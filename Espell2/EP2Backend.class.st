@@ -5,7 +5,10 @@ Class {
 		'simulator',
 		'systemDefinition',
 		'objectSpace',
-		'extraRoots'
+		'extraRoots',
+		'byteSymbolClass',
+		'associationClass',
+		'aSymbolTableClass'
 	],
 	#category : #'Espell2-Backend'
 }
@@ -41,6 +44,29 @@ EP2Backend >> addExtraRoot: anEP2RemoteClass [
 	extraRoots add: anEP2RemoteClass
 ]
 
+{ #category : #'special-classes' }
+EP2Backend >> arrayClass: anEP2RemoteClass [ 
+	"The Array class in special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Array"
+	self specialObjectsArray at: 8 put: anEP2RemoteClass.
+	
+	self installClass: anEP2RemoteClass inClassTableIndex: 51.
+	
+	"Array is a special class that resides in the first page of the class table.
+	Array is duplicated in the special class index 16, that can also be obtained by querying the memory manager as follows:
+	
+		self objectMemory arrayClassIndexPun.
+		
+	Usually, a class hash must be the same as the class index in the class table. But, since the class is in two different positions, one of them does not hold that invariant.
+	To install the class in the table in both positions, we use an Unchecked version of the method that contains no assertions of that invariant."
+	self objectMemory classAtIndex: self objectMemory arrayClassIndexPun putUnchecked: anEP2RemoteClass target address.
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> associationClass: anEP2RemoteClass [ 
+	associationClass := anEP2RemoteClass
+]
+
 { #category : #'high-level-messages' }
 EP2Backend >> basicNewOn: aRemoteClass [
 	
@@ -66,6 +92,55 @@ EP2Backend >> basicSizeOf: anEPRemoteObject [
 	^ self simulator uncheckedStSizeOf: anEPRemoteObject target address
 ]
 
+{ #category : #'special-classes' }
+EP2Backend >> blockClass: anEP2RemoteClass [ 
+
+	"The Point class in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: BlockClosure"
+	self specialObjectsArray at: 37 put: anEP2RemoteClass.
+	self installClass: anEP2RemoteClass inClassTableIndex: 37
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> byteArrayClass: anEP2RemoteClass [ 
+
+	"The twenty-seventh special object.
+	Smalltalk specialObjectsArray indexOf: ByteArray"
+	self specialObjectsArray at: 27 put: anEP2RemoteClass.
+	self installClass: anEP2RemoteClass inClassTableIndex: 50.
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> byteStringClass: anEP2RemoteClass [ 
+	"The seventh special object.
+	Smalltalk specialObjectsArray indexOf: ByteString"
+	self specialObjectsArray at: 7 put: anEP2RemoteClass.
+	self objectMemory setHashBitsOf: anEP2RemoteClass target address to: 52.
+	self objectMemory classAtIndex: 52 putUnchecked: anEP2RemoteClass target address.
+	anEP2RemoteClass target: anEP2RemoteClass target asClassIndexHandle.
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> byteSymbolClass [
+	^ byteSymbolClass
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> byteSymbolClass: aClass [
+	
+	byteSymbolClass := aClass
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> characterClass: aClass [ 
+	"The twentieth special object.
+	Smalltalk specialObjectsArray indexOf: Character"
+	self specialObjectsArray at: 20 put: aClass.
+	self objectMemory setHashBitsOf: aClass target address to: 2.
+	self objectMemory classAtIndex: 2 putUnchecked: aClass target address.
+	aClass target: aClass target asClassIndexHandle.
+]
+
 { #category : #'accessing-classTable' }
 EP2Backend >> classAtIndex: anInteger [ 
 	^ simulator objectMemory classAtIndex: anInteger
@@ -87,6 +162,14 @@ EP2Backend >> compactClassIndexOf: anEP2RemoteClass [
 	
 	"All classes in Spur are compact, which also means that Spur has no compact classes"
 	^ 0
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> contextClass: anEP2RemoteClass [ 
+	"The method Comtext class in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Context"
+	self specialObjectsArray at: 11 put: anEP2RemoteClass. 
+	self installClass: anEP2RemoteClass inClassTableIndex: 36
 ]
 
 { #category : #'creating-stub-instances' }
@@ -123,6 +206,14 @@ EP2Backend >> falseObject: anEP2Mirror [
 	self specialObjectsArray
 		ifNotNil: [ :soa | soa at: 2 put: anEP2Mirror ].
 	simulator objectMemory falseObject: anEP2Mirror target address
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> floatClass: anEP2RemoteClass [ 
+	"The tenth special object.
+	Smalltalk specialObjectsArray indexOf: Float"
+	self specialObjectsArray at: 10 put: anEP2RemoteClass.
+	self installClass: anEP2RemoteClass inClassTableIndex: 34
 ]
 
 { #category : #initializing }
@@ -185,6 +276,14 @@ EP2Backend >> instSpecOfClass: anEP2Mirror [
 	^ self simulator objectMemory instSpecOfClass: anEP2Mirror target address
 ]
 
+{ #category : #'install-class' }
+EP2Backend >> installClass: anEP2RemoteClass inClassTableIndex: anInteger [ 
+	
+	self objectMemory setHashBitsOf: anEP2RemoteClass target address to: anInteger.
+	self objectMemory classAtIndex: anInteger putUnchecked: anEP2RemoteClass target address.
+	anEP2RemoteClass target: anEP2RemoteClass target asClassIndexHandle.
+]
+
 { #category : #'high-level-message' }
 EP2Backend >> instanceFixedSizeOf: aClass [
 	
@@ -214,9 +313,42 @@ EP2Backend >> isSmallInteger: aHandle [
 	^ self objectMemory isIntegerObject: aHandle address
 ]
 
+{ #category : #'special-classes' }
+EP2Backend >> largeNegativeIntegerClass: anEP2RemoteClass [ 
+	"The forty-third special object.
+	Smalltalk specialObjectsArray indexOf: LargeNegativeInteger"
+	self specialObjectsArray at: 43 put: anEP2RemoteClass.
+	self installClass: anEP2RemoteClass inClassTableIndex: 32
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> largePositiveIntegerClass: anEP2RemoteClass [ 
+	"The fourteenth special object.
+	Smalltalk specialObjectsArray indexOf: LargePositiveInteger"
+	self specialObjectsArray at: 14 put: anEP2RemoteClass.
+	self installClass: anEP2RemoteClass inClassTableIndex: 33
+]
+
 { #category : #accessing }
 EP2Backend >> memoryManager [
 	self shouldBeImplemented.
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> messageClass: anEP2RemoteClass [ 
+
+	"The method Comtext class in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Message"
+	self specialObjectsArray at: 16 put: anEP2RemoteClass.
+	self installClass: anEP2RemoteClass inClassTableIndex: 35
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> methodClass: anEP2RemoteClass [ 
+
+	"The CompiledMethod instance in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: CompiledMethod"
+	^ self specialObjectsArray at: 17 put: anEP2RemoteClass
 ]
 
 { #category : #mirrors }
@@ -292,6 +424,23 @@ EP2Backend >> objectSpace: anEPObjectSpace [
 	objectSpace := anEPObjectSpace
 ]
 
+{ #category : #'special-classes' }
+EP2Backend >> pointClass: anEP2RemoteClass [ 
+
+	"The Point class in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Point"
+	self specialObjectsArray at: 13 put: anEP2RemoteClass.
+	self installClass: anEP2RemoteClass inClassTableIndex: 33
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> processClass: anEP2RemoteClass [ 
+
+	"The Point class in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Process"
+	^ self specialObjectsArray at: 28 put: anEP2RemoteClass
+]
+
 { #category : #'accessing-low-level' }
 EP2Backend >> rawHashOf: anAddress [
 	
@@ -337,6 +486,12 @@ EP2Backend >> smallIntegerClass: aClass [
 EP2Backend >> specialObjectsArray [
 	"Careful. This is an external object. Do not send messages to it."
 	^ self objectSpace specialObjectsArray
+]
+
+{ #category : #'special-classes' }
+EP2Backend >> symbolTableClass: anEP2RemoteClass [ 
+	
+	symbolTableClass := anEP2RemoteClass
 ]
 
 { #category : #accessing }
