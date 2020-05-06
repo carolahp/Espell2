@@ -1,0 +1,16 @@
+Class {
+	#name : #EP2RemoteArray,
+	#superclass : #EP2RemoteObject,
+	#category : #'Espell2-HighLevel-remoteObjects'
+}
+
+{ #category : #accessing }
+EP2RemoteArray class >> at: index put: value [ 
+	^ self layout at: index put: value
+]
+
+{ #category : #accessing }
+EP2RemoteArray >> layoutClass [
+	" generic layout "
+	^ EP2VariableLayout
+]
