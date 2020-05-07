@@ -45,6 +45,13 @@ EP2Backend >> addExtraRoot: anEP2RemoteClass [
 ]
 
 { #category : #'special-classes' }
+EP2Backend >> arrayClass [
+	"The Array class in special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Array"
+	^ (self specialObjectsArray at: 8) asRemoteClass
+]
+
+{ #category : #'special-classes' }
 EP2Backend >> arrayClass: anEP2RemoteClass [ 
 	"The Array class in special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Array"
@@ -171,7 +178,6 @@ EP2Backend >> classHandle: handleFrom setTo: handleTo [
 
 { #category : #'modifying-mirrors' }
 EP2Backend >> classOf: anEP2SimulatorAddressHandle [
- 
 	^ self objectMemory fetchClassOf: anEP2SimulatorAddressHandle address
 ]
 
@@ -264,6 +270,23 @@ EP2Backend >> fromLocalInteger: aLocalInteger [
 		ifFalse: [ self mirrorOnAddress: integer ].
 ]
 
+{ #category : #'remote-to-local' }
+EP2Backend >> fromRemoteByteString: anEP2Mirror [ 
+	
+	| localString |
+	localString := ByteString new: anEP2Mirror basicSize.
+	1 to: localString size do: [ :i |
+		localString byteAt: i put: (anEP2Mirror at: i) asSmallInteger.
+	].
+	^ localString
+]
+
+{ #category : #'remote-to-local' }
+EP2Backend >> fromRemoteByteSymbol: anEP2Mirror [ 
+	
+	^ Symbol intern: (self fromRemoteByteString: anEP2Mirror)
+]
+
 { #category : #'creating-mirrors' }
 EP2Backend >> handleOnAddress: anAddress [
 
@@ -286,6 +309,60 @@ EP2Backend >> handleOnClassIndex: aClassIndex [
 EP2Backend >> initialize [
 	super initialize.
 	extraRoots := Set new
+]
+
+{ #category : #'initializing-memory' }
+EP2Backend >> initializeExecutionContext [
+
+	| page pointer stackPages theIP theMethod rcvr numArgs |
+
+"Create empty initial context to be able to execute primitives"
+	stackPages := self simulator stackPages.
+	page := stackPages newStackPage.
+	pointer := page baseAddress.
+	theIP := 0.
+	theMethod := self nilObject target address.
+	rcvr := self nilObject target address.
+	numArgs := 0.
+	
+	"If this is a synthetic context its IP could be pointing at the CallPrimitive opcode.  If so, skip it."
+	stackPages longAt: pointer put: rcvr.
+	
+	"saved caller ip is sender context in base frame"
+	stackPages
+		longAt: (pointer := pointer - self objectMemory wordSize)
+		put: self nilObject target address.
+
+	"base frame's saved fp is null"
+	stackPages
+		longAt: (pointer := pointer - self objectMemory wordSize)
+		put: 0.
+	page baseFP: pointer; headFP: pointer.
+
+	stackPages
+		longAt: (pointer := pointer - self objectMemory wordSize)
+		put: theMethod.
+
+	stackPages
+		longAt: (pointer := pointer - self objectMemory wordSize)
+		put: (self simulator encodeFrameFieldHasContext: true isBlock: true numArgs: numArgs).
+	stackPages
+		longAt: (pointer := pointer - self objectMemory wordSize)
+		put: self nilObject target address.
+	stackPages
+		longAt: (pointer := pointer - self objectMemory wordSize)
+		put: rcvr.
+	
+	"top of stack is the instruction pointer"
+	"stackPages longAt: (pointer := pointer - self objectMemory wordSize) put: theIP."
+	page headSP: pointer.
+
+	self simulator setStackPageAndLimit: page.
+	self simulator framePointer: page headFP.
+	self simulator stackPointer: page headSP.
+	self simulator setMethodUnchecked: (self simulator iframeMethod: page headFP).
+	self simulator instructionPointer: 0.
+	self simulator internalizeIPandSP.
 ]
 
 { #category : #'accessing-header' }

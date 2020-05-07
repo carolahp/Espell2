@@ -22,6 +22,11 @@ EP2RemoteObject >> = aRemoteObjectOrMirror [
 ]
 
 { #category : #converting }
+EP2RemoteObject >> asRemoteArray [
+	^ EP2RemoteArray on: self mirror
+]
+
+{ #category : #converting }
 EP2RemoteObject >> asRemoteClass [
 	^ EP2RemoteClass on: self mirror
 ]
@@ -44,6 +49,11 @@ EP2RemoteObject >> at: index put: aReference [
 { #category : #'accessing-pvt' }
 EP2RemoteObject >> backend [
 	^ mirror backend
+]
+
+{ #category : #'high-level-message' }
+EP2RemoteObject >> basicClass [
+	^ self mirror basicClass
 ]
 
 { #category : #accessing }

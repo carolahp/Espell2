@@ -62,6 +62,17 @@ EP2ObjectSpace >> interpreter: anEPASTEvaluator [
 
 ]
 
+{ #category : #'remote-objects-instantiation' }
+EP2ObjectSpace >> newRemoteArrayWithAll: elements [
+	
+	| array |
+	array := self backend arrayClass basicNew: elements size.
+	elements withIndexDo: [ :element :index |
+		array at: index put: element
+	].
+	^ array
+]
+
 { #category : #'accessing-specialObjects' }
 EP2ObjectSpace >> nilObject [
 	^ self backend nilObject

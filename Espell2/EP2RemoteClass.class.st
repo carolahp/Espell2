@@ -4,11 +4,6 @@ Class {
 	#category : #'Espell2-HighLevel-remoteObjects'
 }
 
-{ #category : #'accessing-header' }
-EP2RemoteClass >> basicClass [
-	^ self mirror basicClass
-]
-
 { #category : #'high-level-messages' }
 EP2RemoteClass >> basicNew [
 	
@@ -23,6 +18,18 @@ EP2RemoteClass >> basicNew: aSize [
 { #category : #'accessing-instVars-mapping' }
 EP2RemoteClass >> classFormatIndex [
 	^ self systemDefinition classFormatIndex
+]
+
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteClass >> className [
+	
+	^ self backend 
+		fromRemoteByteSymbol: (self instanceVariableAtIndex: self classNameIndex)
+]
+
+{ #category : #'accessing-instVars-mapping' }
+EP2RemoteClass >> classNameIndex [
+	^ self backend systemDefinition instanceVariableMapping classNameIndex
 ]
 
 { #category : #'high-level-messages' }
@@ -70,4 +77,12 @@ EP2RemoteClass >> isBitsClass [
 EP2RemoteClass >> layoutClass [
 	" generic layout "
 	^ EP2FixedLayout
+]
+
+{ #category : #printing }
+EP2RemoteClass >> printOn: aStream [
+	aStream 
+		nextPutAll: '*';
+		nextPutAll: self className;
+		nextPutAll: '*'
 ]
