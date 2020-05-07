@@ -17,8 +17,8 @@ EP2RemoteObject class >> on: anEPMirror [
 ]
 
 { #category : #comparing }
-EP2RemoteObject >> = aRemoteObjectOrMirror [
-	^ self pointsToSameObject: aRemoteObjectOrMirror
+EP2RemoteObject >> = anotherObject [
+	^ self mirror = anotherObject
 ]
 
 { #category : #converting }
@@ -96,11 +96,6 @@ EP2RemoteObject >> mirror [
 { #category : #accessing }
 EP2RemoteObject >> mirror: anEP2Mirror [
 	mirror := anEP2Mirror
-]
-
-{ #category : #comparing }
-EP2RemoteObject >> pointsToSameObject: aRemoteObjectOrMirror [
-	^self target = aRemoteObjectOrMirror target
 ]
 
 { #category : #printing }

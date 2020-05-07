@@ -16,3 +16,8 @@ EP2SimulatorHandle >> backend: anEP2SimulatorBackend [
 EP2SimulatorHandle >> isSmallInteger [ 
 	self subclassResponsibility 
 ]
+
+{ #category : #accessing }
+EP2SimulatorHandle >> species [ 
+	self subclassResponsibility 
+]

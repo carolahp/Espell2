@@ -4,6 +4,18 @@ Class {
 	#category : #'Espell2-LowLevel-mirrors'
 }
 
+{ #category : #comparing }
+EP2SimulatorInternalObjectHandle >> = aHandle [
+
+	^ self species = aHandle species
+		and: [ self address == aHandle address ]
+]
+
+{ #category : #accessing }
+EP2SimulatorInternalObjectHandle >> address [ 
+	self subclassResponsibility 
+]
+
 { #category : #'accessing-instVars' }
 EP2SimulatorInternalObjectHandle >> instanceVariableAtIndex: anInteger [ 
 	
@@ -13,4 +25,10 @@ EP2SimulatorInternalObjectHandle >> instanceVariableAtIndex: anInteger [
 { #category : #'as yet unclassified' }
 EP2SimulatorInternalObjectHandle >> isSmallInteger [
 	^ backend isSmallInteger: self
+]
+
+{ #category : #'as yet unclassified' }
+EP2SimulatorInternalObjectHandle >> species [
+
+	^ EP2SimulatorInternalObjectHandle
 ]

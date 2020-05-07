@@ -16,6 +16,13 @@ EP2Mirror class >> on: anEP2SimulatorHandle from: anEP2Backend [
 		yourself
 ]
 
+{ #category : #comparing }
+EP2Mirror >> = anotherMirror [
+	([anotherMirror isEP2Mirror] on:Exception do: [ false ]) ifFalse: [ ^ false ].
+	
+	^ self pointsToSameObject: anotherMirror
+]
+
 { #category : #'converting-local' }
 EP2Mirror >> asLocalSmallInteger [
 
@@ -77,8 +84,18 @@ EP2Mirror >> instSpec [
 ]
 
 { #category : #testing }
+EP2Mirror >> isEP2Mirror [
+	^ true
+]
+
+{ #category : #testing }
 EP2Mirror >> isSmallInteger [
 	^ target isSmallInteger
+]
+
+{ #category : #comparing }
+EP2Mirror >> pointsToSameObject: aRemoteObjectOrMirror [
+	^self target = aRemoteObjectOrMirror target
 ]
 
 { #category : #printing }
