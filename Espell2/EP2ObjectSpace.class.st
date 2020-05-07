@@ -51,6 +51,12 @@ EP2ObjectSpace >> fromLocalInteger: anInteger [
 ]
 
 { #category : #accessing }
+EP2ObjectSpace >> interpreter [
+	interpreter ifNil: [ self error: 'interpreter not initialized for this object space' ].
+	^interpreter
+]
+
+{ #category : #accessing }
 EP2ObjectSpace >> interpreter: anEPASTEvaluator [ 
 	interpreter := anEPASTEvaluator 
 
@@ -73,7 +79,8 @@ EP2ObjectSpace >> specialObjectsArray [
 
 { #category : #'accessing-specialObjects' }
 EP2ObjectSpace >> specialObjectsArray: anEP2Mirror [ 
-	specialObjectsArray := (anEP2Mirror asRemoteArray)
+	specialObjectsArray := anEP2Mirror.
+	backend simulator objectMemory specialObjectsOop: anEP2Mirror target address
 ]
 
 { #category : #accessing }

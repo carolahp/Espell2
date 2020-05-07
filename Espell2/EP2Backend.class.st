@@ -86,6 +86,24 @@ EP2Backend >> basicNewOn: aRemoteClass [
 	^ newObject
 ]
 
+{ #category : #'high-level-messages' }
+EP2Backend >> basicNewOn: aRemoteClass withSize: aSize [ 
+	| newOop newObject |
+	newOop := self objectMemory instantiateClass: aRemoteClass target address indexableSize: aSize.
+	self assert: newOop notNil.
+	
+	newObject := (self mirrorOnAddress: newOop) asRemoteObject.
+	1 to: aRemoteClass instanceFixedSize do: [ :index |
+		newObject instanceVariableAtIndex: index put: self nilObject.
+	].
+	aRemoteClass isBitsClass ifFalse: [
+		1 to: newObject size do: [ :index |
+			newObject at: index put: self nilObject.
+		].
+	].
+	^ newObject
+]
+
 { #category : #'accessing-mirror' }
 EP2Backend >> basicSizeOf: anEPRemoteObject [
 	anEPRemoteObject isSmallInteger ifTrue: [ ^ 0 ].
@@ -379,13 +397,18 @@ EP2Backend >> nilObject: anEPMirror [
 	simulator objectMemory nilObject: anEPMirror target address
 ]
 
+{ #category : #'accessing-objects' }
+EP2Backend >> object: aHandler at: anInteger [ 
+	^ self mirrorOnAddress: (simulator stObject: aHandler address at: anInteger)
+]
+
 { #category : #'modifying-mirrors' }
 EP2Backend >> object: objectOop at: anInteger put: valueOop [
 	
 	simulator objectMemory
-		stObject: valueOop
+		stObject: objectOop
 		at: anInteger
-		put: objectOop
+		put: valueOop
 ]
 
 { #category : #'accessing-instVars' }
@@ -430,7 +453,7 @@ EP2Backend >> pointClass: anEP2RemoteClass [
 	"The Point class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Point"
 	self specialObjectsArray at: 13 put: anEP2RemoteClass.
-	self installClass: anEP2RemoteClass inClassTableIndex: 33
+	self installClass: anEP2RemoteClass inClassTableIndex: 54.
 ]
 
 { #category : #'special-classes' }
@@ -439,6 +462,23 @@ EP2Backend >> processClass: anEP2RemoteClass [
 	"The Point class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Process"
 	^ self specialObjectsArray at: 28 put: anEP2RemoteClass
+]
+
+{ #category : #'special-objects' }
+EP2Backend >> processorAssociation [
+
+	"The Association object that references the processor.
+	Should be index 4.
+	Smalltalk specialObjectsArray indexOf: (Smalltalk bindingOf: #Processor)"
+	^ (self specialObjectsArray at: 4) asRemoteAssociation
+]
+
+{ #category : #'special-objects' }
+EP2Backend >> processorAssociation: anEP2RemoteObject [ 
+	"The Association object that references the processor.
+	Should be index 4.
+	Smalltalk specialObjectsArray indexOf: (Smalltalk bindingOf: #Processor)"
+	^ self specialObjectsArray at: 4 put: anEP2RemoteObject
 ]
 
 { #category : #'accessing-low-level' }
@@ -485,7 +525,16 @@ EP2Backend >> smallIntegerClass: aClass [
 { #category : #'accessing-specialObjects' }
 EP2Backend >> specialObjectsArray [
 	"Careful. This is an external object. Do not send messages to it."
-	^ self objectSpace specialObjectsArray
+	^ (self objectSpace specialObjectsArray) 
+			ifNotNil: [ :soa | soa asRemoteArray ]
+			ifNil: [ nil ]
+]
+
+{ #category : #'special-objects' }
+EP2Backend >> specialSelectors: anArrayOfSelectorsAndArgumentSizePairs [ 
+	"The 24th special object.
+	Smalltalk specialObjectsArray indexOf: Smalltalk specialSelectors"
+	^ self specialObjectsArray at: 24 put: anArrayOfSelectorsAndArgumentSizePairs
 ]
 
 { #category : #'special-classes' }

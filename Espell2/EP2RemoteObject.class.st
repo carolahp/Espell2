@@ -93,6 +93,14 @@ EP2RemoteObject >> pointsToSameObject: aRemoteObjectOrMirror [
 	^self target = aRemoteObjectOrMirror target
 ]
 
+{ #category : #printing }
+EP2RemoteObject >> printOn: aStream [
+	aStream 
+		nextPutAll: 'aRemote [ ';
+		nextPutAll: self target address asString;
+		nextPutAll: ' ]'
+]
+
 { #category : #'public-api' }
 EP2RemoteObject >> setClass: aRemoteClass [
 	[

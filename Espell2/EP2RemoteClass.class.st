@@ -15,6 +15,11 @@ EP2RemoteClass >> basicNew [
 	^ self backend basicNewOn: self
 ]
 
+{ #category : #'high-level-message' }
+EP2RemoteClass >> basicNew: aSize [ 
+	^ self backend basicNewOn: self withSize: aSize
+]
+
 { #category : #'accessing-instVars-mapping' }
 EP2RemoteClass >> classFormatIndex [
 	^ self systemDefinition classFormatIndex

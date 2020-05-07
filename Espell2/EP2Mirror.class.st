@@ -28,6 +28,11 @@ EP2Mirror >> asRemoteArray [
 ]
 
 { #category : #'converting-high-level' }
+EP2Mirror >> asRemoteAssociation [
+	^ EP2RemoteAssociation on: self 
+]
+
+{ #category : #'converting-high-level' }
 EP2Mirror >> asRemoteClass [ 
 	^ EP2RemoteClass on: self
 ]
@@ -74,6 +79,14 @@ EP2Mirror >> instSpec [
 { #category : #testing }
 EP2Mirror >> isSmallInteger [
 	^ target isSmallInteger
+]
+
+{ #category : #printing }
+EP2Mirror >> printOn: aStream [
+	aStream 
+		nextPutAll: 'aMirror [ ';
+		nextPutAll: self target address asString;
+		nextPutAll: ' ]'
 ]
 
 { #category : #'accessing-header' }

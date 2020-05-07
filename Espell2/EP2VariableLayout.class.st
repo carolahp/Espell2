@@ -10,6 +10,12 @@ EP2VariableLayout class >> at: anIndex put: anEP2Mirror [
 ]
 
 { #category : #accessing }
+EP2VariableLayout >> at: anIndex [
+
+	^ self backend object: self mirror target at: anIndex
+]
+
+{ #category : #accessing }
 EP2VariableLayout >> at: anIndex put: anEP2Mirror [
 	^ self backend 
 		object: mirror target address 

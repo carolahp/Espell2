@@ -14,3 +14,10 @@ EP2RemoteArray >> layoutClass [
 	" generic layout "
 	^ EP2VariableLayout
 ]
+
+{ #category : #printing }
+EP2RemoteArray >> printOn: aStream [
+	aStream nextPutAll: '#('.
+	(1 to: self basicSize) do: [ :i | (self at: i) printOn: aStream . aStream nextPutAll: ' ' ].
+	aStream nextPutAll: ')'
+]
