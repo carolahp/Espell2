@@ -1,3 +1,6 @@
+"
+I am used by EP2Mirrors to hold the reference to the object they point at.
+"
 Class {
 	#name : #EP2SimulatorHandle,
 	#superclass : #Object,

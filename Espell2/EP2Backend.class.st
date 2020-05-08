@@ -228,7 +228,11 @@ EP2Backend >> falseObject: anEP2Mirror [
 	"^ self specialObjectsArray at: 1 put: anEPMirror"
 
 	self specialObjectsArray
-		ifNotNil: [ :soa | soa at: 2 put: anEP2Mirror ].
+		ifNotNil: [ :soa | 
+			self  
+				object: soa
+				at: 2 
+				put: anEP2Mirror ].
 	simulator objectMemory falseObject: anEP2Mirror target address
 ]
 
@@ -424,6 +428,11 @@ EP2Backend >> largePositiveIntegerClass: anEP2RemoteClass [
 	self installClass: anEP2RemoteClass inClassTableIndex: 33
 ]
 
+{ #category : #'from local to remote' }
+EP2Backend >> localObjectAsRemoteObject: aLocalObject [
+	^ aLocalObject asRemoteObjectInObjectSpace: self objectSpace
+]
+
 { #category : #accessing }
 EP2Backend >> memoryManager [
 	self shouldBeImplemented.
@@ -470,17 +479,57 @@ EP2Backend >> nilObject: anEPMirror [
 	Smalltalk specialObjectsArray indexOf: nil"
 
 	self specialObjectsArray
-		ifNotNil: [ :soa | soa at: 1 put: anEPMirror ].
+		ifNotNil: [ :soa | 
+			self 
+				object: soa
+				at: 1 
+				put: anEPMirror ].
 	simulator objectMemory nilObject: anEPMirror target address
 ]
 
 { #category : #'accessing-objects body' }
-EP2Backend >> object: aHandler at: anInteger [ 
-	^ self mirrorOnAddress: (simulator stObject: aHandler address at: anInteger)
+EP2Backend >> object: object at: index [ 
+	^ self 
+		objectOop: object target address 
+		at: index 
 ]
 
 { #category : #'accessing-objects body' }
-EP2Backend >> object: objectOop at: anInteger put: valueOop [
+EP2Backend >> object: object at: index put: value [
+	self 
+		objectOop: object target address 
+		at: index 
+		putOop: value target address 
+]
+
+{ #category : #'accessing-objects body' }
+EP2Backend >> object: object instVarAt: index [ 
+	^ self 
+		objectOop: object target address 
+		instVarAt: index
+]
+
+{ #category : #'accessing-objects body' }
+EP2Backend >> object: object instVarAt: index put: value [
+
+	self objectOop: object target address 
+		instVarAt: index 
+		putOop: value target address
+]
+
+{ #category : #accessing }
+EP2Backend >> objectMemory [
+	
+	^ simulator objectMemory
+]
+
+{ #category : #'accessing-objects body' }
+EP2Backend >> objectOop: objectOop at: index [ 
+	^ self mirrorOnAddress: (simulator stObject: objectOop at: index)
+]
+
+{ #category : #'accessing-objects body' }
+EP2Backend >> objectOop: objectOop at: anInteger putOop: valueOop [
 	
 	simulator objectMemory
 		stObject: objectOop
@@ -489,29 +538,23 @@ EP2Backend >> object: objectOop at: anInteger put: valueOop [
 ]
 
 { #category : #'accessing-objects body' }
-EP2Backend >> object: anEPSimulatorInternalHandle instVarAt: index [ 
+EP2Backend >> objectOop: objectOop instVarAt: index [ 
 	
 	| address |
-	address := self objectMemory fetchPointer: index - 1 ofObject: anEPSimulatorInternalHandle address.	
+	address := self objectMemory fetchPointer: index - 1 ofObject: objectOop.	
 	((self objectMemory isNonImmediate: address)
 		and: [self objectMemory isForwarded: address])
 			ifTrue: [ | forwardedObject |
 				forwardedObject := self objectMemory followForwarded: address.
-				self object: anEPSimulatorInternalHandle address instVarAt: index put: forwardedObject.
+				self object: objectOop instVarAt: index put: forwardedObject.
 				address := forwardedObject ].
 	^ self mirrorOnAddress: address
 ]
 
 { #category : #'accessing-objects body' }
-EP2Backend >> object: objectOop instVarAt: index put: valueOop [
+EP2Backend >> objectOop: objectOop instVarAt: index putOop: valueOop [
 	
 	simulator objectMemory storePointer: index - 1 ofObject: objectOop withValue: valueOop
-]
-
-{ #category : #accessing }
-EP2Backend >> objectMemory [
-	
-	^ simulator objectMemory
 ]
 
 { #category : #accessing }
@@ -574,6 +617,14 @@ EP2Backend >> simulator [
 { #category : #accessing }
 EP2Backend >> simulator: aStackInterpreterSimulatorLSB [ 
 	simulator := aStackInterpreterSimulatorLSB
+]
+
+{ #category : #'accessing-slots' }
+EP2Backend >> slotsFor: anEP2RemoteObject do: aBlockClosure [ 
+	| object classDefinition |
+	object := anEP2RemoteObject.
+	classDefinition := object basicClass asClassInSystemDefinition. "getting the corresponding definition from systemDefinition"
+	classDefinition ifNotNil: [ self haltOnce ]
 ]
 
 { #category : #'accessing-special classes' }
@@ -645,6 +696,10 @@ EP2Backend >> trueObject: anEPMirror [
 	"^ self specialObjectsArray at: 1 put: anEPMirror"
 
 	self specialObjectsArray
-		ifNotNil: [ :soa | soa at: 3 put: anEPMirror ].
+		ifNotNil: [ :soa | 
+			self 
+				object: soa
+				at: 3
+				put: anEPMirror ].
 	simulator objectMemory trueObject: anEPMirror target address
 ]

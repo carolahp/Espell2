@@ -1,3 +1,6 @@
+"
+I hold references to objects installed in the bootstrapped Object Memory, and which can be accessed only by their address in memory
+"
 Class {
 	#name : #EP2SimulatorAddressHandle,
 	#superclass : #EP2SimulatorInternalObjectHandle,

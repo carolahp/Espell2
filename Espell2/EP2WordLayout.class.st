@@ -1,17 +1,17 @@
 Class {
-	#name : #EP2ByteLayout,
+	#name : #EP2WordLayout,
 	#superclass : #EP2BitsLayout,
 	#category : #'Espell2-Kernel-Layouts'
 }
 
 { #category : #testing }
-EP2ByteLayout >> isByteLayout [
+EP2WordLayout >> isWordLayout [
 
 	^ true
 ]
 
 { #category : #testing }
-EP2ByteLayout >> layoutName [
+EP2WordLayout >> layoutName [
 
-	^ #ByteLayout
+	^ #WordLayout
 ]

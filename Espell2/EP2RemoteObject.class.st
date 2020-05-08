@@ -5,7 +5,7 @@ Class {
 		'mirror',
 		'layout'
 	],
-	#category : #'Espell2-HighLevel-remoteObjects'
+	#category : #'Espell2-Kernel'
 }
 
 { #category : #'instance creation' }
@@ -22,6 +22,11 @@ EP2RemoteObject >> = anotherObject [
 ]
 
 { #category : #converting }
+EP2RemoteObject >> asClassInSystemDefinition [
+	^ nil
+]
+
+{ #category : #converting }
 EP2RemoteObject >> asRemoteArray [
 	^ EP2RemoteArray on: self mirror
 ]
@@ -29,6 +34,11 @@ EP2RemoteObject >> asRemoteArray [
 { #category : #converting }
 EP2RemoteObject >> asRemoteClass [
 	^ EP2RemoteClass on: self mirror
+]
+
+{ #category : #converting }
+EP2RemoteObject >> asRemoteNil [
+	^ EP2RemoteNil on: self mirror
 ]
 
 { #category : #converting }
@@ -62,14 +72,19 @@ EP2RemoteObject >> basicSize [
 	^ self backend basicSizeOf: self
 ]
 
+{ #category : #converting }
+EP2RemoteObject >> classDefinition [
+	^ nil
+]
+
 { #category : #accessing }
 EP2RemoteObject >> instanceVariableAtIndex: index [
 	^ self layout instanceVariableAtIndex: index
 ]
 
 { #category : #accessing }
-EP2RemoteObject >> instanceVariableAtIndex: index put: aReference [
-	self layout instanceVariableAtIndex: index put: aReference
+EP2RemoteObject >> instanceVariableAtIndex: index put: anObject [
+	self layout instanceVariableAtIndex: index put: anObject
 ]
 
 { #category : #testing }
@@ -79,7 +94,7 @@ EP2RemoteObject >> isSmallInteger [
 
 { #category : #accessing }
 EP2RemoteObject >> layout [ 
-	^ layout ifNil: [ layout := self layoutClass on: self mirror ]
+	^ layout ifNil: [ layout := self layoutClass on: self ]
 ]
 
 { #category : #accessing }

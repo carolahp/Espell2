@@ -1,5 +1,35 @@
 Class {
 	#name : #EP2CompiledMethodLayout,
 	#superclass : #EP2ObjectLayout,
-	#category : #'Espell2-Layouts'
+	#category : #'Espell2-Kernel-Layouts'
 }
+
+{ #category : #testing }
+EP2CompiledMethodLayout >> isBitsLayout [
+
+	^ true
+]
+
+{ #category : #testing }
+EP2CompiledMethodLayout >> isByteLayout [
+
+	^ true
+]
+
+{ #category : #testing }
+EP2CompiledMethodLayout >> isCompiledMethodLayout [
+
+	^ true
+]
+
+{ #category : #testing }
+EP2CompiledMethodLayout >> isVariableLayout [
+
+	^ true
+]
+
+{ #category : #testing }
+EP2CompiledMethodLayout >> layoutName [
+
+	^ #CompiledMethodLayout
+]

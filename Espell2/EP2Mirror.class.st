@@ -1,3 +1,9 @@
+"
+I am a proxy for handling objects during the bootstrap process. 
+InstVars:
+- Backend: an instance of EP2Backend, who works as a high level interface to use the VMMaker to handle memory
+- Handler: an instance of EP2SimulatorHandle. Notice that there exist internal and external handles. Internal handlers deal with objects installed in the generated Object Memory, while external handles deal with local Pharo objects used by during the AST interpretation of instructions. 
+"
 Class {
 	#name : #EP2Mirror,
 	#superclass : #Object,
@@ -50,6 +56,11 @@ EP2Mirror >> asRemoteEmptyObject [
 ]
 
 { #category : #'converting-high-level' }
+EP2Mirror >> asRemoteNil [
+	^ EP2RemoteNil on: self
+]
+
+{ #category : #'converting-high-level' }
 EP2Mirror >> asRemoteObject [
 	"gets the corresponding layout according to my instSpec and then uses it to create a remoteObject with the correct type"
 	| layoutClass remoteObjectClass |
@@ -70,7 +81,11 @@ EP2Mirror >> backend: anEP2Backend [
 
 { #category : #'accessing-header' }
 EP2Mirror >> basicClass [
-	^ (backend mirrorOn: self target basicClassHandle) asRemoteClass
+	| classOrNil |
+	classOrNil := backend mirrorOn: self target basicClassHandle.
+	^ classOrNil isNilObject 
+		ifTrue:  [ classOrNil asRemoteNil ] 
+		ifFalse: [ classOrNil asRemoteClass ] 
 ]
 
 { #category : #'accessing-header' }
@@ -86,6 +101,11 @@ EP2Mirror >> instSpec [
 { #category : #testing }
 EP2Mirror >> isEP2Mirror [
 	^ true
+]
+
+{ #category : #testing }
+EP2Mirror >> isNilObject [
+	^ self backend nilObject = self 
 ]
 
 { #category : #testing }

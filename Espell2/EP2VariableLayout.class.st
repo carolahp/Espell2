@@ -1,7 +1,7 @@
 Class {
 	#name : #EP2VariableLayout,
 	#superclass : #EP2PointerLayout,
-	#category : #'Espell2-Layouts'
+	#category : #'Espell2-Kernel-Layouts'
 }
 
 { #category : #accessing }
@@ -9,16 +9,14 @@ EP2VariableLayout class >> at: anIndex put: anEP2Mirror [
 	self mirror backend object: self mirror target address at: anIndex put: anEP2Mirror target address
 ]
 
-{ #category : #accessing }
-EP2VariableLayout >> at: anIndex [
+{ #category : #testing }
+EP2VariableLayout >> isVariableLayout [
 
-	^ self backend object: self mirror target at: anIndex
+	^ true
 ]
 
-{ #category : #accessing }
-EP2VariableLayout >> at: anIndex put: anEP2Mirror [
-	^ self backend 
-		object: mirror target address 
-		at: anIndex 
-		put: anEP2Mirror target address
+{ #category : #testing }
+EP2VariableLayout >> layoutName [
+
+	^ #VariableLayout
 ]

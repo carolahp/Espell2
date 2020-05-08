@@ -1,8 +1,18 @@
 Class {
 	#name : #EP2RemoteClass,
 	#superclass : #EP2RemoteObject,
-	#category : #'Espell2-HighLevel-remoteObjects'
+	#category : #'Espell2-Kernel'
 }
+
+{ #category : #comparing }
+EP2RemoteClass >> = anotherRemoteObject [
+	^ self mirror = anotherRemoteObject mirror
+]
+
+{ #category : #converting }
+EP2RemoteClass >> asClassInSystemDefinition [
+	^ self mirrorDefinitionMap at: self 
+]
 
 { #category : #'high-level-messages' }
 EP2RemoteClass >> basicNew [
@@ -22,9 +32,15 @@ EP2RemoteClass >> classFormatIndex [
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> className [
+	| remoteName |
+	remoteName := [self instanceVariableAtIndex: self classNameIndex] on: SubscriptOutOfBounds do: [ ^ nil ].
 	
-	^ self backend 
-		fromRemoteByteSymbol: (self instanceVariableAtIndex: self classNameIndex)
+	^ self backend fromRemoteByteSymbol: remoteName
+]
+
+{ #category : #accessing }
+EP2RemoteClass >> classNameFromAnyOrigin [
+	^ self className ifNil: [ self asClassInSystemDefinition name ]
 ]
 
 { #category : #'accessing-instVars-mapping' }
@@ -79,10 +95,19 @@ EP2RemoteClass >> layoutClass [
 	^ EP2FixedLayout
 ]
 
+{ #category : #accessing }
+EP2RemoteClass >> mirrorDefinitionMap [
+	^ self backend objectSpace interpreter codeProvider classLoader mirrorDefinitionMap 
+]
+
 { #category : #printing }
 EP2RemoteClass >> printOn: aStream [
 	aStream 
+		nextPutAll: '(remote class)'.
+		
+	self mirror printOn: aStream
+	"aStream 
 		nextPutAll: '*';
-		nextPutAll: self className;
-		nextPutAll: '*'
+		nextPutAll: self classNameFromAnyOrigin;
+		nextPutAll: '*'"
 ]

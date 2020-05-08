@@ -1,19 +1,17 @@
 Class {
 	#name : #EP2FixedLayout,
 	#superclass : #EP2PointerLayout,
-	#category : #'Espell2-Layouts'
+	#category : #'Espell2-Kernel-Layouts'
 }
 
-{ #category : #'accessing-instVars' }
-EP2FixedLayout >> instanceVariableAtIndex: index [
+{ #category : #testing }
+EP2FixedLayout >> isFixedLayout [
 
-	^ self target instanceVariableAtIndex: index
+	^ true
 ]
 
-{ #category : #accessing }
-EP2FixedLayout >> instanceVariableAtIndex: index put: aReference [
-	self backend 
-		object: self target address 
-		instVarAt: index 
-		put: (aReference asRemoteObjectInObjectSpace: self objectSpace) target address
+{ #category : #testing }
+EP2FixedLayout >> layoutName [
+
+	^ #FixedLayout
 ]

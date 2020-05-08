@@ -1,7 +1,7 @@
 Class {
 	#name : #EP2RemoteArray,
 	#superclass : #EP2RemoteObject,
-	#category : #'Espell2-HighLevel-remoteObjects'
+	#category : #'Espell2-Kernel'
 }
 
 { #category : #accessing }
