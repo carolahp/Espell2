@@ -38,9 +38,9 @@ EP2Layout class >> layoutClassForInstSpec: instSpec [
 ]
 
 { #category : #'instance creation' }
-EP2Layout class >> on: anEP2Mirror [
-	^ (self layoutClassForInstSpec: anEP2Mirror instSpec) new 
-		mirror: anEP2Mirror;
+EP2Layout class >> on: anEP2Remote [
+	^ (self layoutClassForInstSpec: anEP2Remote basicClass instSpec) new 
+		remote: anEP2Remote;
 		yourself
 ]
 

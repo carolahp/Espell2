@@ -386,7 +386,7 @@ EP2Backend >> installClass: anEP2RemoteClass inClassTableIndex: anInteger [
 { #category : #'querying-objects' }
 EP2Backend >> instanceFixedSizeOf: aRemoteClass [
 	
-	^ aRemoteClass format bitAnd: 16rFFFF
+	^ aRemoteClass format asLocalSmallInteger bitAnd: 16rFFFF
 ]
 
 { #category : #'from remote to local' }
@@ -623,8 +623,13 @@ EP2Backend >> simulator: aStackInterpreterSimulatorLSB [
 EP2Backend >> slotsFor: anEP2RemoteObject do: aBlockClosure [ 
 	| object classDefinition |
 	object := anEP2RemoteObject.
+	
 	classDefinition := object basicClass asClassInSystemDefinition. "getting the corresponding definition from systemDefinition"
-	classDefinition ifNotNil: [ self haltOnce ]
+	classDefinition 
+		ifNotNil: [ self haltOnce ]
+		ifNil: [ 
+			self haltOnce.
+			 ]
 ]
 
 { #category : #'accessing-special classes' }
