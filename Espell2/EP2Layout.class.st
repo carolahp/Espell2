@@ -88,6 +88,11 @@ EP2Layout >> instanceVariableAtIndex: index put: anObject [
 	self backend object: self instVarAt: index put: (self backend localObjectAsRemoteObject: anObject)
 ]
 
+{ #category : #'accessing-instVars' }
+EP2Layout >> instanceVariableNamed: aString [ 
+	^ (self allSlots collect: [ :slot | slot name = aString. self haltOnce. ]) ifEmpty: [ nil ]
+]
+
 { #category : #testing }
 EP2Layout >> isBitsLayout [
 

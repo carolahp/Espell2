@@ -82,6 +82,11 @@ EP2RemoteClass >> isBitsClass [
 	
 ]
 
+{ #category : #testing }
+EP2RemoteClass >> isRemoteClass [
+	^ true
+]
+
 { #category : #accessing }
 EP2RemoteClass >> layoutClass [
 	" generic layout "

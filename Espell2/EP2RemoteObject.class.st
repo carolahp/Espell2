@@ -94,6 +94,11 @@ EP2RemoteObject >> instanceVariableAtIndex: index put: anObject [
 	self layout instanceVariableAtIndex: index put: anObject
 ]
 
+{ #category : #'accessing-instVars' }
+EP2RemoteObject >> instanceVariableNamed: aString [ 
+	^ self layout instanceVariableNamed: aString
+]
+
 { #category : #testing }
 EP2RemoteObject >> isEP2Mirror [
 	^ false
@@ -107,6 +112,11 @@ EP2RemoteObject >> isEP2Remote [
 { #category : #testing }
 EP2RemoteObject >> isNilObject [
 	^ self backend nilObject = self 
+]
+
+{ #category : #testing }
+EP2RemoteObject >> isRemoteClass [
+	^ false
 ]
 
 { #category : #testing }
