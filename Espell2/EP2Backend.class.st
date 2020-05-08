@@ -626,7 +626,7 @@ EP2Backend >> slotsFor: anEP2RemoteObject do: aBlockClosure [
 	
 	classDefinition := object basicClass asClassInSystemDefinition. "getting the corresponding definition from systemDefinition"
 	classDefinition 
-		ifNotNil: [ self haltOnce ]
+		ifNotNil: [ classDefinition slots do: [:each | each ]]
 		ifNil: [ 
 			self haltOnce.
 			 ]

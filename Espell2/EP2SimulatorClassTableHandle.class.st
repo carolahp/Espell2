@@ -13,6 +13,11 @@ EP2SimulatorClassTableHandle >> address [
 	^ backend classAtIndex: classIndex
 ]
 
+{ #category : #converting }
+EP2SimulatorClassTableHandle >> asClassIndexHandle [
+	^ self
+]
+
 { #category : #'as yet unclassified' }
 EP2SimulatorClassTableHandle >> backend: anEP2Backend [ 
 	backend := anEP2Backend 

@@ -50,18 +50,13 @@ EP2Layout >> allSlots [
 ]
 
 { #category : #accessing }
-EP2Layout >> at: anIndex [
-	
-	^ self allSlots at: anIndex
+EP2Layout >> at: index [
+	^ self backend object: self at: index
 ]
 
 { #category : #accessing }
-EP2Layout >> at: anIndex put: anObject [
-	| slots mirror |
-	mirror := self localObjectAsRemoteObject: anObject.
-	slots := self allSlots select: [:slot | slot index = anIndex].
-	slots ifEmpty: [ ^ self defaultSlots ].
-	^ slots anyOne write: mirror 
+EP2Layout >> at: index put: anObject [
+	self backend object: self at: index put: (self backend localObjectAsRemoteObject: anObject)
 ]
 
 { #category : #'accessing-pvt' }
@@ -76,12 +71,12 @@ EP2Layout >> instVarNames [
 
 { #category : #accessing }
 EP2Layout >> instanceVariableAtIndex: index [
-	^ self at: index
+	^ self backend object: self instVarAt: index
 ]
 
 { #category : #accessing }
 EP2Layout >> instanceVariableAtIndex: index put: anObject [
-	self at: index put: anObject
+	self backend object: self instVarAt: index put: (self backend localObjectAsRemoteObject: anObject)
 ]
 
 { #category : #testing }

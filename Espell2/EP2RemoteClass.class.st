@@ -61,17 +61,12 @@ EP2RemoteClass >> compactClassIndex [
 
 { #category : #'accessing-header' }
 EP2RemoteClass >> format [
-	^self backend
-		object: self 
-		instVarAt: self classFormatIndex
+	^self layout instanceVariableAtIndex: self classFormatIndex 
 ]
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> format: anInteger [
-	^ self backend
-		object: self 
-		instVarAt: self classFormatIndex
-		put: (self backend localObjectAsRemoteObject: anInteger)
+	^self layout instanceVariableAtIndex: self classFormatIndex put: anInteger
 ]
 
 { #category : #'accessing-specialInstVars' }
