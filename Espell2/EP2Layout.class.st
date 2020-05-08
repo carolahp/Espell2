@@ -17,7 +17,15 @@ EP2Layout class >> defaultRemoteObjectOn: anEP2Mirror [
 	self shouldBeImplemented.
 ]
 
-{ #category : #'gt-inspector-extension' }
+{ #category : #'gt-inspector' }
+EP2Layout class >> gtInspectorLayoutOfMirror: mirror in: composite [
+	^ composite table
+		title: 'a *', mirror basicClass classNameFromAnyOrigin, '*';
+		display: [ { 'self' -> mirror asString } ];
+		send: #value
+]
+
+{ #category : #'instance creation' }
 EP2Layout class >> layoutClassForInstSpec: instSpec [
 	(instSpec = 1) ifTrue: [ ^ EP2FixedLayout ].
 	(instSpec = 7) ifTrue: [ ^ EP2ImmediateLayout ].
@@ -29,7 +37,7 @@ EP2Layout class >> layoutClassForInstSpec: instSpec [
 	^ EP2Layout
 ]
 
-{ #category : #'gt-inspector-extension' }
+{ #category : #'instance creation' }
 EP2Layout class >> on: anEP2Mirror [
 	^ (self layoutClassForInstSpec: anEP2Mirror instSpec) new 
 		mirror: anEP2Mirror;
