@@ -19,6 +19,12 @@ EP2SimulatorInternalObjectHandle >> address [
 	self subclassResponsibility 
 ]
 
+{ #category : #converting }
+EP2SimulatorInternalObjectHandle >> asSmallInteger [
+	
+	^ backend integerValueOf: self
+]
+
 { #category : #'accessing-instVars' }
 EP2SimulatorInternalObjectHandle >> instanceVariableAtIndex: anInteger [ 
 	

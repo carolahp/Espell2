@@ -17,8 +17,9 @@ EP2RemoteObject class >> on: anEPMirror [
 ]
 
 { #category : #comparing }
-EP2RemoteObject >> = anotherObject [
-	^ self mirror = anotherObject
+EP2RemoteObject >> = anotherRemote [
+	([anotherRemote isEP2Remote ] on:Exception do: [ false ]) ifFalse: [ ^ false ].
+	^ self pointsToSameObject: anotherRemote
 ]
 
 { #category : #converting }
@@ -77,6 +78,12 @@ EP2RemoteObject >> classDefinition [
 	^ nil
 ]
 
+{ #category : #comparing }
+EP2RemoteObject >> hash [
+
+	^ self mirror hash
+]
+
 { #category : #accessing }
 EP2RemoteObject >> instanceVariableAtIndex: index [
 	^ self layout instanceVariableAtIndex: index
@@ -85,6 +92,21 @@ EP2RemoteObject >> instanceVariableAtIndex: index [
 { #category : #accessing }
 EP2RemoteObject >> instanceVariableAtIndex: index put: anObject [
 	self layout instanceVariableAtIndex: index put: anObject
+]
+
+{ #category : #testing }
+EP2RemoteObject >> isEP2Mirror [
+	^ false
+]
+
+{ #category : #testing }
+EP2RemoteObject >> isEP2Remote [
+	^ true
+]
+
+{ #category : #testing }
+EP2RemoteObject >> isNilObject [
+	^ self backend nilObject = self 
 ]
 
 { #category : #testing }
@@ -111,6 +133,11 @@ EP2RemoteObject >> mirror [
 { #category : #accessing }
 EP2RemoteObject >> mirror: anEP2Mirror [
 	mirror := anEP2Mirror
+]
+
+{ #category : #comparing }
+EP2RemoteObject >> pointsToSameObject: aRemoteObjectOrMirror [
+	^self target = aRemoteObjectOrMirror target
 ]
 
 { #category : #printing }

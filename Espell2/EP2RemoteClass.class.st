@@ -4,11 +4,6 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
-{ #category : #comparing }
-EP2RemoteClass >> = anotherRemoteObject [
-	^ self mirror = anotherRemoteObject mirror
-]
-
 { #category : #converting }
 EP2RemoteClass >> asClassInSystemDefinition [
 	^ self mirrorDefinitionMap at: self 

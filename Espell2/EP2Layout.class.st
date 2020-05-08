@@ -25,6 +25,15 @@ EP2Layout class >> gtInspectorLayoutOfMirror: mirror in: composite [
 		send: #value
 ]
 
+{ #category : #'mapping-instSpec-class' }
+EP2Layout class >> layoutClassForClass: aRemoteClass [
+	| instSpec | 
+	instSpec := aRemoteClass isNilObject 
+		ifTrue: [ 0 ]
+		ifFalse: [ aRemoteClass instSpec ].
+	^ self layoutClassForInstSpec: instSpec 
+]
+
 { #category : #'instance creation' }
 EP2Layout class >> layoutClassForInstSpec: instSpec [
 	(instSpec = 1) ifTrue: [ ^ EP2FixedLayout ].
@@ -39,7 +48,7 @@ EP2Layout class >> layoutClassForInstSpec: instSpec [
 
 { #category : #'instance creation' }
 EP2Layout class >> on: anEP2Remote [
-	^ (self layoutClassForInstSpec: anEP2Remote basicClass instSpec) new 
+	^ (self layoutClassForClass: anEP2Remote basicClass ) new 
 		remote: anEP2Remote;
 		yourself
 ]

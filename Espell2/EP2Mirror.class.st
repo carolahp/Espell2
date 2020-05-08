@@ -24,7 +24,7 @@ EP2Mirror class >> on: anEP2SimulatorHandle from: anEP2Backend [
 
 { #category : #comparing }
 EP2Mirror >> = anotherMirror [
-	([anotherMirror isEP2Mirror] on:Exception do: [ false ]) ifFalse: [ ^ false ].
+	([anotherMirror isEP2Mirror ] on:Exception do: [ false ]) ifFalse: [ ^ false ].
 	
 	^ self pointsToSameObject: anotherMirror
 ]
@@ -88,9 +88,29 @@ EP2Mirror >> basicClass [
 		ifFalse: [ classOrNil asRemoteClass ] 
 ]
 
+{ #category : #comparing }
+EP2Mirror >> basicIdentityHash [
+
+	^ backend basicIdentityHashOf: self
+]
+
 { #category : #'accessing-header' }
 EP2Mirror >> classIndex [
 	^ self target classIndex
+]
+
+{ #category : #comparing }
+EP2Mirror >> hash [
+
+	^ self identityHash
+]
+
+{ #category : #comparing }
+EP2Mirror >> identityHash [
+	
+	^ self isSmallInteger
+		ifTrue: [ self target asSmallInteger hashMultiply ]
+		ifFalse: [ self basicIdentityHash bitShift: 18 ]
 ]
 
 { #category : #'accessing-header' }
@@ -101,6 +121,11 @@ EP2Mirror >> instSpec [
 { #category : #testing }
 EP2Mirror >> isEP2Mirror [
 	^ true
+]
+
+{ #category : #testing }
+EP2Mirror >> isEP2Remote [
+	^ false
 ]
 
 { #category : #testing }

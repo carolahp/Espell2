@@ -74,6 +74,11 @@ EP2Backend >> associationClass: anEP2RemoteClass [
 	associationClass := anEP2RemoteClass
 ]
 
+{ #category : #hash }
+EP2Backend >> basicIdentityHashOf: anEP2Mirror [ 
+	^ self objectMemory hashBitsOf: anEP2Mirror target address
+]
+
 { #category : #'creating-stub-instances' }
 EP2Backend >> basicNewOn: aRemoteClass [
 	
