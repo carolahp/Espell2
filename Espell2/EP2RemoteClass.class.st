@@ -188,7 +188,7 @@ EP2RemoteClass >> printOn: aStream [
 
 { #category : #'accessing-slots' }
 EP2RemoteClass >> readSlotNamed: aName [
-	^ (self slotNamed: aName) read: self 
+	^ (self basicClass slotNamed: aName) read: self 
 ]
 
 { #category : #'accessing-specialInstVars' }

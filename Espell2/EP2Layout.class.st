@@ -77,9 +77,9 @@ EP2Layout >> gtInspectorIn: composite [
 		display: [ "{ 'self' -> self remote asString },  "
 			(remote isRemoteClass and: [ remote isRoleMetaclass ])  
 				ifTrue: [ { } ] 
-				ifFalse: [ remote allSlots ] ];
+				ifFalse: [ remote basicClass allSlots ] ];
 		column: 'Variable' evaluated: [:slot | slot name ];
-		column: 'Value' evaluated: [ :slot | self remote readSlotNamed: slot name  ];
+		column: 'Value' evaluated: [ :slot | remote readSlotNamed: slot name  ];
 		send: [ :slot | self remote readSlotNamed: slot name ]
 ]
 

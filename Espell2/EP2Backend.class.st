@@ -733,6 +733,7 @@ EP2Backend >> slotsFor: anEP2RemoteClass do: aBlockClosure [
 	classDefinition 
 		ifNotNil: [ classDefinition allSlots do: [:each | | newSlot slotDefiningClass | 
 				slotDefiningClass := self builder classNamed: each parent parent name.
+				"we create a new EP2Slot from the definition"
 				newSlot := each asEP2Slot definingClass: slotDefiningClass; index: each index; yourself.
 				aBlockClosure value: newSlot ]]
 		ifNil: [ 

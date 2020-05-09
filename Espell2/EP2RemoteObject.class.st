@@ -18,7 +18,7 @@ EP2RemoteObject >> = anotherRemote [
 
 { #category : #'accessing-slots' }
 EP2RemoteObject >> allSlots [
-	^ self basicClass layout allSlots
+	^ self layout allSlots
 ]
 
 { #category : #converting }
