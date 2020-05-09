@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #'accessing-slots' }
+EP2RemoteClass >> allSlots [
+	^ self layout allSlots
+]
+
 { #category : #converting }
 EP2RemoteClass >> asClassInSystemDefinition [
 	^ self mirrorDefinitionMap at: self 
@@ -108,4 +113,9 @@ EP2RemoteClass >> printOn: aStream [
 		nextPutAll: '*';
 		nextPutAll: self classNameFromAnyOrigin;
 		nextPutAll: '*'"
+]
+
+{ #category : #'accessing-slots' }
+EP2RemoteClass >> slotNamed: aString [ 
+	^ (self allSlots select: [ :slot | slot name = aString ]) anyOne
 ]

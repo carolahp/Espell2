@@ -18,6 +18,11 @@ EP2IndexedSlot >> read: aRemoteObject [
 ]
 
 { #category : #'meta-object-protocol' }
+EP2IndexedSlot >> slotName [ 
+	^ 'IndexedSlot'
+]
+
+{ #category : #'meta-object-protocol' }
 EP2IndexedSlot >> write: aRemoteValue to: aRemoteObject [
 	self backend 
 		object: aRemoteObject

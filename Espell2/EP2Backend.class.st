@@ -131,6 +131,11 @@ EP2Backend >> blockClass: anEP2RemoteClass [
 	self installClass: anEP2RemoteClass inClassTableIndex: 37
 ]
 
+{ #category : #accessing }
+EP2Backend >> builder [ 
+	^ self objectSpace interpreter codeProvider
+]
+
 { #category : #'accessing-special classes' }
 EP2Backend >> byteArrayClass: anEP2RemoteClass [ 
 
@@ -438,11 +443,6 @@ EP2Backend >> localObjectAsRemoteObject: aLocalObject [
 	^ aLocalObject asRemoteObjectInObjectSpace: self objectSpace
 ]
 
-{ #category : #accessing }
-EP2Backend >> memoryManager [
-	self shouldBeImplemented.
-]
-
 { #category : #'accessing-special classes' }
 EP2Backend >> messageClass: anEP2RemoteClass [ 
 
@@ -625,13 +625,15 @@ EP2Backend >> simulator: aStackInterpreterSimulatorLSB [
 ]
 
 { #category : #'accessing-slots' }
-EP2Backend >> slotsFor: anEP2RemoteObject do: aBlockClosure [ 
-	| object classDefinition |
-	object := anEP2RemoteObject.
+EP2Backend >> slotsFor: anEP2RemoteClass do: aBlockClosure [ 
+	| classDefinition |
 	
-	classDefinition := object basicClass asClassInSystemDefinition. "getting the corresponding definition from systemDefinition"
+	classDefinition := anEP2RemoteClass asClassInSystemDefinition. "getting the corresponding definition from systemDefinition"
 	classDefinition 
-		ifNotNil: [ classDefinition slots do: [:each | each ]]
+		ifNotNil: [ classDefinition allSlots do: [:each | | newSlot slotDefiningClass | 
+				slotDefiningClass := self builder classNamed: each parent parent name.
+				newSlot := each asEP2Slot definingClass: slotDefiningClass; index: each index; yourself.
+				aBlockClosure value: newSlot ]]
 		ifNil: [ 
 			self haltOnce.
 			 ]

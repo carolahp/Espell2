@@ -158,6 +158,11 @@ EP2RemoteObject >> printOn: aStream [
 		nextPutAll: ' ]'
 ]
 
+{ #category : #'accessing-slots' }
+EP2RemoteObject >> readSlotNamed: aName [
+	^ (self basicClass slotNamed: aName) read: self 
+]
+
 { #category : #'public-api' }
 EP2RemoteObject >> setClass: aRemoteClass [
 	[
