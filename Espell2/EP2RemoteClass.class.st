@@ -9,6 +9,11 @@ EP2RemoteClass >> addressDefinitionMap [
 	^ self backend objectSpace interpreter codeProvider classLoader addressDefinitionMap
 ]
 
+{ #category : #accessing }
+EP2RemoteClass >> addressLocalClassMap [
+	^ self backend objectSpace interpreter codeProvider classLoader addressLocalClassMap
+]
+
 { #category : #'accessing-instVars' }
 EP2RemoteClass >> allInstVars [
 	^ (self allSlots select: #isInstanceVariableSlot) collect: [ :slot | slot name -> (slot read: self) ]
@@ -17,6 +22,21 @@ EP2RemoteClass >> allInstVars [
 { #category : #converting }
 EP2RemoteClass >> asClassInSystemDefinition [
 	^ [self addressDefinitionMap at: self target address ] on: KeyNotFound do: [ nil ]
+]
+
+{ #category : #accessing }
+EP2RemoteClass >> asLocalClass [
+	"it returns the EP2Remote class that corresponds with this class.
+	For example: Association asLocalClass will return EP2RemoteAssociation.
+	We use this to instantiate the correct class for each remote object we fetch from the remote object memory"
+	"^ self addressLocalClassMap 
+		at: self mirror target address 
+		ifAbsentPut: [" | definition role localClassOrNil |
+			definition := self addressDefinitionMap at: self mirror target address.
+			role := self backend systemDefinition roleOfClass: definition.
+			localClassOrNil := Smalltalk classNamed: 'EP2Remote', role asString.
+		^	localClassOrNil
+		"]"
 ]
 
 { #category : #'high-level-messages' }
@@ -32,6 +52,7 @@ EP2RemoteClass >> basicNew: aSize [
 
 { #category : #'high-level-message' }
 EP2RemoteClass >> basicSetClassName: aString [ 
+
 	self instanceVariableAtIndex: self classNameIndex put: aString
 ]
 

@@ -78,15 +78,20 @@ EP2Mirror >> asRemoteNil [
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteObject [
 	"gets the corresponding layout according to my instSpec and then uses it to create a remoteObject with the correct type"
-	| layoutClass remoteObjectClass |
+	| basicClass layoutClass |
+	
+	basicClass := self basicClass.
+	basicClass isNilObject 
+		ifFalse: [ basicClass asLocalClass ifNotNil: [:localClass | ^ localClass on: self ] ].
+	
 	self isNilObject ifTrue: [ ^ self asRemoteNil ].
 	self isTrueObject ifTrue: [ ^ self asRemoteTrue ].
 	self isFalseObject ifTrue: [ ^ self asRemoteFalse ].
 	layoutClass := 	self isSmallInteger 
 		ifTrue: [ EP2ImmediateLayout ]
 		ifFalse: [ EP2Layout layoutClassForInstSpec: self instSpec].
-	remoteObjectClass := layoutClass defaultRemoteObjectClass.
-	^ remoteObjectClass on: self
+	
+	^ layoutClass defaultRemoteObjectClass on: self
 ]
 
 { #category : #'as yet unclassified' }

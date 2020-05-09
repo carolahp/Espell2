@@ -350,7 +350,7 @@ EP2Backend >> fromLocalByteSymbol: aByteSymbol [
 	| remoteSymbol |
 	remoteSymbol := (self byteSymbolClass basicNew: aByteSymbol size) asRemoteObject.
 	1 to: aByteSymbol size do: [ :i |
-		remoteSymbol at: i put: (aByteSymbol at: i)
+		remoteSymbol at: i put: (aByteSymbol at: i) asciiValue
 	].
 	^ remoteSymbol
 ]

@@ -32,6 +32,11 @@ EP2RemoteObject >> asRemoteArray [
 ]
 
 { #category : #converting }
+EP2RemoteObject >> asRemoteByteString [
+	^ EP2RemoteByteString on: self mirror 
+]
+
+{ #category : #converting }
 EP2RemoteObject >> asRemoteClass [
 	^ EP2RemoteClass on: self mirror
 ]

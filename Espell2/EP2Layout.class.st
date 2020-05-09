@@ -80,7 +80,7 @@ EP2Layout >> gtInspectorIn: composite [
 				ifFalse: [ remote allSlots ] ];
 		column: 'Variable' evaluated: [:slot | slot name ];
 		column: 'Value' evaluated: [ :slot | self remote readSlotNamed: slot name  ];
-		send: #value
+		send: [ :slot | self remote readSlotNamed: slot name ]
 ]
 
 { #category : #accessing }
@@ -90,7 +90,7 @@ EP2Layout >> instVarNames [
 
 { #category : #accessing }
 EP2Layout >> instanceVariableAtIndex: index [
-	^ self backend object: self instVarAt: index
+	^ (self backend object: self instVarAt: index) asRemoteObject
 ]
 
 { #category : #accessing }
