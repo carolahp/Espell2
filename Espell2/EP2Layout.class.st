@@ -73,6 +73,20 @@ EP2Layout >> backend [
 	^ self remote mirror backend
 ]
 
+{ #category : #'gt-extension' }
+EP2Layout >> gtInspectorIn: composite [
+	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
+	^ composite table
+		title: self remote asString;
+		display: [ "{ 'self' -> self remote asString },  "
+			(remote isRemoteClass and: [ remote isRoleMetaclass ])  
+				ifTrue: [ { } ] 
+				ifFalse: [ remote allSlots ] ];
+		column: 'Variable' evaluated: [:slot | slot name ];
+		column: 'Value' evaluated: [ :slot | self remote readSlotNamed: slot name  ];
+		send: #value
+]
+
 { #category : #accessing }
 EP2Layout >> instVarNames [
 	^ (self allSlots select: #isInstanceVariableSlot) collect: #name

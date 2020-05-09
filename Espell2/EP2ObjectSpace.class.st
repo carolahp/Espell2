@@ -9,7 +9,7 @@ Class {
 		'debuggerInterpreter',
 		'specialObjectsArray'
 	],
-	#category : #Espell2
+	#category : #'Espell2-Backend'
 }
 
 { #category : #accessing }

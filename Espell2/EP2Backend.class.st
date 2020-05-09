@@ -416,6 +416,11 @@ EP2Backend >> isBitsClass: anEP2RemoteClass [
 	^ (self instSpecOfClass: anEP2RemoteClass) >= 7
 ]
 
+{ #category : #'testing-classes' }
+EP2Backend >> isRoleMetaclass: anEP2RemoteClass [ 
+	^ (self builder systemDefinition classRoles at: #Metaclass) = anEP2RemoteClass classNameFromAnyOrigin 
+]
+
 { #category : #'testing-objects' }
 EP2Backend >> isSmallInteger: aHandle [ 
 	

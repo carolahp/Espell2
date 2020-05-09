@@ -78,6 +78,12 @@ EP2RemoteObject >> classDefinition [
 	^ nil
 ]
 
+{ #category : #'gt-inspector' }
+EP2RemoteObject >> gtInspectorIn: composite [
+	<gtInspectorPresentationOrder: 2>
+	^ self layout gtInspectorIn: composite
+]
+
 { #category : #comparing }
 EP2RemoteObject >> hash [
 

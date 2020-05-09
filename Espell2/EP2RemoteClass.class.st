@@ -4,14 +4,19 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #accessing }
+EP2RemoteClass >> addressDefinitionMap [
+	^ self backend objectSpace interpreter codeProvider classLoader addressDefinitionMap
+]
+
 { #category : #'accessing-slots' }
 EP2RemoteClass >> allSlots [
-	^ self layout allSlots
+	^ self basicClass layout allSlots
 ]
 
 { #category : #converting }
 EP2RemoteClass >> asClassInSystemDefinition [
-	^ self mirrorDefinitionMap at: self 
+	^ [self addressDefinitionMap at: self target address ] on: KeyNotFound do: [ nil ]
 ]
 
 { #category : #'high-level-messages' }
@@ -40,7 +45,10 @@ EP2RemoteClass >> className [
 
 { #category : #accessing }
 EP2RemoteClass >> classNameFromAnyOrigin [
-	^ self className ifNil: [ self asClassInSystemDefinition name ]
+	^ self className 
+		ifNil: [ self asClassInSystemDefinition 
+					ifNil: [ 'error (', self mirror asString,')' ] 
+					ifNotNil: [:classDef | classDef name] ]
 ]
 
 { #category : #'accessing-instVars-mapping' }
@@ -69,6 +77,13 @@ EP2RemoteClass >> format: anInteger [
 	^self layout instanceVariableAtIndex: self classFormatIndex put: anInteger
 ]
 
+{ #category : #'gt-inspector' }
+EP2RemoteClass >> gtInspectorIn: composite [
+	<gtInspectorPresentationOrder: 2>
+	^ self layout gtClassInspectorIn: composite
+	
+]
+
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> instSpec [ 
 	^ self backend instSpecOfClass: self mirror
@@ -92,6 +107,11 @@ EP2RemoteClass >> isRemoteClass [
 	^ true
 ]
 
+{ #category : #testing }
+EP2RemoteClass >> isRoleMetaclass [
+	^ self backend isRoleMetaclass: self
+]
+
 { #category : #accessing }
 EP2RemoteClass >> layoutClass [
 	" generic layout "
@@ -109,6 +129,11 @@ EP2RemoteClass >> printOn: aStream [
 		nextPutAll: '*';
 		nextPutAll: self classNameFromAnyOrigin;
 		nextPutAll: '*'
+]
+
+{ #category : #'accessing-slots' }
+EP2RemoteClass >> readSlotNamed: aName [
+	^ (self slotNamed: aName) read: self 
 ]
 
 { #category : #'accessing-slots' }

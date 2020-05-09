@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'classIndex'
 	],
-	#category : #Espell2
+	#category : #'Espell2-LowLevel-mirrors'
 }
 
 { #category : #accessing }

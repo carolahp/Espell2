@@ -1,7 +1,7 @@
 Class {
 	#name : #EP2RemoteAssociation,
 	#superclass : #EP2RemoteObject,
-	#category : #Espell2
+	#category : #'Espell2-Kernel'
 }
 
 { #category : #'instance-variables-mapping' }

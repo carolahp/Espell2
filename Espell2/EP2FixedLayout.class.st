@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
+{ #category : #'gt-extension' }
+EP2FixedLayout >> gtClassInspectorIn: composite [
+	self flag: 'ToDo'
+]
+
 { #category : #testing }
 EP2FixedLayout >> isFixedLayout [
 
