@@ -44,6 +44,11 @@ EP2ObjectSpace >> falseObject: aFalseObject [
 	self backend falseObject: aFalseObject
 ]
 
+{ #category : #'from local to remote' }
+EP2ObjectSpace >> fromLocalByteSymbol: aByteSymbol [  
+	^ backend fromLocalByteSymbol: aByteSymbol 
+]
+
 { #category : #'from-local-to-mirror' }
 EP2ObjectSpace >> fromLocalInteger: anInteger [
 

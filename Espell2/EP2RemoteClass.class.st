@@ -30,6 +30,11 @@ EP2RemoteClass >> basicNew: aSize [
 	^ self backend basicNewOn: self withSize: aSize
 ]
 
+{ #category : #'high-level-message' }
+EP2RemoteClass >> basicSetClassName: aString [ 
+	self instanceVariableAtIndex: self classNameIndex put: aString
+]
+
 { #category : #'instVars-mapping' }
 EP2RemoteClass >> classFormatIndex [
 	^ (self systemDefinition instanceVariableMapping classFormatIndex) ifNil: [ self error: 'undefined index for format inst var in Class' ]

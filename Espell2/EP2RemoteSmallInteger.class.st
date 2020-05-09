@@ -27,6 +27,11 @@ EP2RemoteSmallInteger >> asRemoteSmallInteger [
 	^ self 
 ]
 
+{ #category : #'converting-local' }
+EP2RemoteSmallInteger >> asSmallInteger [
+	^ self asLocalSmallInteger 
+]
+
 { #category : #'high-level-message' }
 EP2RemoteSmallInteger >> basicClass [
 	^ self backend builder classNamed: #SmallInteger

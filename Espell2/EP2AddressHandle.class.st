@@ -2,8 +2,8 @@
 I hold references to objects installed in the bootstrapped Object Memory, and which can be accessed only by their address in memory
 "
 Class {
-	#name : #EP2SimulatorAddressHandle,
-	#superclass : #EP2SimulatorInternalObjectHandle,
+	#name : #EP2AddressHandle,
+	#superclass : #EP2InternalObjectHandle,
 	#instVars : [
 		'address'
 	],
@@ -11,23 +11,23 @@ Class {
 }
 
 { #category : #comparing }
-EP2SimulatorAddressHandle >> = aHandle [
+EP2AddressHandle >> = aHandle [
 
 	^ self address == aHandle address
 ]
 
 { #category : #accessing }
-EP2SimulatorAddressHandle >> address [
+EP2AddressHandle >> address [
 	^ address
 ]
 
 { #category : #accessing }
-EP2SimulatorAddressHandle >> address: anInteger [ 
+EP2AddressHandle >> address: anInteger [ 
 	address := anInteger
 ]
 
 { #category : #converting }
-EP2SimulatorAddressHandle >> asClassIndexHandle [
+EP2AddressHandle >> asClassIndexHandle [
 
 	| hash |
 	hash := (backend rawHashOf: address).
@@ -36,11 +36,11 @@ EP2SimulatorAddressHandle >> asClassIndexHandle [
 ]
 
 { #category : #'accessing-header' }
-EP2SimulatorAddressHandle >> basicClassHandle [
+EP2AddressHandle >> basicClassHandle [
 	^ backend handleOnAddress: (backend classOf: self)
 ]
 
 { #category : #'accessing-header' }
-EP2SimulatorAddressHandle >> classIndex [ 
+EP2AddressHandle >> classIndex [ 
 	^ backend objectMemory classIndexOf: self address  
 ]

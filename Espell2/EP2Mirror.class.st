@@ -55,6 +55,11 @@ EP2Mirror >> asRemoteEmptyObject [
 	^ EP2RemoteEmptyObject on: self
 ]
 
+{ #category : #converting }
+EP2Mirror >> asRemoteFalse [
+	^ EP2RemoteFalse on: self
+]
+
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteNil [
 	^ EP2RemoteNil on: self
@@ -112,6 +117,20 @@ EP2Mirror >> classIndex [
 	^ self target classIndex
 ]
 
+{ #category : #'executing primitives' }
+EP2Mirror >> executePrimitiveMethod: aCompiledMethod withArguments: arguments [
+
+	| result |
+	result := self backend
+			executePrimitiveMethod: aCompiledMethod
+			on: self
+			withArguments: (arguments collect: #mirror).
+	
+	self assert: self backend stackIsEmpty. 
+	result value: (result value asRemoteObject).
+	^ result
+]
+
 { #category : #comparing }
 EP2Mirror >> hash [
 
@@ -159,6 +178,11 @@ EP2Mirror >> isSmallInteger [
 { #category : #testing }
 EP2Mirror >> isTrueObject [
 	^ self backend trueObject mirror = self
+]
+
+{ #category : #converting }
+EP2Mirror >> mirror [
+	^ self 
 ]
 
 { #category : #comparing }

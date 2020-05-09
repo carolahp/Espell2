@@ -2,42 +2,42 @@
 I hold references to objects installed in the bootstrapped Object Memory
 "
 Class {
-	#name : #EP2SimulatorInternalObjectHandle,
-	#superclass : #EP2SimulatorHandle,
+	#name : #EP2InternalObjectHandle,
+	#superclass : #EP2Handle,
 	#category : #'Espell2-LowLevel-mirrors'
 }
 
 { #category : #comparing }
-EP2SimulatorInternalObjectHandle >> = aHandle [
+EP2InternalObjectHandle >> = aHandle [
 
 	^ self species = aHandle species
 		and: [ self address == aHandle address ]
 ]
 
 { #category : #accessing }
-EP2SimulatorInternalObjectHandle >> address [ 
+EP2InternalObjectHandle >> address [ 
 	self subclassResponsibility 
 ]
 
 { #category : #converting }
-EP2SimulatorInternalObjectHandle >> asSmallInteger [
+EP2InternalObjectHandle >> asSmallInteger [
 	
 	^ backend integerValueOf: self
 ]
 
 { #category : #'accessing-instVars' }
-EP2SimulatorInternalObjectHandle >> instanceVariableAtIndex: anInteger [ 
+EP2InternalObjectHandle >> instanceVariableAtIndex: anInteger [ 
 	
 	^ backend object: self address instVarAt: anInteger
 ]
 
 { #category : #'as yet unclassified' }
-EP2SimulatorInternalObjectHandle >> isSmallInteger [
+EP2InternalObjectHandle >> isSmallInteger [
 	^ backend isSmallInteger: self
 ]
 
 { #category : #'as yet unclassified' }
-EP2SimulatorInternalObjectHandle >> species [
+EP2InternalObjectHandle >> species [
 
-	^ EP2SimulatorInternalObjectHandle
+	^ EP2InternalObjectHandle
 ]

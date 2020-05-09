@@ -9,6 +9,11 @@ Class {
 }
 
 { #category : #converting }
+EP2Remote >> asRemoteObject [
+	^ self
+]
+
+{ #category : #converting }
 EP2Remote >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
 	^ self 
 ]
@@ -31,14 +36,7 @@ EP2Remote >> classDefinition [
 { #category : #'executing primitives' }
 EP2Remote >> executePrimitiveMethod: aCompiledMethod withArguments: arguments [
 
-	| result |
-	result := self backend
-			executePrimitiveMethod: aCompiledMethod
-			on: self
-			withArguments: arguments.
-	
-	self assert: self backend stackIsEmpty. 
-	^ result.
+	^ self mirror executePrimitiveMethod: aCompiledMethod withArguments: arguments
 ]
 
 { #category : #'gt-inspector' }

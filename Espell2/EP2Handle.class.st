@@ -2,7 +2,7 @@
 I am used by EP2Mirrors to hold the reference to the object they point at.
 "
 Class {
-	#name : #EP2SimulatorHandle,
+	#name : #EP2Handle,
 	#superclass : #Object,
 	#instVars : [
 		'backend'
@@ -11,16 +11,16 @@ Class {
 }
 
 { #category : #accessing }
-EP2SimulatorHandle >> backend: anEP2SimulatorBackend [ 
+EP2Handle >> backend: anEP2SimulatorBackend [ 
 	backend := anEP2SimulatorBackend
 ]
 
 { #category : #accessing }
-EP2SimulatorHandle >> isSmallInteger [ 
+EP2Handle >> isSmallInteger [ 
 	self subclassResponsibility 
 ]
 
 { #category : #accessing }
-EP2SimulatorHandle >> species [ 
+EP2Handle >> species [ 
 	self subclassResponsibility 
 ]

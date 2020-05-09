@@ -1,6 +1,6 @@
 Class {
-	#name : #EP2SimulatorClassTableHandle,
-	#superclass : #EP2SimulatorInternalObjectHandle,
+	#name : #EP2ClassTableHandle,
+	#superclass : #EP2InternalObjectHandle,
 	#instVars : [
 		'classIndex'
 	],
@@ -8,30 +8,30 @@ Class {
 }
 
 { #category : #accessing }
-EP2SimulatorClassTableHandle >> address [
+EP2ClassTableHandle >> address [
 
 	^ backend classAtIndex: classIndex
 ]
 
 { #category : #converting }
-EP2SimulatorClassTableHandle >> asClassIndexHandle [
+EP2ClassTableHandle >> asClassIndexHandle [
 	^ self
 ]
 
 { #category : #'as yet unclassified' }
-EP2SimulatorClassTableHandle >> backend: anEP2Backend [ 
+EP2ClassTableHandle >> backend: anEP2Backend [ 
 	backend := anEP2Backend 
 
 ]
 
 { #category : #'accessing-mirror' }
-EP2SimulatorClassTableHandle >> basicClassHandle [
+EP2ClassTableHandle >> basicClassHandle [
 	
 	^ backend handleOnAddress: (backend classOf: self)
 ]
 
 { #category : #accessing }
-EP2SimulatorClassTableHandle >> classIndex: anInteger [ 
+EP2ClassTableHandle >> classIndex: anInteger [ 
 	classIndex := anInteger 
 
 ]
