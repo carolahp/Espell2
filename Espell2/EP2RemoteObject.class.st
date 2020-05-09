@@ -16,10 +16,21 @@ EP2RemoteObject class >> on: anEPMirror [
 		yourself
 ]
 
+{ #category : #constants }
+EP2RemoteObject class >> unmappedInstVarIndex [
+	^ 'unmapped'
+	
+]
+
 { #category : #comparing }
 EP2RemoteObject >> = anotherRemote [
 	([anotherRemote isEP2Remote ] on:Exception do: [ false ]) ifFalse: [ ^ false ].
 	^ self pointsToSameObject: anotherRemote
+]
+
+{ #category : #'accessing-slots' }
+EP2RemoteObject >> allSlots [
+	^ self basicClass layout allSlots
 ]
 
 { #category : #converting }
@@ -78,25 +89,26 @@ EP2RemoteObject >> classDefinition [
 	^ nil
 ]
 
+{ #category : #'instVars-mapping' }
+EP2RemoteObject >> classPoolIndex [
+	^ (self backend systemDefinition instanceVariableMapping classPoolIndex) ifNil: [ self class unmappedInstVarIndex ]
+]
+
 { #category : #'gt-inspector' }
 EP2RemoteObject >> gtInspectorIn: composite [
 	<gtInspectorPresentationOrder: 2>
 	^ self layout gtInspectorIn: composite
 ]
 
-{ #category : #comparing }
-EP2RemoteObject >> hash [
-
-	^ self mirror hash
-]
-
-{ #category : #accessing }
+{ #category : #'accessing-instVars' }
 EP2RemoteObject >> instanceVariableAtIndex: index [
+	(index == self class unmappedInstVarIndex) ifTrue: [ ^self backend nilObject ].
 	^ self layout instanceVariableAtIndex: index
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing-instVars' }
 EP2RemoteObject >> instanceVariableAtIndex: index put: anObject [
+	(index == self class unmappedInstVarIndex) ifTrue: [ self error: 'Unmapped Inst Var writting attempt' ].
 	self layout instanceVariableAtIndex: index put: anObject
 ]
 

@@ -9,11 +9,6 @@ EP2RemoteClass >> addressDefinitionMap [
 	^ self backend objectSpace interpreter codeProvider classLoader addressDefinitionMap
 ]
 
-{ #category : #'accessing-slots' }
-EP2RemoteClass >> allSlots [
-	^ self basicClass layout allSlots
-]
-
 { #category : #converting }
 EP2RemoteClass >> asClassInSystemDefinition [
 	^ [self addressDefinitionMap at: self target address ] on: KeyNotFound do: [ nil ]
@@ -22,17 +17,17 @@ EP2RemoteClass >> asClassInSystemDefinition [
 { #category : #'high-level-messages' }
 EP2RemoteClass >> basicNew [
 	
-	^ self backend basicNewOn: self
+	^ self backend basicNewOn: self 
 ]
 
-{ #category : #'high-level-message' }
+{ #category : #'high-level-messages' }
 EP2RemoteClass >> basicNew: aSize [ 
 	^ self backend basicNewOn: self withSize: aSize
 ]
 
-{ #category : #'accessing-instVars-mapping' }
+{ #category : #'instVars-mapping' }
 EP2RemoteClass >> classFormatIndex [
-	^ self systemDefinition classFormatIndex
+	^ (self systemDefinition instanceVariableMapping classFormatIndex) ifNil: [ self error: 'undefined index for format inst var in Class' ]
 ]
 
 { #category : #'accessing-specialInstVars' }
@@ -51,14 +46,29 @@ EP2RemoteClass >> classNameFromAnyOrigin [
 					ifNotNil: [:classDef | classDef name] ]
 ]
 
-{ #category : #'accessing-instVars-mapping' }
+{ #category : #'instVars-mapping' }
 EP2RemoteClass >> classNameIndex [
-	^ self backend systemDefinition instanceVariableMapping classNameIndex
+	^ (self systemDefinition instanceVariableMapping classNameIndex) ifNil: [ self class unmappedInstVarIndex ]
+]
+
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteClass >> classPool [
+	^ self instanceVariableAtIndex: self classPoolIndex
+]
+
+{ #category : #'instVars-mapping' }
+EP2RemoteClass >> classSharedPoolsIndex [
+	^ (self systemDefinition instanceVariableMapping classSharedPoolsIndex) ifNil: [ self class unmappedInstVarIndex ]
 ]
 
 { #category : #'high-level-messages' }
 EP2RemoteClass >> classSide [
 	^ self basicClass
+]
+
+{ #category : #'instVars-mapping' }
+EP2RemoteClass >> classSuperclassIndex [
+	^ (self systemDefinition instanceVariableMapping classSuperclassIndex) ifNil: [ self error: 'undefined index for superclass inst var in Class' ]
 ]
 
 { #category : #'accessing-header' }
@@ -84,6 +94,15 @@ EP2RemoteClass >> gtInspectorIn: composite [
 	
 ]
 
+{ #category : #binding }
+EP2RemoteClass >> innerBindingOf: aSymbol [ 
+	(self classPool isNilObject) ifFalse: [ self halt ].
+	(self sharedPool isNilObject) ifFalse: [ self halt ].
+	self flag: 'superclass is nil for all stubs, check this later'.
+	(self superclass isNilObject) ifFalse:  [^ self superclass innerBindingOf: aSymbol].
+	^ nil
+]
+
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> instSpec [ 
 	^ self backend instSpecOfClass: self mirror
@@ -92,7 +111,7 @@ EP2RemoteClass >> instSpec [
 { #category : #'high-level-messages' }
 EP2RemoteClass >> instanceFixedSize [
 	
-	^ self backend instanceFixedSizeOf: self.
+	^ self backend instanceFixedSizeOf: self
 ]
 
 { #category : #testing }
@@ -112,15 +131,10 @@ EP2RemoteClass >> isRoleMetaclass [
 	^ self backend isRoleMetaclass: self
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> layoutClass [
 	" generic layout "
 	^ EP2FixedLayout
-]
-
-{ #category : #accessing }
-EP2RemoteClass >> mirrorDefinitionMap [
-	^ self backend objectSpace interpreter codeProvider classLoader mirrorDefinitionMap 
 ]
 
 { #category : #printing }
@@ -136,7 +150,17 @@ EP2RemoteClass >> readSlotNamed: aName [
 	^ (self slotNamed: aName) read: self 
 ]
 
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteClass >> sharedPool [
+	^ self instanceVariableAtIndex: self classSharedPoolsIndex 
+]
+
 { #category : #'accessing-slots' }
 EP2RemoteClass >> slotNamed: aString [ 
 	^ (self allSlots select: [ :slot | slot name = aString ]) anyOne
+]
+
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteClass >> superclass [
+	^ self instanceVariableAtIndex: self classSuperclassIndex 
 ]
