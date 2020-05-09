@@ -9,6 +9,11 @@ EP2InstanceVariableSlot >> isInstanceVariableSlot [
 	^ true
 ]
 
+{ #category : #printing }
+EP2InstanceVariableSlot >> printOn: aStream [
+	aStream nextPutAll: name ,' => ', self slotName
+]
+
 { #category : #'meta-object-protocol' }
 EP2InstanceVariableSlot >> read: aRemoteObject [
 	^ (self backend object: aRemoteObject instVarAt: index) asRemoteObject

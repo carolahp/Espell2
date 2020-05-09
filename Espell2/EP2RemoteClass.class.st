@@ -20,7 +20,7 @@ EP2RemoteClass >> allInstVars [
 ]
 
 { #category : #converting }
-EP2RemoteClass >> asClassInSystemDefinition [
+EP2RemoteClass >> asClassDefinition [
 	^ [self addressDefinitionMap at: self target address ] on: KeyNotFound do: [ nil ]
 ]
 
@@ -33,6 +33,8 @@ EP2RemoteClass >> asLocalClass [
 		at: self mirror target address 
 		ifAbsentPut: [" | definition role localClassOrNil |
 			definition := self addressDefinitionMap at: self mirror target address.
+			"if I am a metaclass, my instances can be represented as instances of EP2RemoteClass"
+			definition isMetaclass ifTrue: [^ EP2RemoteClass].
 			role := self backend systemDefinition roleOfClass: definition.
 			localClassOrNil := Smalltalk classNamed: 'EP2Remote', role asString.
 		^	localClassOrNil
@@ -72,7 +74,7 @@ EP2RemoteClass >> className [
 { #category : #accessing }
 EP2RemoteClass >> classNameFromAnyOrigin [
 	^ self className 
-		ifNil: [ self asClassInSystemDefinition 
+		ifNil: [ self asClassDefinition 
 					ifNil: [ 'error (', self mirror asString,')' ] 
 					ifNotNil: [:classDef | classDef name] ]
 ]
@@ -129,12 +131,6 @@ EP2RemoteClass >> format: anInteger [
 	^self layout instanceVariableAtIndex: self classFormatIndex put: anInteger
 ]
 
-{ #category : #'gt-inspector' }
-EP2RemoteClass >> gtInspectorIn: composite [
-	<gtInspectorPresentationOrder: 2>
-	^ self layout gtInspectorIn: composite
-]
-
 { #category : #binding }
 EP2RemoteClass >> innerBindingOf: aSymbol [ 
 	(self classPool isNilObject) ifFalse: [ self halt ].
@@ -184,11 +180,6 @@ EP2RemoteClass >> printOn: aStream [
 		nextPutAll: '*';
 		nextPutAll: self classNameFromAnyOrigin;
 		nextPutAll: '*'
-]
-
-{ #category : #'accessing-slots' }
-EP2RemoteClass >> readSlotNamed: aName [
-	^ (self basicClass slotNamed: aName) read: self 
 ]
 
 { #category : #'accessing-specialInstVars' }

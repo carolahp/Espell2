@@ -4,8 +4,7 @@ Class {
 	#instVars : [
 		'name',
 		'owningRemoteClass',
-		'definingRemoteClass',
-		'index'
+		'definingRemoteClass'
 	],
 	#category : #'Espell2-Kernel-Slots'
 }
@@ -18,11 +17,6 @@ EP2Slot >> backend [
 { #category : #accessing }
 EP2Slot >> definingClass: anEP2RemoteClass [ 
 	definingRemoteClass := anEP2RemoteClass
-]
-
-{ #category : #accessing }
-EP2Slot >> index: anInteger [ 
-	index := anInteger 
 ]
 
 { #category : #testing }
@@ -47,7 +41,7 @@ EP2Slot >> name: aString [
 
 { #category : #printing }
 EP2Slot >> printOn: aStream [
-	aStream nextPutAll: name ,' => ', self slotName
+	self subclassResponsibility 
 ]
 
 { #category : #'meta-object-protocol' }

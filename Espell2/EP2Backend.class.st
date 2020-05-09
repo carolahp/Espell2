@@ -728,8 +728,8 @@ EP2Backend >> simulator: aStackInterpreterSimulatorLSB [
 { #category : #'accessing-slots' }
 EP2Backend >> slotsFor: anEP2RemoteClass do: aBlockClosure [ 
 	| classDefinition |
-	
-	classDefinition := anEP2RemoteClass asClassInSystemDefinition. "getting the corresponding definition from systemDefinition"
+	"getting the corresponding definition from systemDefinition"
+	classDefinition := anEP2RemoteClass asClassDefinition. 
 	classDefinition 
 		ifNotNil: [ classDefinition allSlots do: [:each | | newSlot slotDefiningClass | 
 				slotDefiningClass := self builder classNamed: each parent parent name.

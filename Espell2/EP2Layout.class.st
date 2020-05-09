@@ -191,6 +191,11 @@ EP2Layout >> objectSpace [
 	^ self mirror backend objectSpace
 ]
 
+{ #category : #accessing }
+EP2Layout >> readSlotNamed: aName [
+	^ (remote basicClass slotNamed: aName) read: self 
+]
+
 { #category : #'accessing-pvt' }
 EP2Layout >> remote [
 	^ remote 
@@ -199,6 +204,11 @@ EP2Layout >> remote [
 { #category : #'accessing-pvt' }
 EP2Layout >> remote: anEPRemoteObject [
 	remote := anEPRemoteObject
+]
+
+{ #category : #accessing }
+EP2Layout >> slotNamed: aString [
+	^ (self allSlots select: [ :slot | slot name = aString ]) anyOne
 ]
 
 { #category : #'accessing-pvt' }

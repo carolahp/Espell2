@@ -22,7 +22,7 @@ EP2RemoteObject >> allSlots [
 ]
 
 { #category : #converting }
-EP2RemoteObject >> asClassInSystemDefinition [
+EP2RemoteObject >> asClassDefinition [
 	^ nil
 ]
 
@@ -87,19 +87,6 @@ EP2RemoteObject >> instanceVariableNamed: aString [
 { #category : #comparing }
 EP2RemoteObject >> pointsToSameObject: aRemoteObjectOrMirror [
 	^self target = aRemoteObjectOrMirror target
-]
-
-{ #category : #printing }
-EP2RemoteObject >> printOn: aStream [
-	aStream 
-		nextPutAll: 'aRemote [ ';
-		nextPutAll: self target address asString;
-		nextPutAll: ' ]'
-]
-
-{ #category : #'accessing-slots' }
-EP2RemoteObject >> readSlotNamed: aName [
-	^ (self basicClass slotNamed: aName) read: self 
 ]
 
 { #category : #'public-api' }

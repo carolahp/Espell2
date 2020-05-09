@@ -18,7 +18,7 @@ EP2Remote class >> on: anEPMirror [
 
 { #category : #converting }
 EP2Remote >> asRemoteObject [
-	^ self
+	^ self 
 ]
 
 { #category : #converting }
@@ -99,6 +99,19 @@ EP2Remote >> mirror [
 { #category : #accessing }
 EP2Remote >> mirror: anEP2Mirror [
 	mirror := anEP2Mirror
+]
+
+{ #category : #printing }
+EP2Remote >> printOn: aStream [
+	aStream 
+		nextPutAll: 'aRemote [ ';
+		nextPutAll: self target address asString;
+		nextPutAll: ' ]'
+]
+
+{ #category : #introspection }
+EP2Remote >> readSlotNamed: aName [
+	^ self layout readSlotNamed: aName
 ]
 
 { #category : #accessing }

@@ -16,7 +16,13 @@ EP2RemoteArray >> layoutClass [
 
 { #category : #printing }
 EP2RemoteArray >> printOn: aStream [
-	aStream nextPutAll: '#('.
-	(1 to: self basicSize) do: [ :i | (self at: i) printOn: aStream . aStream nextPutAll: ' ' ].
-	aStream nextPutAll: ')'
+	aStream nextPutAll: '*a ';
+		nextPutAll: self basicClass classNameFromAnyOrigin, ' [';
+		nextPutAll: self basicSize asString;
+		nextPutAll:' items]*'
+]
+
+{ #category : #'accessing-slots' }
+EP2RemoteArray >> slotNamed: aString [ 
+	^ (self allSlots select: [ :slot | slot name = aString ]) anyOne
 ]
