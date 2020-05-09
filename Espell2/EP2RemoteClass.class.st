@@ -34,7 +34,7 @@ EP2RemoteClass >> classFormatIndex [
 EP2RemoteClass >> className [
 	| remoteName |
 	remoteName := [self instanceVariableAtIndex: self classNameIndex] on: SubscriptOutOfBounds do: [ ^ nil ].
-	
+	remoteName isNilObject ifTrue: [^nil].
 	^ self backend fromRemoteByteSymbol: remoteName
 ]
 
@@ -106,13 +106,9 @@ EP2RemoteClass >> mirrorDefinitionMap [
 { #category : #printing }
 EP2RemoteClass >> printOn: aStream [
 	aStream 
-		nextPutAll: '(remote class)'.
-		
-	self mirror printOn: aStream
-	"aStream 
 		nextPutAll: '*';
 		nextPutAll: self classNameFromAnyOrigin;
-		nextPutAll: '*'"
+		nextPutAll: '*'
 ]
 
 { #category : #'accessing-slots' }

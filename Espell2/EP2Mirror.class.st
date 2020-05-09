@@ -130,7 +130,7 @@ EP2Mirror >> isEP2Remote [
 
 { #category : #testing }
 EP2Mirror >> isNilObject [
-	^ self backend nilObject = self 
+	^ self backend nilObject mirror = self 
 ]
 
 { #category : #testing }
