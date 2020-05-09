@@ -366,12 +366,13 @@ EP2Backend >> fromLocalInteger: aLocalInteger [
 ]
 
 { #category : #'from remote to local' }
-EP2Backend >> fromRemoteByteString: anEP2Mirror [ 
+EP2Backend >> fromRemoteByteString: remoteOrMirror [ 
 	
-	| localString |
-	localString := ByteString new: anEP2Mirror basicSize.
+	| localString remote |
+	remote := remoteOrMirror asRemoteByteString.
+	localString := ByteString new: remote basicSize.
 	1 to: localString size do: [ :i |
-		localString byteAt: i put: (anEP2Mirror at: i) asSmallInteger.
+		localString byteAt: i put: (remote at: i) asSmallInteger.
 	].
 	^ localString
 ]

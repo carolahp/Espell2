@@ -11,7 +11,6 @@ EP2RemoteArray class >> at: index put: value [
 
 { #category : #accessing }
 EP2RemoteArray >> layoutClass [
-	" generic layout "
 	^ EP2VariableLayout
 ]
 

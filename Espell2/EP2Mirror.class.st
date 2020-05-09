@@ -45,6 +45,11 @@ EP2Mirror >> asRemoteAssociation [
 	^ EP2RemoteAssociation on: self 
 ]
 
+{ #category : #'converting-high-level' }
+EP2Mirror >> asRemoteByteString [
+	^ EP2RemoteByteString on: self
+]
+
 { #category : #converting }
 EP2Mirror >> asRemoteCharacter [
 	^ EP2RemoteCharacter on: self
@@ -133,6 +138,11 @@ EP2Mirror >> basicIdentityHash [
 ]
 
 { #category : #'accessing-header' }
+EP2Mirror >> basicSize [ 
+	^ backend basicSizeOf: self
+]
+
+{ #category : #'accessing-header' }
 EP2Mirror >> classIndex [
 	^ self target classIndex
 ]
@@ -169,7 +179,7 @@ EP2Mirror >> instSpec [
 	^ [self basicClass instSpec] on: Error do: [ 0 ]
 ]
 
-{ #category : #'accessing-instVars' }
+{ #category : #'accessing-high-level' }
 EP2Mirror >> instanceVariableAtIndex: anInteger [ 
 	^ self asRemoteObject instanceVariableAtIndex: anInteger
 ]

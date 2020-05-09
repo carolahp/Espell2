@@ -111,8 +111,7 @@ EP2RemoteClass >> format: anInteger [
 { #category : #'gt-inspector' }
 EP2RemoteClass >> gtInspectorIn: composite [
 	<gtInspectorPresentationOrder: 2>
-	^ self layout gtClassInspectorIn: composite
-	
+	^ self layout gtInspectorIn: composite
 ]
 
 { #category : #binding }
