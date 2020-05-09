@@ -29,7 +29,7 @@ EP2RemoteSmallInteger >> asRemoteSmallInteger [
 
 { #category : #'high-level-message' }
 EP2RemoteSmallInteger >> basicClass [
-	^ self backend classNamed: #SmallInteger
+	^ self backend builder classNamed: #SmallInteger
 ]
 
 { #category : #accessing }

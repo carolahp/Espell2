@@ -28,6 +28,19 @@ EP2Remote >> classDefinition [
 	^ nil
 ]
 
+{ #category : #'executing primitives' }
+EP2Remote >> executePrimitiveMethod: aCompiledMethod withArguments: arguments [
+
+	| result |
+	result := self backend
+			executePrimitiveMethod: aCompiledMethod
+			on: self
+			withArguments: arguments.
+	
+	self assert: self backend stackIsEmpty. 
+	^ result.
+]
+
 { #category : #'gt-inspector' }
 EP2Remote >> gtInspectorIn: composite [
 	<gtInspectorPresentationOrder: 2>
@@ -57,6 +70,11 @@ EP2Remote >> isRemoteClass [
 { #category : #testing }
 EP2Remote >> isSmallInteger [
 	^ self mirror isSmallInteger
+]
+
+{ #category : #accessing }
+EP2Remote >> layout [ 
+	^ layout ifNil: [ layout := self layoutClass on: self ]
 ]
 
 { #category : #accessing }

@@ -87,11 +87,6 @@ EP2RemoteObject >> instanceVariableNamed: aString [
 	^ self layout instanceVariableNamed: aString
 ]
 
-{ #category : #accessing }
-EP2RemoteObject >> layout [ 
-	^ layout ifNil: [ layout := self layoutClass on: self ]
-]
-
 { #category : #comparing }
 EP2RemoteObject >> pointsToSameObject: aRemoteObjectOrMirror [
 	^self target = aRemoteObjectOrMirror target
