@@ -266,11 +266,11 @@ EP2Backend >> executePrimitiveMethod: aMethod on: receiver withArguments: aColle
 				
 				self simulator primitiveFailureCode > 0 ifTrue: [ 
 					self halt.
-					^ EPPrimitiveFailed new code: self simulator primitiveFailureCode ].
+					^ EP2PrimitiveFailed new code: self simulator primitiveFailureCode ].
 				
 				returnValue := self simulator stackTop.
 				self simulator pop: 1.
-				^ EPPrimitiveSuccess new value: (self mirrorOnAddress: returnValue) 
+				^ EP2PrimitiveSuccess new value: (self mirrorOnAddress: returnValue) 
 			]
 			ifFalse: [ | function |
 				function := self simulator functionPointerFor: aMethod primitive inClass: nil.
@@ -280,11 +280,11 @@ EP2Backend >> executePrimitiveMethod: aMethod on: receiver withArguments: aColle
 				self simulator maybeRetryFailureDueToForwarding: aMethod primitive.
 			].
 			self simulator primitiveFailureCode > 0 ifTrue: [ 
-				^ EPPrimitiveFailed new code: self simulator primitiveFailureCode ].
+				^ EP2PrimitiveFailed new code: self simulator primitiveFailureCode ].
 			
 			returnValue := self simulator stackTop.
 			self simulator pop: 1.
-			^ EPPrimitiveSuccess new value: (self mirrorOnAddress: returnValue)
+			^ EP2PrimitiveSuccess new value: (self mirrorOnAddress: returnValue)
 		] ensure: [ 
 			"We pop extra things..."
 			self simulator pop: (((self simulator stackPointer - self simulator framePointer) + (self simulator objectMemory wordSize * 4)) min: 0)  abs / self simulator objectMemory wordSize.

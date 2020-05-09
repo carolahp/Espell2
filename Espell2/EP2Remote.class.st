@@ -43,8 +43,10 @@ EP2Remote >> classDefinition [
 
 { #category : #'executing primitives' }
 EP2Remote >> executePrimitiveMethod: aCompiledMethod withArguments: arguments [
-
-	^ self mirror executePrimitiveMethod: aCompiledMethod withArguments: arguments
+	| result |
+	result := self mirror executePrimitiveMethod: aCompiledMethod withArguments: arguments.
+	result hasFailed ifFalse: [ result value: result value asRemoteObject ].
+	^ result
 ]
 
 { #category : #'gt-inspector' }

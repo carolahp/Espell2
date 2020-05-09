@@ -14,6 +14,11 @@ EP2ExternalObjectHandle >> basicClassHandle [
 ]
 
 { #category : #accessing }
+EP2ExternalObjectHandle >> object [
+	^ object
+]
+
+{ #category : #accessing }
 EP2ExternalObjectHandle >> object: anASTBlockClosure [ 
 	object := anASTBlockClosure
 ]

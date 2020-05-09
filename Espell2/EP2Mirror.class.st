@@ -132,7 +132,6 @@ EP2Mirror >> executePrimitiveMethod: aCompiledMethod withArguments: arguments [
 			withArguments: (arguments collect: #mirror).
 	
 	self assert: self backend stackIsEmpty. 
-	result value: (result value asRemoteObject).
 	^ result
 ]
 
