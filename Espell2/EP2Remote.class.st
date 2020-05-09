@@ -8,6 +8,14 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #'instance creation' }
+EP2Remote class >> on: anEPMirror [ 
+	
+	^ self new
+		mirror: anEPMirror;
+		yourself
+]
+
 { #category : #converting }
 EP2Remote >> asRemoteObject [
 	^ self

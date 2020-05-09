@@ -13,7 +13,8 @@ Class {
 { #category : #comparing }
 EP2AddressHandle >> = aHandle [
 
-	^ self address == aHandle address
+	^ self species = aHandle species
+		and: [ self address == aHandle address ]
 ]
 
 { #category : #accessing }

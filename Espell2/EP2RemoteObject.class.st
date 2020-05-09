@@ -4,14 +4,6 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
-{ #category : #'instance creation' }
-EP2RemoteObject class >> on: anEPMirror [ 
-	
-	^ self new
-		mirror: anEPMirror;
-		yourself
-]
-
 { #category : #constants }
 EP2RemoteObject class >> unmappedInstVarIndex [
 	^ 'unmapped'

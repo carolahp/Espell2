@@ -45,6 +45,11 @@ EP2Mirror >> asRemoteAssociation [
 	^ EP2RemoteAssociation on: self 
 ]
 
+{ #category : #converting }
+EP2Mirror >> asRemoteCharacter [
+	^ EP2RemoteCharacter on: self
+]
+
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteClass [ 
 	^ EP2RemoteClass on: self

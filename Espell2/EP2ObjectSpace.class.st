@@ -49,6 +49,11 @@ EP2ObjectSpace >> fromLocalByteSymbol: aByteSymbol [
 	^ backend fromLocalByteSymbol: aByteSymbol 
 ]
 
+{ #category : #'from local to remote' }
+EP2ObjectSpace >> fromLocalCharacter: aCharacter [ 
+	^ (self backend mirrorOnAddress: (self objectMemory characterObjectOf: aCharacter codePoint)) asRemoteCharacter
+]
+
 { #category : #'from-local-to-mirror' }
 EP2ObjectSpace >> fromLocalInteger: anInteger [
 
@@ -86,6 +91,11 @@ EP2ObjectSpace >> nilObject [
 { #category : #'accessing-specialObjects' }
 EP2ObjectSpace >> nilObject: aNilObject [
 	self backend nilObject: aNilObject
+]
+
+{ #category : #accessing }
+EP2ObjectSpace >> objectMemory [
+	^ self backend simulator objectMemory
 ]
 
 { #category : #'accessing-specialObjects' }

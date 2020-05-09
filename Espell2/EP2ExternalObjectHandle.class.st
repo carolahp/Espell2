@@ -8,6 +8,17 @@ Class {
 }
 
 { #category : #accessing }
+EP2ExternalObjectHandle >> basicClassHandle [
+	
+	^ backend handleOnExternalObject: object class
+]
+
+{ #category : #accessing }
 EP2ExternalObjectHandle >> object: anASTBlockClosure [ 
 	object := anASTBlockClosure
+]
+
+{ #category : #accessing }
+EP2ExternalObjectHandle >> species [
+	^ EP2ExternalObjectHandle 
 ]

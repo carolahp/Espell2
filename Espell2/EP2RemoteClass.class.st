@@ -66,6 +66,12 @@ EP2RemoteClass >> classPool [
 	^ self instanceVariableAtIndex: self classPoolIndex
 ]
 
+{ #category : #'high level messages' }
+EP2RemoteClass >> classPool: anObject [ 
+	
+	^ self instanceVariableAtIndex: self classPoolIndex put: anObject asRemoteObject
+]
+
 { #category : #'instVars-mapping' }
 EP2RemoteClass >> classPoolIndex [
 	^ (self backend systemDefinition instanceVariableMapping classPoolIndex) ifNil: [ self class unmappedInstVarIndex ]

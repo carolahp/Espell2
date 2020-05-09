@@ -4,14 +4,6 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
-{ #category : #'instance-creation' }
-EP2RemoteSmallInteger class >> on: anEPMirror [ 
-	
-	^ self new
-		mirror: anEPMirror;
-		yourself
-]
-
 { #category : #'instance creation' }
 EP2RemoteSmallInteger class >> on: anEP2SimulatorAddressHandle from: anEP2Backend [ 
 	^ self on: (EP2Mirror on: anEP2SimulatorAddressHandle from: anEP2Backend)
