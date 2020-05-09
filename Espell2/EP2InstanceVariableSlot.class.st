@@ -4,13 +4,14 @@ Class {
 	#category : #'Espell2-Kernel-Slots'
 }
 
-{ #category : #testint }
-EP2InstanceVariableSlot >> isInstVarSlot [
+{ #category : #testing }
+EP2InstanceVariableSlot >> isInstanceVariableSlot [
+	^ true
 ]
 
 { #category : #'meta-object-protocol' }
 EP2InstanceVariableSlot >> read: aRemoteObject [
-	^ self backend object: aRemoteObject instVarAt: index
+	^ (self backend object: aRemoteObject instVarAt: index) asRemoteObject
 ]
 
 { #category : #'as yet unclassified' }

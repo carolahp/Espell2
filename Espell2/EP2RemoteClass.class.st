@@ -9,6 +9,11 @@ EP2RemoteClass >> addressDefinitionMap [
 	^ self backend objectSpace interpreter codeProvider classLoader addressDefinitionMap
 ]
 
+{ #category : #'accessing-instVars' }
+EP2RemoteClass >> allInstVars [
+	^ (self allSlots select: #isInstanceVariableSlot) collect: [ :slot | slot name -> (slot read: self) ]
+]
+
 { #category : #converting }
 EP2RemoteClass >> asClassInSystemDefinition [
 	^ [self addressDefinitionMap at: self target address ] on: KeyNotFound do: [ nil ]

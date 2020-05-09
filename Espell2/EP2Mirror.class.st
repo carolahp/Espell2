@@ -64,6 +64,10 @@ EP2Mirror >> asRemoteNil [
 EP2Mirror >> asRemoteObject [
 	"gets the corresponding layout according to my instSpec and then uses it to create a remoteObject with the correct type"
 	| layoutClass remoteObjectClass |
+	self isNilObject ifTrue: [ ^ self asRemoteNil ].
+	self isTrueObject ifTrue: [ ^ self asRemoteTrue ].
+	self isFalseObject ifTrue: [ ^ self asRemoteFalse ].
+	
 	layoutClass := EP2Layout layoutClassForInstSpec: self instSpec.
 	remoteObjectClass := layoutClass defaultRemoteObjectClass.
 	^ remoteObjectClass on: self
@@ -129,6 +133,11 @@ EP2Mirror >> isEP2Remote [
 ]
 
 { #category : #testing }
+EP2Mirror >> isFalseObject [
+	^ self backend falseObject mirror = self
+]
+
+{ #category : #testing }
 EP2Mirror >> isNilObject [
 	^ self backend nilObject mirror = self 
 ]
@@ -136,6 +145,11 @@ EP2Mirror >> isNilObject [
 { #category : #testing }
 EP2Mirror >> isSmallInteger [
 	^ target isSmallInteger
+]
+
+{ #category : #testing }
+EP2Mirror >> isTrueObject [
+	^ self backend trueObject mirror = self
 ]
 
 { #category : #comparing }

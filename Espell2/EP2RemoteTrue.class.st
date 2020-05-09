@@ -1,10 +1,10 @@
 Class {
-	#name : #EP2RemoteNil,
+	#name : #EP2RemoteTrue,
 	#superclass : #EP2RemoteEmptyObject,
 	#category : #'Espell2-Kernel'
 }
 
 { #category : #printing }
-EP2RemoteNil >> printOn: aStream [
-	^ aStream nextPutAll: '*nil*'
+EP2RemoteTrue >> printOn: aStream [
+	^ aStream nextPutAll: '*true*'
 ]

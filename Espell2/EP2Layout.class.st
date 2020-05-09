@@ -36,6 +36,7 @@ EP2Layout class >> layoutClassForClass: aRemoteClass [
 
 { #category : #'instance creation' }
 EP2Layout class >> layoutClassForInstSpec: instSpec [
+	"(instSpec = 0) ifTrue: [ ^ EP2EmptyLayout ]."
 	(instSpec = 1) ifTrue: [ ^ EP2FixedLayout ].
 	(instSpec = 7) ifTrue: [ ^ EP2ImmediateLayout ].
 	(instSpec = 3) ifTrue: [ ^ self halt."EP2VariableWithInstVarsLayout" ].	

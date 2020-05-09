@@ -14,7 +14,7 @@ EP2IndexedSlot >> isIndexedSlot [
 
 { #category : #'meta-object-protocol' }
 EP2IndexedSlot >> read: aRemoteObject [
-	^ self backend object: aRemoteObject at: index
+	^ (self backend object: aRemoteObject at: index) asRemoteObject
 ]
 
 { #category : #'meta-object-protocol' }
