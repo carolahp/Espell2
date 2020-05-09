@@ -1,10 +1,6 @@
 Class {
 	#name : #EP2RemoteObject,
-	#superclass : #Object,
-	#instVars : [
-		'mirror',
-		'layout'
-	],
+	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
 
@@ -53,11 +49,6 @@ EP2RemoteObject >> asRemoteNil [
 	^ EP2RemoteNil on: self mirror
 ]
 
-{ #category : #converting }
-EP2RemoteObject >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
-	^ self 
-]
-
 { #category : #accessing }
 EP2RemoteObject >> at: index [
 	^ self layout at: index
@@ -68,13 +59,8 @@ EP2RemoteObject >> at: index put: aReference [
 	self layout at: index put: aReference
 ]
 
-{ #category : #'accessing-pvt' }
-EP2RemoteObject >> backend [
-	^ mirror backend
-]
-
 { #category : #'high-level-message' }
-EP2RemoteObject >> basicClass [
+EP2RemoteObject >> basicClass [ 
 	^ self mirror basicClass
 ]
 
@@ -82,22 +68,6 @@ EP2RemoteObject >> basicClass [
 EP2RemoteObject >> basicSize [
 	
 	^ self backend basicSizeOf: self
-]
-
-{ #category : #converting }
-EP2RemoteObject >> classDefinition [
-	^ nil
-]
-
-{ #category : #'instVars-mapping' }
-EP2RemoteObject >> classPoolIndex [
-	^ (self backend systemDefinition instanceVariableMapping classPoolIndex) ifNil: [ self class unmappedInstVarIndex ]
-]
-
-{ #category : #'gt-inspector' }
-EP2RemoteObject >> gtInspectorIn: composite [
-	<gtInspectorPresentationOrder: 2>
-	^ self layout gtInspectorIn: composite
 ]
 
 { #category : #'accessing-instVars' }
@@ -117,50 +87,9 @@ EP2RemoteObject >> instanceVariableNamed: aString [
 	^ self layout instanceVariableNamed: aString
 ]
 
-{ #category : #testing }
-EP2RemoteObject >> isEP2Mirror [
-	^ false
-]
-
-{ #category : #testing }
-EP2RemoteObject >> isEP2Remote [
-	^ true
-]
-
-{ #category : #testing }
-EP2RemoteObject >> isNilObject [
-	^ self backend nilObject = self 
-]
-
-{ #category : #testing }
-EP2RemoteObject >> isRemoteClass [
-	^ false
-]
-
-{ #category : #testing }
-EP2RemoteObject >> isSmallInteger [
-	^ self mirror isSmallInteger
-]
-
 { #category : #accessing }
 EP2RemoteObject >> layout [ 
 	^ layout ifNil: [ layout := self layoutClass on: self ]
-]
-
-{ #category : #accessing }
-EP2RemoteObject >> layoutClass [
-	" generic layout "
-	^ EP2Layout
-]
-
-{ #category : #accessing }
-EP2RemoteObject >> mirror [
-	^ mirror
-]
-
-{ #category : #accessing }
-EP2RemoteObject >> mirror: anEP2Mirror [
-	mirror := anEP2Mirror
 ]
 
 { #category : #comparing }
@@ -207,11 +136,6 @@ EP2RemoteObject >> size [
 { #category : #'accessing-pvt' }
 EP2RemoteObject >> systemDefinition [
 	^ mirror backend systemDefinition
-]
-
-{ #category : #accessing }
-EP2RemoteObject >> target [ 
-	^ mirror target
 ]
 
 { #category : #'accessing-mirror' }

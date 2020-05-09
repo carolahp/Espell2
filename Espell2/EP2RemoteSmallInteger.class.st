@@ -1,10 +1,6 @@
 Class {
 	#name : #EP2RemoteSmallInteger,
-	#superclass : #Object,
-	#instVars : [
-		'mirror',
-		'layout'
-	],
+	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
 
@@ -31,22 +27,17 @@ EP2RemoteSmallInteger >> asRemoteSmallInteger [
 	^ self 
 ]
 
-{ #category : #accessing }
-EP2RemoteSmallInteger >> mirror [
-	^ mirror
+{ #category : #'high-level-message' }
+EP2RemoteSmallInteger >> basicClass [
+	^ self backend classNamed: #SmallInteger
 ]
 
 { #category : #accessing }
-EP2RemoteSmallInteger >> mirror: anEP2Mirror [ 
-	mirror := anEP2Mirror
+EP2RemoteSmallInteger >> layoutClass [ 
+	^ EP2ImmediateLayout 
 ]
 
 { #category : #printing }
 EP2RemoteSmallInteger >> printOn: aStream [
 	aStream nextPutAll: '*', self asLocalSmallInteger asString, '*'
-]
-
-{ #category : #accessing }
-EP2RemoteSmallInteger >> target [ 
-	^ mirror target
 ]

@@ -9,12 +9,7 @@ Class {
 
 { #category : #'remote-objects-relationship' }
 EP2Layout class >> defaultRemoteObjectClass [
-	^ EP2RemoteObject 
-]
-
-{ #category : #'remote-objects-relationship' }
-EP2Layout class >> defaultRemoteObjectOn: anEP2Mirror [ 
-	self shouldBeImplemented.
+	^ EP2RemoteObject
 ]
 
 { #category : #'gt-inspector' }

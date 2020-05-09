@@ -7,8 +7,15 @@ Class {
 { #category : #'gt-inspector-extension' }
 EP2EmptyLayout class >> on: anEP2Mirror [
 	^ self new 
-		mirror: anEP2Mirror;
+		remote: anEP2Mirror;
 		yourself
+]
+
+{ #category : #'gt-extension' }
+EP2EmptyLayout >> gtInspectorIn: composite [
+	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
+	^ composite text
+		title: self remote asString
 ]
 
 { #category : #accessing }

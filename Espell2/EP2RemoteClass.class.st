@@ -62,6 +62,11 @@ EP2RemoteClass >> classPool [
 ]
 
 { #category : #'instVars-mapping' }
+EP2RemoteClass >> classPoolIndex [
+	^ (self backend systemDefinition instanceVariableMapping classPoolIndex) ifNil: [ self class unmappedInstVarIndex ]
+]
+
+{ #category : #'instVars-mapping' }
 EP2RemoteClass >> classSharedPoolsIndex [
 	^ (self systemDefinition instanceVariableMapping classSharedPoolsIndex) ifNil: [ self class unmappedInstVarIndex ]
 ]

@@ -86,7 +86,7 @@ EP2Backend >> basicNewOn: aRemoteClass [
 	newOop := self objectMemory instantiateClass: aRemoteClass target address.
 	self assert: newOop notNil.
 	
-	newObject := (self mirrorOnAddress: newOop) asRemoteObject.
+	newObject := (self mirrorOnAddress: newOop) asRemoteStub.
 	1 to: aRemoteClass instanceFixedSize do: [ :index |
 		newObject instanceVariableAtIndex: index put: self nilObject.
 	].
@@ -480,7 +480,7 @@ EP2Backend >> mirrorOnAddress: anObject [
 EP2Backend >> nilObject [
 	
 	"The first special object."
-	^ (self mirrorOnAddress: simulator objectMemory nilObject) asRemoteEmptyObject 
+	^ (self mirrorOnAddress: simulator objectMemory nilObject) asRemoteNil
 ]
 
 { #category : #'accessing-special objects' }

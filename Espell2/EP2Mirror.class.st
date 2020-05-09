@@ -67,10 +67,19 @@ EP2Mirror >> asRemoteObject [
 	self isNilObject ifTrue: [ ^ self asRemoteNil ].
 	self isTrueObject ifTrue: [ ^ self asRemoteTrue ].
 	self isFalseObject ifTrue: [ ^ self asRemoteFalse ].
-	
-	layoutClass := EP2Layout layoutClassForInstSpec: self instSpec.
+	layoutClass := 	self isSmallInteger 
+		ifTrue: [ EP2ImmediateLayout ]
+		ifFalse: [ EP2Layout layoutClassForInstSpec: self instSpec].
 	remoteObjectClass := layoutClass defaultRemoteObjectClass.
 	^ remoteObjectClass on: self
+]
+
+{ #category : #'converting-high-level' }
+EP2Mirror >> asRemoteStub [
+	| remoteObjectClass |
+	remoteObjectClass := EP2Layout defaultRemoteObjectClass.
+	^ remoteObjectClass on: self
+	
 ]
 
 { #category : #accessing }
