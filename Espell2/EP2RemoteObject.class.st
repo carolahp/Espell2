@@ -200,3 +200,10 @@ EP2RemoteObject >> target [
 EP2RemoteObject >> target: anEP2SimulatorClassTableHandle [ 
 	self mirror target: anEP2SimulatorClassTableHandle
 ]
+
+{ #category : #'accessing-slots' }
+EP2RemoteObject >> writeSlotNamed: aName value: anObject [
+	^ (self basicClass slotNamed: aName) 
+		write: (self layout localObjectAsRemoteObject: anObject) 
+		to: self
+]
