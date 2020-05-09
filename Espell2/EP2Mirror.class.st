@@ -84,12 +84,27 @@ EP2Mirror >> asRemoteObject [
 	^ remoteObjectClass on: self
 ]
 
+{ #category : #'as yet unclassified' }
+EP2Mirror >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
+	^ self asRemoteObject
+]
+
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteStub [
 	| remoteObjectClass |
 	remoteObjectClass := EP2Layout defaultRemoteObjectClass.
 	^ remoteObjectClass on: self
 	
+]
+
+{ #category : #converting }
+EP2Mirror >> asRemoteTrue [
+	^ EP2RemoteTrue on: self
+]
+
+{ #category : #'from remote to local' }
+EP2Mirror >> asSmallInteger [
+	^ self asLocalSmallInteger
 ]
 
 { #category : #accessing }
@@ -152,6 +167,11 @@ EP2Mirror >> identityHash [
 { #category : #'accessing-header' }
 EP2Mirror >> instSpec [
 	^ [self basicClass instSpec] on: Error do: [ 0 ]
+]
+
+{ #category : #'accessing-instVars' }
+EP2Mirror >> instanceVariableAtIndex: anInteger [ 
+	^ self asRemoteObject instanceVariableAtIndex: anInteger
 ]
 
 { #category : #testing }
