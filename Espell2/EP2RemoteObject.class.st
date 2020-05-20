@@ -16,9 +16,9 @@ EP2RemoteObject >> = anotherRemote [
 	^ self pointsToSameObject: anotherRemote
 ]
 
-{ #category : #'accessing-slots' }
-EP2RemoteObject >> allSlots [
-	^ self layout allSlots
+{ #category : #'accessing-variables' }
+EP2RemoteObject >> allVariables [
+	^ self basicClass allSlots collect: [ :slot | slot read: self ]
 ]
 
 { #category : #converting }
@@ -48,7 +48,7 @@ EP2RemoteObject >> asRemoteNil [
 
 { #category : #accessing }
 EP2RemoteObject >> at: index [
-	^ self layout at: index
+	^ (self layout at: index) asRemoteObject
 ]
 
 { #category : #accessing }
@@ -120,11 +120,4 @@ EP2RemoteObject >> systemDefinition [
 { #category : #'accessing-mirror' }
 EP2RemoteObject >> target: anEP2SimulatorClassTableHandle [ 
 	self mirror target: anEP2SimulatorClassTableHandle
-]
-
-{ #category : #'accessing-slots' }
-EP2RemoteObject >> writeSlotNamed: aName value: anObject [
-	^ (self basicClass slotNamed: aName) 
-		write: (self layout localObjectAsRemoteObject: anObject) 
-		to: self
 ]

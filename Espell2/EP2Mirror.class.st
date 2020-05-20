@@ -224,6 +224,20 @@ EP2Mirror >> mirror [
 	^ self 
 ]
 
+{ #category : #'executing primitives' }
+EP2Mirror >> nextObject [
+	| nextAddress addressHandle |
+	nextAddress := self backend objectMemory objectAfter: self target address.
+	addressHandle := EP2AddressHandle new 
+		address: nextAddress; 
+		backend: self backend; 
+		yourself.
+ 
+	^ self class 
+		on: addressHandle
+		from: self backend
+]
+
 { #category : #comparing }
 EP2Mirror >> pointsToSameObject: aRemoteObjectOrMirror [
 	^self target = aRemoteObjectOrMirror target

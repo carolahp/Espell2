@@ -1,6 +1,9 @@
 Class {
 	#name : #EP2RemoteClass,
 	#superclass : #EP2RemoteObject,
+	#instVars : [
+		'slots'
+	],
 	#category : #'Espell2-Kernel'
 }
 
@@ -17,6 +20,11 @@ EP2RemoteClass >> addressLocalClassMap [
 { #category : #'accessing-instVars' }
 EP2RemoteClass >> allInstVars [
 	^ (self allSlots select: #isInstanceVariableSlot) collect: [ :slot | slot name -> (slot read: self) ]
+]
+
+{ #category : #'accessing-slots' }
+EP2RemoteClass >> allSlots [ 
+	^ self slots
 ]
 
 { #category : #converting }
@@ -121,6 +129,12 @@ EP2RemoteClass >> compactClassIndex [
 	
 ]
 
+{ #category : #'accessing-slots' }
+EP2RemoteClass >> defaultSlots [
+
+	^ OrderedCollection new
+]
+
 { #category : #'accessing-header' }
 EP2RemoteClass >> format [
 	^self layout instanceVariableAtIndex: self classFormatIndex 
@@ -129,6 +143,12 @@ EP2RemoteClass >> format [
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> format: anInteger [
 	^self layout instanceVariableAtIndex: self classFormatIndex put: anInteger
+]
+
+{ #category : #initialize }
+EP2RemoteClass >> initialize [ 
+	super initialize.
+	slots := self defaultSlots.
 ]
 
 { #category : #binding }
@@ -143,6 +163,11 @@ EP2RemoteClass >> innerBindingOf: aSymbol [
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> instSpec [ 
 	^ self backend instSpecOfClass: self mirror
+]
+
+{ #category : #'accessing-instVars' }
+EP2RemoteClass >> instVarNames [
+	^ (self allSlots select: #isInstanceVariableSlot) collect: #name
 ]
 
 { #category : #'high-level-messages' }
@@ -190,6 +215,19 @@ EP2RemoteClass >> sharedPool [
 { #category : #'accessing-slots' }
 EP2RemoteClass >> slotNamed: aString [ 
 	^ (self allSlots select: [ :slot | slot name = aString ]) anyOne
+]
+
+{ #category : #'accessing-slots' }
+EP2RemoteClass >> slots [
+	| allSlots |
+	allSlots := OrderedCollection new.
+	self slotsDo: [ :each | allSlots add: each].
+	^ allSlots asArray
+]
+
+{ #category : #'accessing-slots' }
+EP2RemoteClass >> slotsDo: aBlock [
+	self backend slotsFor: self do: aBlock
 ]
 
 { #category : #'accessing-specialInstVars' }

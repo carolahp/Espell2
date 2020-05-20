@@ -29,7 +29,7 @@ EP2IndexedSlot >> printOn: aStream [
 
 { #category : #'meta-object-protocol' }
 EP2IndexedSlot >> read: aRemoteObject [
-	self halt.
+	
 	^ (self backend object: aRemoteObject at: index) asRemoteObject
 ]
 

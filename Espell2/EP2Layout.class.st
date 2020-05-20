@@ -50,11 +50,6 @@ EP2Layout class >> on: anEP2Remote [
 ]
 
 { #category : #accessing }
-EP2Layout >> allSlots [ 
-	^ {}
-]
-
-{ #category : #accessing }
 EP2Layout >> at: index [
 	^ self backend object: self at: index
 ]
@@ -84,11 +79,6 @@ EP2Layout >> gtInspectorIn: composite [
 ]
 
 { #category : #accessing }
-EP2Layout >> instVarNames [
-	^ (self allSlots select: #isInstanceVariableSlot) collect: #name
-]
-
-{ #category : #accessing }
 EP2Layout >> instanceVariableAtIndex: index [
 	^ (self backend object: self instVarAt: index) asRemoteObject
 ]
@@ -100,7 +90,7 @@ EP2Layout >> instanceVariableAtIndex: index put: anObject [
 
 { #category : #'accessing-instVars' }
 EP2Layout >> instanceVariableNamed: aString [ 
-	^ (self allSlots collect: [ :slot | slot name = aString. self haltOnce. ]) ifEmpty: [ nil ]
+	^ (self remote basicClass slotNamed: aString) read: self 
 ]
 
 { #category : #testing }
@@ -189,11 +179,6 @@ EP2Layout >> localObjectAsRemoteObject: anObject [
 { #category : #'accessing-pvt' }
 EP2Layout >> objectSpace [
 	^ self mirror backend objectSpace
-]
-
-{ #category : #accessing }
-EP2Layout >> readSlotNamed: aName [
-	^ (remote basicClass slotNamed: aName) read: self 
 ]
 
 { #category : #'accessing-pvt' }

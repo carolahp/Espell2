@@ -16,6 +16,11 @@ EP2Remote class >> on: anEPMirror [
 		yourself
 ]
 
+{ #category : #'accessing-variables' }
+EP2Remote >> allVariables [
+	^ { }
+]
+
 { #category : #converting }
 EP2Remote >> asRemoteObject [
 	^ self 
@@ -101,6 +106,11 @@ EP2Remote >> mirror: anEP2Mirror [
 	mirror := anEP2Mirror
 ]
 
+{ #category : #'executing primitives' }
+EP2Remote >> nextObject [
+	^ self mirror nextObject asRemoteObject
+]
+
 { #category : #printing }
 EP2Remote >> printOn: aStream [
 	aStream 
@@ -109,12 +119,19 @@ EP2Remote >> printOn: aStream [
 		nextPutAll: ' ]'
 ]
 
-{ #category : #introspection }
+{ #category : #'accessing-slots' }
 EP2Remote >> readSlotNamed: aName [
-	^ self layout readSlotNamed: aName
+	^ (self basicClass slotNamed: aName) read: self 
 ]
 
 { #category : #accessing }
 EP2Remote >> target [ 
 	^ mirror target
+]
+
+{ #category : #'accessing-slots' }
+EP2Remote >> writeSlotNamed: aName value: anObject [
+	^ (self basicClass slotNamed: aName) 
+		write: (self layout localObjectAsRemoteObject: anObject) 
+		to: self
 ]

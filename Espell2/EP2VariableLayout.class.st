@@ -11,16 +11,15 @@ EP2VariableLayout class >> at: anIndex put: anEP2Mirror [
 
 { #category : #'gt-extension' }
 EP2VariableLayout >> gtInspectorIn: composite [
-	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
 	^ composite table
 		title: self remote asString;
-		display: [ "{ 'self' -> self remote asString },  "
+		display: [ 
 			(remote isRemoteClass and: [ remote isRoleMetaclass ])  
 				ifTrue: [ { } ] 
-				ifFalse: [ remote allSlots ] ];
-		column: 'Variable' evaluated: [:slot | slot name ];
-		column: 'Value' evaluated: [ :slot | remote readSlotNamed: slot name  ];
-		send: [ :slot | self remote readSlotNamed: slot name ]
+				ifFalse: [ remote allVariables collectWithIndex: [ :var :index | index -> var ] ] ];
+		column: 'Index' evaluated: [:assoc | assoc key ];
+		column: 'Value' evaluated: [ :assoc | assoc value  ];
+		send: [ :assoc | assoc value ]
 ]
 
 { #category : #testing }
@@ -33,23 +32,4 @@ EP2VariableLayout >> isVariableLayout [
 EP2VariableLayout >> layoutName [
 
 	^ #VariableLayout
-]
-
-{ #category : #accessing }
-EP2VariableLayout >> readSlotNamed: aName [
-	^ (remote slotNamed: aName) read: self 
-]
-
-{ #category : #'queries-slots' }
-EP2VariableLayout >> slotsDo: aBlock [
-	| newSlot |
-	1 to: remote basicSize do: [ :index | 
-		newSlot := EP2IndexedSlot new 
-			definingClass: remote basicClass; 
-			index: index;
-			name: index asString;
-			yourself.
-		aBlock value: newSlot
-		]
-	
 ]
