@@ -57,10 +57,11 @@ EP2RemoteClass >> basicNew [
 
 { #category : #'high-level-messages' }
 EP2RemoteClass >> basicNew: aSize [ 
+
 	^ self backend basicNewOn: self withSize: aSize
 ]
 
-{ #category : #'high-level-message' }
+{ #category : #'high-level-messages' }
 EP2RemoteClass >> basicSetClassName: aString [ 
 
 	self instanceVariableAtIndex: self classNameIndex put: aString
@@ -97,7 +98,7 @@ EP2RemoteClass >> classPool [
 	^ self instanceVariableAtIndex: self classPoolIndex
 ]
 
-{ #category : #'high level messages' }
+{ #category : #'high-level-messages' }
 EP2RemoteClass >> classPool: anObject [ 
 	
 	^ self instanceVariableAtIndex: self classPoolIndex put: anObject asRemoteObject

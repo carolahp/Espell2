@@ -16,7 +16,7 @@ EP2RemoteAssociation >> associationValueIndex [
 
 { #category : #'high-level-message' }
 EP2RemoteAssociation >> key [
-	self instanceVariableAtIndex: self associationKeyIndex
+	^ self instanceVariableAtIndex: self associationKeyIndex
 ]
 
 { #category : #accessing }
@@ -34,7 +34,7 @@ EP2RemoteAssociation >> printOn: aStream [
 
 { #category : #'high-level-message' }
 EP2RemoteAssociation >> value [
-	self instanceVariableAtIndex: self associationValueIndex
+	^ self instanceVariableAtIndex: self associationValueIndex
 ]
 
 { #category : #'high-level-message' }
