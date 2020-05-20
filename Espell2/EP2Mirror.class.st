@@ -61,6 +61,11 @@ EP2Mirror >> asRemoteClass [
 ]
 
 { #category : #'converting-high-level' }
+EP2Mirror >> asRemoteDictionary [
+	self shouldBeImplemented.
+]
+
+{ #category : #'converting-high-level' }
 EP2Mirror >> asRemoteEmptyObject [
 	^ EP2RemoteEmptyObject on: self
 ]

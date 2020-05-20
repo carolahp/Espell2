@@ -32,6 +32,11 @@ EP2RemoteObject >> asRemoteArray [
 ]
 
 { #category : #converting }
+EP2RemoteObject >> asRemoteAssociation [
+	^ self mirror asRemoteAssociation
+]
+
+{ #category : #converting }
 EP2RemoteObject >> asRemoteByteString [
 	^ EP2RemoteByteString on: self mirror 
 ]
@@ -39,6 +44,11 @@ EP2RemoteObject >> asRemoteByteString [
 { #category : #converting }
 EP2RemoteObject >> asRemoteClass [
 	^ EP2RemoteClass on: self mirror
+]
+
+{ #category : #converting }
+EP2RemoteObject >> asRemoteDictionary [
+	^ self mirror asRemoteDictionary
 ]
 
 { #category : #converting }
