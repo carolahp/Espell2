@@ -10,6 +10,7 @@ Class {
 { #category : #accessing }
 EP2Environment >> bindingOf: aSymbol [
 	| result |
+	self flag: 'class variables are missing'.
 	result := (super bindingOf: aSymbol).
 	"maybe aSymbol is the name of class that has not been installed" 
 	result ifNil: [
@@ -17,7 +18,7 @@ EP2Environment >> bindingOf: aSymbol [
 			self builder classNamed: aSymbol.
 			result := super bindingOf: aSymbol] 
 				on: PBClassDefinitionNotFound 
-				do: [^ nil]].
+				do: [ ^ nil]].
 	^ result 
 ]
 

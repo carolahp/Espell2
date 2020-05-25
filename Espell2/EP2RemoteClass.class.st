@@ -41,8 +41,8 @@ EP2RemoteClass >> asLocalClass [
 		at: self mirror target address 
 		ifAbsentPut: [" | definition role localClassOrNil |
 			definition := self addressDefinitionMap at: self mirror target address.
-			"if I am a metaclass, my instances can be represented as instances of EP2RemoteClass"
-			definition isMetaclass ifTrue: [^ EP2RemoteClass].
+			"if I am a metaclass, my instances can be represented as instances of EP2RemoteMetaclass"
+			definition isMetaclass ifTrue: [^ EP2RemoteMetaclass].
 			role := self backend systemDefinition roleOfClass: definition.
 			localClassOrNil := Smalltalk classNamed: 'EP2Remote', role asString.
 		^	localClassOrNil
