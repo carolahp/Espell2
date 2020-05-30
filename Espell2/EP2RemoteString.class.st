@@ -16,6 +16,7 @@ EP2RemoteString >> layoutClass [
 
 { #category : #printing }
 EP2RemoteString >> printOn: aStream [
-	aStream nextPutAll: self asLocalByteString
-	
+	aStream nextPutAll: '*';
+		nextPutAll: self asLocalByteString;
+		nextPutAll: '*'
 ]

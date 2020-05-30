@@ -55,11 +55,11 @@ EP2SpurImage >> gtInspector: composite [
 { #category : #initialization }
 EP2SpurImage >> initialize [
 	super initialize.
-	self initializeInstanceVariables 
+	self initializeSpecialObjects 
 ]
 
 { #category : #initialization }
-EP2SpurImage >> initializeInstanceVariables [
+EP2SpurImage >> initializeSpecialObjects [
 	| classes |
 	
 	falseObject := nilObject nextObject.

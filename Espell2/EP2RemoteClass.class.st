@@ -12,14 +12,18 @@ EP2RemoteClass >> addressDefinitionMap [
 	^ self backend objectSpace interpreter codeProvider classLoader addressDefinitionMap
 ]
 
-{ #category : #accessing }
-EP2RemoteClass >> addressLocalClassMap [
-	^ self backend objectSpace interpreter codeProvider classLoader addressLocalClassMap
-]
-
 { #category : #'accessing-instVars' }
 EP2RemoteClass >> allInstVars [
 	^ (self allSlots select: #isInstanceVariableSlot) collect: [ :slot | slot name -> (slot read: self) ]
+]
+
+{ #category : #accessing }
+EP2RemoteClass >> allInstanceVariablesEvaluated [
+	| basicClass |
+	
+	basicClass := self asLocalClass .
+	basicClass ifNil: [ ^#() ].
+	^ basicClass allInstVarNames collectWithIndex: [ :ivName :i | ivName -> (self instanceVariableAtIndex: i) ]
 ]
 
 { #category : #'accessing-slots' }
@@ -101,7 +105,7 @@ EP2RemoteClass >> classPool [
 { #category : #'high-level-messages' }
 EP2RemoteClass >> classPool: anObject [ 
 	
-	^ self instanceVariableAtIndex: self classPoolIndex put: anObject asRemoteObject
+	^ self instanceVariableAtIndex: self classPoolIndex put: anObject
 ]
 
 { #category : #'instVars-mapping' }
@@ -192,6 +196,14 @@ EP2RemoteClass >> isRemoteClass [
 { #category : #testing }
 EP2RemoteClass >> isRoleMetaclass [
 	^ self backend isRoleMetaclass: self
+]
+
+{ #category : #testing }
+EP2RemoteClass >> isStub [
+	self flag: 'find a more stable way to check this'.
+	^ (self format isSmallInteger 
+		and: [ self superclass isNilObject ])
+		and: [ ([self classPool] on: AssertionFailure do: [ 42 ]) == 42 ]
 ]
 
 { #category : #'accessing-specialInstVars' }

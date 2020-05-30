@@ -75,7 +75,7 @@ EP2Layout >> gtInspectorIn: composite [
 				ifFalse: [ remote basicClass allSlots ] ];
 		column: 'Variable' evaluated: [:slot | slot name ];
 		column: 'Value' evaluated: [ :slot | remote readSlotNamed: slot name  ];
-		send: [ :slot | self remote readSlotNamed: slot name ]
+		send: [ :slot | slot ifNotNil: [self remote readSlotNamed: slot name] ]
 ]
 
 { #category : #accessing }

@@ -18,7 +18,7 @@ EP2VariableLayout >> gtInspectorIn: composite [
 				ifTrue: [ { } ] 
 				ifFalse: [ remote allVariables collectWithIndex: [ :var :index | index -> var ] ] ];
 		column: 'Index' evaluated: [:assoc | assoc key ];
-		column: 'Value' evaluated: [ :assoc | assoc value  ];
+		column: 'Value' evaluated: [ :assoc | assoc value ];
 		send: [ :assoc | assoc value ]
 ]
 

@@ -40,6 +40,6 @@ EP2RemoteAssociation >> value [
 { #category : #'high-level-message' }
 EP2RemoteAssociation >> value: anEP2RemoteObject [ 
 	self 
-		instanceVariableAtIndex: self associationKeyIndex
+		instanceVariableAtIndex: self associationValueIndex
 		put: anEP2RemoteObject  
 ]
