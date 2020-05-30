@@ -17,15 +17,6 @@ EP2RemoteClass >> allInstVars [
 	^ (self allSlots select: #isInstanceVariableSlot) collect: [ :slot | slot name -> (slot read: self) ]
 ]
 
-{ #category : #accessing }
-EP2RemoteClass >> allInstanceVariablesEvaluated [
-	| basicClass |
-	
-	basicClass := self asLocalClass .
-	basicClass ifNil: [ ^#() ].
-	^ basicClass allInstVarNames collectWithIndex: [ :ivName :i | ivName -> (self instanceVariableAtIndex: i) ]
-]
-
 { #category : #'accessing-slots' }
 EP2RemoteClass >> allSlots [ 
 	^ self slots
