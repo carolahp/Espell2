@@ -56,12 +56,6 @@ EP2RemoteClass >> basicNew: aSize [
 	^ self backend basicNewOn: self withSize: aSize
 ]
 
-{ #category : #'high-level-messages' }
-EP2RemoteClass >> basicSetClassName: aString [ 
-
-	self instanceVariableAtIndex: self classNameIndex put: aString
-]
-
 { #category : #'instVars-mapping' }
 EP2RemoteClass >> classFormatIndex [
 	^ (self systemDefinition instanceVariableMapping classFormatIndex) ifNil: [ self error: 'undefined index for format inst var in Class' ]
@@ -201,6 +195,12 @@ EP2RemoteClass >> isStub [
 EP2RemoteClass >> layoutClass [
 	" generic layout "
 	^ EP2FixedLayout
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteClass >> name: aString [ 
+
+	self instanceVariableAtIndex: self classNameIndex put: aString asSymbol
 ]
 
 { #category : #printing }

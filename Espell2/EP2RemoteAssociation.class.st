@@ -19,6 +19,11 @@ EP2RemoteAssociation >> key [
 	^ self instanceVariableAtIndex: self associationKeyIndex
 ]
 
+{ #category : #'accessing-instVars' }
+EP2RemoteAssociation >> key: aString [ 
+	self instanceVariableAtIndex: self associationKeyIndex put: aString
+]
+
 { #category : #accessing }
 EP2RemoteAssociation >> layoutClass [
 	" generic layout "
