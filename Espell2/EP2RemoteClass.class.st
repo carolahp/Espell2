@@ -203,6 +203,11 @@ EP2RemoteClass >> name: aString [
 	self instanceVariableAtIndex: self classNameIndex put: aString asSymbol
 ]
 
+{ #category : #'high-level-messages' }
+EP2RemoteClass >> new [
+	^ self basicNew mirror asRemoteObject
+]
+
 { #category : #printing }
 EP2RemoteClass >> printOn: aStream [
 	aStream 
