@@ -35,3 +35,8 @@ EP2ClassTableHandle >> classIndex: anInteger [
 	classIndex := anInteger 
 
 ]
+
+{ #category : #printing }
+EP2ClassTableHandle >> printOn: aStream [
+	aStream nextPutAll: self address asString
+]

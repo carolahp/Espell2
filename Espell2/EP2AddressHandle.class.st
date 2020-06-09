@@ -45,3 +45,8 @@ EP2AddressHandle >> basicClassHandle [
 EP2AddressHandle >> classIndex [ 
 	^ backend objectMemory classIndexOf: self address  
 ]
+
+{ #category : #printing }
+EP2AddressHandle >> printOn: aStream [
+	aStream nextPutAll: self address asString
+]

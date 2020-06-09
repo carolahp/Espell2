@@ -258,7 +258,7 @@ EP2Mirror >> pointsToSameObject: aRemoteObjectOrMirror [
 EP2Mirror >> printOn: aStream [
 	aStream 
 		nextPutAll: 'aMirror [ ';
-		nextPutAll: self target address asString;
+		nextPutAll: self target asString;
 		nextPutAll: ' ]'
 ]
 

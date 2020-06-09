@@ -31,6 +31,11 @@ EP2InternalObjectHandle >> instanceVariableAtIndex: anInteger [
 	^ backend object: self address instVarAt: anInteger
 ]
 
+{ #category : #accessing }
+EP2InternalObjectHandle >> isExternalHandle [
+	^ false
+]
+
 { #category : #'as yet unclassified' }
 EP2InternalObjectHandle >> isSmallInteger [
 	^ backend isSmallInteger: self

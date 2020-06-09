@@ -23,6 +23,11 @@ EP2ExternalObjectHandle >> object: anASTBlockClosure [
 	object := anASTBlockClosure
 ]
 
+{ #category : #printing }
+EP2ExternalObjectHandle >> printOn: aStream [
+	aStream nextPutAll: self object asString
+]
+
 { #category : #accessing }
 EP2ExternalObjectHandle >> species [
 	^ EP2ExternalObjectHandle 
