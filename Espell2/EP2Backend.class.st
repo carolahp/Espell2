@@ -351,6 +351,16 @@ EP2Backend >> forBootstrap [
 ]
 
 { #category : #'from local to remote' }
+EP2Backend >> fromLocalByteString: aString [ 
+	| remoteString |
+	remoteString := (self byteStringClass basicNew: aString size).
+	1 to: aString size do: [ :i |
+		remoteString at: i put: (((aString at: i) asciiValue) asRemoteObjectInObjectSpace: self objectSpace). 
+	].
+	^ remoteString
+]
+
+{ #category : #'from local to remote' }
 EP2Backend >> fromLocalByteSymbol: aByteSymbol [ 
 	| remoteSymbol |
 	remoteSymbol := (self byteSymbolClass basicNew: aByteSymbol size) asRemoteObject.
