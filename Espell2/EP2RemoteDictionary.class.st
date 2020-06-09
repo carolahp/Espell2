@@ -9,6 +9,12 @@ EP2RemoteDictionary >> array [
 	^ self instanceVariableAtIndex: self dictionaryArrayIndex
 ]
 
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteDictionary >> at: key [
+	self flag: 'temporary value'. 
+	^ nil
+]
+
 { #category : #'instVars-mapping' }
 EP2RemoteDictionary >> dictionaryArrayIndex [ 
 	^ (self systemDefinition instanceVariableMapping dictionaryArrayIndex) ifNil: [ self error: 'undefined index for array inst var in Dictionary' ]

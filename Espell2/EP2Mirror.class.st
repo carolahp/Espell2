@@ -29,6 +29,12 @@ EP2Mirror >> = anotherMirror [
 	^ self pointsToSameObject: anotherMirror
 ]
 
+{ #category : #'converting-external-mirror' }
+EP2Mirror >> asDASTBlockMirror [
+
+	^ backend dastBlockEMirrorOn: self target
+]
+
 { #category : #'converting-local' }
 EP2Mirror >> asLocalSmallInteger [
 
@@ -62,7 +68,7 @@ EP2Mirror >> asRemoteClass [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteDictionary [
-	self shouldBeImplemented.
+	^ EP2RemoteDictionary on: self
 ]
 
 { #category : #'converting-high-level' }

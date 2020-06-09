@@ -16,6 +16,11 @@ EP2RemoteObject >> = anotherRemote [
 	^ self pointsToSameObject: anotherRemote
 ]
 
+{ #category : #'accessing-instVars' }
+EP2RemoteObject >> allInstVars [
+	^ (self basicClass allSlots select: #isInstanceVariableSlot) collect: [ :slot | slot name -> (slot read: self) ]
+]
+
 { #category : #'accessing-variables' }
 EP2RemoteObject >> allVariables [
 	^ self basicClass allSlots collect: [ :slot | slot read: self ]

@@ -143,10 +143,15 @@ EP2RemoteClass >> initialize [
 
 { #category : #binding }
 EP2RemoteClass >> innerBindingOf: aSymbol [ 
-	(self classPool isNilObject) ifFalse: [ self halt ].
+	| binding |
+	(self classPool isNilObject) ifFalse: [ binding := self classPool at: aSymbol ].
+	binding ifNotNil: [^ binding] .
+	
 	(self sharedPool isNilObject) ifFalse: [ self halt ].
+	
 	self flag: 'superclass is nil for all stubs, check this later'.
 	(self superclass isNilObject) ifFalse:  [^ self superclass innerBindingOf: aSymbol].
+	
 	^ nil
 ]
 
@@ -223,7 +228,9 @@ EP2RemoteClass >> sharedPool [
 
 { #category : #'accessing-slots' }
 EP2RemoteClass >> slotNamed: aString [ 
-	^ (self allSlots select: [ :slot | slot name = aString ]) anyOne
+	^ (self allSlots select: [ :slot | slot name = aString ]) 
+		ifEmpty: [ EP2SlotNotFoundException signal ] 
+		ifNotEmpty: [:results | results anyOne]
 ]
 
 { #category : #'accessing-slots' }

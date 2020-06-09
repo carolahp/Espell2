@@ -223,6 +223,11 @@ EP2Backend >> createObjectWithFormat: classFormat withSize: aSize classIndex: cl
 	^ self mirrorOnAddress: oop.
 ]
 
+{ #category : #'mirrors-external' }
+EP2Backend >> dastBlockEMirrorOn: anEP2ExternalObjectHandle [ 
+	^ EPDASTBlockExternalMirror on: anEP2ExternalObjectHandle from: self
+]
+
 { #category : #'executing primitives' }
 EP2Backend >> dispatchFunctionPointer: function [
 	^ [ self simulator dispatchFunctionPointer: function ]
