@@ -45,6 +45,11 @@ EP2ObjectSpace >> falseObject: aFalseObject [
 ]
 
 { #category : #'from local to remote' }
+EP2ObjectSpace >> fromLocalByteString: aString [ 
+	^ self backend fromLocalByteString: aString
+]
+
+{ #category : #'from local to remote' }
 EP2ObjectSpace >> fromLocalByteSymbol: aByteSymbol [  
 	^ backend fromLocalByteSymbol: aByteSymbol 
 ]
