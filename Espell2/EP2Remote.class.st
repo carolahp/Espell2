@@ -65,6 +65,11 @@ EP2Remote >> gtInspectorIn: composite [
 	^ self layout gtInspectorIn: composite
 ]
 
+{ #category : #'as yet unclassified' }
+EP2Remote >> instanceVariableNamed: aString [ 
+	^ nil
+]
+
 { #category : #testing }
 EP2Remote >> isEP2Mirror [
 	^ false

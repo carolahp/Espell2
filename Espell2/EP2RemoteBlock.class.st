@@ -39,6 +39,11 @@ EP2RemoteBlock >> layoutClass [
 	^ EP2BlockLayout 
 ]
 
+{ #category : #'high-level-messages' }
+EP2RemoteBlock >> methodClass [
+	^ self target object methodClass
+]
+
 { #category : #'high-level-message' }
 EP2RemoteBlock >> outerContext [ 
 	^ self target object outerContext
