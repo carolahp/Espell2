@@ -42,7 +42,7 @@ EP2RemoteClass >> asLocalClass [
 		ifAbsentPut: [" | definition role localClassOrNil |
 			definition := [self addressDefinitionMap at: self mirror target address] 
 				on: KeyNotFound 
-				do: [ self backend builder systemDefinitionAt: #Class ].
+				do: [ ^ nil " self backend builder systemDefinitionAt: #Class" ].
 			"if I am a metaclass, my instances can be represented as instances of EP2RemoteMetaclass"
 			definition isMetaclass ifTrue: [^ EP2RemoteMetaclass].
 			role := self backend systemDefinition roleOfClass: definition.
