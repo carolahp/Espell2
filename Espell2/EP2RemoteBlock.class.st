@@ -4,9 +4,14 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
-{ #category : #'high-level-message' }
+{ #category : #accessing }
 EP2RemoteBlock >> allInstVars [
 	^ #()
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteBlock >> argumentNames [
+	^ self target object argumentNames
 ]
 
 { #category : #accessing }
@@ -14,9 +19,29 @@ EP2RemoteBlock >> basicSize [
 	^ 0
 ]
 
+{ #category : #'high-level-message' }
+EP2RemoteBlock >> body [ 
+	^ self target object body
+]
+
+{ #category : #testing }
+EP2RemoteBlock >> isEPDASTBlockMirror [
+	^ true
+]
+
+{ #category : #'high-level-message' }
+EP2RemoteBlock >> isPrimitive [ 
+	^ self target object isPrimitive
+]
+
 { #category : #accessing }
 EP2RemoteBlock >> layoutClass [ 
 	^ EP2BlockLayout 
+]
+
+{ #category : #'high-level-message' }
+EP2RemoteBlock >> outerContext [ 
+	^ self target object outerContext
 ]
 
 { #category : #accessing }

@@ -217,6 +217,7 @@ EP2Mirror >> isEP2Remote [
 
 { #category : #testing }
 EP2Mirror >> isEPDASTBlockMirror [
+self halt. "this should be called only from high level remote objects"
 	^ self target isExternalHandle and: [self target object isKindOf: DASTBlock].
 ]
 
