@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #'high-level-message' }
+EP2RemoteBlock >> allInstVars [
+	^ #()
+]
+
 { #category : #accessing }
 EP2RemoteBlock >> basicSize [
 	^ 0

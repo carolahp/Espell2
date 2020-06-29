@@ -18,12 +18,6 @@ EP2ClassTableHandle >> asClassIndexHandle [
 	^ self
 ]
 
-{ #category : #'as yet unclassified' }
-EP2ClassTableHandle >> backend: anEP2Backend [ 
-	backend := anEP2Backend 
-
-]
-
 { #category : #'accessing-mirror' }
 EP2ClassTableHandle >> basicClassHandle [
 	

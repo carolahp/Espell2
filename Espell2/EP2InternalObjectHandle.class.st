@@ -25,8 +25,14 @@ EP2InternalObjectHandle >> asSmallInteger [
 	^ backend integerValueOf: self
 ]
 
+{ #category : #'accessing-instVars' }
+EP2InternalObjectHandle >> basicSize [ 
+	^ backend basicSizeOf: self
+]
+
 { #category : #'high-level-message' }
 EP2InternalObjectHandle >> instSpec [
+	"we assume this method is called only when I point to a class. Otherwise this will fail in the assertions done by the vm simulator"
 	^ backend instSpecOfClass: self
 ]
 

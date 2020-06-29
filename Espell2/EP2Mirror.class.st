@@ -105,7 +105,7 @@ EP2Mirror >> asRemoteObject [
 	self isFalseObject ifTrue: [ ^ self asRemoteFalse ].
 	layoutClass := 	self isSmallInteger 
 		ifTrue: [ EP2ImmediateLayout ]
-		ifFalse: [ EP2Layout layoutClassForInstSpec: self instSpec].
+		ifFalse: [ EP2Layout layoutClassForInstSpec: self basicClass instSpec].
 	
 	^ layoutClass defaultRemoteObjectClass on: self
 ]
@@ -160,7 +160,7 @@ EP2Mirror >> basicIdentityHash [
 
 { #category : #'accessing-header' }
 EP2Mirror >> basicSize [ 
-	^ backend basicSizeOf: self
+	^ self target basicSize
 ]
 
 { #category : #'accessing-header' }
@@ -197,7 +197,7 @@ EP2Mirror >> identityHash [
 
 { #category : #'accessing-header' }
 EP2Mirror >> instSpec [
-	^ [self basicClass instSpec] on: Error do: [ 0 ]
+	^ self target instSpec
 ]
 
 { #category : #'accessing-high-level' }

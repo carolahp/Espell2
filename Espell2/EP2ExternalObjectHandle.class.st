@@ -13,9 +13,15 @@ EP2ExternalObjectHandle >> basicClassHandle [
 	^ backend handleOnExternalObject: object class
 ]
 
+{ #category : #accessing }
+EP2ExternalObjectHandle >> basicSize [ 
+	^ object basicSize
+]
+
 { #category : #'high-level-message' }
-EP2ExternalObjectHandle >> instSpec [ 
-	self shouldNotImplement
+EP2ExternalObjectHandle >> instSpec [
+	"asking inst spec of external object (like DASTBlock?)" 
+	 self shouldNotImplement 
 ]
 
 { #category : #testing }
