@@ -24,6 +24,17 @@ EP2RemoteBlock >> body [
 	^ self target object body
 ]
 
+{ #category : #'high-level-messages' }
+EP2RemoteBlock >> bodyOffset [
+	^ self target object bodyOffset 
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteBlock >> gtInspectorIn: aGLMCompositePresentation highlightInterval: aCollection [ 
+	^ self target object gtInspectorIn: aGLMCompositePresentation highlightInterval: aCollection 
+
+]
+
 { #category : #testing }
 EP2RemoteBlock >> isEPDASTBlockMirror [
 	^ true
