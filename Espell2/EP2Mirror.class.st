@@ -173,6 +173,11 @@ EP2Mirror >> classIndex [
 	^ self target classIndex
 ]
 
+{ #category : #'accessing - compiler' }
+EP2Mirror >> compiler [
+	^ self backend objectSpace crossCompiler
+]
+
 { #category : #'executing primitives' }
 EP2Mirror >> executePrimitiveMethod: aCompiledMethod withArguments: arguments [
 

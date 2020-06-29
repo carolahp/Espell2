@@ -69,6 +69,11 @@ EP2Backend >> arrayClass: anEP2RemoteClass [
 	self objectMemory classAtIndex: self objectMemory arrayClassIndexPun putUnchecked: anEP2RemoteClass target address.
 ]
 
+{ #category : #'accessing special classes' }
+EP2Backend >> associationClass [
+	^ associationClass
+]
+
 { #category : #'accessing-special classes' }
 EP2Backend >> associationClass: anEP2RemoteClass [ 
 	associationClass := anEP2RemoteClass

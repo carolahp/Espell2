@@ -35,6 +35,11 @@ EP2RemoteCompiledMethod >> initialPC [
 	^ (self numberOfLiterals + 1) * self backend wordSize + 1
 ]
 
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> literalAt: anInteger put: anRemoteObject [ 
+	^ self at: anInteger put: anRemoteObject 
+]
+
 { #category : #'accessing - literals' }
 EP2RemoteCompiledMethod >> numberOfLiterals [
 	"Answer the number of literals used by the receiver."

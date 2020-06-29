@@ -1,0 +1,26 @@
+Class {
+	#name : #EP2LiteralBinding,
+	#superclass : #Object,
+	#instVars : [
+		'name',
+		'objectSpace'
+	],
+	#category : #'Espell2-Compiler-Bindings'
+}
+
+{ #category : #'from local to remote' }
+EP2LiteralBinding >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
+	self subclassResponsibility 
+]
+
+{ #category : #accessing }
+EP2LiteralBinding >> name [
+
+	^ name
+]
+
+{ #category : #accessing }
+EP2LiteralBinding >> name: aName [
+
+	name := aName
+]

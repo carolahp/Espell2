@@ -30,7 +30,7 @@ EP2ObjectSpace >> characterTable: anEPExternalCharacterTable [
 
 { #category : #accessing }
 EP2ObjectSpace >> crossCompiler [
-	^ EPCrossCompiler new
+	^ EP2CrossCompiler new
 		objectSpace: self;
 		yourself
 ]
@@ -89,6 +89,16 @@ EP2ObjectSpace >> interpreter: anEPASTEvaluator [
 { #category : #'remote-instantiation' }
 EP2ObjectSpace >> newArrayWithAll: aCollection [ 
 	^ self newRemoteArrayWithAll: aCollection
+]
+
+{ #category : #'remote object instantiation' }
+EP2ObjectSpace >> newAssociationWithKey: aKey andValue: aValue [
+
+	| association |
+	association := self backend associationClass basicNew asRemoteAssociation.
+	association instanceVariableAtIndex: association associationKeyIndex put: aKey.
+	association instanceVariableAtIndex: association associationValueIndex put: aValue.
+	^ association
 ]
 
 { #category : #'remote-objects-instantiation' }
