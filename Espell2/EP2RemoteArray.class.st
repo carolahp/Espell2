@@ -4,11 +4,6 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
-{ #category : #accessing }
-EP2RemoteArray class >> at: index put: value [ 
-	^ self layout at: index put: value
-]
-
 { #category : #printing }
 EP2RemoteArray >> allVariables [
 	| vars |

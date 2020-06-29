@@ -79,6 +79,11 @@ EP2ObjectSpace >> interpreter: anEPASTEvaluator [
 
 ]
 
+{ #category : #'remote-instantiation' }
+EP2ObjectSpace >> newArrayWithAll: aCollection [ 
+	^ self newRemoteArrayWithAll: aCollection
+]
+
 { #category : #'remote-objects-instantiation' }
 EP2ObjectSpace >> newRemoteArrayWithAll: elements [
 	
