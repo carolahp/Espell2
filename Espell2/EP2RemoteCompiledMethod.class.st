@@ -1,12 +1,17 @@
 Class {
 	#name : #EP2RemoteCompiledMethod,
-	#superclass : #EP2Remote,
+	#superclass : #EP2RemoteObject,
 	#category : #'Espell2-Kernel'
 }
 
 { #category : #'high-level-message' }
 EP2RemoteCompiledMethod >> basicClass [
 	^  self backend builder classNamed: #CompiledMethod
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteCompiledMethod >> byteAt: anInteger put: anEP2RemoteSmallInteger [ 
+	^ self at: anInteger put: anEP2RemoteSmallInteger 
 ]
 
 { #category : #accessing }

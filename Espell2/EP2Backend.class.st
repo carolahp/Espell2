@@ -927,3 +927,8 @@ EP2Backend >> trueObject: anEPMirror [
 				put: anEPMirror ].
 	simulator objectMemory trueObject: anEPMirror target address
 ]
+
+{ #category : #'vm constants' }
+EP2Backend >> wordSize [
+	^ simulator objectMemory wordSize
+]
