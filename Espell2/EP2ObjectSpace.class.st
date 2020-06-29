@@ -51,7 +51,9 @@ EP2ObjectSpace >> fromLocalByteString: aString [
 
 { #category : #'from local to remote' }
 EP2ObjectSpace >> fromLocalByteSymbol: aByteSymbol [  
-	^ backend fromLocalByteSymbol: aByteSymbol 
+
+	^ self symbolTable at: aByteSymbol ifAbsentPut: [ 
+		backend fromLocalByteSymbol: aByteSymbol ]
 ]
 
 { #category : #'from local to remote' }
@@ -112,6 +114,11 @@ EP2ObjectSpace >> specialObjectsArray [
 EP2ObjectSpace >> specialObjectsArray: anEP2Mirror [ 
 	specialObjectsArray := anEP2Mirror.
 	backend simulator objectMemory specialObjectsOop: anEP2Mirror target address
+]
+
+{ #category : #accessing }
+EP2ObjectSpace >> symbolTable [
+	^ symbolTable
 ]
 
 { #category : #accessing }

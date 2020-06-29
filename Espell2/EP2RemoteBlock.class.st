@@ -72,3 +72,8 @@ EP2RemoteBlock >> printOn: aStream [
 EP2RemoteBlock >> sourceCode [
 	^ self target object sourceCode
 ]
+
+{ #category : #'high-level-messages' }
+EP2RemoteBlock >> sourceCodeWithClassAndSelector [
+	^ self target object sourceCodeWithClassAndSelector
+]

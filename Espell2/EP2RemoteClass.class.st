@@ -27,6 +27,11 @@ EP2RemoteClass >> asClassDefinition [
 	^ [self addressDefinitionMap at: self target address ] on: KeyNotFound do: [ nil ]
 ]
 
+{ #category : #compatibility }
+EP2RemoteClass >> asClassMirror [
+	^ self 
+]
+
 { #category : #accessing }
 EP2RemoteClass >> asLocalClass [
 	"it returns the EP2Remote class that corresponds with this class.
@@ -181,6 +186,11 @@ EP2RemoteClass >> isBitsClass [
 
 	^ self backend isBitsClass: self
 	
+]
+
+{ #category : #testing }
+EP2RemoteClass >> isClassMirror [
+	^ true
 ]
 
 { #category : #testing }

@@ -36,6 +36,11 @@ EP2Remote >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 	^ self 
 ]
 
+{ #category : #converting }
+EP2Remote >> asRemoteSmallInteger [
+	^ EP2RemoteSmallInteger on: self mirror
+]
+
 { #category : #'accessing-pvt' }
 EP2Remote >> backend [
 	^ mirror backend
@@ -75,6 +80,11 @@ EP2Remote >> gtInspectorIn: composite [
 { #category : #'as yet unclassified' }
 EP2Remote >> instanceVariableNamed: aString [ 
 	^ nil
+]
+
+{ #category : #testing }
+EP2Remote >> isClassMirror [
+	^ false
 ]
 
 { #category : #testing }

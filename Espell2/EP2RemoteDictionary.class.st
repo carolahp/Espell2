@@ -11,8 +11,9 @@ EP2RemoteDictionary >> array [
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteDictionary >> at: key [
-	self flag: 'temporary value'. 
-	^ nil
+	^ self 
+		evaluateCode: 'aDictionary at: key' 
+		withTemps: { #aDictionary -> self . #key -> key }
 ]
 
 { #category : #'accessing-specialInstVars' }
