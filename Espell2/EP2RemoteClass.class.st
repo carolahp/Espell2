@@ -24,7 +24,7 @@ EP2RemoteClass >> allSlots [
 
 { #category : #'converting-local' }
 EP2RemoteClass >> asClassDefinition [
-	^ [self addressDefinitionMap at: self target address ] on: KeyNotFound do: [ nil ]
+	^ [self addressDefinitionMap at: self target address ] on: KeyNotFound do: [ self backend builder systemDefinitionAt: #Class ]
 ]
 
 { #category : #compatibility }
@@ -40,7 +40,9 @@ EP2RemoteClass >> asLocalClass [
 	"^ self addressLocalClassMap 
 		at: self mirror target address 
 		ifAbsentPut: [" | definition role localClassOrNil |
-			definition := self addressDefinitionMap at: self mirror target address.
+			definition := [self addressDefinitionMap at: self mirror target address] 
+				on: KeyNotFound 
+				do: [ self backend builder systemDefinitionAt: #Class ].
 			"if I am a metaclass, my instances can be represented as instances of EP2RemoteMetaclass"
 			definition isMetaclass ifTrue: [^ EP2RemoteMetaclass].
 			role := self backend systemDefinition roleOfClass: definition.
@@ -133,6 +135,11 @@ EP2RemoteClass >> compactClassIndex [
 EP2RemoteClass >> defaultSlots [
 
 	^ OrderedCollection new
+]
+
+{ #category : #'public-api' }
+EP2RemoteClass >> fixedSize [
+	^self basicClass instanceFixedSize
 ]
 
 { #category : #'accessing-header' }

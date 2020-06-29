@@ -51,6 +51,11 @@ EP2Remote >> basicClass [
 	self subclassResponsibility 
 ]
 
+{ #category : #'as yet unclassified' }
+EP2Remote >> becomeInto: anEP2Remote [ 
+	^ self backend become: self into: anEP2Remote 
+]
+
 { #category : #converting }
 EP2Remote >> classDefinition [
 	^ nil

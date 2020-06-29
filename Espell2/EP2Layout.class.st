@@ -34,7 +34,7 @@ EP2Layout class >> layoutClassForInstSpec: instSpec [
 	"(instSpec = 0) ifTrue: [ ^ EP2EmptyLayout ]."
 	(instSpec = 1) ifTrue: [ ^ EP2FixedLayout ].
 	(instSpec = 7) ifTrue: [ ^ EP2ImmediateLayout ].
-	(instSpec = 3) ifTrue: [ ^ self halt."EP2VariableWithInstVarsLayout" ].	
+	(instSpec = 3) ifTrue: [ ^ EP2MethodDictionaryLayout ].	
 	(instSpec = 2) ifTrue: [ ^ EP2VariableLayout ].
 	(instSpec = 16) ifTrue: [ ^ EP2ByteLayout ].
 	(instSpec = 24) ifTrue: [ ^ EP2CompiledMethodLayout ].
