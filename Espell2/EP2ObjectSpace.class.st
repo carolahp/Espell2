@@ -59,7 +59,7 @@ EP2ObjectSpace >> fromLocalCharacter: aCharacter [
 	^ (self backend mirrorOnAddress: (self objectMemory characterObjectOf: aCharacter codePoint)) asRemoteCharacter
 ]
 
-{ #category : #'from-local-to-mirror' }
+{ #category : #'from local to remote' }
 EP2ObjectSpace >> fromLocalInteger: anInteger [
 
 	^backend fromLocalInteger: anInteger

@@ -402,6 +402,14 @@ EP2Backend >> fromRemoteByteSymbol: anEP2Mirror [
 	^ Symbol intern: (self fromRemoteByteString: anEP2Mirror)
 ]
 
+{ #category : #'from remote to local' }
+EP2Backend >> fromRemoteCharacter: mirror [
+	| oop |
+	oop := mirror target address.
+	self assert: (self simulator objectMemory isCharacterObject: oop).
+	^ Character value: (self simulator objectMemory characterValueOf: oop)
+]
+
 { #category : #'creating-handles' }
 EP2Backend >> handleOnAddress: anAddress [
 
