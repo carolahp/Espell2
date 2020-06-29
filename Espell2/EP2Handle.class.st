@@ -15,6 +15,16 @@ EP2Handle >> backend: anEP2SimulatorBackend [
 	backend := anEP2SimulatorBackend
 ]
 
+{ #category : #'high-level-message' }
+EP2Handle >> instSpec [
+	self subclassResponsibility
+]
+
+{ #category : #accessing }
+EP2Handle >> isExternalHandle [
+	self subclassResponsibility 
+]
+
 { #category : #accessing }
 EP2Handle >> isSmallInteger [ 
 	self subclassResponsibility 

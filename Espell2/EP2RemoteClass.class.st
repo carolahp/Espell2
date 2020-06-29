@@ -22,7 +22,7 @@ EP2RemoteClass >> allSlots [
 	^ self slots
 ]
 
-{ #category : #converting }
+{ #category : #'converting-local' }
 EP2RemoteClass >> asClassDefinition [
 	^ [self addressDefinitionMap at: self target address ] on: KeyNotFound do: [ nil ]
 ]
@@ -42,6 +42,11 @@ EP2RemoteClass >> asLocalClass [
 			localClassOrNil := Smalltalk classNamed: 'EP2Remote', role asString.
 		^	localClassOrNil
 		"]"
+]
+
+{ #category : #'converting-local' }
+EP2RemoteClass >> asRGClass [
+	^ self asClassDefinition
 ]
 
 { #category : #'high-level-messages' }
@@ -157,7 +162,7 @@ EP2RemoteClass >> innerBindingOf: aSymbol [
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> instSpec [ 
-	^ self backend instSpecOfClass: self mirror
+	^ self mirror target instSpec
 ]
 
 { #category : #'accessing-instVars' }

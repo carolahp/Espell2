@@ -45,6 +45,22 @@ EP2RemoteDictionary >> printOn: aStream [
 		nextPutAll:' items]*'
 ]
 
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteDictionary >> scanFor: anObject [
+	"Scan the key array for the first slot containing either a nil (indicating an empty slot) or an element that matches anObject. Answer the index of that slot or zero if no slot is found. This method will be overridden in various subclasses that have different interpretations for matching elements."
+	| element start finish |
+	finish := self array size.
+	start := 1.
+
+	"Search in the array"
+	start to: finish do:
+		[:index | ((element := self array at: index) == self objectSpace nilObject 
+			or: [element key = anObject])
+			ifTrue: [^ index ]].
+
+	^ 0  "No match"
+]
+
 { #category : #'accessing-instVars' }
 EP2RemoteDictionary >> tally [
 	^ self instanceVariableAtIndex: self dictionaryTallyIndex

@@ -16,6 +16,11 @@ EP2Remote class >> on: anEPMirror [
 		yourself
 ]
 
+{ #category : #'accessing-instVars' }
+EP2Remote >> allInstVars [
+	^ #()
+]
+
 { #category : #'accessing-variables' }
 EP2Remote >> allVariables [
 	^ { }
@@ -115,7 +120,7 @@ EP2Remote >> nextObject [
 EP2Remote >> printOn: aStream [
 	aStream 
 		nextPutAll: 'aRemote [ ';
-		nextPutAll: self target address asString;
+		nextPutAll: self target asString;
 		nextPutAll: ' ]'
 ]
 

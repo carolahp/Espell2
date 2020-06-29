@@ -13,6 +13,26 @@ EP2ExternalObjectHandle >> basicClassHandle [
 	^ backend handleOnExternalObject: object class
 ]
 
+{ #category : #'high-level-message' }
+EP2ExternalObjectHandle >> instSpec [ 
+	self shouldNotImplement
+]
+
+{ #category : #testing }
+EP2ExternalObjectHandle >> isAddressHandle [
+	self shouldBeImplemented.
+]
+
+{ #category : #accessing }
+EP2ExternalObjectHandle >> isExternalHandle [
+	^ true
+]
+
+{ #category : #accessing }
+EP2ExternalObjectHandle >> isSmallInteger [
+	^ false
+]
+
 { #category : #accessing }
 EP2ExternalObjectHandle >> object [
 	^ object

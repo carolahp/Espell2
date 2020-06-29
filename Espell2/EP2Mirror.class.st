@@ -32,7 +32,7 @@ EP2Mirror >> = anotherMirror [
 { #category : #'converting-external-mirror' }
 EP2Mirror >> asDASTBlockMirror [
 
-	^ backend dastBlockEMirrorOn: self target
+	^ backend mirrorOn: self target
 ]
 
 { #category : #'converting-local' }
@@ -49,6 +49,11 @@ EP2Mirror >> asRemoteArray [
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteAssociation [
 	^ EP2RemoteAssociation on: self 
+]
+
+{ #category : #'converting-high-level' }
+EP2Mirror >> asRemoteBlock [ 
+	^ EP2RemoteBlock on: self
 ]
 
 { #category : #'converting-high-level' }
@@ -208,6 +213,11 @@ EP2Mirror >> isEP2Mirror [
 { #category : #testing }
 EP2Mirror >> isEP2Remote [
 	^ false
+]
+
+{ #category : #testing }
+EP2Mirror >> isEPDASTBlockMirror [
+	^ self target isExternalHandle and: [self target object isKindOf: DASTBlock].
 ]
 
 { #category : #testing }

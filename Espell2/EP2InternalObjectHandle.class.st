@@ -25,6 +25,11 @@ EP2InternalObjectHandle >> asSmallInteger [
 	^ backend integerValueOf: self
 ]
 
+{ #category : #'high-level-message' }
+EP2InternalObjectHandle >> instSpec [
+	^ backend instSpecOfClass: self
+]
+
 { #category : #'accessing-instVars' }
 EP2InternalObjectHandle >> instanceVariableAtIndex: anInteger [ 
 	
@@ -45,4 +50,9 @@ EP2InternalObjectHandle >> isSmallInteger [
 EP2InternalObjectHandle >> species [
 
 	^ EP2InternalObjectHandle
+]
+
+{ #category : #accessing }
+EP2InternalObjectHandle >> target [ 
+	^ self 
 ]

@@ -29,6 +29,11 @@ EP2RemoteSmallInteger >> basicClass [
 	^ self backend builder classNamed: #SmallInteger
 ]
 
+{ #category : #'high-level-message' }
+EP2RemoteSmallInteger >> basicSize [
+	^ 0
+]
+
 { #category : #accessing }
 EP2RemoteSmallInteger >> layoutClass [ 
 	^ EP2ImmediateLayout 

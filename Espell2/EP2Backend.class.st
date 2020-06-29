@@ -118,7 +118,6 @@ EP2Backend >> basicNewOn: aRemoteClass withSize: aSize [
 
 { #category : #'querying-objects' }
 EP2Backend >> basicSizeOf: anEPRemoteObject [
-	anEPRemoteObject isSmallInteger ifTrue: [ ^ 0 ].
 	^ self simulator uncheckedStSizeOf: anEPRemoteObject target address
 ]
 
@@ -143,6 +142,11 @@ EP2Backend >> byteArrayClass: anEP2RemoteClass [
 	Smalltalk specialObjectsArray indexOf: ByteArray"
 	self specialObjectsArray at: 27 put: anEP2RemoteClass.
 	self installClass: anEP2RemoteClass inClassTableIndex: 50.
+]
+
+{ #category : #'accessing-specialClasses' }
+EP2Backend >> byteStringClass [
+	^ self specialObjectsArray at: 7 
 ]
 
 { #category : #'accessing-special classes' }
@@ -223,11 +227,6 @@ EP2Backend >> createObjectWithFormat: classFormat withSize: aSize classIndex: cl
 	^ self mirrorOnAddress: oop.
 ]
 
-{ #category : #'mirrors-external' }
-EP2Backend >> dastBlockEMirrorOn: anEP2ExternalObjectHandle [ 
-	^ EPDASTBlockExternalMirror on: anEP2ExternalObjectHandle from: self
-]
-
 { #category : #'executing primitives' }
 EP2Backend >> dispatchFunctionPointer: function [
 	^ [ self simulator dispatchFunctionPointer: function ]
@@ -297,6 +296,11 @@ EP2Backend >> executePrimitiveMethod: aMethod on: receiver withArguments: aColle
 			"Recursive xeq affects primErrorCode"
 			self simulator initPrimCall.
 			self simulator internalizeIPandSP].
+]
+
+{ #category : #mirrors }
+EP2Backend >> extMirrorOn: anEP2ExternalObjectHandle [ 
+	^ EP2Mirror on: anEP2ExternalObjectHandle from: self
 ]
 
 { #category : #'accessing-special objects' }
