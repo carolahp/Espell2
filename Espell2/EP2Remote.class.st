@@ -51,6 +51,13 @@ EP2Remote >> classDefinition [
 	^ nil
 ]
 
+{ #category : #evaluating }
+EP2Remote >> evaluateCode: aString withTemps: aCollection [ 
+	^ self backend builder bootstrapInterpreter 
+		evaluateCode: aString withTemps: aCollection 
+
+]
+
 { #category : #'executing primitives' }
 EP2Remote >> executePrimitiveMethod: aCompiledMethod withArguments: arguments [
 	| result |

@@ -32,3 +32,8 @@ EP2Environment >> builder: aPBImageBuilderGeneric [
 	builder := aPBImageBuilderGeneric 
 
 ]
+
+{ #category : #accessing }
+EP2Environment >> classLoader [
+	^ self builder classLoader
+]

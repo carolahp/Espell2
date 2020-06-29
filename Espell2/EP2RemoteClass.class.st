@@ -215,7 +215,9 @@ EP2RemoteClass >> name: aString [
 
 { #category : #'high-level-messages' }
 EP2RemoteClass >> new [
-	^ self basicNew mirror asRemoteObject
+	^ self 
+		evaluateCode: 'aClass new'
+		withTemps: { #aClass -> self } 
 ]
 
 { #category : #printing }
