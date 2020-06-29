@@ -13,6 +13,11 @@ EP2LiteralBinding >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 	self subclassResponsibility 
 ]
 
+{ #category : #'accessing remote objects' }
+EP2LiteralBinding >> classNamed: aString [ 
+	^ objectSpace backend builder bootstrapEnvironmentAt: aString
+]
+
 { #category : #accessing }
 EP2LiteralBinding >> name [
 
@@ -23,4 +28,9 @@ EP2LiteralBinding >> name [
 EP2LiteralBinding >> name: aName [
 
 	name := aName
+]
+
+{ #category : #accessing }
+EP2LiteralBinding >> objectSpace: anEP2ObjectSpace [ 
+	objectSpace := anEP2ObjectSpace
 ]
