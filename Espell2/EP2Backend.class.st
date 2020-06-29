@@ -235,6 +235,18 @@ EP2Backend >> contextClass: anEP2RemoteClass [
 	self installClass: anEP2RemoteClass inClassTableIndex: 36
 ]
 
+{ #category : #'method-compiling' }
+EP2Backend >> createCompiledMethodWithSize: bytecodeSize andHeader: methodHeader [ 
+	
+	^ (self
+		executePrimitiveNumber: 79
+		on: self methodClass
+		withArguments: { 
+			bytecodeSize asSmallInteger asRemoteObjectInObjectSpace: self objectSpace. 
+			methodHeader asSmallInteger asRemoteObjectInObjectSpace: self objectSpace })
+		value asRemoteCompiledMethod
+]
+
 { #category : #'creating-stub-instances' }
 EP2Backend >> createObjectWithFormat: classFormat withSize: aSize classIndex: classIndex [
 	
@@ -317,6 +329,40 @@ EP2Backend >> executePrimitiveMethod: aMethod on: receiver withArguments: aColle
 		] ensure: [ 
 			"We pop extra things..."
 			self simulator pop: (((self simulator stackPointer - self simulator framePointer) + (self simulator objectMemory wordSize * 4)) min: 0)  abs / self simulator objectMemory wordSize.
+			self assert: self stackIsEmpty.
+			"Recursive xeq affects primErrorCode"
+			self simulator initPrimCall.
+			self simulator internalizeIPandSP].
+]
+
+{ #category : #'primitive execution' }
+EP2Backend >> executePrimitiveNumber: number on: receiver withArguments: aCollection [ 
+
+	| returnValue |
+	self simulator internalizeIPandSP.
+	self simulator externalizeIPandSP.
+	self simulator initPrimCall.
+	self simulator argumentCount: aCollection size.
+	self simulator push: receiver target address.
+	aCollection do: [ :each |
+		self simulator push: each target address.
+	].
+
+	
+	^ [		| function |
+			function := self simulator functionPointerFor: number inClass: nil.
+			function = 0 ifTrue: [ ^ EPPrimitiveFailed new ].
+			self simulator primitiveFunctionPointer: function.
+			self simulator dispatchFunctionPointer: function.
+			self simulator primitiveFailureCode > 0 ifTrue: [ 
+				^ EPPrimitiveFailed new code: self simulator primitiveFailureCode ].
+			
+			returnValue := self simulator stackTop.
+			self simulator pop: 1.
+			^ EPPrimitiveSuccess new value: (self mirrorOnAddress: returnValue)
+		] ensure: [ 
+			"We pop extra things..."
+			self simulator pop: (((self simulator stackPointer - self simulator framePointer) + (self simulator objectMemory wordSize*4)) min: 0)  abs / self simulator objectMemory wordSize.
 			self assert: self stackIsEmpty.
 			"Recursive xeq affects primErrorCode"
 			self simulator initPrimCall.
@@ -598,6 +644,11 @@ EP2Backend >> messageClass: anEP2RemoteClass [
 	Smalltalk specialObjectsArray indexOf: Message"
 	self specialObjectsArray at: 16 put: anEP2RemoteClass.
 	self installClass: anEP2RemoteClass inClassTableIndex: 35
+]
+
+{ #category : #'accessing-special classes' }
+EP2Backend >> methodClass [ 
+	^ (self specialObjectsArray at: 17) asRemoteClass 
 ]
 
 { #category : #'accessing-special classes' }

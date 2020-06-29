@@ -71,6 +71,11 @@ EP2Mirror >> asRemoteClass [
 	^ EP2RemoteClass on: self
 ]
 
+{ #category : #'converting -high level' }
+EP2Mirror >> asRemoteCompiledMethod [
+	^ EP2RemoteCompiledMethod on: self
+]
+
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteDictionary [
 	^ EP2RemoteDictionary on: self

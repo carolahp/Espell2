@@ -29,6 +29,13 @@ EP2ObjectSpace >> characterTable: anEPExternalCharacterTable [
 ]
 
 { #category : #accessing }
+EP2ObjectSpace >> crossCompiler [
+	^ EPCrossCompiler new
+		objectSpace: self;
+		yourself
+]
+
+{ #category : #accessing }
 EP2ObjectSpace >> debuggerInterpreter: aDASTEvaluator [ 
 	debuggerInterpreter := aDASTEvaluator 
 
