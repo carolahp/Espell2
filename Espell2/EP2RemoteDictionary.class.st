@@ -17,6 +17,11 @@ EP2RemoteDictionary >> at: key [
 ]
 
 { #category : #'accessing-specialInstVars' }
+EP2RemoteDictionary >> at: key ifAbsent: aBlock [
+	^ [self at: key] on: Error do: [ aBlock value ]
+]
+
+{ #category : #'accessing-specialInstVars' }
 EP2RemoteDictionary >> at: key put: value [
 	^ self 
 		evaluateCode: 'aDictionary at: key put: value' 
