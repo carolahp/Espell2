@@ -9,6 +9,13 @@ EP2RemoteDictionary >> array [
 	^ self instanceVariableAtIndex: self dictionaryArrayIndex
 ]
 
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> associationAt: key [ 
+	^ self 
+		evaluateCode: 'aDictionary associationAt: key' 
+		withTemps: { #aDictionary -> self . #key -> key }
+]
+
 { #category : #'accessing-specialInstVars' }
 EP2RemoteDictionary >> at: key [
 	^ self 

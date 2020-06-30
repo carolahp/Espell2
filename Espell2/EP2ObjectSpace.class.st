@@ -13,6 +13,12 @@ Class {
 	#category : #'Espell2-Backend'
 }
 
+{ #category : #'dummy environment for compilation' }
+EP2ObjectSpace >> at: aString ifAbsent: aBlockClosure [ 
+	"returns nil because this method is used to get CompiledMethod for generating Compiled Method instances durin the bootstrap"
+	^ aBlockClosure value
+]
+
 { #category : #accessing }
 EP2ObjectSpace >> backend [
 	^ backend

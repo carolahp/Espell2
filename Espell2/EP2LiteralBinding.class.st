@@ -18,6 +18,11 @@ EP2LiteralBinding >> classNamed: aString [
 	^ objectSpace backend builder bootstrapEnvironmentAt: aString
 ]
 
+{ #category : #value }
+EP2LiteralBinding >> emitValue: anIRBuilder [
+	anIRBuilder pushLiteralVariable: self.
+]
+
 { #category : #accessing }
 EP2LiteralBinding >> name [
 

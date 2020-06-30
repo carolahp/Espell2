@@ -3,7 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'class',
-		'environment'
+		'objectSpace'
 	],
 	#category : #'Espell2-Backend'
 }
@@ -20,27 +20,17 @@ EP2CrossCompilerBinding >> binding [
 	^ class isMeta ifTrue: [
 		EP2MetaclassBinding  new
 			name: class theNonMetaClass name; 
-			objectSpace: environment objectSpace;
+			objectSpace: objectSpace;
 			yourself ] ifFalse: [
 		EP2GlobalBinding new
 			name: class theNonMetaClass name; 
-			objectSpace: environment objectSpace;
+			objectSpace: objectSpace;
 			yourself ]
 ]
 
 { #category : #accessing }
 EP2CrossCompilerBinding >> class: aRGClass [ 
 	class := aRGClass
-]
-
-{ #category : #accessing }
-EP2CrossCompilerBinding >> environment [
-	^ environment
-]
-
-{ #category : #accessing }
-EP2CrossCompilerBinding >> environment: aCompilerEnvironment [ 
-	environment := aCompilerEnvironment
 ]
 
 { #category : #binding }
@@ -70,7 +60,17 @@ EP2CrossCompilerBinding >> newBindingFor: aRGClass [
 	
 	^ self class new
 		class: aRGClass;
-		environment: environment
+		objectSpace: objectSpace
+]
+
+{ #category : #accessing }
+EP2CrossCompilerBinding >> objectSpace [
+	^ objectSpace
+]
+
+{ #category : #accessing }
+EP2CrossCompilerBinding >> objectSpace: anObject [
+	objectSpace := anObject
 ]
 
 { #category : #bindings }
