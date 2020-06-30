@@ -5,6 +5,18 @@ Class {
 }
 
 { #category : #testing }
+EP2CompiledMethodLayout >> at: anIndex [
+	
+	^ self backend compiledMethod: self objectAt: anIndex
+]
+
+{ #category : #testing }
+EP2CompiledMethodLayout >> at: anIndex put: anObjectMirror [
+	
+	self backend compiledMethod: self objectAt: anIndex put: anObjectMirror
+]
+
+{ #category : #testing }
 EP2CompiledMethodLayout >> isBitsLayout [
 
 	^ true

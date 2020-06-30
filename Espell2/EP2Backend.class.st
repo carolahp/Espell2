@@ -232,6 +232,16 @@ EP2Backend >> compactClassIndexOf: anEP2RemoteClass [
 	^ 0
 ]
 
+{ #category : #'accessing-compiled method' }
+EP2Backend >> compiledMethod: aRemoteCompiledMethod objectAt: anIndex [ 
+	^ self object: aRemoteCompiledMethod instVarAt: anIndex
+]
+
+{ #category : #'accessing-compiled method' }
+EP2Backend >> compiledMethod: aRemoteCompiledMethod objectAt: anIndex put: aRemoteObject [ 
+	self object: aRemoteCompiledMethod instVarAt: anIndex put: aRemoteObject
+]
+
 { #category : #'accessing-special classes' }
 EP2Backend >> contextClass: anEP2RemoteClass [ 
 	"The method Comtext class in most special objects arrays.
