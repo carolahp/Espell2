@@ -76,6 +76,11 @@ EP2ObjectSpace >> fromLocalCharacter: aCharacter [
 ]
 
 { #category : #'from local to remote' }
+EP2ObjectSpace >> fromLocalFloat: aLocalFloat [ 
+	^ self backend fromLocalFloat: aLocalFloat
+]
+
+{ #category : #'from local to remote' }
 EP2ObjectSpace >> fromLocalInteger: anInteger [
 
 	^backend fromLocalInteger: anInteger

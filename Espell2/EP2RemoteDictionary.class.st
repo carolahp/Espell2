@@ -11,9 +11,14 @@ EP2RemoteDictionary >> array [
 
 { #category : #'high-level-messages' }
 EP2RemoteDictionary >> associationAt: key [ 
-	^ self 
+	^ self associationAt: key ifAbsent: [ self error: 'key not found in dictionary' ]
+]
+
+{ #category : #binding }
+EP2RemoteDictionary >> associationAt: key ifAbsent: aBlockClosure [ 
+	^ [self 
 		evaluateCode: 'aDictionary associationAt: key' 
-		withTemps: { #aDictionary -> self . #key -> key }
+		withTemps: { #aDictionary -> self . #key -> key }] on: Error do: [ aBlockClosure value ]
 ]
 
 { #category : #'accessing-specialInstVars' }
@@ -36,6 +41,11 @@ EP2RemoteDictionary >> at: key put: value [
 			{ #aDictionary -> self.
 			  #key -> key.
 			  #value -> value}
+]
+
+{ #category : #binding }
+EP2RemoteDictionary >> bindingOf: aSymbol [
+	^self associationAt: aSymbol ifAbsent:[nil]
 ]
 
 { #category : #'instVars-mapping' }

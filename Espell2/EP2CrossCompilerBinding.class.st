@@ -33,15 +33,21 @@ EP2CrossCompilerBinding >> class: aRGClass [
 	class := aRGClass
 ]
 
+{ #category : #accessing }
+EP2CrossCompilerBinding >> className [
+	
+	^ class name
+]
+
 { #category : #binding }
 EP2CrossCompilerBinding >> innerBindingOf: aString [ 
 
 	(class classVarNames includes: aString asSymbol)
-		ifTrue: [ self assert: environment notNil.
+		ifTrue: [ self assert: objectSpace notNil.
 			^ EP2ClassVariableBinding new
-				name: aString asSymbol
+					name: aString asSymbol
 					ownerName: class theNonMetaClass name
-					objectSpace: environment;
+					objectSpace: objectSpace;
 				yourself ].
 	class instanceSide sharedPools
 		do: [ :pool | 
@@ -53,6 +59,11 @@ EP2CrossCompilerBinding >> innerBindingOf: aString [
 
 	"If it is a temp or an instance variable"
 	^ nil
+]
+
+{ #category : #accessing }
+EP2CrossCompilerBinding >> name [
+	^ self className
 ]
 
 { #category : #bindings }

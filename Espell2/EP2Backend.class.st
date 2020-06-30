@@ -461,6 +461,11 @@ EP2Backend >> fromLocalByteSymbol: aByteSymbol [
 ]
 
 { #category : #'from local to remote' }
+EP2Backend >> fromLocalFloat: aLocalFloat [ 
+	^ self mirrorOnAddress: (self objectMemory floatObjectOf: aLocalFloat)
+]
+
+{ #category : #'from local to remote' }
 EP2Backend >> fromLocalInteger: aLocalInteger [
 	
 	| integer |
