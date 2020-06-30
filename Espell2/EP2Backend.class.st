@@ -200,6 +200,13 @@ EP2Backend >> byteSymbolClass: aClass [
 	byteSymbolClass := aClass
 ]
 
+{ #category : #'accessing special classes' }
+EP2Backend >> characterClass [
+	"The twentieth special object.
+	Smalltalk specialObjectsArray indexOf: Character"
+	^ self specialObjectsArray at: 20
+]
+
 { #category : #'accessing-special classes' }
 EP2Backend >> characterClass: aClass [ 
 	"The twentieth special object.
@@ -240,6 +247,14 @@ EP2Backend >> compiledMethod: aRemoteCompiledMethod objectAt: anIndex [
 { #category : #'accessing-compiled method' }
 EP2Backend >> compiledMethod: aRemoteCompiledMethod objectAt: anIndex put: aRemoteObject [ 
 	self object: aRemoteCompiledMethod instVarAt: anIndex put: aRemoteObject
+]
+
+{ #category : #'accessing special classes' }
+EP2Backend >> contextClass [
+
+	"The method Comtext class in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Context"
+	^ self specialObjectsArray at: 11
 ]
 
 { #category : #'accessing-special classes' }
@@ -410,6 +425,13 @@ EP2Backend >> falseObject: anEP2Mirror [
 				at: 2 
 				put: anEP2Mirror ].
 	simulator objectMemory falseObject: anEP2Mirror target address
+]
+
+{ #category : #'accessing special classes' }
+EP2Backend >> floatClass [
+	"The tenth special object.
+	Smalltalk specialObjectsArray indexOf: Float"
+	^ self specialObjectsArray at: 10
 ]
 
 { #category : #'accessing-special classes' }
@@ -644,6 +666,13 @@ EP2Backend >> largeNegativeIntegerClass: anEP2RemoteClass [
 	self installClass: anEP2RemoteClass inClassTableIndex: 32
 ]
 
+{ #category : #'accessing special classes' }
+EP2Backend >> largePositiveIntegerClass [
+	"The fourteenth special object.
+	Smalltalk specialObjectsArray indexOf: LargePositiveInteger"
+	^ self specialObjectsArray at: 14
+]
+
 { #category : #'accessing-special classes' }
 EP2Backend >> largePositiveIntegerClass: anEP2RemoteClass [ 
 	"The fourteenth special object.
@@ -655,6 +684,14 @@ EP2Backend >> largePositiveIntegerClass: anEP2RemoteClass [
 { #category : #'from local to remote' }
 EP2Backend >> localObjectAsRemoteObject: aLocalObject [
 	^ aLocalObject asRemoteObjectInObjectSpace: self objectSpace
+]
+
+{ #category : #'accessing special classes' }
+EP2Backend >> messageClass [
+
+	"The method Comtext class in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Message"
+	^ self specialObjectsArray at: 16
 ]
 
 { #category : #'accessing-special classes' }
@@ -796,6 +833,14 @@ EP2Backend >> objectSpace: anEPObjectSpace [
 	objectSpace := anEPObjectSpace
 ]
 
+{ #category : #'accessing special classes' }
+EP2Backend >> pointClass [
+
+	"The Point class in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Point"
+	^ self specialObjectsArray at: 13
+]
+
 { #category : #'accessing-special classes' }
 EP2Backend >> pointClass: anEP2RemoteClass [ 
 
@@ -838,6 +883,14 @@ EP2Backend >> rawHashOf: anAddress [
 	^ self objectMemory rawHashBitsOf: anAddress
 ]
 
+{ #category : #'accessing special classes' }
+EP2Backend >> semaphoreClass [
+
+	"The Point class in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Semaphore"
+	^ self specialObjectsArray at: 19
+]
+
 { #category : #accessing }
 EP2Backend >> simulator [
 	^ simulator
@@ -864,6 +917,14 @@ EP2Backend >> slotsFor: anEP2RemoteClass do: aBlockClosure [
 			 ]
 ]
 
+{ #category : #'accessing special classes' }
+EP2Backend >> smallIntegerClass [
+	
+	"The Smalltalk instance in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: SmallInteger"
+	^ self specialObjectsArray at: 6
+]
+
 { #category : #'accessing-special classes' }
 EP2Backend >> smallIntegerClass: aClass [
 
@@ -885,6 +946,14 @@ EP2Backend >> smallIntegerClass: aClass [
 	self objectMemory classAtIndex: 1 putUnchecked: aClass target address.
 	self objectMemory classAtIndex: 3 putUnchecked: aClass target address.
 	aClass target: aClass target asClassIndexHandle.
+]
+
+{ #category : #'accessing special classes' }
+EP2Backend >> smalltalkInstance [
+
+	"The Smalltalk instance in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Smalltalk"
+	^ self specialObjectsArray at: 9.
 ]
 
 { #category : #'accessing-special objects' }
