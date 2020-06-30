@@ -3,6 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'backend',
+		'systemDictionary',
 		'characterTable',
 		'symbolTable',
 		'interpreter',
@@ -147,6 +148,16 @@ EP2ObjectSpace >> symbolTable [
 EP2ObjectSpace >> symbolTable: anEPExternalSymbolTable [ 
 	symbolTable := anEPExternalSymbolTable 
 
+]
+
+{ #category : #accessing }
+EP2ObjectSpace >> systemDictionary [
+	^ systemDictionary
+]
+
+{ #category : #accessing }
+EP2ObjectSpace >> systemDictionary: anObject [
+	systemDictionary := anObject
 ]
 
 { #category : #'accessing-specialObjects' }

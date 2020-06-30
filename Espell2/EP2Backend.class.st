@@ -770,7 +770,7 @@ EP2Backend >> objectOop: objectOop instVarAt: index [
 		and: [self objectMemory isForwarded: address])
 			ifTrue: [ | forwardedObject |
 				forwardedObject := self objectMemory followForwarded: address.
-				self object: objectOop instVarAt: index put: forwardedObject.
+				self objectOop: objectOop instVarAt: index putOop: forwardedObject.
 				address := forwardedObject ].
 	^ self mirrorOnAddress: address
 ]
