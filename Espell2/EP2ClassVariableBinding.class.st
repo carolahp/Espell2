@@ -13,6 +13,12 @@ EP2ClassVariableBinding >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 			classPool bindingOf: name
 ]
 
+{ #category : #testing }
+EP2ClassVariableBinding >> isGlobalVariable [
+	
+	^ false
+]
+
 { #category : #initialization }
 EP2ClassVariableBinding >> name: aBindingName ownerName: anOwnerName objectSpace: anObjectSpace [
 	^self 

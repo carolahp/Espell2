@@ -18,6 +18,11 @@ EP2LiteralBinding >> classNamed: aString [
 	^ objectSpace systemDictionary at: aString
 ]
 
+{ #category : #emit }
+EP2LiteralBinding >> emitStore: anIRBuilder [ 
+	anIRBuilder storeIntoLiteralVariable: self.
+]
+
 { #category : #value }
 EP2LiteralBinding >> emitValue: anIRBuilder [
 	anIRBuilder pushLiteralVariable: self.
