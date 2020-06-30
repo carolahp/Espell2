@@ -151,6 +151,14 @@ EP2Backend >> become: anObject into: anotherObject [
 	].
 ]
 
+{ #category : #'accessing special classes' }
+EP2Backend >> blockClass [
+
+	"The Point class in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: BlockClosure"
+	^ self specialObjectsArray at: 37
+]
+
 { #category : #'accessing-special classes' }
 EP2Backend >> blockClass: anEP2RemoteClass [ 
 
@@ -163,6 +171,12 @@ EP2Backend >> blockClass: anEP2RemoteClass [
 { #category : #accessing }
 EP2Backend >> builder [ 
 	^ self objectSpace interpreter codeProvider
+]
+
+{ #category : #'accessing special classes' }
+EP2Backend >> byteArrayClass [
+	"The twenty-seventh special object"
+	^ (self specialObjectsArray at: 27) asClassMirror
 ]
 
 { #category : #'accessing-special classes' }
@@ -215,6 +229,15 @@ EP2Backend >> characterClass: aClass [
 	self objectMemory setHashBitsOf: aClass target address to: 2.
 	self objectMemory classAtIndex: 2 putUnchecked: aClass target address.
 	aClass target: aClass target asClassIndexHandle.
+]
+
+{ #category : #'accessing special objects' }
+EP2Backend >> characterTable [
+	
+	"The Character table instance in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Character characterTable"
+	self flag: 'update'. 
+	^ self specialObjectsArray at: 25
 ]
 
 { #category : #'accessing-class table' }
@@ -848,6 +871,14 @@ EP2Backend >> pointClass: anEP2RemoteClass [
 	Smalltalk specialObjectsArray indexOf: Point"
 	self specialObjectsArray at: 13 put: anEP2RemoteClass.
 	self installClass: anEP2RemoteClass inClassTableIndex: 54.
+]
+
+{ #category : #'accessing special classes' }
+EP2Backend >> processClass [
+
+	"The Point class in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Process"
+	^ self specialObjectsArray at: 28
 ]
 
 { #category : #'accessing-special classes' }
