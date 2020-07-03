@@ -7,13 +7,18 @@ Class {
 { #category : #testing }
 EP2CompiledMethodLayout >> at: anIndex [
 	
-	^ self backend compiledMethod: self objectAt: anIndex
+	^ (self backend 
+		object: remote target 
+		at: anIndex)
 ]
 
 { #category : #testing }
-EP2CompiledMethodLayout >> at: anIndex put: anObjectMirror [
+EP2CompiledMethodLayout >> at: anIndex put: aRemoteObject [
 	
-	self backend compiledMethod: self objectAt: anIndex put: anObjectMirror
+	self backend 
+		object: remote target
+		at: anIndex 
+		put: aRemoteObject target
 ]
 
 { #category : #testing }

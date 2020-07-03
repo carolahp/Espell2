@@ -9,9 +9,21 @@ EP2RemoteCompiledMethod >> basicClass [
 	^  self backend builder classNamed: #CompiledMethod
 ]
 
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> byteAt: anIndex [
+	^ self at: anIndex
+]
+
 { #category : #'high-level-messages' }
 EP2RemoteCompiledMethod >> byteAt: anInteger put: anEP2RemoteSmallInteger [ 
 	^ self at: anInteger put: anEP2RemoteSmallInteger 
+]
+
+{ #category : #'as yet unclassified' }
+EP2RemoteCompiledMethod >> bytecodes [
+	^ ByteArray streamContents: [ :s |
+		self initialPC to: self endPC do: [:i | 
+			s nextPut: (self byteAt: i) asLocalSmallInteger ] ].
 ]
 
 { #category : #accessing }
@@ -24,6 +36,11 @@ EP2RemoteCompiledMethod >> bytecodes: someBytecodes [
 	]
 ]
 
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> endPC [
+	^(EP2MethodTrailer new method: self) endPC
+]
+
 { #category : #'as yet unclassified' }
 EP2RemoteCompiledMethod >> frameSize [
 	(self header noMask: 16r20000)
@@ -33,7 +50,7 @@ EP2RemoteCompiledMethod >> frameSize [
 
 { #category : #accessing }
 EP2RemoteCompiledMethod >> header [
-	^ (self at: 1) target asSmallInteger
+	^ (self objectAt: 1) target asSmallInteger
 ]
 
 { #category : #'accessing - header' }
@@ -49,12 +66,16 @@ EP2RemoteCompiledMethod >> initialPC [
 
 { #category : #accessing }
 EP2RemoteCompiledMethod >> literalAt: anIndex [
-	^ self at: anIndex + 1
+
+	^ self objectAt: anIndex + 1
 ]
 
 { #category : #accessing }
-EP2RemoteCompiledMethod >> literalAt: anInteger put: anRemoteObject [ 
-	^ self at: anInteger + 1 put: anRemoteObject 
+EP2RemoteCompiledMethod >> literalAt: anIndex put: aLiteralMirror [
+
+	self
+		objectAt: anIndex + 1
+		put: aLiteralMirror
 ]
 
 { #category : #accessing }
@@ -89,13 +110,13 @@ EP2RemoteCompiledMethod >> numberOfTemps [
 { #category : #accessing }
 EP2RemoteCompiledMethod >> objectAt: anIndex [
 	
-	^ self backend compiledMethod: self target objectAt: anIndex
+	^ self backend compiledMethod: self objectAt: anIndex
 ]
 
 { #category : #accessing }
 EP2RemoteCompiledMethod >> objectAt: anIndex put: anObjectMirror [
 	
-	self backend compiledMethod: self target address objectAt: anIndex put: anObjectMirror target address
+	self backend compiledMethod: self objectAt: anIndex put: anObjectMirror
 ]
 
 { #category : #accessing }
@@ -121,7 +142,7 @@ EP2RemoteCompiledMethod >> primitive [
 EP2RemoteCompiledMethod >> printOn: aStream [
 	aStream 
 		nextPutAll: '* >> ';
-		nextPutAll: self selector;
+		nextPutAll: (self selector ifNil: ['--no selector--']);
 		nextPutAll: '*'
 ]
 
