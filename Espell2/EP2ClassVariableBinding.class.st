@@ -39,3 +39,8 @@ EP2ClassVariableBinding >> name: aBindingName ownerName: anOwnerName objectSpace
 EP2ClassVariableBinding >> ownerName: aString [ 
 	ownerName := aString
 ]
+
+{ #category : #public }
+EP2ClassVariableBinding >> value [ 
+	^(self asRemoteObjectInObjectSpace: objectSpace) instanceVariableAtIndex: objectSpace backend systemDefinition instanceVariableMapping associationValueIndex 
+]
