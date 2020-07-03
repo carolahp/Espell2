@@ -8,7 +8,8 @@ Class {
 		'extraRoots',
 		'byteSymbolClass',
 		'associationClass',
-		'aSymbolTableClass'
+		'aSymbolTableClass',
+		'alternativePrimitivesResult'
 	],
 	#category : #'Espell2-Backend'
 }
@@ -42,6 +43,15 @@ EP2Backend class >> withOptions: options [
 EP2Backend >> addExtraRoot: anEP2RemoteClass [ 
 
 	extraRoots add: anEP2RemoteClass
+]
+
+{ #category : #'dummy primitives' }
+EP2Backend >> alternativePrimitivesResult [
+	^ alternativePrimitivesResult
+		ifNil: [ alternativePrimitivesResult := 
+			{(#primitiveSnapshot -> true).
+			 (#primitiveImageName -> 'imagename').
+			 (#primitiveQuit -> true)} asDictionary ]
 ]
 
 { #category : #'accessing-special classes' }

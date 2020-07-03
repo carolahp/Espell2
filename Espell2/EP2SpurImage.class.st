@@ -69,7 +69,7 @@ EP2SpurImage >> initializeSpecialObjects [
 	classes := #() asOrderedCollection.
 	self backend simulator objectMemory 
 		classTableObjectsDoWithIndex: [ :classOop :index | 
-			classes add: { index . (EPClassMirror onAddress: classOop backend: self backend) } ].
+			classes add: { index . (self backend mirrorOnAddress: classOop) asRemoteClass } ].
 	classes sort: [ :c1 :c2 | ((c1 at:2) classNameFromAnyOrigin) < ((c2 at:2) classNameFromAnyOrigin) ].
 	classTable := classes asArray asRemoteObjectInObjectSpace: self objectSpace
 ]

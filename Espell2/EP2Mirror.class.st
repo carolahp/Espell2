@@ -68,7 +68,12 @@ EP2Mirror >> asRemoteCharacter [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteClass [ 
-	^ EP2RemoteClass on: self
+	| remoteClass |
+	remoteClass := (EP2RemoteClass on: self).
+	remoteClass target isExternalHandle ifFalse: [ 
+		remoteClass asRGClass isMetaclass ifTrue: [ ^ EP2RemoteMetaclass on: self ].
+	]. 
+	^ remoteClass
 ]
 
 { #category : #'converting -high level' }
@@ -102,8 +107,12 @@ EP2Mirror >> asRemoteObject [
 	| basicClass layoutClass |
 	
 	basicClass := self basicClass.
-	basicClass isNilObject 
-		ifFalse: [ basicClass asLocalClass ifNotNil: [:localClass | ^ localClass on: self ] ].
+	basicClass isNilObject ifFalse: [ 
+		basicClass asLocalClass
+		 ifNotNil: [:localClass |
+			(localClass = EP2RemoteMetaclass) ifTrue: [^EP2RemoteClass on: self].
+			(localClass = EP2RemoteClass) ifTrue: [^EP2RemoteMetaclass on: self].
+			^ localClass on: self ] ].
 	
 	self isNilObject ifTrue: [ ^ self asRemoteNil ].
 	self isTrueObject ifTrue: [ ^ self asRemoteTrue ].
