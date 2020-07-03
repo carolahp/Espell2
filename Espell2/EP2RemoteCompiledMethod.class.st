@@ -62,7 +62,7 @@ EP2RemoteCompiledMethod >> methodClass [
 	| binding |
 	binding := self literalAt: self numberOfLiterals.
 	binding isNilObject ifTrue: [ ^nil ].
-	^(binding instanceVariableAtIndex: 2) asClassMirror
+	^ binding asRemoteClass
 ]
 
 { #category : #accessing }
@@ -117,12 +117,20 @@ EP2RemoteCompiledMethod >> primitive [
 
 ]
 
+{ #category : #printing }
+EP2RemoteCompiledMethod >> printOn: aStream [
+	aStream 
+		nextPutAll: '* >> ';
+		nextPutAll: self selector;
+		nextPutAll: '*'
+]
+
 { #category : #accessing }
 EP2RemoteCompiledMethod >> remoteLiterals [
 	^(1 to: self numberOfLiterals) collect: [ :index | self literalAt: index]
 ]
 
-{ #category : #accessing }
+{ #category : #'high-level-message' }
 EP2RemoteCompiledMethod >> selector [
 	| penultimateLiteral remoteSelector isSymbol |
 	penultimateLiteral := self penultimateLiteral.
@@ -141,7 +149,8 @@ EP2RemoteCompiledMethod >> sourceCode [
 		sourceCodeOfMethod: self
 		ifAbsent: [ self decompile decompileString ]"
 
-	^ (self methodClass asRGClass localMethods
-		select: [ :rgmethod | rgmethod selector = self selector ]) anyOne
-		sourceCode
+	(self methodClass asRGClass localMethods
+		select: [ :rgmethod | rgmethod selector = self selector ]) 
+		ifNotEmpty: [ :found | ^ found anyOne sourceCode ].
+	^ nil
 ]
