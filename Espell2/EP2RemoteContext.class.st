@@ -61,7 +61,11 @@ EP2RemoteContext >> contextStackpIndex [
 
 { #category : #initializing }
 EP2RemoteContext >> initializeTemporaryVariables [
-	self shouldBeImplemented.
+	"This will push in the context's stack a nil for each of the temporary variables of the method. Both the primitive and the code that follows are in theory doing the same."
+	self primitiveInitializeTempsInStack.
+	1 to: self method numberOfTemps do: [ :i |
+		self tempAt: i put: self backend nilObject.
+	].
 ]
 
 { #category : #accessing }
@@ -72,6 +76,11 @@ EP2RemoteContext >> method [
 { #category : #accessing }
 EP2RemoteContext >> method: anEP2RemoteCompiledMethod [ 
 	self instanceVariableAtIndex: self contextMethodIndex put: anEP2RemoteCompiledMethod
+]
+
+{ #category : #'initializing temps' }
+EP2RemoteContext >> primitiveInitializeTempsInStack [
+	self backend initializeTempsInStackOfContext: self
 ]
 
 { #category : #accessing }

@@ -573,6 +573,11 @@ EP2Backend >> handleOnExternalObject: aLocalObject [
 			yourself
 ]
 
+{ #category : #'accesssing compiled method' }
+EP2Backend >> headerOfCompiledMethod: anEP2AddressHandle [ 
+	^ (self compiledMethod: anEP2AddressHandle objectAt: 1) asSmallInteger
+]
+
 { #category : #initializing }
 EP2Backend >> initialize [
 	super initialize.
@@ -631,6 +636,12 @@ EP2Backend >> initializeExecutionContext [
 	self simulator setMethodUnchecked: (self simulator iframeMethod: page headFP).
 	self simulator instructionPointer: 0.
 	self simulator internalizeIPandSP.
+]
+
+{ #category : #'accessing remote context' }
+EP2Backend >> initializeTempsInStackOfContext: anEP2RemoteContext [ 
+
+	^ self executePrimitiveNumber: 76 on: anEP2RemoteContext withArguments: { anEP2RemoteContext method numberOfTemps asRemoteObjectInObjectSpace: self objectSpace }
 ]
 
 { #category : #'querying-objects' }
@@ -781,6 +792,12 @@ EP2Backend >> nilObject: anEPMirror [
 				at: 1 
 				put: anEPMirror ].
 	simulator objectMemory nilObject: anEPMirror target address
+]
+
+{ #category : #'accessing compiled method' }
+EP2Backend >> numberOfLiteralsOf: anEP2AddressHandle [ 
+	
+	^ (self headerOfCompiledMethod: anEP2AddressHandle) bitAnd: 16r7FFF
 ]
 
 { #category : #'accessing-objects body' }

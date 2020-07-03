@@ -36,6 +36,11 @@ EP2Remote >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 	^ self 
 ]
 
+{ #category : #convertion }
+EP2Remote >> asRemoteProcess [
+	^ EP2RemoteProcess on: self mirror
+]
+
 { #category : #converting }
 EP2Remote >> asRemoteSmallInteger [
 	^ EP2RemoteSmallInteger on: self mirror

@@ -99,6 +99,11 @@ EP2ObjectSpace >> fromLocalInteger: anInteger [
 	^backend fromLocalInteger: anInteger
 ]
 
+{ #category : #'installing process' }
+EP2ObjectSpace >> installAsActiveProcess: anEP2RemoteProcess withProcessor: anEP2RemoteObject [ 
+	self shouldBeImplemented.
+]
+
 { #category : #accessing }
 EP2ObjectSpace >> interpreter [
 	interpreter ifNil: [ self error: 'interpreter not initialized for this object space' ].
@@ -155,6 +160,11 @@ EP2ObjectSpace >> nilObject: aNilObject [
 { #category : #accessing }
 EP2ObjectSpace >> objectMemory [
 	^ self backend simulator objectMemory
+]
+
+{ #category : #accessing }
+EP2ObjectSpace >> processBuilder [
+	^ EP2RemoteProcess
 ]
 
 { #category : #'accessing-specialObjects' }
