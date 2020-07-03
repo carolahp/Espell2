@@ -24,6 +24,18 @@ EP2RemoteCompiledMethod >> bytecodes: someBytecodes [
 	]
 ]
 
+{ #category : #'as yet unclassified' }
+EP2RemoteCompiledMethod >> frameSize [
+	(self header noMask: 16r20000)
+		ifTrue: [^ 16 "SmallFrame"]
+		ifFalse: [^ 56 "LargeFrame"]
+]
+
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> header [
+	^ (self at: 1) target asSmallInteger
+]
+
 { #category : #'accessing - header' }
 EP2RemoteCompiledMethod >> headerOfCompiledMethod [
 	^ (self layout instanceVariableAtIndex: 1) asLocalSmallInteger 
@@ -45,10 +57,45 @@ EP2RemoteCompiledMethod >> literalAt: anInteger put: anRemoteObject [
 	^ self at: anInteger + 1 put: anRemoteObject 
 ]
 
-{ #category : #'accessing - literals' }
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> methodClass [
+	| binding |
+	binding := self literalAt: self numberOfLiterals.
+	binding isNilObject ifTrue: [ ^nil ].
+	^(binding instanceVariableAtIndex: 2) asClassMirror
+]
+
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> numberOfArguments [
+	"Answer the number of arguments the receiver takes."
+
+	^ (self header bitShift: -24) bitAnd: 16r0F
+]
+
+{ #category : #accessing }
 EP2RemoteCompiledMethod >> numberOfLiterals [
 	"Answer the number of literals used by the receiver."
-	^ self headerOfCompiledMethod bitAnd: 16r7FFF
+	
+	^ self backend numberOfLiteralsOf: self target
+]
+
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> numberOfTemps [
+	"Answer the number of temporary variables used by the receiver."
+	
+	^ (self header bitShift: -18) bitAnd: 16r3F
+]
+
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> objectAt: anIndex [
+	
+	^ self backend compiledMethod: self target objectAt: anIndex
+]
+
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> objectAt: anIndex put: anObjectMirror [
+	
+	self backend compiledMethod: self target address objectAt: anIndex put: anObjectMirror target address
 ]
 
 { #category : #accessing }
@@ -58,7 +105,21 @@ EP2RemoteCompiledMethod >> penultimateLiteral [
 	index := self numberOfLiterals - 1.
 	^ index > 0
 		ifTrue: [ self literalAt: index ]
-		ifFalse: [ self objectSpace nilObject ]
+		ifFalse: [ self backend nilObject ]
+]
+
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> primitive [
+	| primBits |
+	primBits := self header bitAnd: 16r100001FF.
+	
+	^ (primBits bitAnd: 16r1FF) + (primBits bitShift: -19)
+
+]
+
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> remoteLiterals [
+	^(1 to: self numberOfLiterals) collect: [ :index | self literalAt: index]
 ]
 
 { #category : #accessing }
@@ -72,4 +133,15 @@ EP2RemoteCompiledMethod >> selector [
 										ifFalse: [ "It is a method properties object whose second inst var has the selector"
 														penultimateLiteral instanceVariableAtIndex: 2 ].
 	^ self backend fromRemoteByteSymbol: remoteSelector
+]
+
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> sourceCode [
+	"^ backend objectSpace sourceCodeManager
+		sourceCodeOfMethod: self
+		ifAbsent: [ self decompile decompileString ]"
+
+	^ (self methodClass asRGClass localMethods
+		select: [ :rgmethod | rgmethod selector = self selector ]) anyOne
+		sourceCode
 ]

@@ -35,6 +35,11 @@ EP2ObjectSpace >> characterTable: anEPExternalCharacterTable [
 	
 ]
 
+{ #category : #'accessing builders' }
+EP2ObjectSpace >> contextBuilder [
+	^ EP2RemoteContext
+]
+
 { #category : #'creating process' }
 EP2ObjectSpace >> createProcessWithPriority: aPriority doing: anExpression withTemps: someTemps [
 	| method aContext  |
@@ -104,6 +109,11 @@ EP2ObjectSpace >> interpreter [
 EP2ObjectSpace >> interpreter: anEPASTEvaluator [ 
 	interpreter := anEPASTEvaluator 
 
+]
+
+{ #category : #'accessing builders' }
+EP2ObjectSpace >> methodBuilder [
+	^ backend builder methodBuilder
 ]
 
 { #category : #'remote-instantiation' }

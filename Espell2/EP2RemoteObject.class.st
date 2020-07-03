@@ -52,6 +52,11 @@ EP2RemoteObject >> asRemoteClass [
 ]
 
 { #category : #converting }
+EP2RemoteObject >> asRemoteCompiledMethod [
+	^ EP2RemoteCompiledMethod on: self mirror
+]
+
+{ #category : #converting }
 EP2RemoteObject >> asRemoteDictionary [
 	^ self mirror asRemoteDictionary
 ]
