@@ -57,7 +57,7 @@ EP2CrossCompiler >> transformLiteral: aLiteral asLiteralInObjectSpace: anObjectS
 	
 	aLiteral isMethodProperties ifTrue: [
 		"For now we convert method properties in selectors. Careful! We are losing pragmas at bootstrap time!"
-		^ aLiteral selector asLiteralInObjectSpace: anObjectSpace 
+		^ aLiteral selector asRemoteObjectInObjectSpace: anObjectSpace 
 	].
 	^ aLiteral asRemoteObjectInObjectSpace: anObjectSpace  
 ]

@@ -7,6 +7,13 @@ Class {
 	#category : #'Espell2-Compiler-Bindings'
 }
 
+{ #category : #public }
+EP2ClassVariableBinding >> accept: anEPASTInterpreter assign: anEP2RemoteObject inNode: aRBGlobalNode [ 
+	
+	^ (anEPASTInterpreter environment classNamed: ownerName)
+			classPool at: name put: anEP2RemoteObject
+]
+
 { #category : #'from local to remote' }
 EP2ClassVariableBinding >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
 	^ (self classNamed: ownerName)

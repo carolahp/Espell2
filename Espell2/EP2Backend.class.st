@@ -681,6 +681,13 @@ EP2Backend >> isSmallInteger: aHandle [
 	^ self objectMemory isIntegerObject: aHandle address
 ]
 
+{ #category : #'accessing special classes' }
+EP2Backend >> largeNegativeIntegerClass [
+	"The forty-third special object.
+	Smalltalk specialObjectsArray indexOf: LargeNegativeInteger"
+	^ self specialObjectsArray at: 43
+]
+
 { #category : #'accessing-special classes' }
 EP2Backend >> largeNegativeIntegerClass: anEP2RemoteClass [ 
 	"The forty-third special object.
