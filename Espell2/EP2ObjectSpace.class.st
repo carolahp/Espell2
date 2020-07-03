@@ -100,8 +100,21 @@ EP2ObjectSpace >> fromLocalInteger: anInteger [
 ]
 
 { #category : #'installing process' }
-EP2ObjectSpace >> installAsActiveProcess: anEP2RemoteProcess withProcessor: anEP2RemoteObject [ 
-	self shouldBeImplemented.
+EP2ObjectSpace >> installAsActiveProcess: aRemoteProcess withProcessor: aRemoteProcessor [ 
+	| activeProcess theProcessor |
+	theProcessor := aRemoteProcessor asRemoteScheduler.
+	activeProcess := theProcessor activeProcess.
+	"If this is already the active process we have nothing to do"
+	(activeProcess pointsToSameObject: aRemoteProcess)
+		ifTrue: [ ^self ].
+	
+	"If there is another active process we queue it"
+	activeProcess isNilObject ifFalse: [
+		activeProcess queue
+	].
+	
+	aRemoteProcess asRemoteProcess priorityList: self nilObject.
+	theProcessor activeProcess: aRemoteProcess.
 ]
 
 { #category : #accessing }

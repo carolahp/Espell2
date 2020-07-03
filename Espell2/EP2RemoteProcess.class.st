@@ -28,6 +28,11 @@ EP2RemoteProcess >> priority: aPriorityInteger [
 		put: aPriorityInteger 
 ]
 
+{ #category : #accessing }
+EP2RemoteProcess >> priorityList: aRemoteObject [ 
+	self instanceVariableAtIndex: self processPriorityListIndex put: aRemoteObject
+]
+
 { #category : #'inst-var mapping' }
 EP2RemoteProcess >> processContextIndex [
 	^ (self systemDefinition instanceVariableMapping processContextIndex) ifNil: [ self class unmappedInstVarIndex ]
@@ -36,4 +41,9 @@ EP2RemoteProcess >> processContextIndex [
 { #category : #'inst-var mapping' }
 EP2RemoteProcess >> processPriorityIndex [
 	^ (self systemDefinition instanceVariableMapping processPriorityIndex) ifNil: [ self class unmappedInstVarIndex ]
+]
+
+{ #category : #'inst-var mapping' }
+EP2RemoteProcess >> processPriorityListIndex [
+	^ (self systemDefinition instanceVariableMapping processPriorityListIndex) ifNil: [ self class unmappedInstVarIndex ]
 ]

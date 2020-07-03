@@ -66,6 +66,11 @@ EP2RemoteObject >> asRemoteNil [
 	^ EP2RemoteNil on: self mirror
 ]
 
+{ #category : #converting }
+EP2RemoteObject >> asRemoteScheduler [
+	^ EP2RemoteScheduler on: self mirror
+]
+
 { #category : #accessing }
 EP2RemoteObject >> at: index [
 	^ (self layout at: index) asRemoteObject
