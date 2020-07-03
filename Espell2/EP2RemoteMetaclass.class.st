@@ -9,7 +9,7 @@ EP2RemoteMetaclass >> classNameFromAnyOrigin [
 	| soleInstance |
 	soleInstance := self soleInstance.
 	(soleInstance isNotNil and: [ soleInstance isNilObject not  ]) 
-		ifTrue: [ ^ soleInstance asLocalByteString, ' class' ]
+		ifTrue: [ ^ soleInstance classNameFromAnyOrigin, ' class' ]
 		ifFalse: [ ^ '' ]
 ]
 

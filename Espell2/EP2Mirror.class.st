@@ -107,11 +107,11 @@ EP2Mirror >> asRemoteObject [
 	| basicClass layoutClass |
 	
 	basicClass := self basicClass.
+	(basicClass = backend builder classLoader metaclassClass) ifTrue: [^EP2RemoteMetaclass on: self ].
 	basicClass isNilObject ifFalse: [ 
 		basicClass asLocalClass
 		 ifNotNil: [:localClass |
 			(localClass = EP2RemoteMetaclass) ifTrue: [^EP2RemoteClass on: self].
-			(localClass = EP2RemoteClass) ifTrue: [^EP2RemoteMetaclass on: self].
 			^ localClass on: self ] ].
 	
 	self isNilObject ifTrue: [ ^ self asRemoteNil ].
