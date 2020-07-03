@@ -11,6 +11,7 @@ Class {
 EP2Environment >> bindingOf: aSymbol [
 	| result |
 	self flag: 'class variables are missing'.
+	self halt.
 	result := (super bindingOf: aSymbol).
 	"maybe aSymbol is the name of class that has not been installed" 
 	result ifNil: [
@@ -19,7 +20,10 @@ EP2Environment >> bindingOf: aSymbol [
 			result := super bindingOf: aSymbol] 
 				on: PBClassDefinitionNotFound 
 				do: [ ^ nil]].
-	^ result 
+	^ EP2GlobalBinding new
+			name: aSymbol; 
+			objectSpace: builder objectSpace;
+			yourself 
 ]
 
 { #category : #accessing }
@@ -41,4 +45,10 @@ EP2Environment >> classLoader [
 { #category : #public }
 EP2Environment >> classNamed: aSymbol [
 	^ self builder classNamed: aSymbol
+]
+
+{ #category : #public }
+EP2Environment >> globalNamed: aString put: aRemoteObject [ 
+	
+	builder bootstrapEnvironment at: aString put: aRemoteObject
 ]

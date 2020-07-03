@@ -60,7 +60,7 @@ EP2InternalSymbolTable >> includesKey: aLocalSymbol [
 EP2InternalSymbolTable >> initialize [
 
 	super initialize.
-	cache := EPDictionary new.
+	cache := Dictionary new.
 ]
 
 { #category : #public }

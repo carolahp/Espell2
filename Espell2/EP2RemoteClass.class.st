@@ -68,6 +68,21 @@ EP2RemoteClass >> basicNew: aSize [
 	^ self backend basicNewOn: self withSize: aSize
 ]
 
+{ #category : #binding }
+EP2RemoteClass >> bindingOf: aSymbol [ 
+	| binding |
+	(self classPool isNilObject) ifFalse: [ binding := self classPool at: aSymbol ].
+	binding ifNotNil: [^ binding] .
+	
+	(self sharedPool isNilObject) ifFalse: [ self halt ].
+	
+	self flag: 'superclass is nil for all stubs, check this later'.
+	(self superclass isNilObject) ifFalse:  [
+		(self superclass bindingOf: aSymbol) ifNotNil: [ :bind | ^ bind ]].
+	self halt.
+	^ nil
+]
+
 { #category : #'instVars-mapping' }
 EP2RemoteClass >> classFormatIndex [
 	^ (self systemDefinition instanceVariableMapping classFormatIndex) ifNil: [ self error: 'undefined index for format inst var in Class' ]
@@ -107,7 +122,7 @@ EP2RemoteClass >> classPool: anObject [
 
 { #category : #'instVars-mapping' }
 EP2RemoteClass >> classPoolIndex [
-	^ (self backend systemDefinition instanceVariableMapping classPoolIndex) ifNil: [ self class unmappedInstVarIndex ]
+	^ (self systemDefinition instanceVariableMapping classPoolIndex) ifNil: [ self class unmappedInstVarIndex ]
 ]
 
 { #category : #'instVars-mapping' }
