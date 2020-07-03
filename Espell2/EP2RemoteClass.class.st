@@ -69,17 +69,32 @@ EP2RemoteClass >> basicNew: aSize [
 ]
 
 { #category : #binding }
+EP2RemoteClass >> binding [
+	^ self bindingOf: self className
+]
+
+{ #category : #binding }
 EP2RemoteClass >> bindingOf: aSymbol [ 
 	| binding |
-	(self classPool isNilObject) ifFalse: [ binding := self classPool at: aSymbol ].
-	binding ifNotNil: [^ binding] .
+	(self classPool isNilObject not 
+	and: [ self asRGClass classPool includes: aSymbol ]) 
+		ifTrue: [ binding := self classPool at: aSymbol ].
 	
 	(self sharedPool isNilObject) ifFalse: [ self halt ].
 	
 	self flag: 'superclass is nil for all stubs, check this later'.
 	(self superclass isNilObject) ifFalse:  [
 		(self superclass bindingOf: aSymbol) ifNotNil: [ :bind | ^ bind ]].
-	self halt.
+	
+	(self backend builder systemDefinition at: aSymbol)
+	ifNotNil: [ 
+		"checking that the remote class exists"
+		(self backend objectSpace systemDictionary at: aSymbol) ifNil: [ self halt: 'asking for a class that has not yet been installed' ].
+		^ EP2GlobalBinding new
+			name: aSymbol;
+			objectSpace: self backend objectSpace;
+			yourself ].
+	
 	^ nil
 ]
 
@@ -176,7 +191,9 @@ EP2RemoteClass >> initialize [
 { #category : #binding }
 EP2RemoteClass >> innerBindingOf: aSymbol [ 
 	| binding |
-	(self classPool isNilObject) ifFalse: [ binding := self classPool at: aSymbol ].
+	(self classPool isNilObject not 
+	and: [ self asRGClass classPool includes: aSymbol ]) 
+		ifTrue: [ binding := self classPool at: aSymbol ].
 	binding ifNotNil: [^ binding] .
 	
 	(self sharedPool isNilObject) ifFalse: [ self halt ].
@@ -237,6 +254,11 @@ EP2RemoteClass >> isStub [
 EP2RemoteClass >> layoutClass [
 	" generic layout "
 	^ EP2FixedLayout
+]
+
+{ #category : #accessing }
+EP2RemoteClass >> name [
+	^ self className
 ]
 
 { #category : #'high-level-messages' }

@@ -11,7 +11,6 @@ Class {
 EP2Environment >> bindingOf: aSymbol [
 	| result |
 	self flag: 'class variables are missing'.
-	self halt.
 	result := (super bindingOf: aSymbol).
 	"maybe aSymbol is the name of class that has not been installed" 
 	result ifNil: [

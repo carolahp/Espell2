@@ -8,6 +8,19 @@ Class {
 }
 
 { #category : #compiling }
+EP2CrossCompiler >> basicCompileDoItFromSourceCode: sourceCode [ 
+
+	"Ugly. We should not build a remote environment on demand like this. Think wether to put it in the object space or make the cross compiler know it."
+	| highLevelUndefinedObjectClass |
+	
+	highLevelUndefinedObjectClass := objectSpace nilObject basicClass.
+	^ (OpalCompiler new 
+		noPattern: true;
+		environment: (EP2DummyEnvironment on: objectSpace);
+		source: sourceCode; class: highLevelUndefinedObjectClass; requestor: objectSpace nilObject; failBlock: [self error]; parse) generate
+]
+
+{ #category : #compiling }
 EP2CrossCompiler >> basicCompileSourceCode: sourceCode forClass: anEP2CrossCompilerBinding [ 
 
 	| options contextClass |
@@ -42,6 +55,21 @@ EP2CrossCompiler >> compile: sourceCode forClass: aClass inEnvironment: anEnviro
 	^ localCompiledMethod asRemoteObjectInObjectSpace: anEnvironment objectSpace
 ]
 
+{ #category : #compiling }
+EP2CrossCompiler >> compileDoIt: sourceCode [ 
+	| localCompiledMethod |
+	localCompiledMethod := self basicCompileDoItFromSourceCode: sourceCode.
+	^ self translateToRemoteCompiledMethod: localCompiledMethod
+]
+
+{ #category : #'creating compiled method' }
+EP2CrossCompiler >> createCompiledMethodWithSize: methodSize andHeader: header [ 
+
+	^ objectSpace backend
+		createCompiledMethodWithSize: methodSize
+		andHeader: header
+]
+
 { #category : #accessing }
 EP2CrossCompiler >> objectSpace [
 	^ objectSpace
@@ -60,4 +88,19 @@ EP2CrossCompiler >> transformLiteral: aLiteral asLiteralInObjectSpace: anObjectS
 		^ aLiteral selector asRemoteObjectInObjectSpace: anObjectSpace 
 	].
 	^ aLiteral asRemoteObjectInObjectSpace: anObjectSpace  
+]
+
+{ #category : #'translating to remote' }
+EP2CrossCompiler >> translateToRemoteCompiledMethod: localCompiledMethod [ 
+
+	| methodMirror methodSize |
+	methodSize := localCompiledMethod bytecode size + CompiledMethodTrailer empty size.
+	methodMirror := self
+						createCompiledMethodWithSize: methodSize
+						andHeader: localCompiledMethod header.
+	methodMirror bytecodes: localCompiledMethod bytecode.
+	localCompiledMethod allLiterals withIndexDo: [ :literal :index |
+		methodMirror literalAt: index put: (self transformLiteral: literal asLiteralInObjectSpace: objectSpace).
+	].
+	^methodMirror
 ]
