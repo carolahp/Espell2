@@ -25,6 +25,12 @@ EP2ClassTableHandle >> basicClassHandle [
 ]
 
 { #category : #accessing }
+EP2ClassTableHandle >> classIndex [
+	^ classIndex 
+
+]
+
+{ #category : #accessing }
 EP2ClassTableHandle >> classIndex: anInteger [ 
 	classIndex := anInteger 
 

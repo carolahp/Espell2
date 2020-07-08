@@ -21,6 +21,13 @@ EP2CompiledMethodLayout >> at: anIndex put: aRemoteObject [
 		put: aRemoteObject target
 ]
 
+{ #category : #'gt-extension' }
+EP2CompiledMethodLayout >> gtInspectorIn: composite [
+	^ composite text
+		title: self remote asString;
+		display: [ self remote sourceCode ]
+]
+
 { #category : #testing }
 EP2CompiledMethodLayout >> isBitsLayout [
 
