@@ -23,6 +23,13 @@ EP2SystemDictionary >> arrayClass [
 	^ self classNamed: #Array
 ]
 
+{ #category : #accessing }
+EP2SystemDictionary >> associationAt: aString [
+	| value |
+	value := self at: aString ifAbsent: [ ^ nil ].
+	^ (aString -> value) asRemoteObjectInObjectSpace: self objectSpace
+]
+
 { #category : #testing }
 EP2SystemDictionary >> at: aString [ 
 	
@@ -32,6 +39,12 @@ EP2SystemDictionary >> at: aString [
 			withTemps: {
 				'systemDictionary' -> systemDictionary.
 				'key' -> (aString asSymbol asLiteralInObjectSpace: objectSpace) }
+]
+
+{ #category : #accessing }
+EP2SystemDictionary >> at: aString ifAbsent: aBlockClosure [ 
+	 
+	^ [self at: aString] on: Error do: [ cache at: aString put: nil . aBlockClosure value ]
 ]
 
 { #category : #testing }

@@ -28,6 +28,20 @@ EP2CompiledMethodLayout >> gtInspectorIn: composite [
 		display: [ self remote sourceCode ]
 ]
 
+{ #category : #'gt-extension' }
+EP2CompiledMethodLayout >> gtInspectorRawIn: composite [
+	^ composite table
+		title: [ '*Raw*' ];
+		display: [ |literals  bytecodes |
+			literals := remote literals collectWithIndex: [ :val :index | ('#literal', index asString) -> val ].
+			bytecodes := remote bytecodes asOrderedCollection collectWithIndex: [ :val :index | ('#bc', index asString) -> val ]. 
+			literals , bytecodes];
+		column: 'Variable'
+			evaluated: [:assoc |	assoc key ];
+		column: 'Value'
+			evaluated: [:assoc | assoc value ].
+]
+
 { #category : #testing }
 EP2CompiledMethodLayout >> isBitsLayout [
 

@@ -48,6 +48,12 @@ EP2RemoteCompiledMethod >> frameSize [
 		ifFalse: [^ 56 "LargeFrame"]
 ]
 
+{ #category : #'high-level-messages' }
+EP2RemoteCompiledMethod >> gtInspectorRawIn: composite [ 
+	<gtInspectorPresentationOrder: 2>
+	^ self layout gtInspectorRawIn: composite
+]
+
 { #category : #accessing }
 EP2RemoteCompiledMethod >> header [
 	^ (self objectAt: 1) target asSmallInteger
@@ -76,6 +82,12 @@ EP2RemoteCompiledMethod >> literalAt: anIndex put: aLiteralMirror [
 	self
 		objectAt: anIndex + 1
 		put: aLiteralMirror
+]
+
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> literals [
+	^(1 to: self numberOfLiterals) collect: [ :index |
+		(self literalAt: index) asRemoteObject asLocalLiteral ]
 ]
 
 { #category : #accessing }

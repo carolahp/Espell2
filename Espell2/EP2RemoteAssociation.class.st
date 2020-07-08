@@ -4,6 +4,12 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #'converting-local' }
+EP2RemoteAssociation >> asLocalLiteral [
+	self flag: 'different from Espell'.
+	^ self key -> self value
+]
+
 { #category : #'instance-variables-mapping' }
 EP2RemoteAssociation >> associationKeyIndex [
 	^ self systemDefinition instanceVariableMapping associationKeyIndex 
