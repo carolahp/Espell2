@@ -32,7 +32,7 @@ EP2CrossCompiler >> basicCompileSourceCode: sourceCode forClass: anEP2CrossCompi
 		options: options;
 		source: sourceCode;
 		class: anEP2CrossCompilerBinding;
-		environment: anEP2CrossCompilerBinding objectSpace;
+		environment: anEP2CrossCompilerBinding environment;
 		requestor: nil;
 		failBlock: [ self error ];
 		parse) generate
@@ -43,8 +43,9 @@ EP2CrossCompiler >> compile: sourceCode forClass: aClass inEnvironment: anEnviro
 
 	| localCompiledMethod binding |
 
-	binding := EP2CrossCompilerBinding new class: aClass; objectSpace: anEnvironment objectSpace.
-	[localCompiledMethod := self basicCompileSourceCode: sourceCode forClass: binding. ]
+	binding := EP2CrossCompilerBinding new class: aClass; environment: anEnvironment; yourself.
+	
+	[localCompiledMethod := self basicCompileSourceCode: sourceCode forClass: binding ]
 		on: OCUndeclaredVariableWarning
 		do: [ :e | 
 			e resume:
