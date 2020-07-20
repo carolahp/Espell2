@@ -21,7 +21,7 @@ EP2LiteralBinding >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 
 { #category : #'accessing remote objects' }
 EP2LiteralBinding >> classNamed: aString [ 
-	^ objectSpace systemDictionary at: aString
+	^ objectSpace backend builder classNamed: aString
 ]
 
 { #category : #emit }

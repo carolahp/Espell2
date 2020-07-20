@@ -691,6 +691,14 @@ EP2Backend >> isBitsClass: anEP2RemoteClass [
 	^ (self instSpecOfClass: anEP2RemoteClass) >= 7
 ]
 
+{ #category : #testing }
+EP2Backend >> isImmediate: mirror [ 
+	| mirrorClass |
+	 mirrorClass := mirror basicClass classNameFromAnyOrigin.
+	^ (mirrorClass = (self systemDefinition classWithRole: #SmallInteger) name) 
+		or: [ (mirrorClass = (self systemDefinition classWithRole: #Character) name) ]
+]
+
 { #category : #'testing-classes' }
 EP2Backend >> isRoleMetaclass: anEP2RemoteClass [ 
 	^ (self builder systemDefinition classRoles at: #Metaclass) = anEP2RemoteClass classNameFromAnyOrigin 

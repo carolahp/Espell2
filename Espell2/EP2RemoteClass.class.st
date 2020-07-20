@@ -190,11 +190,15 @@ EP2RemoteClass >> initialize [
 
 { #category : #binding }
 EP2RemoteClass >> innerBindingOf: aSymbol [ 
-	| binding |
-	(self classPool isNilObject not 
-	and: [ self asRGClass classPool includes: aSymbol ]) 
-		ifTrue: [ binding := self classPool at: aSymbol ].
-	binding ifNotNil: [^ binding] .
+	| result |
+	self classPool isNilObject not 
+		ifTrue: [ result := self classPool at: aSymbol ifAbsent: [ nil ] ].
+	result ifNotNil: [
+		^ EP2ClassVariableBinding new
+				name: aSymbol asSymbol
+				ownerName: self classNameFromAnyOrigin
+				objectSpace: mirror backend objectSpace;
+				yourself ] .
 	
 	(self sharedPool isNilObject) ifFalse: [ self halt ].
 	

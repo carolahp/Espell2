@@ -174,7 +174,12 @@ EP2Mirror >> basicIdentityHash [
 
 { #category : #'accessing-header' }
 EP2Mirror >> basicSize [ 
-	^ self target basicSize
+	
+	^ [self target basicSize] 
+		on: Error 
+		do: [ (self backend isImmediate: self) 
+					ifTrue: [ ^ 0 ] 
+					ifFalse: [self error: 'Impossible to get object''s size']]
 ]
 
 { #category : #'accessing-header' }

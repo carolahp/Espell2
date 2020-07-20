@@ -7,10 +7,14 @@ Class {
 	#category : #'Espell2-Backend'
 }
 
+{ #category : #'accessing classes' }
+EP2Environment >> allClasses [
+	^ self select: [ :item | item isRemoteClass ]
+]
+
 { #category : #accessing }
 EP2Environment >> bindingOf: aSymbol [
 	| result |
-	self flag: 'class variables are missing'.
 	result := (super bindingOf: aSymbol).
 	"maybe aSymbol is the name of class that has not been installed" 
 	result ifNil: [
@@ -23,6 +27,12 @@ EP2Environment >> bindingOf: aSymbol [
 			name: aSymbol; 
 			objectSpace: builder objectSpace;
 			yourself 
+]
+
+{ #category : #accessing }
+EP2Environment >> bootstrapEnvironmentAt: aString [ 
+self halt.
+	^ self bindingOf: aString
 ]
 
 { #category : #accessing }
