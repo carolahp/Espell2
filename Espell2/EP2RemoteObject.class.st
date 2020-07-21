@@ -32,6 +32,16 @@ EP2RemoteObject >> asClassDefinition [
 ]
 
 { #category : #converting }
+EP2RemoteObject >> asContextMirror [
+	^ self asRemoteContext asContextMirror
+]
+
+{ #category : #'converting-local' }
+EP2RemoteObject >> asLocalString [
+	^ self asRemoteByteString asLocalString
+]
+
+{ #category : #converting }
 EP2RemoteObject >> asRemoteArray [
 	^ EP2RemoteArray on: self mirror
 ]
@@ -48,12 +58,17 @@ EP2RemoteObject >> asRemoteByteString [
 
 { #category : #converting }
 EP2RemoteObject >> asRemoteClass [
-	^ EP2RemoteClass on: self mirror
+	^ self mirror asRemoteClass
 ]
 
 { #category : #converting }
 EP2RemoteObject >> asRemoteCompiledMethod [
 	^ EP2RemoteCompiledMethod on: self mirror
+]
+
+{ #category : #converting }
+EP2RemoteObject >> asRemoteContext [
+	^ self mirror asRemoteContext
 ]
 
 { #category : #converting }
@@ -67,8 +82,18 @@ EP2RemoteObject >> asRemoteNil [
 ]
 
 { #category : #converting }
+EP2RemoteObject >> asRemoteObjectCasted [
+	^ self mirror asRemoteObjectCasted
+]
+
+{ #category : #converting }
 EP2RemoteObject >> asRemoteScheduler [
 	^ EP2RemoteScheduler on: self mirror
+]
+
+{ #category : #'converting-local' }
+EP2RemoteObject >> asSmallInteger [
+	^ self asRemoteSmallInteger asSmallInteger 
 ]
 
 { #category : #accessing }
@@ -112,6 +137,19 @@ EP2RemoteObject >> instanceVariableNamed: aString [
 { #category : #comparing }
 EP2RemoteObject >> pointsToSameObject: aRemoteObjectOrMirror [
 	^self target = aRemoteObjectOrMirror target
+]
+
+{ #category : #printing }
+EP2RemoteObject >> printOn: aStream [
+	|selfcasted|
+	selfcasted := self asRemoteObjectCasted.
+	(selfcasted class = self class) 
+	ifTrue: [ aStream 
+		nextPutAll: 'aRemote [ ';
+		nextPutAll: self target asString;
+		nextPutAll: ' ]' ]
+	ifFalse: [ selfcasted printOn: aStream ]
+	
 ]
 
 { #category : #'public-api' }

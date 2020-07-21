@@ -12,14 +12,14 @@ EP2VariableLayout class >> at: anIndex put: anEP2Mirror [
 { #category : #'gt-extension' }
 EP2VariableLayout >> gtInspectorIn: composite [
 	^ composite table
-		title: self remote asString;
+		title: self remote asRemoteObjectCasted asString;
 		display: [ 
 			(remote isRemoteClass and: [ remote isRoleMetaclass ])  
 				ifTrue: [ { } ] 
 				ifFalse: [ remote allVariables collectWithIndex: [ :var :index | index -> var ] ] ];
 		column: 'Index' evaluated: [:assoc | assoc key ];
-		column: 'Value' evaluated: [ :assoc | assoc value ];
-		send: [ :assoc | assoc value ]
+		column: 'Value' evaluated: [ :assoc | assoc value asRemoteObjectCasted ];
+		send: [ :assoc | assoc value asRemoteObjectCasted]
 ]
 
 { #category : #testing }

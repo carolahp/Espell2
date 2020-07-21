@@ -8,7 +8,7 @@ Class {
 EP2RemoteMetaclass >> classNameFromAnyOrigin [
 	| soleInstance |
 	soleInstance := self soleInstance.
-	(soleInstance isNotNil and: [ soleInstance isNilObject not  ]) 
+	(soleInstance isNotNil and: [ soleInstance isNilObject not ]) 
 		ifTrue: [ ^ soleInstance classNameFromAnyOrigin, ' class' ]
 		ifFalse: [ ^ '' ]
 ]
@@ -21,5 +21,5 @@ EP2RemoteMetaclass >> metaclassThisClassIndex [
 
 { #category : #accessing }
 EP2RemoteMetaclass >> soleInstance [.
-	^ self instanceVariableAtIndex: self metaclassThisClassIndex
+	^ (self instanceVariableAtIndex: self metaclassThisClassIndex) asRemoteClass
 ]

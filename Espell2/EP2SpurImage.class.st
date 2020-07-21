@@ -14,7 +14,7 @@ Class {
 { #category : #instantiation }
 EP2SpurImage class >> onFirstObject: anEP2Mirror [
 	^ self basicNew 
-		nilObject: anEP2Mirror;
+		nilObject: anEP2Mirror asRemoteNil;
 		initialize;
 		yourself
 ]
@@ -62,14 +62,14 @@ EP2SpurImage >> initialize [
 EP2SpurImage >> initializeSpecialObjects [
 	| classes |
 	
-	falseObject := nilObject nextObject.
-	trueObject := falseObject nextObject.
-	specialObjectsArray := self backend specialObjectsArray.
+	falseObject := nilObject nextObject asRemoteFalse.
+	trueObject := falseObject nextObject asRemoteTrue.
+	specialObjectsArray := self backend specialObjectsArray asRemoteArray.
 	"calculating class table"
 	classes := #() asOrderedCollection.
 	self backend simulator objectMemory 
 		classTableObjectsDoWithIndex: [ :classOop :index | 
-			classes add: { index . (self backend mirrorOnAddress: classOop) asRemoteClass } ].
+			classes add: { index . (self backend mirrorOnAddress: classOop) asRemoteObjectCasted } ].
 	classes sort: [ :c1 :c2 | ((c1 at:2) classNameFromAnyOrigin) < ((c2 at:2) classNameFromAnyOrigin) ].
 	classTable := classes asArray asRemoteObjectInObjectSpace: self objectSpace
 ]

@@ -20,10 +20,9 @@ EP2RemoteArray >> layoutClass [
 
 { #category : #printing }
 EP2RemoteArray >> printOn: aStream [
-	aStream nextPutAll: '*a ';
-		nextPutAll: self basicClass classNameFromAnyOrigin, ' [';
-		nextPutAll: self basicSize asString;
-		nextPutAll:' items]*'
+	aStream nextPutAll: '*#( '.
+	1 to: self basicSize do: [:i | aStream nextPutAll: (self at:i) asString, ' '].
+	aStream nextPutAll:')*'
 ]
 
 { #category : #'accessing-slots' }

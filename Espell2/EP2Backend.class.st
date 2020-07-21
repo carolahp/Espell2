@@ -81,7 +81,7 @@ EP2Backend >> arrayClass: anEP2RemoteClass [
 
 { #category : #'accessing special classes' }
 EP2Backend >> associationClass [
-	^ associationClass
+	^ (associationClass) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -166,7 +166,7 @@ EP2Backend >> blockClass [
 
 	"The Point class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: BlockClosure"
-	^ self specialObjectsArray at: 37
+	^ (self specialObjectsArray at: 37) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -186,7 +186,7 @@ EP2Backend >> builder [
 { #category : #'accessing special classes' }
 EP2Backend >> byteArrayClass [
 	"The twenty-seventh special object"
-	^ (self specialObjectsArray at: 27) asClassMirror
+	^ (self specialObjectsArray at: 27) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -200,7 +200,7 @@ EP2Backend >> byteArrayClass: anEP2RemoteClass [
 
 { #category : #'accessing-specialClasses' }
 EP2Backend >> byteStringClass [
-	^ self specialObjectsArray at: 7 
+	^ (self specialObjectsArray at: 7) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -215,7 +215,7 @@ EP2Backend >> byteStringClass: anEP2RemoteClass [
 
 { #category : #'accessing-special classes' }
 EP2Backend >> byteSymbolClass [
-	^ byteSymbolClass
+	^ (byteSymbolClass) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -228,7 +228,7 @@ EP2Backend >> byteSymbolClass: aClass [
 EP2Backend >> characterClass [
 	"The twentieth special object.
 	Smalltalk specialObjectsArray indexOf: Character"
-	^ self specialObjectsArray at: 20
+	^ (self specialObjectsArray at: 20) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -287,7 +287,7 @@ EP2Backend >> contextClass [
 
 	"The method Comtext class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Context"
-	^ self specialObjectsArray at: 11
+	^ (self specialObjectsArray at: 11) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -464,7 +464,7 @@ EP2Backend >> falseObject: anEP2Mirror [
 EP2Backend >> floatClass [
 	"The tenth special object.
 	Smalltalk specialObjectsArray indexOf: Float"
-	^ self specialObjectsArray at: 10
+	^ (self specialObjectsArray at: 10) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -714,7 +714,7 @@ EP2Backend >> isSmallInteger: aHandle [
 EP2Backend >> largeNegativeIntegerClass [
 	"The forty-third special object.
 	Smalltalk specialObjectsArray indexOf: LargeNegativeInteger"
-	^ self specialObjectsArray at: 43
+	^ (self specialObjectsArray at: 43) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -729,7 +729,7 @@ EP2Backend >> largeNegativeIntegerClass: anEP2RemoteClass [
 EP2Backend >> largePositiveIntegerClass [
 	"The fourteenth special object.
 	Smalltalk specialObjectsArray indexOf: LargePositiveInteger"
-	^ self specialObjectsArray at: 14
+	^ (self specialObjectsArray at: 14) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -750,7 +750,7 @@ EP2Backend >> messageClass [
 
 	"The method Comtext class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Message"
-	^ self specialObjectsArray at: 16
+	^ (self specialObjectsArray at: 16) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -903,7 +903,7 @@ EP2Backend >> pointClass [
 
 	"The Point class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Point"
-	^ self specialObjectsArray at: 13
+	^ (self specialObjectsArray at: 13) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -920,7 +920,7 @@ EP2Backend >> processClass [
 
 	"The Point class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Process"
-	^ self specialObjectsArray at: 28
+	^ (self specialObjectsArray at: 28) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -961,7 +961,7 @@ EP2Backend >> semaphoreClass [
 
 	"The Point class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Semaphore"
-	^ self specialObjectsArray at: 19
+	^ (self specialObjectsArray at: 19) asRemoteClass
 ]
 
 { #category : #accessing }
@@ -995,7 +995,7 @@ EP2Backend >> smallIntegerClass [
 	
 	"The Smalltalk instance in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: SmallInteger"
-	^ self specialObjectsArray at: 6
+	^ (self specialObjectsArray at: 6) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }

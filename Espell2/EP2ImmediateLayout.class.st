@@ -13,7 +13,7 @@ EP2ImmediateLayout class >> defaultRemoteObjectClass [
 EP2ImmediateLayout >> gtInspectorIn: composite [
 	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
 	^ composite text
-		title: self remote asString;
+		title: self remote asRemoteObjectCasted asString;
 		display: #yourself
 ]
 

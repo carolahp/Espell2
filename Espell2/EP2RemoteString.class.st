@@ -14,6 +14,11 @@ EP2RemoteString >> asLocalLiteral [
 	^ self asLocalByteString 
 ]
 
+{ #category : #'converting-local' }
+EP2RemoteString >> asLocalString [
+	^ self backend fromRemoteByteString: self.
+]
+
 { #category : #accessing }
 EP2RemoteString >> layoutClass [
 	^ EP2VariableLayout

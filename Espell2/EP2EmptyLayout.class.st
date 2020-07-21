@@ -15,7 +15,7 @@ EP2EmptyLayout class >> on: anEP2Mirror [
 EP2EmptyLayout >> gtInspectorIn: composite [
 	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
 	^ composite text
-		title: self remote asString
+		title: self remote asRemoteObjectCasted asString
 ]
 
 { #category : #accessing }

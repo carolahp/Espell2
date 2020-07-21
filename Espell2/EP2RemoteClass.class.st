@@ -58,8 +58,9 @@ EP2RemoteClass >> asRGClass [
 
 { #category : #'high-level-messages' }
 EP2RemoteClass >> basicNew [
-	
-	^ self backend basicNewOn: self 
+	" casting as remote object or immediate, depending on my layout "
+	^ self layout class defaultRemoteObjectClass  
+		on: (self backend basicNewOn: self) 
 ]
 
 { #category : #'high-level-messages' }
@@ -126,7 +127,7 @@ EP2RemoteClass >> classNameIndex [
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> classPool [
-	^ self instanceVariableAtIndex: self classPoolIndex
+	^ (self instanceVariableAtIndex: self classPoolIndex) asRemoteDictionary 
 ]
 
 { #category : #'high-level-messages' }
@@ -174,7 +175,7 @@ EP2RemoteClass >> fixedSize [
 
 { #category : #'accessing-header' }
 EP2RemoteClass >> format [
-	^self layout instanceVariableAtIndex: self classFormatIndex 
+	^ (self layout instanceVariableAtIndex: self classFormatIndex) asRemoteSmallInteger
 ]
 
 { #category : #'accessing-specialInstVars' }
@@ -313,5 +314,5 @@ EP2RemoteClass >> slotsDo: aBlock [
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> superclass [
-	^ self instanceVariableAtIndex: self classSuperclassIndex 
+	^ (self instanceVariableAtIndex: self classSuperclassIndex) asRemoteClass
 ]

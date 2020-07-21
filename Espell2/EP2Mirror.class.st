@@ -69,6 +69,7 @@ EP2Mirror >> asRemoteCharacter [
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteClass [ 
 	| remoteClass |
+	self isNilObject ifTrue: [^ backend nilObject ].
 	remoteClass := (EP2RemoteClass on: self).
 	remoteClass target isExternalHandle ifFalse: [ 
 		remoteClass asRGClass isMetaclass ifTrue: [ ^ EP2RemoteMetaclass on: self ].
@@ -79,6 +80,11 @@ EP2Mirror >> asRemoteClass [
 { #category : #'converting -high level' }
 EP2Mirror >> asRemoteCompiledMethod [
 	^ EP2RemoteCompiledMethod on: self
+]
+
+{ #category : #'converting-high-level' }
+EP2Mirror >> asRemoteContext [
+	^ EP2RemoteContext on: self
 ]
 
 { #category : #'converting-high-level' }
@@ -103,6 +109,11 @@ EP2Mirror >> asRemoteNil [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteObject [
+	^ EP2RemoteObject on: self
+]
+
+{ #category : #'converting-high-level' }
+EP2Mirror >> asRemoteObjectCasted [
 	"gets the corresponding layout according to my instSpec and then uses it to create a remoteObject with the correct type"
 	| basicClass layoutClass |
 	

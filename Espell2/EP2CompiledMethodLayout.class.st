@@ -24,8 +24,8 @@ EP2CompiledMethodLayout >> at: anIndex put: aRemoteObject [
 { #category : #'gt-extension' }
 EP2CompiledMethodLayout >> gtInspectorIn: composite [
 	^ composite text
-		title: self remote asString;
-		display: [ self remote sourceCode ]
+		title: self remote asRemoteCompiledMethod asString;
+		display: [ self remote asRemoteCompiledMethod sourceCode ]
 ]
 
 { #category : #'gt-extension' }

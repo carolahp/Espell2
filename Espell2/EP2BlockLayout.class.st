@@ -15,6 +15,6 @@ EP2BlockLayout class >> on: anEP2Mirror [
 EP2BlockLayout >> gtInspectorIn: composite [
 	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
 	^ composite text
-		title: self remote asString;
-		display: [ '*', self remote sourceCode, '*' ]
+		title: self remote asRemoteBlock asString;
+		display: [ '*', self remote asRemoteBlock sourceCode, '*' ]
 ]

@@ -27,6 +27,16 @@ EP2Remote >> allVariables [
 ]
 
 { #category : #converting }
+EP2Remote >> asRemoteBlock [
+	^ self mirror asRemoteBlock
+]
+
+{ #category : #converting }
+EP2Remote >> asRemoteFalse [
+	^ self mirror asRemoteFalse
+]
+
+{ #category : #converting }
 EP2Remote >> asRemoteObject [
 	^ self 
 ]
@@ -44,6 +54,11 @@ EP2Remote >> asRemoteProcess [
 { #category : #converting }
 EP2Remote >> asRemoteSmallInteger [
 	^ EP2RemoteSmallInteger on: self mirror
+]
+
+{ #category : #converting }
+EP2Remote >> asRemoteTrue [
+	^ self mirror asRemoteTrue
 ]
 
 { #category : #'accessing-pvt' }
