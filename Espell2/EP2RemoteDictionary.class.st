@@ -6,7 +6,7 @@ Class {
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteDictionary >> array [
-	^ self instanceVariableAtIndex: self dictionaryArrayIndex
+	^ (self instanceVariableAtIndex: self dictionaryArrayIndex) asRemoteArray
 ]
 
 { #category : #'high-level-messages' }
@@ -19,6 +19,13 @@ EP2RemoteDictionary >> associationAt: key ifAbsent: aBlockClosure [
 	^ [self 
 		evaluateCode: 'aDictionary associationAt: key' 
 		withTemps: { #aDictionary -> self . #key -> key }] on: Error do: [ aBlockClosure value ]
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> associations [ 
+	^ (self array allVariables 
+				reject: [ :item | item isNilObject ])
+				collect: [ :item | item asRemoteAssociation ] 
 ]
 
 { #category : #'accessing-specialInstVars' }
@@ -63,19 +70,22 @@ EP2RemoteDictionary >> gtInspectorIn: composite [
 	<gtInspectorPresentationOrder: 1>
 	^ composite table
 		title: self asString;
-		display: [ (self array allVariables 
-				reject: [ :item | item isNilObject ]) ];
-		column: 'Key' evaluated: [:assoc | assoc key ];
-		column: 'Value' evaluated: [ :assoc | assoc value ];
+		display: [ self associations ];
+		column: 'Key' evaluated: [:assoc | assoc key asRemoteObjectCasted ];
+		column: 'Value' evaluated: [ :assoc | assoc value asRemoteObjectCasted ];
 		send: [ :assoc | assoc value ]
 ]
 
 { #category : #printing }
 EP2RemoteDictionary >> printOn: aStream [
 	aStream nextPutAll: '*a ';
-		nextPutAll: self basicClass classNameFromAnyOrigin, ' [';
+		nextPutAll: self basicClass classNameFromAnyOrigin, '[';
 		nextPutAll: self tally asString;
-		nextPutAll:' items]*'
+		nextPutAll: 'items]('.
+	
+	1 to: self tally asLocalSmallInteger do: [:i | aStream nextPutAll: (self associations at:i) asString, ' '].
+	
+	aStream nextPutAll:')*'
 ]
 
 { #category : #'accessing-specialInstVars' }
@@ -96,5 +106,5 @@ EP2RemoteDictionary >> scanFor: anObject [
 
 { #category : #'accessing-instVars' }
 EP2RemoteDictionary >> tally [
-	^ self instanceVariableAtIndex: self dictionaryTallyIndex
+	^ (self instanceVariableAtIndex: self dictionaryTallyIndex) asRemoteSmallInteger
 ]
