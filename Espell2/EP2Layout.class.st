@@ -178,7 +178,7 @@ EP2Layout >> localObjectAsRemoteObject: anObject [
 
 { #category : #'accessing-pvt' }
 EP2Layout >> objectSpace [
-	^ self mirror backend objectSpace
+	^ self remote mirror backend objectSpace
 ]
 
 { #category : #'accessing-pvt' }

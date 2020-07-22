@@ -117,7 +117,7 @@ EP2Mirror >> asRemoteObjectCasted [
 	"gets the corresponding layout according to my instSpec and then uses it to create a remoteObject with the correct type"
 	| basicClass layoutClass |
 	
-	basicClass := self basicClass.
+	basicClass := self basicRemoteClass.
 	basicClass isNilObject ifFalse: [ 
 		basicClass asLocalClass
 		 ifNotNil: [:localClass |
@@ -130,7 +130,7 @@ EP2Mirror >> asRemoteObjectCasted [
 	self isFalseObject ifTrue: [ ^ self asRemoteFalse ].
 	layoutClass := 	self isSmallInteger 
 		ifTrue: [ EP2ImmediateLayout ]
-		ifFalse: [ EP2Layout layoutClassForInstSpec: self basicClass instSpec].
+		ifFalse: [ EP2Layout layoutClassForInstSpec: basicClass instSpec].
 	
 	^ layoutClass defaultRemoteObjectClass on: self
 ]
@@ -171,6 +171,7 @@ EP2Mirror >> backend: anEP2Backend [
 { #category : #'accessing-header' }
 EP2Mirror >> basicClass [
 	| classOrNil |
+	"it can return a class installed in the kernel or an external class"
 	classOrNil := backend mirrorOn: self target basicClassHandle.
 	^ classOrNil isNilObject 
 		ifTrue:  [ classOrNil asRemoteNil ] 
@@ -181,6 +182,16 @@ EP2Mirror >> basicClass [
 EP2Mirror >> basicIdentityHash [
 
 	^ backend basicIdentityHashOf: self
+]
+
+{ #category : #'accessing-header' }
+EP2Mirror >> basicRemoteClass [
+	| classOrNil |
+	"always returns a class that is installed in the kernel"
+	classOrNil := backend mirrorOn: self target basicRemoteClassHandle.
+	^ classOrNil isNilObject 
+		ifTrue:  [ classOrNil asRemoteNil ] 
+		ifFalse: [ classOrNil asRemoteClass ] 
 ]
 
 { #category : #'accessing-header' }

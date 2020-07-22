@@ -134,6 +134,11 @@ EP2RemoteObject >> instanceVariableNamed: aString [
 	^ self layout instanceVariableNamed: aString
 ]
 
+{ #category : #testing }
+EP2RemoteObject >> isExternalObject [
+	^ self target isExternalHandle
+]
+
 { #category : #comparing }
 EP2RemoteObject >> pointsToSameObject: aRemoteObjectOrMirror [
 	^self target = aRemoteObjectOrMirror target

@@ -7,7 +7,7 @@ Class {
 	#instVars : [
 		'address'
 	],
-	#category : #'Espell2-LowLevel-mirrors'
+	#category : #'Espell2-Handles'
 }
 
 { #category : #comparing }
@@ -48,5 +48,8 @@ EP2AddressHandle >> classIndex [
 
 { #category : #printing }
 EP2AddressHandle >> printOn: aStream [
-	aStream nextPutAll: self address asString
+	aStream 
+		nextPutAll: 'handle[';
+		nextPutAll: self address asString;
+		nextPutAll: ']'
 ]

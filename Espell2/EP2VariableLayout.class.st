@@ -19,7 +19,7 @@ EP2VariableLayout >> gtInspectorIn: composite [
 				ifFalse: [ remote allVariables collectWithIndex: [ :var :index | index -> var ] ] ];
 		column: 'Index' evaluated: [:assoc | assoc key ];
 		column: 'Value' evaluated: [ :assoc | assoc value asRemoteObjectCasted ];
-		send: [ :assoc | assoc value asRemoteObjectCasted]
+		send: [ :assoc | assoc value ifNotNil: [ :val | val asRemoteObjectCasted ] ]
 ]
 
 { #category : #testing }

@@ -198,7 +198,7 @@ EP2Backend >> byteArrayClass: anEP2RemoteClass [
 	self installClass: anEP2RemoteClass inClassTableIndex: 50.
 ]
 
-{ #category : #'accessing-specialClasses' }
+{ #category : #'accessing-special classes' }
 EP2Backend >> byteStringClass [
 	^ (self specialObjectsArray at: 7) asRemoteClass
 ]
@@ -558,7 +558,7 @@ EP2Backend >> fromRemoteCharacter: mirror [
 
 { #category : #'creating-handles' }
 EP2Backend >> handleOnAddress: anAddress [
-
+	self assert: anAddress isNumber.
 	^ EP2AddressHandle new
 			backend: self;
 			address: anAddress;

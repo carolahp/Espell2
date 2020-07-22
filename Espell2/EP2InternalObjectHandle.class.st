@@ -4,7 +4,7 @@ I hold references to objects installed in the bootstrapped Object Memory
 Class {
 	#name : #EP2InternalObjectHandle,
 	#superclass : #EP2Handle,
-	#category : #'Espell2-LowLevel-mirrors'
+	#category : #'Espell2-Handles'
 }
 
 { #category : #comparing }
@@ -23,6 +23,11 @@ EP2InternalObjectHandle >> address [
 EP2InternalObjectHandle >> asSmallInteger [
 	
 	^ backend integerValueOf: self
+]
+
+{ #category : #accessing }
+EP2InternalObjectHandle >> basicRemoteClassHandle [
+	^ self basicClassHandle
 ]
 
 { #category : #'accessing-instVars' }

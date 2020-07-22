@@ -4,13 +4,19 @@ Class {
 	#instVars : [
 		'object'
 	],
-	#category : #'Espell2-LowLevel-mirrors'
+	#category : #'Espell2-Handles'
 }
 
 { #category : #accessing }
 EP2ExternalObjectHandle >> basicClassHandle [
 	
 	^ backend handleOnExternalObject: object class
+]
+
+{ #category : #accessing }
+EP2ExternalObjectHandle >> basicRemoteClassHandle [
+	"answers my corresponding class in the kernel"
+	^ backend handleOnAddress: (backend builder bootstrapEnvironmentAt: object remoteClassName) target address
 ]
 
 { #category : #accessing }

@@ -15,6 +15,11 @@ EP2RemoteSmallInteger >> asLocalSmallInteger [
 ]
 
 { #category : #converting }
+EP2RemoteSmallInteger >> asRemoteObjectCasted [
+	^ self mirror asRemoteObjectCasted
+]
+
+{ #category : #converting }
 EP2RemoteSmallInteger >> asRemoteSmallInteger [
 	^ self 
 ]

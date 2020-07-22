@@ -7,12 +7,17 @@ Class {
 	#instVars : [
 		'backend'
 	],
-	#category : #'Espell2-LowLevel-mirrors'
+	#category : #'Espell2-Handles'
 }
 
 { #category : #accessing }
 EP2Handle >> backend: anEP2SimulatorBackend [ 
 	backend := anEP2SimulatorBackend
+]
+
+{ #category : #'accessing-header' }
+EP2Handle >> basicClassHandle [
+	self subclassResponsibility
 ]
 
 { #category : #'high-level-message' }

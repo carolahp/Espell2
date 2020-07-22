@@ -69,6 +69,11 @@ EP2RemoteContext >> initializeTemporaryVariables [
 ]
 
 { #category : #accessing }
+EP2RemoteContext >> layoutClass [ 
+	^ EP2ContextLayout 
+]
+
+{ #category : #accessing }
 EP2RemoteContext >> method [
 	^ (self instanceVariableAtIndex: self contextMethodIndex) asRemoteCompiledMethod
 ]
