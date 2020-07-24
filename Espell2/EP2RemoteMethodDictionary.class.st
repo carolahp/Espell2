@@ -12,5 +12,5 @@ EP2RemoteMethodDictionary >> gtInspectorIn: composite [
 		display: [ (self array allVariables 
 				reject: [ :item | item isNilObject ]) ];
 		column: 'Key' evaluated: [:method | method asString ];
-		send: [ :assoc | assoc value ]
+		send: [ :assoc | assoc value asRemoteCompiledMethod ]
 ]
