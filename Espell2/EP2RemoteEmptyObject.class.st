@@ -11,3 +11,14 @@ EP2RemoteEmptyObject class >> on: anEPMirror [
 		mirror: anEPMirror;
 		yourself
 ]
+
+{ #category : #test }
+EP2RemoteEmptyObject >> test [
+	self assert: (mirror backend basicSizeOf: mirror) equals: 0.
+	self assert: self basicClass format asLocalSmallInteger equals: 0
+]
+
+{ #category : #tests }
+EP2RemoteEmptyObject >> testStub [
+	self test
+]

@@ -19,3 +19,19 @@ EP2SpurImageTests class >> runAllTestsOnSpurImage: anEP2SpurImage [
 EP2SpurImageTests >> image: anEP2SpurImage [
 	image := anEP2SpurImage
 ]
+
+{ #category : #tests }
+EP2SpurImageTests >> testFalse [
+	image falseObject test
+]
+
+{ #category : #tests }
+EP2SpurImageTests >> testNil [
+	
+	image nilObject test
+]
+
+{ #category : #tests }
+EP2SpurImageTests >> testTrue [ 
+	image trueObject test
+]
