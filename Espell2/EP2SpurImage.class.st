@@ -29,6 +29,13 @@ EP2SpurImage >> backend [
 	^ self nilObject backend 
 ]
 
+{ #category : #'accessing-classes' }
+EP2SpurImage >> classNamed: aString [
+	(self classes select: [ :class | class name = aString ]) 
+		ifNotEmpty: [ :result | ^ result anyOne ].
+	^ nil
+]
+
 { #category : #'accessing-specialObjects' }
 EP2SpurImage >> classTable [
 	^ classTable
