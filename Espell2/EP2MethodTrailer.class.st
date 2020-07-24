@@ -1,7 +1,7 @@
 Class {
 	#name : #EP2MethodTrailer,
 	#superclass : #CompiledMethodTrailer,
-	#category : #Espell2
+	#category : #'Espell2-Compiler-Bindings'
 }
 
 { #category : #decoding }

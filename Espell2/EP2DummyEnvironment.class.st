@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'objectSpace'
 	],
-	#category : #Espell2
+	#category : #'Espell2-Compiler-Bindings'
 }
 
 { #category : #'instance creation' }
