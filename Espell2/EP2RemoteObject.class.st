@@ -36,6 +36,11 @@ EP2RemoteObject >> asContextMirror [
 	^ self asRemoteContext asContextMirror
 ]
 
+{ #category : #'converting loca' }
+EP2RemoteObject >> asLocalSmallInteger [
+	^ self mirror asLocalSmallInteger
+]
+
 { #category : #'converting-local' }
 EP2RemoteObject >> asLocalString [
 	^ self asRemoteByteString asLocalString

@@ -87,7 +87,7 @@ EP2RemoteCompiledMethod >> literalAt: anIndex put: aLiteralMirror [
 { #category : #accessing }
 EP2RemoteCompiledMethod >> literals [
 	^(1 to: self numberOfLiterals) collect: [ :index |
-		(self literalAt: index) asRemoteObject asLocalLiteral ]
+		(self literalAt: index) asRemoteObjectCasted asLocalLiteral ]
 ]
 
 { #category : #accessing }
