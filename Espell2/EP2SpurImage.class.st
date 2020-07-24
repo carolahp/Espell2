@@ -34,6 +34,29 @@ EP2SpurImage >> classTable [
 	^ classTable
 ]
 
+{ #category : #'accessing-classes' }
+EP2SpurImage >> classes [
+	| classes |
+	classes := #() asOrderedCollection.
+	self classesOopDoWithIndex: [ :classOop :index |
+		classes add: (self backend mirrorOnAddress: classOop) asRemoteClass ].
+	^ classes
+]
+
+{ #category : #'accessing-classes' }
+EP2SpurImage >> classesOop [
+	| classes |
+	classes := #() asOrderedCollection.
+	self classesOopDoWithIndex: [ :class :index |
+		classes add: class ].
+	^ classes
+]
+
+{ #category : #'accessing-classes' }
+EP2SpurImage >> classesOopDoWithIndex: aBlock [ 
+	^ self backend simulator objectMemory classTableObjectsDoWithIndex: aBlock 
+]
+
 { #category : #'accessing-specialObjects' }
 EP2SpurImage >> falseObject [
 
@@ -67,8 +90,7 @@ EP2SpurImage >> initializeSpecialObjects [
 	specialObjectsArray := self backend specialObjectsArray asRemoteArray.
 	"calculating class table"
 	classes := #() asOrderedCollection.
-	self backend simulator objectMemory 
-		classTableObjectsDoWithIndex: [ :classOop :index | 
+	self classesOopDoWithIndex: [ :classOop :index | 
 			classes add: { index . (self backend mirrorOnAddress: classOop) asRemoteObjectCasted } ].
 	classes sort: [ :c1 :c2 | ((c1 at:2) classNameFromAnyOrigin) < ((c2 at:2) classNameFromAnyOrigin) ].
 	classTable := classes asArray asRemoteObjectInObjectSpace: self objectSpace
