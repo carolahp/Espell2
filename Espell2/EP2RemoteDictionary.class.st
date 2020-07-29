@@ -28,6 +28,11 @@ EP2RemoteDictionary >> associations [
 				collect: [ :item | item asRemoteAssociation ] 
 ]
 
+{ #category : #'high-level-message' }
+EP2RemoteDictionary >> associationsDo: aBlockClosure [ 
+	self associations do: [:assoc | aBlockClosure value: assoc].
+]
+
 { #category : #'accessing-specialInstVars' }
 EP2RemoteDictionary >> at: key [
 	^ self 

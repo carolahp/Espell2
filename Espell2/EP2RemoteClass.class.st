@@ -148,7 +148,9 @@ EP2RemoteClass >> classSharedPoolsIndex [
 
 { #category : #'high-level-messages' }
 EP2RemoteClass >> classSide [
-	^ self basicClass
+	^ self isMetaclass 
+		ifTrue: [ self	]
+		ifFalse: [ self basicClass ]
 ]
 
 { #category : #'instVars-mapping' }
@@ -226,6 +228,13 @@ EP2RemoteClass >> instanceFixedSize [
 ]
 
 { #category : #testing }
+EP2RemoteClass >> instanceSide [
+	^ self isClass 
+		ifTrue: [ self ]
+		ifFalse: [ self mirror asRemoteMetaclass soleInstance ]
+]
+
+{ #category : #testing }
 EP2RemoteClass >> isBitsClass [
 
 	^ self backend isBitsClass: self
@@ -233,8 +242,18 @@ EP2RemoteClass >> isBitsClass [
 ]
 
 { #category : #testing }
+EP2RemoteClass >> isClass [
+	^ self asRGClass isClass
+]
+
+{ #category : #testing }
 EP2RemoteClass >> isClassMirror [
 	^ true
+]
+
+{ #category : #testing }
+EP2RemoteClass >> isMetaclass [
+	^ self asRGClass isMeta
 ]
 
 { #category : #testing }

@@ -102,6 +102,11 @@ EP2Mirror >> asRemoteFalse [
 	^ EP2RemoteFalse on: self
 ]
 
+{ #category : #transforming }
+EP2Mirror >> asRemoteMetaclass [
+	^ EP2RemoteMetaclass on: self
+]
+
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteNil [
 	^ EP2RemoteNil on: self

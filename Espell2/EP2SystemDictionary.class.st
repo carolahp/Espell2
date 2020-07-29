@@ -23,11 +23,21 @@ EP2SystemDictionary >> arrayClass [
 	^ self classNamed: #Array
 ]
 
+{ #category : #transforming }
+EP2SystemDictionary >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
+	^ self
+]
+
 { #category : #accessing }
 EP2SystemDictionary >> associationAt: aString [
 	| value |
 	value := self at: aString ifAbsent: [ ^ nil ].
 	^ (aString -> value) asRemoteObjectInObjectSpace: self objectSpace
+]
+
+{ #category : #'high-level-message' }
+EP2SystemDictionary >> associationsDo: aBlockClosure [ 
+	systemDictionary asRemoteDictionary associationsDo: [ :assoc | aBlockClosure value: assoc ]
 ]
 
 { #category : #testing }
