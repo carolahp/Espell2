@@ -19,6 +19,16 @@ EP2RemoteArray >> allVariables [
 ]
 
 { #category : #'high-level-messages' }
+EP2RemoteArray >> asDictionary [
+	^ EP2RemoteDictionary newFrom: self
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteArray >> associationsDo: aBlockClosure [ 
+	self do: aBlockClosure
+]
+
+{ #category : #'high-level-messages' }
 EP2RemoteArray >> do: aBlock [ 
 	"Evaluate a Block on non nil elements of the receiver"
 	| dep |

@@ -5,9 +5,33 @@ Class {
 }
 
 { #category : #'instance creation' }
+EP2RemoteDictionary class >> newFrom: aDict [ 
+	"Answer an instance of me containing the same associations as aDict.
+	 Error if any key appears twice."
+	| newDictionary |
+	newDictionary := self newWithBackend: aDict backend size: aDict size.
+	aDict associationsDo:
+		[:x |
+		(newDictionary includesKey: x asRemoteAssociation key)
+			ifTrue: [self error: 'Duplicate key: ', x key printString]
+			ifFalse: [newDictionary add: x]].
+	^ newDictionary
+
+"	NewDictionary newFrom: {1->#a. 2->#b. 3->#c}
+	{1->#a. 2->#b. 3->#c} as: NewDictionary
+	NewDictionary newFrom: {1->#a. 2->#b. 1->#c}
+	{1->#a. 2->#b. 1->#c} as: NewDictionary
+"
+]
+
+{ #category : #'instance creation' }
 EP2RemoteDictionary class >> newWithBackend: anEP2Backend [
-	| dict array tally nElements initialSize |
-	nElements := 4.
+	^ self newWithBackend: anEP2Backend size: 4
+]
+
+{ #category : #'instance creation' }
+EP2RemoteDictionary class >> newWithBackend: anEP2Backend size: nElements [
+	| dict array tally initialSize |
 	initialSize :=  (nElements + 1) * 4 // 3.
 	
 	dict := (anEP2Backend basicNewOn: anEP2Backend dictionaryClass) asRemoteDictionary.
@@ -18,6 +42,18 @@ EP2RemoteDictionary class >> newWithBackend: anEP2Backend [
 	
 	^ dict
 	
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> add: anEP2RemoteObject [
+	| index element assoc |
+	assoc := anEP2RemoteObject asRemoteAssociation.
+	index := self findElementOrNil: assoc key.
+	element := (self array at: index) asRemoteAssociation.
+	element isNilObject
+		ifTrue: [ self atNewIndex: index put: assoc ]
+		ifFalse: [ element value: assoc value ].
+	^ assoc
 ]
 
 { #category : #'accessing-specialInstVars' }
@@ -161,6 +197,12 @@ EP2RemoteDictionary >> gtInspectorIn: composite [
 ]
 
 { #category : #'high-level-messages' }
+EP2RemoteDictionary >> includesKey: anEP2RemoteObject [ 
+
+	^ (self array at: (self scanFor: anEP2RemoteObject)) isNilObject not
+]
+
+{ #category : #'high-level-messages' }
 EP2RemoteDictionary >> noCheckAdd: anEP2RemoteObject [
 	"Must be defined separately for Dictionary because (self findElementOrNil:) expects a key, not an association.  9/7/96 tk"
 
@@ -197,7 +239,7 @@ EP2RemoteDictionary >> scanFor: aRemoteObject [
 		(element isNilObject or: [ element key = object ])
 			ifTrue: [ ^ index ] ].	"Search from 1 to where we started."
 	1 to: start - 1 do: [ :index | 
-		((element := self array at: index) isNilObject or: [ element key = object ])
+		((element := (self array at: index) asRemoteAssociation) isNilObject or: [ element key = object ])
 			ifTrue: [ ^ index ] ].
 	^ 0	"No match AND no empty slot"
 ]
