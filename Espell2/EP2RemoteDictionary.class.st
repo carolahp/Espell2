@@ -35,11 +35,12 @@ EP2RemoteDictionary >> associationAt: key [
 	^ self associationAt: key ifAbsent: [ self error: 'key not found in dictionary' ]
 ]
 
-{ #category : #binding }
-EP2RemoteDictionary >> associationAt: key ifAbsent: aBlockClosure [ 
-	^ [self 
-		evaluateCode: 'aDictionary associationAt: key' 
-		withTemps: { #aDictionary -> self . #key -> key }] on: Error do: [ aBlockClosure value ]
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> associationAt: key ifAbsent: aBlock [ 
+	
+	^ (self array at: (self findElementOrNil: key))
+		ifNil: [ aBlock value ]
+		ifNotNil: [ :assoc | assoc ]
 ]
 
 { #category : #'high-level-messages' }
@@ -54,7 +55,7 @@ EP2RemoteDictionary >> associationsDo: aBlockClosure [
 	self associations do: [:assoc | aBlockClosure value: assoc].
 ]
 
-{ #category : #'accessing-specialInstVars' }
+{ #category : #'high-level-messages' }
 EP2RemoteDictionary >> at: key [
 	"Answer the value associated with the key."
 
@@ -108,7 +109,7 @@ EP2RemoteDictionary >> dictionaryTallyIndex [
 	^ (self systemDefinition instanceVariableMapping dictionaryTallyIndex) ifNil: [ self error: 'undefined index for tally inst var in Dictionary' ]
 ]
 
-{ #category : #'accessing-specialInstVars' }
+{ #category : #errors }
 EP2RemoteDictionary >> errorKeyNotFound [
 	self error: 'key not found'
 ]
@@ -201,7 +202,7 @@ EP2RemoteDictionary >> scanFor: aRemoteObject [
 	^ 0	"No match AND no empty slot"
 ]
 
-{ #category : #'accessing-instVars' }
+{ #category : #'accessing-specialInstVars' }
 EP2RemoteDictionary >> tally [
 	^ (self instanceVariableAtIndex: self dictionaryTallyIndex) asRemoteSmallInteger
 ]
