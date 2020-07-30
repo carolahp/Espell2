@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #testing }
+EP2RemoteTrue >> isTrueObject [
+	^ true
+]
+
 { #category : #accessing }
 EP2RemoteTrue >> layoutClass [
 	^ EP2EmptyLayout

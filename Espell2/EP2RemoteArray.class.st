@@ -18,6 +18,14 @@ EP2RemoteArray >> allVariables [
 	^ vars asArray
 ]
 
+{ #category : #'high-level-messages' }
+EP2RemoteArray >> do: aBlock [ 
+	"Evaluate a Block on non nil elements of the receiver"
+	| dep |
+	1 to: self basicSize do:[:i|
+		(dep := self at: i) isNilObject ifFalse:[aBlock value: dep]].
+]
+
 { #category : #accessing }
 EP2RemoteArray >> layoutClass [
 	^ EP2VariableLayout

@@ -56,6 +56,14 @@ EP2Mirror >> asRemoteBlock [
 	^ EP2RemoteBlock on: self
 ]
 
+{ #category : #'transforming-remote' }
+EP2Mirror >> asRemoteBoolean [
+	self isTrueObject ifTrue: [ ^ self asRemoteTrue ].
+	self isFalseObject ifTrue: [ ^ self asRemoteFalse ].
+	self error: 'not a boolean'
+	
+]
+
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteByteString [
 	^ EP2RemoteByteString on: self
@@ -143,6 +151,11 @@ EP2Mirror >> asRemoteObjectCasted [
 { #category : #'as yet unclassified' }
 EP2Mirror >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
 	^ self asRemoteObject
+]
+
+{ #category : #converting }
+EP2Mirror >> asRemoteSmallInteger [
+	^ EP2RemoteSmallInteger on: self
 ]
 
 { #category : #'converting-high-level' }

@@ -49,31 +49,48 @@ EP2RemoteDictionary >> associations [
 				collect: [ :item | item asRemoteAssociation ] 
 ]
 
-{ #category : #'high-level-message' }
+{ #category : #'high-level-messages' }
 EP2RemoteDictionary >> associationsDo: aBlockClosure [ 
 	self associations do: [:assoc | aBlockClosure value: assoc].
 ]
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteDictionary >> at: key [
-	^ self 
-		evaluateCode: 'aDictionary at: key' 
-		withTemps: { #aDictionary -> self . #key -> key }
+	"Answer the value associated with the key."
+
+	^ self at: key ifAbsent: [ self errorKeyNotFound ]
 ]
 
-{ #category : #'accessing-specialInstVars' }
+{ #category : #'high-level-messages' }
 EP2RemoteDictionary >> at: key ifAbsent: aBlock [
-	^ [self at: key] on: Error do: [ aBlock value ]
+	| index assoc |
+	index := self findElementOrNil: key.
+	assoc := self array at: index.
+	assoc isNilObject
+		ifTrue: [ ^ aBlock value ].
+	^ assoc asRemoteAssociation value
 ]
 
-{ #category : #'accessing-specialInstVars' }
-EP2RemoteDictionary >> at: key put: value [
-	^ self 
-		evaluateCode: 'aDictionary at: key put: value' 
-		withTemps: 
-			{ #aDictionary -> self.
-			  #key -> key.
-			  #value -> value}
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> at: key put: anObject [
+	"Set the value at key to be anObject.  If key is not found, create a new
+	entry for key and set is value to anObject. Answer anObject."
+
+	| index element |
+	index := self findElementOrNil: key.
+	element := (self array at: index) asRemoteAssociation.
+	element isNilObject
+		ifTrue:
+			[ self atNewIndex: index put: (EP2RemoteAssociation newWithBackend: mirror backend key: key value: anObject) ]
+		ifFalse: [ element value: anObject ].
+	^ anObject
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> atNewIndex: index put: anEP2RemoteAssociation [ 
+	self array at: index put: anEP2RemoteAssociation.
+	self tally: self tally + 1.
+	self fullCheck
 ]
 
 { #category : #binding }
@@ -91,15 +108,63 @@ EP2RemoteDictionary >> dictionaryTallyIndex [
 	^ (self systemDefinition instanceVariableMapping dictionaryTallyIndex) ifNil: [ self error: 'undefined index for tally inst var in Dictionary' ]
 ]
 
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteDictionary >> errorKeyNotFound [
+	self error: 'key not found'
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> findElementOrNil: anObject [
+	"Answer the index of a first slot containing either a nil (indicating an empty slot) or an element that matches the given object. Answer the index of that slot or zero. Fail if neither a match nor an empty slot is found."
+
+	| index |
+	index := self scanFor: anObject.
+	index > 0
+		ifTrue: [ ^ index ].	"Bad scene.  Neither have we found a matching element
+	nor even an empty slot.  No hashed set is ever supposed to get
+	completely full."
+	self error: 'There is no free space in this set!'
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> fullCheck [
+	"Keep array at least 1/4 free for decent hash behavior"
+
+	self array size - self tally asLocalSmallInteger < (self array size // 4 max: 1)
+		ifTrue: [ self grow ]
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> grow [
+	"Grow the elements array and reinsert the old elements."
+
+	| oldElements newSize |
+	oldElements := self array.
+	newSize := self array size + (self array size max: 2).
+	self array: (EP2RemoteArray newWithSize: newSize withBackend: mirror backend).
+	self tally: 0.
+	oldElements
+		do: [ :each | 
+			each isNilObject
+				ifFalse: [ self noCheckAdd: each ] ]
+]
+
 { #category : #'gt-inspector' }
 EP2RemoteDictionary >> gtInspectorIn: composite [
-	<gtInspectorPresentationOrder: 1>
 	^ composite table
 		title: self asString;
 		display: [ self associations ];
 		column: 'Key' evaluated: [:assoc | assoc key asRemoteObjectCasted ];
 		column: 'Value' evaluated: [ :assoc | assoc value asRemoteObjectCasted ];
 		send: [ :assoc | assoc value ]
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> noCheckAdd: anEP2RemoteObject [
+	"Must be defined separately for Dictionary because (self findElementOrNil:) expects a key, not an association.  9/7/96 tk"
+
+	self array at: (self findElementOrNil: anEP2RemoteObject asRemoteAssociation key) put: anEP2RemoteObject.
+	self tally: self tally + 1
 ]
 
 { #category : #printing }
@@ -120,20 +185,20 @@ EP2RemoteDictionary >> printOn: aStream [
 				aStream nextPutAll: '[uninitialized]' ]
 ]
 
-{ #category : #'accessing-specialInstVars' }
-EP2RemoteDictionary >> scanFor: anObject [
-	"Scan the key array for the first slot containing either a nil (indicating an empty slot) or an element that matches anObject. Answer the index of that slot or zero if no slot is found. This method will be overridden in various subclasses that have different interpretations for matching elements."
-	| element start finish |
-	finish := self array size.
-	start := 1.
-
-	"Search in the array"
-	start to: finish do:
-		[:index | ((element := self array at: index) == self objectSpace nilObject 
-			or: [element key = anObject])
-			ifTrue: [^ index ]].
-
-	^ 0  "No match"
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> scanFor: aRemoteObject [
+	| element start finish object |
+	object := aRemoteObject asRemoteObjectInObjectSpace: self backend objectSpace.
+	start := object remoteIdentityHash \\ self array size + 1.
+	finish := self array size.	"Search from (hash mod size) to the end."
+	start to: finish do: [ :index | 
+		element := (self array at: index) asRemoteAssociation.
+		(element isNilObject or: [ element key = object ])
+			ifTrue: [ ^ index ] ].	"Search from 1 to where we started."
+	1 to: start - 1 do: [ :index | 
+		((element := self array at: index) isNilObject or: [ element key = object ])
+			ifTrue: [ ^ index ] ].
+	^ 0	"No match AND no empty slot"
 ]
 
 { #category : #'accessing-instVars' }
@@ -143,5 +208,7 @@ EP2RemoteDictionary >> tally [
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteDictionary >> tally: anEP2RemoteSmallInteger [ 
-	(self instanceVariableAtIndex: self dictionaryTallyIndex put: anEP2RemoteSmallInteger asRemoteSmallInteger) 
+	(self 
+		instanceVariableAtIndex: self dictionaryTallyIndex 
+		put: (anEP2RemoteSmallInteger asRemoteObjectInObjectSpace: self backend objectSpace) asRemoteSmallInteger) 
 ]

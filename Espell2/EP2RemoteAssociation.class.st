@@ -4,6 +4,14 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #'instance creation' }
+EP2RemoteAssociation class >> newWithBackend: anEP2Backend key: aString value: anInteger [ 
+	^ (anEP2Backend basicNewOn: anEP2Backend associationClass) asRemoteAssociation
+		key: (aString asRemoteObjectInObjectSpace: anEP2Backend objectSpace);
+		value: (anInteger asRemoteObjectInObjectSpace: anEP2Backend objectSpace);
+		yourself
+]
+
 { #category : #'converting-local' }
 EP2RemoteAssociation >> asLocalLiteral [
 	self flag: 'different from Espell'.

@@ -446,7 +446,7 @@ EP2Backend >> extMirrorOn: anEP2ExternalObjectHandle [
 EP2Backend >> falseObject [
 	
 	"The first special object."
-	^ (self mirrorOnAddress: simulator objectMemory falseObject) asRemoteEmptyObject 
+	^ (self mirrorOnAddress: simulator objectMemory falseObject) asRemoteFalse 
 ]
 
 { #category : #'accessing-special objects' }
@@ -920,6 +920,31 @@ EP2Backend >> pointClass: anEP2RemoteClass [
 	self installClass: anEP2RemoteClass inClassTableIndex: 54.
 ]
 
+{ #category : #'primitive access' }
+EP2Backend >> primitiveAddSmallIntegerNumber [
+	^ 1
+]
+
+{ #category : #'primitive-accessing' }
+EP2Backend >> primitiveBasicIdentityHashNumber [
+	^ 75 
+]
+
+{ #category : #'primitives accessing' }
+EP2Backend >> primitiveGreaterOrEqualsNumber [
+	^ 6
+]
+
+{ #category : #'primitive access' }
+EP2Backend >> primitiveLessOrEqualsNumber [
+	^ 5
+]
+
+{ #category : #'access primitives' }
+EP2Backend >> primitiveModNumber [
+	^ 11
+]
+
 { #category : #'accessing special classes' }
 EP2Backend >> processClass [
 
@@ -1076,7 +1101,7 @@ EP2Backend >> systemDefinition: aPBLanguageDefinition [
 EP2Backend >> trueObject [
 	
 	"The first special object."
-	^ (self mirrorOnAddress: simulator objectMemory trueObject) asRemoteEmptyObject
+	^ (self mirrorOnAddress: simulator objectMemory trueObject) asRemoteTrue
 ]
 
 { #category : #'accessing-special objects' }
