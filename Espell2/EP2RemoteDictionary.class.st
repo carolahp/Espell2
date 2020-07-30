@@ -4,9 +4,30 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #'instance creation' }
+EP2RemoteDictionary class >> newWithBackend: anEP2Backend [
+	| dict array tally nElements initialSize |
+	nElements := 4.
+	initialSize :=  (nElements + 1) * 4 // 3.
+	
+	dict := (anEP2Backend basicNewOn: anEP2Backend dictionaryClass) asRemoteDictionary.
+	array := EP2RemoteArray newWithSize: initialSize withBackend: anEP2Backend.
+	tally := anEP2Backend fromLocalInteger: 0.
+	dict array: array.
+	dict tally: tally.
+	
+	^ dict
+	
+]
+
 { #category : #'accessing-specialInstVars' }
 EP2RemoteDictionary >> array [
 	^ (self instanceVariableAtIndex: self dictionaryArrayIndex) asRemoteArray
+]
+
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteDictionary >> array: anEP2RemoteObject [ 
+	(self instanceVariableAtIndex: self dictionaryArrayIndex put: anEP2RemoteObject asRemoteArray) 
 ]
 
 { #category : #'high-level-messages' }
@@ -84,13 +105,19 @@ EP2RemoteDictionary >> gtInspectorIn: composite [
 { #category : #printing }
 EP2RemoteDictionary >> printOn: aStream [
 	aStream nextPutAll: '*a ';
-		nextPutAll: self basicClass classNameFromAnyOrigin, '[';
-		nextPutAll: self tally asString;
-		nextPutAll: 'items]('.
+		nextPutAll: self basicClass classNameFromAnyOrigin.
 	
-	1 to: self tally asLocalSmallInteger do: [:i | aStream nextPutAll: (self associations at:i) asString, ' '].
-	
-	aStream nextPutAll:')*'
+	"if array is nil, the dictionary is not initialized yet"
+	(self array isNilObject or: self tally isNilObject)
+		ifFalse: [
+			aStream 
+				nextPutAll: '[', self tally asString;
+				nextPutAll: 'items]('.
+			1 to: self tally asLocalSmallInteger 
+			  do: [:i | aStream nextPutAll: (self associations at:i) asString, ' '].
+			aStream nextPutAll:')*']
+		ifTrue: [ 
+				aStream nextPutAll: '[uninitialized]' ]
 ]
 
 { #category : #'accessing-specialInstVars' }
@@ -112,4 +139,9 @@ EP2RemoteDictionary >> scanFor: anObject [
 { #category : #'accessing-instVars' }
 EP2RemoteDictionary >> tally [
 	^ (self instanceVariableAtIndex: self dictionaryTallyIndex) asRemoteSmallInteger
+]
+
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteDictionary >> tally: anEP2RemoteSmallInteger [ 
+	(self instanceVariableAtIndex: self dictionaryTallyIndex put: anEP2RemoteSmallInteger asRemoteSmallInteger) 
 ]

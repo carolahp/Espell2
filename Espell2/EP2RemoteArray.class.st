@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #'instance creation' }
+EP2RemoteArray class >> newWithSize: anInteger withBackend: anEP2Backend [ 
+	^ anEP2Backend basicNewOn: anEP2Backend arrayClass withSize: anInteger
+]
+
 { #category : #printing }
 EP2RemoteArray >> allVariables [
 	| vars |
@@ -20,6 +25,8 @@ EP2RemoteArray >> layoutClass [
 
 { #category : #printing }
 EP2RemoteArray >> printOn: aStream [
+	self isNilObject ifTrue: [ ^ self mirror asRemoteNil printOn: aStream ].
+	
 	aStream nextPutAll: '*#( '.
 	1 to: self basicSize do: [:i | aStream nextPutAll: (self at:i) asString, ' '].
 	aStream nextPutAll:')*'

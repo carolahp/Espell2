@@ -327,6 +327,11 @@ EP2Backend >> createObjectWithFormat: classFormat withSize: aSize classIndex: cl
 	^ self mirrorOnAddress: oop.
 ]
 
+{ #category : #'accessing special classes' }
+EP2Backend >> dictionaryClass [
+	^ (self builder classNamed: #Dictionary) asRemoteClass
+]
+
 { #category : #'executing primitives' }
 EP2Backend >> dispatchFunctionPointer: function [
 	^ [ self simulator dispatchFunctionPointer: function ]
