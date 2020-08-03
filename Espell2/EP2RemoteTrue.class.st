@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #constants }
+EP2RemoteTrue class >> role [ 
+	^ 'True'
+]
+
 { #category : #testing }
 EP2RemoteTrue >> isTrueObject [
 	^ true

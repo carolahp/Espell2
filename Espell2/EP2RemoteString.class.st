@@ -4,6 +4,16 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #constants }
+EP2RemoteString class >> remoteInstSpec [
+	^ 0
+]
+
+{ #category : #constants }
+EP2RemoteString class >> role [ 
+	^ 'String'
+]
+
 { #category : #'from remote to local' }
 EP2RemoteString >> asLocalByteString [
 	^ self backend fromRemoteByteString: self mirror

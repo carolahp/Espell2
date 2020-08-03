@@ -1,67 +1,77 @@
 Class {
-	#name : #EP2RemoteBlock,
+	#name : #EP2RemoteBlockClosure,
 	#superclass : #EP2RemoteObject,
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #constants }
+EP2RemoteBlockClosure class >> remoteInstSpec [
+	^ 3 "may be 1 too"
+]
+
+{ #category : #constants }
+EP2RemoteBlockClosure class >> role [ 
+	^ 'BlockClosure'
+]
+
 { #category : #accessing }
-EP2RemoteBlock >> allInstVars [
+EP2RemoteBlockClosure >> allInstVars [
 	^ #()
 ]
 
 { #category : #'high-level-messages' }
-EP2RemoteBlock >> argumentNames [
+EP2RemoteBlockClosure >> argumentNames [
 	^ self target object argumentNames
 ]
 
 { #category : #accessing }
-EP2RemoteBlock >> basicSize [
+EP2RemoteBlockClosure >> basicSize [
 	^ 0
 ]
 
 { #category : #'high-level-message' }
-EP2RemoteBlock >> body [ 
+EP2RemoteBlockClosure >> body [ 
 	^ self target object body
 ]
 
 { #category : #'high-level-messages' }
-EP2RemoteBlock >> bodyOffset [
+EP2RemoteBlockClosure >> bodyOffset [
 	^ self target object bodyOffset 
 ]
 
 { #category : #'high-level-messages' }
-EP2RemoteBlock >> gtInspectorIn: aGLMCompositePresentation highlightInterval: aCollection [ 
+EP2RemoteBlockClosure >> gtInspectorIn: aGLMCompositePresentation highlightInterval: aCollection [ 
 	^ self target object gtInspectorIn: aGLMCompositePresentation highlightInterval: aCollection 
 
 ]
 
 { #category : #testing }
-EP2RemoteBlock >> isEPDASTBlockMirror [
+EP2RemoteBlockClosure >> isEPDASTBlockMirror [
 	^ true
 ]
 
 { #category : #'high-level-message' }
-EP2RemoteBlock >> isPrimitive [ 
+EP2RemoteBlockClosure >> isPrimitive [ 
 	^ self target object isPrimitive
 ]
 
 { #category : #accessing }
-EP2RemoteBlock >> layoutClass [ 
+EP2RemoteBlockClosure >> layoutClass [ 
 	^ EP2BlockLayout 
 ]
 
 { #category : #'high-level-messages' }
-EP2RemoteBlock >> methodClass [
+EP2RemoteBlockClosure >> methodClass [
 	^ self target object methodClass
 ]
 
 { #category : #'high-level-message' }
-EP2RemoteBlock >> outerContext [ 
+EP2RemoteBlockClosure >> outerContext [ 
 	^ self target object outerContext
 ]
 
 { #category : #accessing }
-EP2RemoteBlock >> printOn: aStream [
+EP2RemoteBlockClosure >> printOn: aStream [
 	aStream 
 		nextPutAll: '*';
 		nextPutAll: self sourceCode;
@@ -69,11 +79,11 @@ EP2RemoteBlock >> printOn: aStream [
 ]
 
 { #category : #'high-level-message' }
-EP2RemoteBlock >> sourceCode [
+EP2RemoteBlockClosure >> sourceCode [
 	^ self target object sourceCode
 ]
 
 { #category : #'high-level-messages' }
-EP2RemoteBlock >> sourceCodeWithClassAndSelector [
+EP2RemoteBlockClosure >> sourceCodeWithClassAndSelector [
 	^ self target object sourceCodeWithClassAndSelector
 ]

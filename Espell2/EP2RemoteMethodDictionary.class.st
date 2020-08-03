@@ -4,6 +4,16 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #constants }
+EP2RemoteMethodDictionary class >> remoteInstSpec [
+	^ 3
+]
+
+{ #category : #constants }
+EP2RemoteMethodDictionary class >> role [ 
+	^ 'MethodDictionary'
+]
+
 { #category : #'gt-inspector' }
 EP2RemoteMethodDictionary >> gtInspectorIn: composite [
 	<gtInspectorPresentationOrder: 1>

@@ -4,6 +4,16 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #constants }
+EP2RemoteCompiledMethod class >> remoteInstSpec [
+	^ 24
+]
+
+{ #category : #constants }
+EP2RemoteCompiledMethod class >> role [ 
+	^ 'CompiledMethod'
+]
+
 { #category : #'high-level-message' }
 EP2RemoteCompiledMethod >> basicClass [
 	^  self backend builder classNamed: #CompiledMethod

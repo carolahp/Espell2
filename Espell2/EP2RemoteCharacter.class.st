@@ -4,6 +4,16 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #constants }
+EP2RemoteCharacter class >> remoteInstSpec [
+	^ 7
+]
+
+{ #category : #constants }
+EP2RemoteCharacter class >> role [ 
+	^ 'Character'
+]
+
 { #category : #'high-level-message' }
 EP2RemoteCharacter >> asLocalCharacter [
 	^ self backend fromRemoteCharacter: self

@@ -12,6 +12,16 @@ EP2RemoteEmptyObject class >> on: anEPMirror [
 		yourself
 ]
 
+{ #category : #constants }
+EP2RemoteEmptyObject class >> remoteInstSpec [
+	^ 0
+]
+
+{ #category : #constants }
+EP2RemoteEmptyObject class >> role [ 
+	^ ''
+]
+
 { #category : #test }
 EP2RemoteEmptyObject >> test [
 	self assert: (mirror backend basicSizeOf: mirror) equals: 0.

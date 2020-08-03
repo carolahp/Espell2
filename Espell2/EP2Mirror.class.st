@@ -53,7 +53,7 @@ EP2Mirror >> asRemoteAssociation [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteBlock [ 
-	^ EP2RemoteBlock on: self
+	^ EP2RemoteBlockClosure on: self
 ]
 
 { #category : #'transforming-remote' }
@@ -117,7 +117,7 @@ EP2Mirror >> asRemoteMetaclass [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteNil [
-	^ EP2RemoteNil on: self
+	^ EP2RemoteUndefinedObject on: self
 ]
 
 { #category : #'converting-high-level' }

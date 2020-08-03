@@ -7,6 +7,16 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #constants }
+EP2RemoteClass class >> remoteInstSpec [
+	^ 1
+]
+
+{ #category : #constants }
+EP2RemoteClass class >> role [ 
+	^ 'Class'
+]
+
 { #category : #accessing }
 EP2RemoteClass >> addressDefinitionMap [
 	^ self backend objectSpace interpreter codeProvider classLoader addressDefinitionMap

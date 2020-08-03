@@ -19,6 +19,16 @@ EP2RemoteContext class >> createContextForMethod: aRemoteCompiledMethod inObject
 	^newContext
 ]
 
+{ #category : #constants }
+EP2RemoteContext class >> remoteInstSpec [
+	^ 3
+]
+
+{ #category : #constants }
+EP2RemoteContext class >> role [ 
+	^ 'Context'
+]
+
 { #category : #converting }
 EP2RemoteContext >> asContextMirror [
 	^ self 

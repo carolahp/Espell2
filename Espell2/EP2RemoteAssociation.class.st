@@ -12,6 +12,16 @@ EP2RemoteAssociation class >> newWithBackend: anEP2Backend key: aString value: a
 		yourself
 ]
 
+{ #category : #constants }
+EP2RemoteAssociation class >> remoteInstSpec [
+	^ 1
+]
+
+{ #category : #'instance creation' }
+EP2RemoteAssociation class >> role [ 
+	^ 'Association'
+]
+
 { #category : #'converting-local' }
 EP2RemoteAssociation >> asLocalLiteral [
 	self flag: 'different from Espell'.

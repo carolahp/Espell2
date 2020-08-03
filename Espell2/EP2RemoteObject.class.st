@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteObject class >> remoteInstSpec [
+	^ 0
+]
+
+{ #category : #constants }
+EP2RemoteObject class >> role [ 
+	^ ''
+]
+
+{ #category : #constants }
 EP2RemoteObject class >> unmappedInstVarIndex [
 	^ 'unmapped'
 	
@@ -83,7 +93,7 @@ EP2RemoteObject >> asRemoteDictionary [
 
 { #category : #converting }
 EP2RemoteObject >> asRemoteNil [
-	^ EP2RemoteNil on: self mirror
+	^ EP2RemoteUndefinedObject on: self mirror
 ]
 
 { #category : #converting }
@@ -93,7 +103,7 @@ EP2RemoteObject >> asRemoteObjectCasted [
 
 { #category : #converting }
 EP2RemoteObject >> asRemoteScheduler [
-	^ EP2RemoteScheduler on: self mirror
+	^ EP2RemoteProcessorScheduler on: self mirror
 ]
 
 { #category : #'converting-local' }

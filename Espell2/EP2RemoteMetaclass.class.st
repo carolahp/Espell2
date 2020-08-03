@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #constants }
+EP2RemoteMetaclass class >> role [ 
+	^ 'Metaclass'
+]
+
 { #category : #accessing }
 EP2RemoteMetaclass >> classNameFromAnyOrigin [
 	| soleInstance |

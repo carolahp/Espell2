@@ -9,6 +9,16 @@ EP2RemoteSmallInteger class >> on: anEP2SimulatorAddressHandle from: anEP2Backen
 	^ self on: (EP2Mirror on: anEP2SimulatorAddressHandle from: anEP2Backend)
 ]
 
+{ #category : #constants }
+EP2RemoteSmallInteger class >> remoteInstSpec [
+	^ 7
+]
+
+{ #category : #'bootstrap roles' }
+EP2RemoteSmallInteger class >> role [ 
+	^ 'SmallInteger'
+]
+
 { #category : #'high-level-messages' }
 EP2RemoteSmallInteger >> + aRemoteInteger [  
 	^ (self 

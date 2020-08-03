@@ -9,6 +9,16 @@ EP2RemoteArray class >> newWithSize: anInteger withBackend: anEP2Backend [
 	^ anEP2Backend basicNewOn: anEP2Backend arrayClass withSize: anInteger
 ]
 
+{ #category : #constants }
+EP2RemoteArray class >> remoteInstSpec [
+	^ 2
+]
+
+{ #category : #'instance creation' }
+EP2RemoteArray class >> role [ 
+	^ 'Array'
+]
+
 { #category : #printing }
 EP2RemoteArray >> allVariables [
 	| vars |

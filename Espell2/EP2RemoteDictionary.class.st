@@ -44,6 +44,16 @@ EP2RemoteDictionary class >> newWithBackend: anEP2Backend size: nElements [
 	
 ]
 
+{ #category : #constants }
+EP2RemoteDictionary class >> remoteInstSpec [
+	^ 1
+]
+
+{ #category : #constants }
+EP2RemoteDictionary class >> role [ 
+	^ 'Dictionary'
+]
+
 { #category : #'high-level-messages' }
 EP2RemoteDictionary >> add: anEP2RemoteObject [
 	| index element assoc |

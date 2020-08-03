@@ -13,6 +13,16 @@ EP2RemoteProcess class >> createProcessForContext: aRemoteContext andPriority: a
 	^newProcess
 ]
 
+{ #category : #constants }
+EP2RemoteProcess class >> remoteInstSpec [
+	^ 1
+]
+
+{ #category : #constants }
+EP2RemoteProcess class >> role [ 
+	^ 'Process'
+]
+
 { #category : #accessing }
 EP2RemoteProcess >> context: anEP2RemoteContext [ 
 	self 
