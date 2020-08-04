@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteProcess,
-	#superclass : #EP2RemoteObject,
+	#superclass : #EP2RemotePointer,
 	#category : #'Espell2-Kernel'
 }
 
@@ -14,7 +14,7 @@ EP2RemoteProcess class >> createProcessForContext: aRemoteContext andPriority: a
 ]
 
 { #category : #constants }
-EP2RemoteProcess class >> remoteInstSpec [
+EP2RemoteProcess class >> modelInstSpec [
 	^ 1
 ]
 

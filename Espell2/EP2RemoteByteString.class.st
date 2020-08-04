@@ -5,7 +5,7 @@ Class {
 }
 
 { #category : #constants }
-EP2RemoteByteString class >> remoteInstSpec [
+EP2RemoteByteString class >> modelInstSpec [
 	^ 16
 ]
 

@@ -1,11 +1,11 @@
 Class {
 	#name : #EP2RemoteString,
-	#superclass : #EP2RemoteObject,
+	#superclass : #EP2RemotePointer,
 	#category : #'Espell2-Kernel'
 }
 
 { #category : #constants }
-EP2RemoteString class >> remoteInstSpec [
+EP2RemoteString class >> modelInstSpec [
 	^ 0
 ]
 

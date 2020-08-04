@@ -1,11 +1,11 @@
 Class {
 	#name : #EP2RemoteProcessorScheduler,
-	#superclass : #EP2RemoteObject,
+	#superclass : #EP2RemotePointer,
 	#category : #'Espell2-Kernel'
 }
 
 { #category : #constants }
-EP2RemoteProcessorScheduler class >> remoteInstSpec [
+EP2RemoteProcessorScheduler class >> modelInstSpec [
 	^ 1
 ]
 

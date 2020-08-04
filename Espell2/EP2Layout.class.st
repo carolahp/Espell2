@@ -9,7 +9,7 @@ Class {
 
 { #category : #'remote-objects-relationship' }
 EP2Layout class >> defaultRemoteObjectClass [
-	^ EP2RemoteObject
+	^ EP2RemotePointer
 ]
 
 { #category : #'gt-inspector' }

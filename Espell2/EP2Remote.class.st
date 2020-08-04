@@ -8,16 +8,8 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
-{ #category : #'instance creation' }
-EP2Remote class >> on: anEPMirror [ 
-	
-	^ self new
-		mirror: anEPMirror;
-		yourself
-]
-
 { #category : #constants }
-EP2Remote class >> remoteInstSpec [
+EP2Remote class >> modelInstSpec [
 	"Answer the instance specification part of the format that defines what kind of object
 	 an instance of the receiver is.  The formats are
 			0	= 0 sized objects (UndefinedObject True False et al)
@@ -37,9 +29,17 @@ EP2Remote class >> remoteInstSpec [
 	self subclassResponsibility
 ]
 
+{ #category : #'instance creation' }
+EP2Remote class >> on: anEPMirror [ 
+	
+	^ self new
+		mirror: anEPMirror;
+		yourself
+]
+
 { #category : #constants }
 EP2Remote class >> role [ 
-	self subclassResponsibility 
+	^ 'ProtoObject'
 ]
 
 { #category : #'accessing-instVars' }
@@ -53,8 +53,43 @@ EP2Remote >> allVariables [
 ]
 
 { #category : #converting }
+EP2Remote >> asRemoteArray [
+	^ EP2RemoteArray on: self mirror
+]
+
+{ #category : #converting }
+EP2Remote >> asRemoteAssociation [
+	^ self mirror asRemoteAssociation
+]
+
+{ #category : #converting }
 EP2Remote >> asRemoteBlock [
 	^ self mirror asRemoteBlock
+]
+
+{ #category : #converting }
+EP2Remote >> asRemoteByteString [
+	^ EP2RemoteByteString on: self mirror 
+]
+
+{ #category : #converting }
+EP2Remote >> asRemoteClass [
+	^ self mirror asRemoteClass
+]
+
+{ #category : #converting }
+EP2Remote >> asRemoteCompiledMethod [
+	^ EP2RemoteCompiledMethod on: self mirror
+]
+
+{ #category : #converting }
+EP2Remote >> asRemoteContext [
+	^ self mirror asRemoteContext
+]
+
+{ #category : #converting }
+EP2Remote >> asRemoteDictionary [
+	^ self mirror asRemoteDictionary
 ]
 
 { #category : #converting }
@@ -63,8 +98,18 @@ EP2Remote >> asRemoteFalse [
 ]
 
 { #category : #converting }
+EP2Remote >> asRemoteNil [
+	^ EP2RemoteUndefinedObject on: self mirror
+]
+
+{ #category : #converting }
 EP2Remote >> asRemoteObject [
 	^ self 
+]
+
+{ #category : #converting }
+EP2Remote >> asRemoteObjectCasted [
+	^ self mirror asRemoteObjectCasted
 ]
 
 { #category : #converting }
@@ -72,9 +117,14 @@ EP2Remote >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 	^ self 
 ]
 
-{ #category : #convertion }
+{ #category : #converting }
 EP2Remote >> asRemoteProcess [
 	^ EP2RemoteProcess on: self mirror
+]
+
+{ #category : #converting }
+EP2Remote >> asRemoteScheduler [
+	^ EP2RemoteProcessorScheduler on: self mirror
 ]
 
 { #category : #converting }
@@ -94,16 +144,18 @@ EP2Remote >> backend [
 
 { #category : #'high-level-message' }
 EP2Remote >> basicClass [
-	self subclassResponsibility 
+	"^ self backend builder classNamed: self class role"
+	^ self mirror basicClass
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'become api' }
 EP2Remote >> becomeInto: anEP2Remote [ 
 	^ self backend become: self into: anEP2Remote 
 ]
 
 { #category : #converting }
 EP2Remote >> classDefinition [
+	self halt.
 	^ nil
 ]
 
@@ -126,11 +178,6 @@ EP2Remote >> executePrimitiveMethod: aCompiledMethod withArguments: arguments [
 EP2Remote >> gtInspectorIn: composite [
 	<gtInspectorPresentationOrder: 1>
 	^ self layout gtInspectorIn: composite
-]
-
-{ #category : #'as yet unclassified' }
-EP2Remote >> instanceVariableNamed: aString [ 
-	^ nil
 ]
 
 { #category : #testing }

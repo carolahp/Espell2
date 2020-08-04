@@ -1,8 +1,13 @@
 Class {
 	#name : #EP2RemoteEmptyObject,
-	#superclass : #EP2RemoteObject,
+	#superclass : #EP2RemotePointer,
 	#category : #'Espell2-Kernel'
 }
+
+{ #category : #constants }
+EP2RemoteEmptyObject class >> modelInstSpec [
+	^ 0
+]
 
 { #category : #'instance creation' }
 EP2RemoteEmptyObject class >> on: anEPMirror [
@@ -10,11 +15,6 @@ EP2RemoteEmptyObject class >> on: anEPMirror [
 	^ self new
 		mirror: anEPMirror;
 		yourself
-]
-
-{ #category : #constants }
-EP2RemoteEmptyObject class >> remoteInstSpec [
-	^ 0
 ]
 
 { #category : #constants }

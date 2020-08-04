@@ -10,7 +10,7 @@ EP2RemoteUndefinedObject class >> format [
 ]
 
 { #category : #constants }
-EP2RemoteUndefinedObject class >> remoteInstSpec [
+EP2RemoteUndefinedObject class >> modelInstSpec [
 	^ 0
 ]
 

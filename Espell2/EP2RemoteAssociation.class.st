@@ -1,8 +1,13 @@
 Class {
 	#name : #EP2RemoteAssociation,
-	#superclass : #EP2RemoteObject,
+	#superclass : #EP2RemotePointer,
 	#category : #'Espell2-Kernel'
 }
+
+{ #category : #constants }
+EP2RemoteAssociation class >> modelInstSpec [
+	^ 1
+]
 
 { #category : #'instance creation' }
 EP2RemoteAssociation class >> newWithBackend: anEP2Backend key: aString value: anInteger [ 
@@ -10,11 +15,6 @@ EP2RemoteAssociation class >> newWithBackend: anEP2Backend key: aString value: a
 		key: (aString asRemoteObjectInObjectSpace: anEP2Backend objectSpace);
 		value: (anInteger asRemoteObjectInObjectSpace: anEP2Backend objectSpace);
 		yourself
-]
-
-{ #category : #constants }
-EP2RemoteAssociation class >> remoteInstSpec [
-	^ 1
 ]
 
 { #category : #'instance creation' }

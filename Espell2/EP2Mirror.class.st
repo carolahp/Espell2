@@ -122,7 +122,7 @@ EP2Mirror >> asRemoteNil [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteObject [
-	^ EP2RemoteObject on: self
+	^ EP2RemotePointer on: self
 ]
 
 { #category : #'converting-high-level' }

@@ -1,166 +1,111 @@
 Class {
-	#name : #EP2RemoteObject,
+	#name : #EP2RemotePointer,
 	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
 
 { #category : #constants }
-EP2RemoteObject class >> remoteInstSpec [
+EP2RemotePointer class >> modelInstSpec [
 	^ 0
 ]
 
 { #category : #constants }
-EP2RemoteObject class >> role [ 
-	^ ''
+EP2RemotePointer class >> role [ 
+	self subclassResponsibility
 ]
 
 { #category : #constants }
-EP2RemoteObject class >> unmappedInstVarIndex [
+EP2RemotePointer class >> unmappedInstVarIndex [
 	^ 'unmapped'
 	
 ]
 
 { #category : #comparing }
-EP2RemoteObject >> = anotherRemote [
+EP2RemotePointer >> = anotherRemote [
 	([anotherRemote isEP2Remote ] on:Exception do: [ false ]) ifFalse: [ ^ false ].
 	^ self pointsToSameObject: anotherRemote
 ]
 
 { #category : #'accessing-instVars' }
-EP2RemoteObject >> allInstVars [
+EP2RemotePointer >> allInstVars [
 	^ (self basicClass allSlots select: #isInstanceVariableSlot) collect: [ :slot | slot name -> (slot read: self) ]
 ]
 
 { #category : #'accessing-variables' }
-EP2RemoteObject >> allVariables [
+EP2RemotePointer >> allVariables [
 	^ self basicClass allSlots collect: [ :slot | slot read: self ]
 ]
 
 { #category : #converting }
-EP2RemoteObject >> asClassDefinition [
+EP2RemotePointer >> asClassDefinition [
 	^ nil
 ]
 
 { #category : #converting }
-EP2RemoteObject >> asContextMirror [
+EP2RemotePointer >> asContextMirror [
 	^ self asRemoteContext asContextMirror
 ]
 
 { #category : #'converting loca' }
-EP2RemoteObject >> asLocalSmallInteger [
+EP2RemotePointer >> asLocalSmallInteger [
 	^ self mirror asLocalSmallInteger
 ]
 
 { #category : #'converting-local' }
-EP2RemoteObject >> asLocalString [
+EP2RemotePointer >> asLocalString [
 	^ self asRemoteByteString asLocalString
 ]
 
-{ #category : #converting }
-EP2RemoteObject >> asRemoteArray [
-	^ EP2RemoteArray on: self mirror
-]
-
-{ #category : #converting }
-EP2RemoteObject >> asRemoteAssociation [
-	^ self mirror asRemoteAssociation
-]
-
-{ #category : #converting }
-EP2RemoteObject >> asRemoteByteString [
-	^ EP2RemoteByteString on: self mirror 
-]
-
-{ #category : #converting }
-EP2RemoteObject >> asRemoteClass [
-	^ self mirror asRemoteClass
-]
-
-{ #category : #converting }
-EP2RemoteObject >> asRemoteCompiledMethod [
-	^ EP2RemoteCompiledMethod on: self mirror
-]
-
-{ #category : #converting }
-EP2RemoteObject >> asRemoteContext [
-	^ self mirror asRemoteContext
-]
-
-{ #category : #converting }
-EP2RemoteObject >> asRemoteDictionary [
-	^ self mirror asRemoteDictionary
-]
-
-{ #category : #converting }
-EP2RemoteObject >> asRemoteNil [
-	^ EP2RemoteUndefinedObject on: self mirror
-]
-
-{ #category : #converting }
-EP2RemoteObject >> asRemoteObjectCasted [
-	^ self mirror asRemoteObjectCasted
-]
-
-{ #category : #converting }
-EP2RemoteObject >> asRemoteScheduler [
-	^ EP2RemoteProcessorScheduler on: self mirror
-]
-
 { #category : #'converting-local' }
-EP2RemoteObject >> asSmallInteger [
+EP2RemotePointer >> asSmallInteger [
 	^ self asRemoteSmallInteger asSmallInteger 
 ]
 
 { #category : #accessing }
-EP2RemoteObject >> at: index [
+EP2RemotePointer >> at: index [
 	^ (self layout at: index) asRemoteObject
 ]
 
 { #category : #accessing }
-EP2RemoteObject >> at: index put: aReference [
+EP2RemotePointer >> at: index put: aReference [
 	self layout at: index put: aReference
 ]
 
-{ #category : #'high-level-message' }
-EP2RemoteObject >> basicClass [ 
-	^ self mirror basicClass
-]
-
 { #category : #accessing }
-EP2RemoteObject >> basicSize [
+EP2RemotePointer >> basicSize [
 	
 	^ self backend basicSizeOf: self
 ]
 
 { #category : #'accessing-instVars' }
-EP2RemoteObject >> instanceVariableAtIndex: index [
+EP2RemotePointer >> instanceVariableAtIndex: index [
 	(index == self class unmappedInstVarIndex) ifTrue: [ ^self backend nilObject ].
 	^ self layout instanceVariableAtIndex: index
 ]
 
 { #category : #'accessing-instVars' }
-EP2RemoteObject >> instanceVariableAtIndex: index put: anObject [
+EP2RemotePointer >> instanceVariableAtIndex: index put: anObject [
 	(index == self class unmappedInstVarIndex) ifTrue: [ self error: 'Unmapped Inst Var writting attempt' ].
 	self layout instanceVariableAtIndex: index put: anObject
 ]
 
 { #category : #'accessing-instVars' }
-EP2RemoteObject >> instanceVariableNamed: aString [ 
+EP2RemotePointer >> instanceVariableNamed: aString [ 
 	^ self layout instanceVariableNamed: aString
 ]
 
 { #category : #testing }
-EP2RemoteObject >> isExternalObject [
+EP2RemotePointer >> isExternalObject [
 	^ self target isExternalHandle
 ]
 
 { #category : #comparing }
-EP2RemoteObject >> pointsToSameObject: aRemoteObjectOrMirror [
+EP2RemotePointer >> pointsToSameObject: aRemoteObjectOrMirror [
 	^self target = aRemoteObjectOrMirror target
 ]
 
 { #category : #printing }
-EP2RemoteObject >> printOn: aStream [
+EP2RemotePointer >> printOn: aStream [
 	|selfcasted|
 	selfcasted := self asRemoteObjectCasted.
 	(selfcasted class = self class) 
@@ -173,7 +118,7 @@ EP2RemoteObject >> printOn: aStream [
 ]
 
 { #category : #'public-api' }
-EP2RemoteObject >> setClass: aRemoteClass [
+EP2RemotePointer >> setClass: aRemoteClass [
 	[
 		self backend classHandle: self target setTo: aRemoteClass target
 	] on: PrimitiveFailed do: [ 
@@ -185,22 +130,22 @@ EP2RemoteObject >> setClass: aRemoteClass [
 ]
 
 { #category : #'accessing-header' }
-EP2RemoteObject >> setHashBitsTo: anInteger [ 
+EP2RemotePointer >> setHashBitsTo: anInteger [ 
 	self mirror setHashBitsTo: anInteger
 ]
 
 { #category : #accessing }
-EP2RemoteObject >> size [
+EP2RemotePointer >> size [
 	
 	^ self basicSize
 ]
 
 { #category : #'accessing-pvt' }
-EP2RemoteObject >> systemDefinition [
+EP2RemotePointer >> systemDefinition [
 	^ mirror backend systemDefinition
 ]
 
 { #category : #'accessing-mirror' }
-EP2RemoteObject >> target: anEP2SimulatorClassTableHandle [ 
+EP2RemotePointer >> target: anEP2SimulatorClassTableHandle [ 
 	self mirror target: anEP2SimulatorClassTableHandle
 ]

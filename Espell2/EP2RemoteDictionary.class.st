@@ -1,8 +1,13 @@
 Class {
 	#name : #EP2RemoteDictionary,
-	#superclass : #EP2RemoteObject,
+	#superclass : #EP2RemotePointer,
 	#category : #'Espell2-Kernel'
 }
+
+{ #category : #constants }
+EP2RemoteDictionary class >> modelInstSpec [
+	^ 1
+]
 
 { #category : #'instance creation' }
 EP2RemoteDictionary class >> newFrom: aDict [ 
@@ -42,11 +47,6 @@ EP2RemoteDictionary class >> newWithBackend: anEP2Backend size: nElements [
 	
 	^ dict
 	
-]
-
-{ #category : #constants }
-EP2RemoteDictionary class >> remoteInstSpec [
-	^ 1
 ]
 
 { #category : #constants }

@@ -5,7 +5,7 @@ Class {
 }
 
 { #category : #constants }
-EP2RemoteCharacter class >> remoteInstSpec [
+EP2RemoteCharacter class >> modelInstSpec [
 	^ 7
 ]
 
@@ -22,11 +22,6 @@ EP2RemoteCharacter >> asLocalCharacter [
 { #category : #'converting remote-to-local' }
 EP2RemoteCharacter >> asLocalLiteral [
 	 ^ self asLocalCharacter
-]
-
-{ #category : #'high-level-message' }
-EP2RemoteCharacter >> basicClass [
-	^  self backend builder classNamed: #Character
 ]
 
 { #category : #'high-level-message' }

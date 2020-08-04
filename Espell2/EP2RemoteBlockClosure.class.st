@@ -1,11 +1,11 @@
 Class {
 	#name : #EP2RemoteBlockClosure,
-	#superclass : #EP2RemoteObject,
+	#superclass : #EP2RemotePointer,
 	#category : #'Espell2-Kernel'
 }
 
 { #category : #constants }
-EP2RemoteBlockClosure class >> remoteInstSpec [
+EP2RemoteBlockClosure class >> modelInstSpec [
 	^ 3 "may be 1 too"
 ]
 

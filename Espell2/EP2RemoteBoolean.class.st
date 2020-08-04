@@ -5,7 +5,7 @@ Class {
 }
 
 { #category : #constants }
-EP2RemoteBoolean class >> remoteInstSpec [
+EP2RemoteBoolean class >> modelInstSpec [
 	^ 0
 ]
 

@@ -5,7 +5,7 @@ Class {
 }
 
 { #category : #constants }
-EP2RemoteMethodDictionary class >> remoteInstSpec [
+EP2RemoteMethodDictionary class >> modelInstSpec [
 	^ 3
 ]
 
@@ -16,7 +16,6 @@ EP2RemoteMethodDictionary class >> role [
 
 { #category : #'gt-inspector' }
 EP2RemoteMethodDictionary >> gtInspectorIn: composite [
-	<gtInspectorPresentationOrder: 1>
 	^ composite table
 		title: self asString;
 		display: [ (self array allVariables 

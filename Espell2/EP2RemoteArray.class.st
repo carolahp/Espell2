@@ -1,17 +1,17 @@
 Class {
 	#name : #EP2RemoteArray,
-	#superclass : #EP2RemoteObject,
+	#superclass : #EP2RemotePointer,
 	#category : #'Espell2-Kernel'
 }
+
+{ #category : #constants }
+EP2RemoteArray class >> modelInstSpec [
+	^ 2
+]
 
 { #category : #'instance creation' }
 EP2RemoteArray class >> newWithSize: anInteger withBackend: anEP2Backend [ 
 	^ anEP2Backend basicNewOn: anEP2Backend arrayClass withSize: anInteger
-]
-
-{ #category : #constants }
-EP2RemoteArray class >> remoteInstSpec [
-	^ 2
 ]
 
 { #category : #'instance creation' }

@@ -1,14 +1,11 @@
 Class {
 	#name : #EP2RemoteClass,
-	#superclass : #EP2RemoteObject,
-	#instVars : [
-		'slots'
-	],
+	#superclass : #EP2RemotePointer,
 	#category : #'Espell2-Kernel'
 }
 
 { #category : #constants }
-EP2RemoteClass class >> remoteInstSpec [
+EP2RemoteClass class >> modelInstSpec [
 	^ 1
 ]
 
@@ -174,12 +171,6 @@ EP2RemoteClass >> compactClassIndex [
 	
 ]
 
-{ #category : #'accessing-slots' }
-EP2RemoteClass >> defaultSlots [
-
-	^ OrderedCollection new
-]
-
 { #category : #'public-api' }
 EP2RemoteClass >> fixedSize [
 	^self basicClass instanceFixedSize
@@ -197,8 +188,7 @@ EP2RemoteClass >> format: anInteger [
 
 { #category : #initialize }
 EP2RemoteClass >> initialize [ 
-	super initialize.
-	slots := self defaultSlots.
+	super initialize
 ]
 
 { #category : #binding }

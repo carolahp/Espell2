@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteContext,
-	#superclass : #EP2RemoteObject,
+	#superclass : #EP2RemotePointer,
 	#category : #'Espell2-Kernel'
 }
 
@@ -20,7 +20,7 @@ EP2RemoteContext class >> createContextForMethod: aRemoteCompiledMethod inObject
 ]
 
 { #category : #constants }
-EP2RemoteContext class >> remoteInstSpec [
+EP2RemoteContext class >> modelInstSpec [
 	^ 3
 ]
 

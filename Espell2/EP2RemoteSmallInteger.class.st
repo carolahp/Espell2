@@ -1,17 +1,17 @@
 Class {
 	#name : #EP2RemoteSmallInteger,
-	#superclass : #EP2Remote,
+	#superclass : #EP2RemoteImmediate,
 	#category : #'Espell2-Kernel'
 }
+
+{ #category : #constants }
+EP2RemoteSmallInteger class >> modelInstSpec [
+	^ 7
+]
 
 { #category : #'instance creation' }
 EP2RemoteSmallInteger class >> on: anEP2SimulatorAddressHandle from: anEP2Backend [ 
 	^ self on: (EP2Mirror on: anEP2SimulatorAddressHandle from: anEP2Backend)
-]
-
-{ #category : #constants }
-EP2RemoteSmallInteger class >> remoteInstSpec [
-	^ 7
 ]
 
 { #category : #'bootstrap roles' }
@@ -65,11 +65,6 @@ EP2RemoteSmallInteger >> asRemoteSmallInteger [
 { #category : #'converting-local' }
 EP2RemoteSmallInteger >> asSmallInteger [
 	^ self asLocalSmallInteger 
-]
-
-{ #category : #'high-level-message' }
-EP2RemoteSmallInteger >> basicClass [
-	^ self backend builder classNamed: #SmallInteger
 ]
 
 { #category : #'high-level-message' }
