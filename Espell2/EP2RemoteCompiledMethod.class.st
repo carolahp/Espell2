@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteCompiledMethod,
-	#superclass : #EP2RemoteObject,
+	#superclass : #EP2RemotePointer,
 	#category : #'Espell2-Kernel'
 }
 
@@ -59,7 +59,7 @@ EP2RemoteCompiledMethod >> frameSize [
 ]
 
 { #category : #'high-level-messages' }
-EP2RemoteCompiledMethod >> gtInspectorRawIn: composite [ 
+EP2RemoteCompiledMethod >> gtInspectorRaw2In: composite [ 
 	<gtInspectorPresentationOrder: 2>
 	^ self layout gtInspectorRawIn: composite
 ]
@@ -105,7 +105,7 @@ EP2RemoteCompiledMethod >> methodClass [
 	| binding |
 	binding := self literalAt: self numberOfLiterals.
 	binding isNilObject ifTrue: [ ^nil ].
-	^ binding asRemoteClass
+	^ binding asRemoteAssociation value asRemoteClass
 ]
 
 { #category : #accessing }
