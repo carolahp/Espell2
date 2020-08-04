@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteCharacter,
-	#superclass : #EP2Remote,
+	#superclass : #EP2RemoteImmediate,
 	#category : #'Espell2-Kernel'
 }
 
@@ -17,6 +17,11 @@ EP2RemoteCharacter class >> role [
 { #category : #'high-level-message' }
 EP2RemoteCharacter >> asLocalCharacter [
 	^ self backend fromRemoteCharacter: self
+]
+
+{ #category : #'converting remote-to-local' }
+EP2RemoteCharacter >> asLocalLiteral [
+	 ^ self asLocalCharacter
 ]
 
 { #category : #'high-level-message' }
