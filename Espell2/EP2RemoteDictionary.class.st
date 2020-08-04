@@ -105,7 +105,8 @@ EP2RemoteDictionary >> associationsDo: aBlockClosure [
 EP2RemoteDictionary >> at: key [
 	"Answer the value associated with the key."
 
-	^ self at: key ifAbsent: [ self errorKeyNotFound ]
+	^ self at: key 
+		ifAbsent: [ EP2RemoteKeyNotFound new key: key; signal ]
 ]
 
 { #category : #'high-level-messages' }
@@ -153,11 +154,6 @@ EP2RemoteDictionary >> dictionaryArrayIndex [
 { #category : #'instVars-mapping' }
 EP2RemoteDictionary >> dictionaryTallyIndex [ 
 	^ (self systemDefinition instanceVariableMapping dictionaryTallyIndex) ifNil: [ self error: 'undefined index for tally inst var in Dictionary' ]
-]
-
-{ #category : #errors }
-EP2RemoteDictionary >> errorKeyNotFound [
-	self error: 'key not found'
 ]
 
 { #category : #'high-level-messages' }

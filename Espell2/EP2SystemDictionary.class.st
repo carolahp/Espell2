@@ -42,37 +42,27 @@ EP2SystemDictionary >> associationsDo: aBlockClosure [
 
 { #category : #testing }
 EP2SystemDictionary >> at: aString [ 
-	
 	cache at: aString ifPresent: [ :global | ^global ].
-	^ objectSpace interpreter
-			evaluateCode: 'systemDictionary at: key'
-			withTemps: {
-				'systemDictionary' -> systemDictionary.
-				'key' -> (aString asSymbol asLiteralInObjectSpace: objectSpace) }
+	^ systemDictionary at: aString.
+	
 ]
 
 { #category : #accessing }
 EP2SystemDictionary >> at: aString ifAbsent: aBlockClosure [ 
-	 
-	^ [self at: aString] on: Error do: [ cache at: aString put: nil . aBlockClosure value ]
+	  
+	^ [self at: aString] on: EP2RemoteKeyNotFound do: [ cache at: aString put: nil . aBlockClosure value ]
 ]
 
 { #category : #testing }
 EP2SystemDictionary >> at: aString put: aValue [
 	
 	cache at: aString put: aValue.
-	
-	^ objectSpace interpreter
-			evaluateCode: 'systemDictionary at: key put: aValue'
-			withTemps: { 
-				'systemDictionary' -> systemDictionary.
-				'key' -> (aString asSymbol asLiteralInObjectSpace: objectSpace).
-				'aValue' -> aValue }
+	^ systemDictionary at: aString put: aValue
 ]
 
 { #category : #binding }
 EP2SystemDictionary >> bindingOf: aName [
-
+self halt.
 	^ objectSpace interpreter
 		evaluateCode: 'systemDictionary bindingOf: key'
 		withTemps: { 
@@ -85,11 +75,6 @@ EP2SystemDictionary >> buildCache [
 
 	objectSpace backend classes do: [ :each |
 		cache at: each className put: each ]
-]
-
-{ #category : #'accessing-classes' }
-EP2SystemDictionary >> classNamed: aString [ 
-	^ self environment bootstrapEnvironmentAt: aString
 ]
 
 { #category : #accessing }
@@ -168,5 +153,5 @@ EP2SystemDictionary >> size [
 { #category : #initialization }
 EP2SystemDictionary >> withSystemDictionary: aSystemDictionary [
 
-	systemDictionary := aSystemDictionary
+	systemDictionary := aSystemDictionary asRemoteDictionary
 ]
