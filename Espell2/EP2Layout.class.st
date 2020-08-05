@@ -3,7 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'remote',
-		'backend'
+		'slots'
 	],
 	#category : #'Espell2-Kernel-Layouts'
 }
@@ -51,6 +51,11 @@ EP2Layout class >> on: anEP2Remote [
 ]
 
 { #category : #'accessing - slots' }
+EP2Layout >> addSlot: aSlot [ 
+	self backend addSlot: aSlot to: self 
+]
+
+{ #category : #'accessing - slots' }
 EP2Layout >> allInstVars [
 	^ (self remote basicClass allSlots select: #isInstanceVariableSlot)
 		collect: [ :slot | slot name -> (slot read: self remote) ]
@@ -77,6 +82,11 @@ EP2Layout >> backend [
 	^ self remote backend
 ]
 
+{ #category : #accessing }
+EP2Layout >> defaultSlots [
+	^ OrderedCollection new
+]
+
 { #category : #'gt-extension' }
 EP2Layout >> gtInspectorIn: composite [
 	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
@@ -89,6 +99,12 @@ EP2Layout >> gtInspectorIn: composite [
 		column: 'Variable' evaluated: [:slot | slot name ];
 		column: 'Value' evaluated: [ :slot | (remote readSlotNamed: slot name) asRemoteObjectCasted  ];
 		send: [ :slot | slot ifNotNil: [(remote readSlotNamed: slot name) asRemoteObjectCasted ] ]
+]
+
+{ #category : #accessing }
+EP2Layout >> initialize [ 
+	super initialize.
+	slots := self defaultSlots
 ]
 
 { #category : #accessing }

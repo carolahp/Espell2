@@ -11,12 +11,6 @@ EP2PointerLayout class >> on: anEP2RemoteObject [
 		yourself
 ]
 
-{ #category : #'queries-slots' }
-EP2PointerLayout >> defaultSlots [
-
-	^ OrderedCollection new
-]
-
 { #category : #'testing-types' }
 EP2PointerLayout >> isPointerLayout [
 

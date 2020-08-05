@@ -29,6 +29,18 @@ EP2MLanguage class >> defaultPackagesListFull [
 	^ nil
 ]
 
+{ #category : #'hooks-api' }
+EP2MLanguage class >> indexedSlotMetaclass [
+	" Return the subclass of EP2MSlot that defines the metamodel for slots of the language "
+	self subclassResponsibility 
+]
+
+{ #category : #'hooks-api' }
+EP2MLanguage class >> instanceVariableSlotMetaclass [
+	" Return the subclass of EP2MSlot that defines the metamodel for slots of the language "
+	self subclassResponsibility 
+]
+
 { #category : #initialization }
 EP2MLanguage >> addBehavior: aMClass [
 	self classNamed: aMClass name ifAbsent: [ self behaviors at: aMClass name put: aMClass ]
