@@ -4,11 +4,6 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
-{ #category : #accessing }
-EP2VariableLayout class >> at: anIndex put: anEP2Mirror [ 
-	self mirror backend object: self mirror target address at: anIndex put: anEP2Mirror target address
-]
-
 { #category : #'gt-extension' }
 EP2VariableLayout >> gtInspectorIn: composite [
 	^ composite table

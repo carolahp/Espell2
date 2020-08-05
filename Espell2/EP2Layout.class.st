@@ -2,7 +2,8 @@ Class {
 	#name : #EP2Layout,
 	#superclass : #Object,
 	#instVars : [
-		'remote'
+		'remote',
+		'backend'
 	],
 	#category : #'Espell2-Kernel-Layouts'
 }
@@ -56,12 +57,13 @@ EP2Layout >> at: index [
 
 { #category : #accessing }
 EP2Layout >> at: index put: anObject [
-	self backend object: self at: index put: (self backend localObjectAsRemoteObject: anObject)
+
+	self backend object: self at: index put: anObject
 ]
 
 { #category : #'accessing-pvt' }
 EP2Layout >> backend [ 
-	^ self remote mirror backend
+	^ self remote backend
 ]
 
 { #category : #'gt-extension' }
@@ -85,7 +87,7 @@ EP2Layout >> instanceVariableAtIndex: index [
 
 { #category : #accessing }
 EP2Layout >> instanceVariableAtIndex: index put: anObject [
-	self backend object: self instVarAt: index put: (self backend localObjectAsRemoteObject: anObject)
+	self backend object: self instVarAt: index put: anObject
 ]
 
 { #category : #'accessing-instVars' }

@@ -832,10 +832,12 @@ EP2Backend >> object: object at: index [
 
 { #category : #'accessing-objects body' }
 EP2Backend >> object: object at: index put: value [
+	| remoteValue |
+	remoteValue := self localObjectAsRemoteObject: value.
 	self 
 		objectOop: object target address 
 		at: index 
-		putOop: value target address 
+		putOop: remoteValue target address 
 ]
 
 { #category : #'accessing-objects body' }
@@ -847,10 +849,11 @@ EP2Backend >> object: object instVarAt: index [
 
 { #category : #'accessing-objects body' }
 EP2Backend >> object: object instVarAt: index put: value [
-
+	| remoteValue |
+	remoteValue := self localObjectAsRemoteObject: value.
 	self objectOop: object target address 
 		instVarAt: index 
-		putOop: value target address
+		putOop: remoteValue target address
 ]
 
 { #category : #accessing }

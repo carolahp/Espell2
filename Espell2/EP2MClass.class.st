@@ -30,6 +30,12 @@ EP2MClass class >> named: aString parent: anEP2MLanguage [
 		yourself
 ]
 
+{ #category : #'accessing slots' }
+EP2MClass >> addSlot: aString [ 
+	^ self layout addSlot: aString to: self
+		
+]
+
 { #category : #'default model values' }
 EP2MClass >> defaultMethodDictionary [
 	^ IdentityDictionary new 

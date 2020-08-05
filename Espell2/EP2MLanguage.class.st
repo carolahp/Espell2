@@ -40,11 +40,7 @@ EP2MLanguage >> addBehaviorFromTemplate: aClassEP2Remote [
 	template := aClassEP2Remote.
 	model := self
 		classNamed: template role
-		ifAbsent: [ (self class classMetaclass
-				named: template role parent: self)
-				layout: template layoutClass;
-				role: template role;
-				yourself ].
+		ifAbsent: [ self newBehaviorFromTemplate: template ].
 	self addBehavior: model.
 	self packages anyOne addDefinedBehavior: model.
 	^ model
@@ -153,6 +149,20 @@ EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 EP2MLanguage >> loadTonelRepository: aTonelRepository packagesNames: aCollection classesNames: anUndefinedObject [
 	"retrocompatibility" 
 	^ self
+]
+
+{ #category : #initialization }
+EP2MLanguage >> newBehaviorFromTemplate: aClassEP2Remote [
+	| behavior template |
+	template := aClassEP2Remote.
+	behavior := self class classMetaclass
+		named: template role
+		parent: self.
+	behavior
+		role: template role;
+		layout: (template layoutClass on: behavior).
+	template allInstVarNames do: [ :each | behavior addSlot: each ].
+	^ behavior
 ]
 
 { #category : #'accessing backend' }
