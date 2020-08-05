@@ -4,6 +4,14 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
+{ #category : #'accessing-variables' }
+EP2VariableLayout >> allVariables [
+	| vars |
+	vars := #() asOrderedCollection.
+	self remote slotsDo: [ :slot | vars add: (slot read: self remote) ].
+	^ vars
+]
+
 { #category : #'gt-extension' }
 EP2VariableLayout >> gtInspectorIn: composite [
 	^ composite table

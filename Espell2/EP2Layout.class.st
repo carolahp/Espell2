@@ -50,6 +50,17 @@ EP2Layout class >> on: anEP2Remote [
 		yourself
 ]
 
+{ #category : #'accessing - slots' }
+EP2Layout >> allInstVars [
+	^ (self remote basicClass allSlots select: #isInstanceVariableSlot)
+		collect: [ :slot | slot name -> (slot read: self remote) ]
+]
+
+{ #category : #'accessing - slots' }
+EP2Layout >> allVariables [
+	^ self remote basicClass allSlots collect: [ :slot | slot read: self remote ]
+]
+
 { #category : #accessing }
 EP2Layout >> at: index [
 	^ self backend object: self at: index
@@ -196,6 +207,11 @@ EP2Layout >> remote: anEPRemoteObject [
 { #category : #accessing }
 EP2Layout >> slotNamed: aString [
 	^ (self allSlots select: [ :slot | slot name = aString ]) anyOne
+]
+
+{ #category : #'accessing - slots' }
+EP2Layout >> slotsDo: aBlock [
+	self backend slotsFor: self remote do: aBlock
 ]
 
 { #category : #'accessing-pvt' }

@@ -52,16 +52,6 @@ EP2RemoteSmallInteger >> \\ aRemoteInteger [
 		withArguments: { aRemoteInteger }) asRemoteSmallInteger
 ]
 
-{ #category : #'accessing-instVars' }
-EP2RemoteSmallInteger >> allInstVars [
-	^ #()
-]
-
-{ #category : #'accessing-variables' }
-EP2RemoteSmallInteger >> allVariables [
-	^#()
-]
-
 { #category : #'converting-to-local' }
 EP2RemoteSmallInteger >> asLocalLiteral [
 	^ self asLocalSmallInteger

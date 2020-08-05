@@ -1008,18 +1008,26 @@ EP2Backend >> simulator: aStackInterpreterSimulatorLSB [
 ]
 
 { #category : #'accessing-slots' }
-EP2Backend >> slotsFor: anEP2RemoteClass do: aBlockClosure [ 
-	| classDefinition |
+EP2Backend >> slotsFor: aClassOrVariableSizedObject do: aBlockClosure [ 
 	"getting the corresponding definition from systemDefinition"
-	classDefinition := anEP2RemoteClass asClassDefinition. 
-	classDefinition 
-		ifNotNil: [ classDefinition allSlots do: [:each | | newSlot slotDefiningClass | 
+	 
+	aClassOrVariableSizedObject asClassDefinition
+		ifNotNil: [ :classDef | 
+			classDef allSlots do: [:each | | newSlot slotDefiningClass | 
 				slotDefiningClass := self builder classNamed: each parent parent name.
 				"we create a new EP2Slot from the definition"
 				newSlot := each asEP2Slot definingClass: slotDefiningClass; index: each index; yourself.
 				aBlockClosure value: newSlot ]]
-		ifNil: [ 
-			self haltOnce.
+		ifNil: [ | variableObj |
+			variableObj := aClassOrVariableSizedObject.
+			1 to: variableObj basicSize do: [ :index | | newSlot |
+				newSlot := EP2IndexedSlot new 
+					definingClass: variableObj basicClass; 
+					index: index;
+					name: index asString;
+					yourself.
+				aBlockClosure value: newSlot
+		]
 			 ]
 ]
 

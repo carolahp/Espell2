@@ -67,12 +67,12 @@ EP2Remote >> = anotherRemote [
 
 { #category : #'accessing-instVars' }
 EP2Remote >> allInstVars [
-	^ (self basicClass allSlots select: #isInstanceVariableSlot) collect: [ :slot | slot name -> (slot read: self) ]
+	^ self layout allInstVars
 ]
 
 { #category : #'accessing-variables' }
 EP2Remote >> allVariables [
-	^ self basicClass allSlots collect: [ :slot | slot read: self ]
+	^ self layout allVariables
 ]
 
 { #category : #converting }
@@ -113,6 +113,11 @@ EP2Remote >> asRemoteBlock [
 { #category : #converting }
 EP2Remote >> asRemoteByteString [
 	^ EP2RemoteByteString on: self mirror 
+]
+
+{ #category : #converting }
+EP2Remote >> asRemoteCharacter [
+	^ self mirror asRemoteCharacter
 ]
 
 { #category : #converting }
@@ -386,6 +391,19 @@ EP2Remote >> setHashBitsTo: anInteger [
 EP2Remote >> size [
 	
 	^ self basicSize
+]
+
+{ #category : #'accessing-slots' }
+EP2Remote >> slots [
+	| allSlots |
+	allSlots := OrderedCollection new.
+	self slotsDo: [ :each | allSlots add: each].
+	^ allSlots asArray
+]
+
+{ #category : #'accessing-slots' }
+EP2Remote >> slotsDo: aBlock [ 
+	self layout slotsDo: aBlock
 ]
 
 { #category : #'accessing-pvt' }

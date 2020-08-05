@@ -14,16 +14,6 @@ EP2RemoteCharacter class >> role [
 	^ 'Character'
 ]
 
-{ #category : #'accessing-instVars' }
-EP2RemoteCharacter >> allInstVars [
-	^ #()
-]
-
-{ #category : #'accessing-instVars' }
-EP2RemoteCharacter >> allVariables [
-	^#()
-]
-
 { #category : #'high-level-message' }
 EP2RemoteCharacter >> asLocalCharacter [
 	^ self backend fromRemoteCharacter: self
@@ -42,6 +32,11 @@ EP2RemoteCharacter >> at: index [
 { #category : #accessing }
 EP2RemoteCharacter >> at: index put: value [
 	self shouldNotImplement 
+]
+
+{ #category : #accessing }
+EP2RemoteCharacter >> basicSize [
+	^ 0
 ]
 
 { #category : #'accessing-instVars' }

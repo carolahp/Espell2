@@ -29,11 +29,6 @@ EP2RemoteClass >> addressDefinitionMap [
 	^ self backend objectSpace interpreter codeProvider classLoader addressDefinitionMap
 ]
 
-{ #category : #'accessing-instVars' }
-EP2RemoteClass >> allInstVars [
-	^ (self allSlots select: #isInstanceVariableSlot) collect: [ :slot | slot name -> (slot read: self) ]
-]
-
 { #category : #'accessing-slots' }
 EP2RemoteClass >> allSlots [ 
 	^ self slots
@@ -320,19 +315,6 @@ EP2RemoteClass >> slotNamed: aString [
 	^ (self allSlots select: [ :slot | slot name = aString ]) 
 		ifEmpty: [ EP2SlotNotFoundException signal ] 
 		ifNotEmpty: [:results | results anyOne]
-]
-
-{ #category : #'accessing-slots' }
-EP2RemoteClass >> slots [
-	| allSlots |
-	allSlots := OrderedCollection new.
-	self slotsDo: [ :each | allSlots add: each].
-	^ allSlots asArray
-]
-
-{ #category : #'accessing-slots' }
-EP2RemoteClass >> slotsDo: aBlock [
-	self backend slotsFor: self do: aBlock
 ]
 
 { #category : #'accessing-specialInstVars' }

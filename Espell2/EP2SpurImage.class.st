@@ -110,7 +110,7 @@ EP2SpurImage >> nilObject [
 
 { #category : #'accessing-specialObjects' }
 EP2SpurImage >> nilObject: anEP2Mirror [
-	nilObject := anEP2Mirror
+	nilObject := anEP2Mirror asRemoteNil
 ]
 
 { #category : #accessing }

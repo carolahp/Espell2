@@ -19,11 +19,6 @@ EP2RemoteBlockClosure class >> role [
 	^ 'BlockClosure'
 ]
 
-{ #category : #accessing }
-EP2RemoteBlockClosure >> allInstVars [
-	^ #()
-]
-
 { #category : #'high-level-messages' }
 EP2RemoteBlockClosure >> argumentNames [
 	^ self target object argumentNames

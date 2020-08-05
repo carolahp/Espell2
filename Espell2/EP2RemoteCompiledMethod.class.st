@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteCompiledMethod class >> layoutClass [
+	^ EP2CompiledMethodLayout 
+]
+
+{ #category : #constants }
 EP2RemoteCompiledMethod class >> modelInstSpec [
 	^ 24
 ]

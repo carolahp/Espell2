@@ -8,7 +8,7 @@ Class {
 EP2CompiledMethodLayout >> at: anIndex [
 	
 	^ (self backend 
-		object: remote target 
+		object: remote  
 		at: anIndex)
 ]
 
@@ -16,9 +16,9 @@ EP2CompiledMethodLayout >> at: anIndex [
 EP2CompiledMethodLayout >> at: anIndex put: aRemoteObject [
 	
 	self backend 
-		object: remote target
+		object: remote 
 		at: anIndex 
-		put: aRemoteObject target
+		put: aRemoteObject 
 ]
 
 { #category : #'gt-extension' }
