@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteAssociation class >> allInstVarNames [
+	'key value'
+]
+
+{ #category : #constants }
 EP2RemoteAssociation class >> modelInstSpec [
 	^ 1
 ]

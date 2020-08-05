@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #constants }
+EP2RemoteContext class >> allInstVarNames [ 
+	^  #(#sender #pc #stackp #method #closureOrNil #receiver)
+]
+
 { #category : #instanciation }
 EP2RemoteContext class >> createContextForMethod: aRemoteCompiledMethod inObjectSpace: anObjectSpace [ 
 	| contextClassMirror newContext |

@@ -30,10 +30,53 @@ EP2MClass class >> named: aString parent: anEP2MLanguage [
 		yourself
 ]
 
+{ #category : #'default model values' }
+EP2MClass >> defaultMethodDictionary [
+	^ IdentityDictionary new 
+]
+
+{ #category : #'accessing layout' }
+EP2MClass >> format [
+	
+	"A class format is composed by"
+	"<5 bits inst spec><16 bits inst size>"
+
+	self isImmediate ifTrue:
+		[^ self parent formatOfImmediate ].
+	
+	^ self instSpec << 16 + self instSize
+]
+
+{ #category : #initialization }
+EP2MClass >> initialize [ 
+	super initialize.
+	methodDict := self defaultMethodDictionary
+]
+
+{ #category : #'accessing header' }
+EP2MClass >> instSize [
+	self shouldBeImplemented.
+]
+
+{ #category : #'accessing header' }
+EP2MClass >> instSpec [
+	^ self layout instSpec
+]
+
+{ #category : #testing }
+EP2MClass >> isImmediate [
+	^ self parent immediateClassRoles contains: [:rol | rol = self role ]
+]
+
 { #category : #testing }
 EP2MClass >> isMetaclass [
 	"languages don't have metaclasses by default"
 	^ false
+]
+
+{ #category : #accessing }
+EP2MClass >> layout [
+	^ layout
 ]
 
 { #category : #'accessing-api' }
@@ -51,6 +94,11 @@ EP2MClass >> metaclass: anOLClass [
 	metaclass := anOLClass
 ]
 
+{ #category : #'accessing model' }
+EP2MClass >> methodDict [
+	^ methodDict
+]
+
 { #category : #'accessing-api' }
 EP2MClass >> package [
 	^ self parent packageFor: self
@@ -62,6 +110,16 @@ EP2MClass >> printOn: aStream [
 		nextPutAll: '"';
 		nextPutAll: self name asString;
 		nextPutAll: '"'
+]
+
+{ #category : #accessing }
+EP2MClass >> role [
+	^ role
+]
+
+{ #category : #accessing }
+EP2MClass >> role: aString [
+	role := aString
 ]
 
 { #category : #'accessing-api' }

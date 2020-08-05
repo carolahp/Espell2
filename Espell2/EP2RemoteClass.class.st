@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteClass class >> allInstVarNames [
+	^#(#superclass #methodDict #format)
+]
+
+{ #category : #constants }
 EP2RemoteClass class >> layoutClass [
 	^ EP2FixedLayout
 ]

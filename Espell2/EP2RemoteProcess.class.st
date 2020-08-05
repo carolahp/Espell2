@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #constants }
+EP2RemoteProcess class >> allInstVarNames [ 
+	^  #(#nextLink #suspendedContext #priority #myList #name #env #effectiveProcess #terminating #level)
+]
+
 { #category : #'instance creation' }
 EP2RemoteProcess class >> createProcessForContext: aRemoteContext andPriority: aPriority inObjectSpace: anObjectSpace [ 
 	| newProcess |

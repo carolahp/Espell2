@@ -9,6 +9,11 @@ Class {
 }
 
 { #category : #constants }
+EP2Remote class >> allInstVarNames [
+	^#()
+]
+
+{ #category : #constants }
 EP2Remote class >> layoutClass [
 	" generic layout "
 	^ EP2ObjectLayout

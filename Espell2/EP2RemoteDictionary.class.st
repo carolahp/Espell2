@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteDictionary class >> allInstVarNames [ 
+	^  #(#tally #array)
+]
+
+{ #category : #constants }
 EP2RemoteDictionary class >> modelInstSpec [
 	^ 1
 ]

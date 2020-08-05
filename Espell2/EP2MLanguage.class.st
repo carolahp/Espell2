@@ -43,6 +43,7 @@ EP2MLanguage >> addBehaviorFromTemplate: aClassEP2Remote [
 		ifAbsent: [ (self class classMetaclass
 				named: template role parent: self)
 				layout: template layoutClass;
+				role: template role;
 				yourself ].
 	self addBehavior: model.
 	self packages anyOne addDefinedBehavior: model.
@@ -52,6 +53,11 @@ EP2MLanguage >> addBehaviorFromTemplate: aClassEP2Remote [
 { #category : #'accessing backend' }
 EP2MLanguage >> behaviors [ 
 	^ behaviors
+]
+
+{ #category : #'accessing model' }
+EP2MLanguage >> classByRoleOrName: aString [ 
+	^ self classNamed: aString
 ]
 
 { #category : #'accessing backend' }
@@ -79,7 +85,7 @@ EP2MLanguage >> defaultGlobalVariables [
 { #category : #class }
 EP2MLanguage >> defaultMetaclass [ 
 	"Hook: return the class that is instance of itself"
-	self subclassResponsibility 
+	^ self classNamed: #Class
 ]
 
 { #category : #'default model values' }
@@ -92,6 +98,16 @@ EP2MLanguage >> defaultPackages [
 	^ IdentitySet new
 		add: package;
 		yourself
+]
+
+{ #category : #'vm-constants' }
+EP2MLanguage >> formatOfImmediate [
+	^7
+]
+
+{ #category : #'as yet unclassified' }
+EP2MLanguage >> immediateClassRoles [
+	^ #(Character SmallInteger)
 ]
 
 { #category : #initialization }
