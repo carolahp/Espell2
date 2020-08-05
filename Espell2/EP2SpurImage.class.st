@@ -100,7 +100,7 @@ EP2SpurImage >> initializeSpecialObjects [
 	self classesOopDoWithIndex: [ :classOop :index | 
 			classes add: { index . (self backend mirrorOnAddress: classOop) asRemoteObjectCasted } ].
 	classes sort: [ :c1 :c2 | ((c1 at:2) classNameFromAnyOrigin) < ((c2 at:2) classNameFromAnyOrigin) ].
-	classTable := classes asArray asRemoteObjectInObjectSpace: self objectSpace
+	classTable := (classes asArray asRemoteObjectInObjectSpace: self objectSpace) asRemoteArray
 ]
 
 { #category : #'accessing-specialObjects' }

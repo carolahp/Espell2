@@ -4,13 +4,13 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2ByteLayout >> isByteLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #accessing }
 EP2ByteLayout >> layoutName [
 
 	^ #ByteLayout

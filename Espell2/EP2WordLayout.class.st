@@ -10,7 +10,7 @@ EP2WordLayout >> isWordLayout [
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #accessing }
 EP2WordLayout >> layoutName [
 
 	^ #WordLayout

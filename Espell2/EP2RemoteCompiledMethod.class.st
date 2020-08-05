@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteCompiledMethod,
-	#superclass : #EP2RemotePointer,
+	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
 

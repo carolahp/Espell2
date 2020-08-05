@@ -1,8 +1,13 @@
 Class {
 	#name : #EP2RemoteString,
-	#superclass : #EP2RemotePointer,
+	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
+
+{ #category : #constants }
+EP2RemoteString class >> layoutClass [ 
+	^ EP2ByteLayout 
+]
 
 { #category : #constants }
 EP2RemoteString class >> modelInstSpec [
@@ -27,11 +32,6 @@ EP2RemoteString >> asLocalLiteral [
 { #category : #'converting-local' }
 EP2RemoteString >> asLocalString [
 	^ self backend fromRemoteByteString: self.
-]
-
-{ #category : #accessing }
-EP2RemoteString >> layoutClass [
-	^ EP2VariableLayout
 ]
 
 { #category : #printing }

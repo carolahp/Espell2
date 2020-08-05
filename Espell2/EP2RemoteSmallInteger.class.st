@@ -1,8 +1,13 @@
 Class {
 	#name : #EP2RemoteSmallInteger,
-	#superclass : #EP2RemoteImmediate,
+	#superclass : #EP2RemoteInteger,
 	#category : #'Espell2-Kernel'
 }
+
+{ #category : #constants }
+EP2RemoteSmallInteger class >> layoutClass [ 
+	^ EP2ImmediateLayout 
+]
 
 { #category : #constants }
 EP2RemoteSmallInteger class >> modelInstSpec [
@@ -47,14 +52,24 @@ EP2RemoteSmallInteger >> \\ aRemoteInteger [
 		withArguments: { aRemoteInteger }) asRemoteSmallInteger
 ]
 
-{ #category : #converting }
-EP2RemoteSmallInteger >> asLocalSmallInteger [
-	^ self mirror asLocalSmallInteger
+{ #category : #'accessing-instVars' }
+EP2RemoteSmallInteger >> allInstVars [
+	^ #()
+]
+
+{ #category : #'accessing-variables' }
+EP2RemoteSmallInteger >> allVariables [
+	^#()
+]
+
+{ #category : #'converting-to-local' }
+EP2RemoteSmallInteger >> asLocalLiteral [
+	^ self asLocalSmallInteger
 ]
 
 { #category : #converting }
-EP2RemoteSmallInteger >> asRemoteObjectCasted [
-	^ self mirror asRemoteObjectCasted
+EP2RemoteSmallInteger >> asLocalSmallInteger [
+	^ self mirror asLocalSmallInteger
 ]
 
 { #category : #converting }
@@ -65,6 +80,16 @@ EP2RemoteSmallInteger >> asRemoteSmallInteger [
 { #category : #'converting-local' }
 EP2RemoteSmallInteger >> asSmallInteger [
 	^ self asLocalSmallInteger 
+]
+
+{ #category : #accessing }
+EP2RemoteSmallInteger >> at: index [
+	self shouldNotImplement 
+]
+
+{ #category : #accessing }
+EP2RemoteSmallInteger >> at: index put: value [
+	self shouldNotImplement 
 ]
 
 { #category : #'high-level-message' }
@@ -81,9 +106,19 @@ EP2RemoteSmallInteger >> executePrimitiveNumber: anInteger withArguments: aColle
 	^ result value  
 ]
 
-{ #category : #accessing }
-EP2RemoteSmallInteger >> layoutClass [ 
-	^ EP2ImmediateLayout 
+{ #category : #'accessing-instVars' }
+EP2RemoteSmallInteger >> instanceVariableAtIndex: index [
+	self shouldNotImplement 
+]
+
+{ #category : #'accessing-instVars' }
+EP2RemoteSmallInteger >> instanceVariableAtIndex: index put: anObject [
+	self shouldNotImplement 
+]
+
+{ #category : #'accessing-instVars' }
+EP2RemoteSmallInteger >> instanceVariableNamed: aString [ 
+	self shouldNotImplement 
 ]
 
 { #category : #printing }

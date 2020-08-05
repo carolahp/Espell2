@@ -17,7 +17,7 @@ EP2PointerLayout >> defaultSlots [
 	^ OrderedCollection new
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2PointerLayout >> isPointerLayout [
 
 	^ true

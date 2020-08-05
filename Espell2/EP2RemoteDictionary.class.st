@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteDictionary,
-	#superclass : #EP2RemotePointer,
+	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
 

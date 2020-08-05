@@ -13,8 +13,3 @@ EP2RemoteSymbol class >> modelInstSpec [
 EP2RemoteSymbol class >> role [ 
 	^ 'Symbol'
 ]
-
-{ #category : #accessing }
-EP2RemoteSymbol >> layoutClass [
-	^ EP2ByteLayout 
-]

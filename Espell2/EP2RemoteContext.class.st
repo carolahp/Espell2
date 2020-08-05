@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteContext,
-	#superclass : #EP2RemotePointer,
+	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
 
@@ -76,11 +76,6 @@ EP2RemoteContext >> initializeTemporaryVariables [
 	1 to: self method numberOfTemps do: [ :i |
 		self tempAt: i put: self backend nilObject.
 	].
-]
-
-{ #category : #accessing }
-EP2RemoteContext >> layoutClass [ 
-	^ EP2ContextLayout 
 ]
 
 { #category : #accessing }

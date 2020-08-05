@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteCharacter,
-	#superclass : #EP2RemoteImmediate,
+	#superclass : #EP2RemoteMagnitude,
 	#category : #'Espell2-Kernel'
 }
 
@@ -14,6 +14,16 @@ EP2RemoteCharacter class >> role [
 	^ 'Character'
 ]
 
+{ #category : #'accessing-instVars' }
+EP2RemoteCharacter >> allInstVars [
+	^ #()
+]
+
+{ #category : #'accessing-instVars' }
+EP2RemoteCharacter >> allVariables [
+	^#()
+]
+
 { #category : #'high-level-message' }
 EP2RemoteCharacter >> asLocalCharacter [
 	^ self backend fromRemoteCharacter: self
@@ -22,6 +32,31 @@ EP2RemoteCharacter >> asLocalCharacter [
 { #category : #'converting remote-to-local' }
 EP2RemoteCharacter >> asLocalLiteral [
 	 ^ self asLocalCharacter
+]
+
+{ #category : #accessing }
+EP2RemoteCharacter >> at: index [ 
+	self shouldNotImplement 
+]
+
+{ #category : #accessing }
+EP2RemoteCharacter >> at: index put: value [
+	self shouldNotImplement 
+]
+
+{ #category : #'accessing-instVars' }
+EP2RemoteCharacter >> instanceVariableAtIndex: index [
+	self shouldNotImplement 
+]
+
+{ #category : #'accessing-instVars' }
+EP2RemoteCharacter >> instanceVariableAtIndex: index put: anObject [
+	self shouldNotImplement 
+]
+
+{ #category : #'accessing-instVars' }
+EP2RemoteCharacter >> instanceVariableNamed: aString [ 
+	self shouldNotImplement 
 ]
 
 { #category : #'high-level-message' }

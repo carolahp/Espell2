@@ -4,19 +4,19 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2BitsLayout >> isBitsLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2BitsLayout >> isVariableLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #accessing }
 EP2BitsLayout >> layoutName [
 
 	^ #BitsLayout

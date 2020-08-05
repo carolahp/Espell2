@@ -1,8 +1,13 @@
 Class {
 	#name : #EP2RemoteClass,
-	#superclass : #EP2RemotePointer,
+	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
+
+{ #category : #constants }
+EP2RemoteClass class >> layoutClass [
+	^ EP2FixedLayout
+]
 
 { #category : #constants }
 EP2RemoteClass class >> modelInstSpec [
@@ -272,12 +277,6 @@ EP2RemoteClass >> isStub [
 	^ (self format isSmallInteger 
 		and: [ self superclass isNilObject ])
 		and: [ ([self classPool] on: AssertionFailure do: [ 42 ]) == 42 ]
-]
-
-{ #category : #'accessing-specialInstVars' }
-EP2RemoteClass >> layoutClass [
-	" generic layout "
-	^ EP2FixedLayout
 ]
 
 { #category : #accessing }

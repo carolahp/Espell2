@@ -100,11 +100,6 @@ EP2Mirror >> asRemoteDictionary [
 	^ EP2RemoteDictionary on: self
 ]
 
-{ #category : #'converting-high-level' }
-EP2Mirror >> asRemoteEmptyObject [
-	^ EP2RemoteEmptyObject on: self
-]
-
 { #category : #converting }
 EP2Mirror >> asRemoteFalse [
 	^ EP2RemoteFalse on: self
@@ -122,7 +117,7 @@ EP2Mirror >> asRemoteNil [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteObject [
-	^ EP2RemotePointer on: self
+	^ EP2Remote on: self
 ]
 
 { #category : #'converting-high-level' }

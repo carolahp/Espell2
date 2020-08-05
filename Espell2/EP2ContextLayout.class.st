@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2ContextLayout,
-	#superclass : #EP2Layout,
+	#superclass : #EP2ObjectLayout,
 	#category : #'Espell2-Kernel-Layouts'
 }
 

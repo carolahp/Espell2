@@ -1,8 +1,13 @@
 Class {
 	#name : #EP2RemoteProcessorScheduler,
-	#superclass : #EP2RemotePointer,
+	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
+
+{ #category : #constants }
+EP2RemoteProcessorScheduler class >> layoutClass [ 
+	^ EP2FixedLayout 
+]
 
 { #category : #constants }
 EP2RemoteProcessorScheduler class >> modelInstSpec [

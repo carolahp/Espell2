@@ -4,19 +4,19 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2WeakLayout >> isVariableLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2WeakLayout >> isWeakLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #accessing }
 EP2WeakLayout >> layoutName [
 
 	^ #EphemeronLayout

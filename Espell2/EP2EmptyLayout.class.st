@@ -18,7 +18,7 @@ EP2EmptyLayout >> gtInspectorIn: composite [
 		title: self remote asRemoteObjectCasted asString
 ]
 
-{ #category : #accessing }
+{ #category : #'testing-layouts' }
 EP2EmptyLayout >> isEmptyLayout [
 
 	^ true
@@ -28,4 +28,10 @@ EP2EmptyLayout >> isEmptyLayout [
 EP2EmptyLayout >> layoutName [
 
 	^ #EmptyLayout
+]
+
+{ #category : #'vm-tests' }
+EP2EmptyLayout >> testRemote [
+	self assert: (self remote mirror backend basicSizeOf: self remote mirror) equals: 0.
+	self assert: self remote basicClass format asLocalSmallInteger equals: 0
 ]

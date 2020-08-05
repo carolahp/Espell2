@@ -9,7 +9,7 @@ Class {
 
 { #category : #'remote-objects-relationship' }
 EP2Layout class >> defaultRemoteObjectClass [
-	^ EP2RemotePointer
+	^ EP2Remote
 ]
 
 { #category : #'gt-inspector' }
@@ -34,7 +34,7 @@ EP2Layout class >> layoutClassForInstSpec: instSpec [
 	"(instSpec = 0) ifTrue: [ ^ EP2EmptyLayout ]."
 	(instSpec = 1) ifTrue: [ ^ EP2FixedLayout ].
 	(instSpec = 7) ifTrue: [ ^ EP2ImmediateLayout ].
-	(instSpec = 3) ifTrue: [ ^ EP2MethodDictionaryLayout ].	
+	(instSpec = 3) ifTrue: [ ^ EP2ObjectLayout ].	
 	(instSpec = 2) ifTrue: [ ^ EP2VariableLayout ].
 	(instSpec = 16) ifTrue: [ ^ EP2ByteLayout ].
 	(instSpec = 24) ifTrue: [ ^ EP2CompiledMethodLayout ].
@@ -93,79 +93,79 @@ EP2Layout >> instanceVariableNamed: aString [
 	^ (self remote basicClass slotNamed: aString) read: self 
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isBitsLayout [
 
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isByteLayout [
 
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isCompiledMethodLayout [
 
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isEmptyLayout [
 
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isEphemeronLayout [
 
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isFixedLayout [
 
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isImmediateLayout [
 
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isLayout [
 
 	^true
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isObjectLayout [
 
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isPointerLayout [
 
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isVariableLayout [
 
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isWeakLayout [
 
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2Layout >> isWordLayout [
 
 	^ false
@@ -199,4 +199,9 @@ EP2Layout >> slotNamed: aString [
 { #category : #'accessing-pvt' }
 EP2Layout >> target [ 
 	^ self remote mirror target
+]
+
+{ #category : #'vm-tests' }
+EP2Layout >> testRemote [
+	^ true
 ]

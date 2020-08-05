@@ -4,7 +4,7 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
-{ #category : #testing }
+{ #category : #accessing }
 EP2CompiledMethodLayout >> at: anIndex [
 	
 	^ (self backend 
@@ -12,7 +12,7 @@ EP2CompiledMethodLayout >> at: anIndex [
 		at: anIndex)
 ]
 
-{ #category : #testing }
+{ #category : #accessing }
 EP2CompiledMethodLayout >> at: anIndex put: aRemoteObject [
 	
 	self backend 
@@ -42,31 +42,31 @@ EP2CompiledMethodLayout >> gtInspectorRawIn: composite [
 			evaluated: [:assoc | assoc value ].
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2CompiledMethodLayout >> isBitsLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2CompiledMethodLayout >> isByteLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2CompiledMethodLayout >> isCompiledMethodLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2CompiledMethodLayout >> isVariableLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #accessing }
 EP2CompiledMethodLayout >> layoutName [
 
 	^ #CompiledMethodLayout

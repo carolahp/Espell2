@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteProcess,
-	#superclass : #EP2RemotePointer,
+	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
 
@@ -11,6 +11,11 @@ EP2RemoteProcess class >> createProcessForContext: aRemoteContext andPriority: a
 	newProcess priority: aPriority.
 	newProcess context: aRemoteContext.
 	^newProcess
+]
+
+{ #category : #constants }
+EP2RemoteProcess class >> layoutClass [ 
+	^ EP2FixedLayout 
 ]
 
 { #category : #constants }

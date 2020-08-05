@@ -4,13 +4,13 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2FixedLayout >> isFixedLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #accessing }
 EP2FixedLayout >> layoutName [
 
 	^ #FixedLayout

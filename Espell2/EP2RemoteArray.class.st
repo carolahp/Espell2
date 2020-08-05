@@ -1,8 +1,13 @@
 Class {
 	#name : #EP2RemoteArray,
-	#superclass : #EP2RemotePointer,
+	#superclass : #EP2RemoteArrayedCollection,
 	#category : #'Espell2-Kernel'
 }
+
+{ #category : #constants }
+EP2RemoteArray class >> layoutClass [
+	^ EP2VariableLayout
+]
 
 { #category : #constants }
 EP2RemoteArray class >> modelInstSpec [
@@ -44,11 +49,6 @@ EP2RemoteArray >> do: aBlock [
 	| dep |
 	1 to: self basicSize do:[:i|
 		(dep := self at: i) isNilObject ifFalse:[aBlock value: dep]].
-]
-
-{ #category : #accessing }
-EP2RemoteArray >> layoutClass [
-	^ EP2VariableLayout
 ]
 
 { #category : #printing }

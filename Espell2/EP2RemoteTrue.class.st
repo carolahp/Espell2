@@ -14,11 +14,6 @@ EP2RemoteTrue >> isTrueObject [
 	^ true
 ]
 
-{ #category : #accessing }
-EP2RemoteTrue >> layoutClass [
-	^ EP2EmptyLayout
-]
-
 { #category : #printing }
 EP2RemoteTrue >> printOn: aStream [
 	^ aStream nextPutAll: '*true*'

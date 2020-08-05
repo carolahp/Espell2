@@ -9,7 +9,7 @@ EP2ImmediateLayout class >> defaultRemoteObjectClass [
 	^ EP2RemoteSmallInteger 
 ]
 
-{ #category : #testing }
+{ #category : #'gt-extension' }
 EP2ImmediateLayout >> gtInspectorIn: composite [
 	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
 	^ composite text
@@ -17,13 +17,13 @@ EP2ImmediateLayout >> gtInspectorIn: composite [
 		display: #yourself
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2ImmediateLayout >> isImmediateLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #accessing }
 EP2ImmediateLayout >> layoutName [
 
 	^ #ImmediateLayout

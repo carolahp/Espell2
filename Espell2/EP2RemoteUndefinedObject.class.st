@@ -1,12 +1,12 @@
 Class {
 	#name : #EP2RemoteUndefinedObject,
-	#superclass : #EP2RemoteEmptyObject,
+	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
 
 { #category : #constants }
-EP2RemoteUndefinedObject class >> format [ 
-	^ 0
+EP2RemoteUndefinedObject class >> layoutClass [
+	^ EP2EmptyLayout
 ]
 
 { #category : #constants }
@@ -17,11 +17,6 @@ EP2RemoteUndefinedObject class >> modelInstSpec [
 { #category : #constants }
 EP2RemoteUndefinedObject class >> role [ 
 	^ 'UndefinedObject'
-]
-
-{ #category : #accessing }
-EP2RemoteUndefinedObject >> layoutClass [
-	^ EP2EmptyLayout
 ]
 
 { #category : #printing }

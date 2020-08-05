@@ -22,13 +22,13 @@ EP2VariableLayout >> gtInspectorIn: composite [
 		send: [ :assoc | assoc value ifNotNil: [ :val | val asRemoteObjectCasted ] ]
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2VariableLayout >> isVariableLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #accessing }
 EP2VariableLayout >> layoutName [
 
 	^ #VariableLayout

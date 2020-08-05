@@ -11,19 +11,19 @@ EP2ObjectLayout class >> on: anEP2Mirror [
 		yourself
 ]
 
-{ #category : #testing }
+{ #category : #'testing-types' }
 EP2ObjectLayout >> isObjectLayout [
 
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #accessing }
 EP2ObjectLayout >> layoutName [
 
 	^ #ObjectLayout
 ]
 
-{ #category : #testing }
+{ #category : #accessing }
 EP2ObjectLayout >> slots [ 
 
 	"only for API compatibility purposes"

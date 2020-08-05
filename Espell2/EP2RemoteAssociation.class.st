@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteAssociation,
-	#superclass : #EP2RemotePointer,
+	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
 
@@ -46,12 +46,6 @@ EP2RemoteAssociation >> key [
 { #category : #'accessing-instVars' }
 EP2RemoteAssociation >> key: aString [ 
 	self instanceVariableAtIndex: self associationKeyIndex put: aString
-]
-
-{ #category : #accessing }
-EP2RemoteAssociation >> layoutClass [
-	" generic layout "
-	^ EP2FixedLayout
 ]
 
 { #category : #printing }

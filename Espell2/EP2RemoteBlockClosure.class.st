@@ -1,8 +1,13 @@
 Class {
 	#name : #EP2RemoteBlockClosure,
-	#superclass : #EP2RemotePointer,
+	#superclass : #EP2Remote,
 	#category : #'Espell2-Kernel'
 }
+
+{ #category : #constants }
+EP2RemoteBlockClosure class >> layoutClass [ 
+	^ EP2BlockLayout 
+]
 
 { #category : #constants }
 EP2RemoteBlockClosure class >> modelInstSpec [
@@ -53,11 +58,6 @@ EP2RemoteBlockClosure >> isEPDASTBlockMirror [
 { #category : #'high-level-message' }
 EP2RemoteBlockClosure >> isPrimitive [ 
 	^ self target object isPrimitive
-]
-
-{ #category : #accessing }
-EP2RemoteBlockClosure >> layoutClass [ 
-	^ EP2BlockLayout 
 ]
 
 { #category : #'high-level-messages' }
