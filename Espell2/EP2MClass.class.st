@@ -9,19 +9,23 @@ Class {
 	#instVars : [
 		'superclass',
 		'methodDict',
+		'metaclass',
 		'layout',
 		'role'
 	],
 	#category : #'Espell2-Metamodel'
 }
 
-{ #category : #'instance creation' }
-EP2MClass class >> named: aString parent: anEP2MLanguage superclass: aEP2MBehavior layout: anEP2LayoutClass [ 
+{ #category : #accessing }
+EP2MClass class >> layout: aClass [ 
+	layout := aClass
+]
+
+{ #category : #instanciation }
+EP2MClass class >> named: aString parent: anEP2MLanguage [ 
 	^ self basicNew
-		name: aString;
+		name: aString asSymbol;
 		parent: anEP2MLanguage;
-		superclass: aEP2MBehavior;
-		layout: anEP2LayoutClass;
 		initialize;
 		yourself
 ]
@@ -32,17 +36,22 @@ EP2MClass >> isMetaclass [
 	^ false
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing-api' }
 EP2MClass >> layout: anEP2LayoutClass [ 
 	layout := anEP2LayoutClass
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing-api' }
 EP2MClass >> metaclass [
-	^ self parent metaclassFor: self
+	^ metaclass
 ]
 
-{ #category : #'accessing-model' }
+{ #category : #accessing }
+EP2MClass >> metaclass: anOLClass [ 
+	metaclass := anOLClass
+]
+
+{ #category : #'accessing-api' }
 EP2MClass >> package [
 	^ self parent packageFor: self
 ]

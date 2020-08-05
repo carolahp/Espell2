@@ -31,7 +31,7 @@ EP2MPackage >> initialize [
 { #category : #printing }
 EP2MPackage >> printOn: aStream [
 	aStream 
-		nextPutAll: 'a PckgDef "';
+		nextPutAll: 'a Package "';
 		nextPutAll: self name asString;
 		nextPutAll: '"'
 ]
