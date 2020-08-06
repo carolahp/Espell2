@@ -44,12 +44,12 @@ EP2MLanguage class >> instanceVariableSlotMetaclass [
 	self subclassResponsibility 
 ]
 
-{ #category : #initialization }
+{ #category : #'accessing backend' }
 EP2MLanguage >> addBehavior: aMClass [
 	self classNamed: aMClass name ifAbsent: [ self behaviors at: aMClass name put: aMClass ]
 ]
 
-{ #category : #initialization }
+{ #category : #'accessing backend' }
 EP2MLanguage >> addBehaviorFromTemplate: aClassEP2Remote [
 	| template model |
 	template := aClassEP2Remote.
@@ -62,7 +62,7 @@ EP2MLanguage >> addBehaviorFromTemplate: aClassEP2Remote [
 	^ model
 ]
 
-{ #category : #'accessing all classes' }
+{ #category : #'accessing classes' }
 EP2MLanguage >> allClasses [
 	^ behaviors
 ]
@@ -82,7 +82,7 @@ EP2MLanguage >> classAssociation [
 	^ self classWithRole: #Association
 ]
 
-{ #category : #'accessing model' }
+{ #category : #'accessing classes' }
 EP2MLanguage >> classByRoleOrName: aString [ 
 	^ self classNamed: aString
 ]
@@ -115,12 +115,14 @@ EP2MLanguage >> classMetaclass [
 
 { #category : #'accessing backend' }
 EP2MLanguage >> classNamed: aString [ 
-	^ self classNamed: aString asSymbol ifAbsent: [ KeyNotFound new key: aString; signal ]
+	^ self classNamed: aString ifAbsent: [ KeyNotFound new key: aString; signal ]
 ]
 
 { #category : #'accessing backend' }
 EP2MLanguage >> classNamed: aString ifAbsent: aBlockClosure [
-	^ [self behaviors at: aString] on: KeyNotFound do: [ aBlockClosure value ]
+	^ [ self behaviors at: aString asSymbol ]
+		on: KeyNotFound
+		do: [ aBlockClosure value ]
 ]
 
 { #category : #'accessing special classes' }
@@ -133,7 +135,7 @@ EP2MLanguage >> classProcessorScheduler [
 	^ self classWithRole: #ProcessorScheduler
 ]
 
-{ #category : #'accessing class roles' }
+{ #category : #hooks }
 EP2MLanguage >> classRoles [
 	^ classRoles ifNil: [ classRoles := {
 		#ProtoObject -> #ProtoObject.
@@ -204,6 +206,11 @@ EP2MLanguage >> formatOfImmediate [
 	^7
 ]
 
+{ #category : #'accessing globals' }
+EP2MLanguage >> globalVariables [
+	^ globalVariables
+]
+
 { #category : #hooks }
 EP2MLanguage >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
 	self subclassResponsibility 
@@ -223,7 +230,7 @@ EP2MLanguage >> initialize [
 	
 ]
 
-{ #category : #'instance variables mapping' }
+{ #category : #'vm-constants' }
 EP2MLanguage >> instanceVariableMapping [
 	
 	^ instanceVariableMapping ifNil: [ instanceVariableMapping := PBInstanceVariableMappingGeneric on: self ]
@@ -262,7 +269,8 @@ EP2MLanguage >> loadTonelRepository: aTonelRepository packagesNames: aCollection
 { #category : #'accessing backend' }
 EP2MLanguage >> packageFor: anEP2MBehavior [
 	^ (self packages
-		select: [ :package | package definesBehavior: anEP2MBehavior ]) anyOne
+		select: [ :package | package definesBehavior: anEP2MBehavior ])
+		anyOne
 ]
 
 { #category : #'accessing backend' }
@@ -280,7 +288,7 @@ EP2MLanguage >> pbBootstrapper: aPBBootstrapGeneric [
 	pbBootstrapper := aPBBootstrapGeneric
 ]
 
-{ #category : #'private-accessing' }
+{ #category : #accessing }
 EP2MLanguage >> pbRepository: aPBRepository [ 
 	pbRepository := aPBRepository 
 ]
@@ -291,4 +299,10 @@ EP2MLanguage >> printOn: aStream [
 		nextPutAll: 'a Language "';
 		nextPutAll: self name asString;
 		nextPutAll: '"'
+]
+
+{ #category : #'accessing remote objects' }
+EP2MLanguage >> remote [
+	"we use the imageBuilder to interact with the kernel"
+	^ self pbBootstrapper builder
 ]

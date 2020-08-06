@@ -35,6 +35,9 @@ EP2MLanguageBackend >> environment: anOLObjVLisp [
 ]
 
 { #category : #'accessing slots' }
-EP2MLanguageBackend >> slotsFor: anOLClass do: aBlockClosure [ 
-	anOLClass basicClass layout slots do: [:slot | aBlockClosure value: slot]
+EP2MLanguageBackend >> slotsFor: aClassOrVariableSizedObject do: aBlockClosure [
+	aClassOrVariableSizedObject isBehavior 
+		ifTrue: [ aClassOrVariableSizedObject layout slots do: [:slot | aBlockClosure value: slot] ] 
+		ifFalse: [ self halt. ]
+	
 ]

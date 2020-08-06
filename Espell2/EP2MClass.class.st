@@ -42,6 +42,11 @@ EP2MClass >> basicClass [
 	^ self metaclass
 ]
 
+{ #category : #'accessing-backend' }
+EP2MClass >> classSide [
+	self subclassResponsibility 
+]
+
 { #category : #'default model values' }
 EP2MClass >> defaultMethodDictionary [
 	^ IdentityDictionary new 
@@ -172,6 +177,11 @@ EP2MClass >> printOn: aStream [
 		nextPutAll: '"';
 		nextPutAll: self name asString;
 		nextPutAll: '"'
+]
+
+{ #category : #'accessing remote objects' }
+EP2MClass >> remote [
+	^ self parent remote bootstrapEnvironmentAt: self name
 ]
 
 { #category : #accessing }

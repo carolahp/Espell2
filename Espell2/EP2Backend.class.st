@@ -1009,8 +1009,8 @@ EP2Backend >> simulator: aStackInterpreterSimulatorLSB [
 
 { #category : #'accessing-slots' }
 EP2Backend >> slotsFor: aClassOrVariableSizedObject do: aBlockClosure [ 
-	"getting the corresponding definition from systemDefinition"
-	 
+
+	"getting the corresponding definition from systemDefinition" 
 	aClassOrVariableSizedObject asClassDefinition
 		ifNotNil: [ :classDef | 
 			classDef allSlots do: [:each | | newSlot slotDefiningClass | 
