@@ -21,7 +21,7 @@ EP2RemoteProcessorScheduler class >> modelInstSpec [
 
 { #category : #constants }
 EP2RemoteProcessorScheduler class >> role [ 
-	^ 'ProcessScheduler'
+	^ 'ProcessorScheduler'
 ]
 
 { #category : #accessing }

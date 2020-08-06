@@ -14,7 +14,8 @@ Class {
 		'globalVariables',
 		'behaviors',
 		'pbBootstrapper',
-		'backend'
+		'backend',
+		'instanceVariableMapping'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -75,6 +76,11 @@ EP2MLanguage >> behaviors [
 	^ behaviors
 ]
 
+{ #category : #'accessing special classes' }
+EP2MLanguage >> classAssociation [
+	^ self classWithRole: #Association
+]
+
 { #category : #'accessing model' }
 EP2MLanguage >> classByRoleOrName: aString [ 
 	^ self classNamed: aString
@@ -83,6 +89,22 @@ EP2MLanguage >> classByRoleOrName: aString [
 { #category : #'accessing special classes' }
 EP2MLanguage >> classClass [
 	^ self classWithRole: #Class
+]
+
+{ #category : #'accessing special classes' }
+EP2MLanguage >> classClassVariable [
+	^ [ self classWithRole: #ClassVariable ] on: KeyNotFound 
+			do: [ self classWithRole: #Association ]
+]
+
+{ #category : #'accessing special classes' }
+EP2MLanguage >> classContext [
+	^ self classWithRole: #Context
+]
+
+{ #category : #'accessing special classes' }
+EP2MLanguage >> classDictionary [
+	^ self classWithRole: #Dictionary
 ]
 
 { #category : #'accessing special classes' }
@@ -98,6 +120,21 @@ EP2MLanguage >> classNamed: aString [
 { #category : #'accessing backend' }
 EP2MLanguage >> classNamed: aString ifAbsent: aBlockClosure [
 	^ [self behaviors at: aString] on: KeyNotFound do: [ aBlockClosure value ]
+]
+
+{ #category : #'accessing special classes' }
+EP2MLanguage >> classProcess [
+	^ self classWithRole: #Process
+]
+
+{ #category : #'accessing special classes' }
+EP2MLanguage >> classProcessorScheduler [
+	^ self classWithRole: #ProcessorScheduler
+]
+
+{ #category : #'accessing special classes' }
+EP2MLanguage >> classSmalltalk [
+	^ self classWithRole: #Smalltalk
 ]
 
 { #category : #'accessing classes' }
@@ -146,6 +183,12 @@ EP2MLanguage >> initialize [
 	globalVariables := self defaultGlobalVariables.
 	self loadRequiredBehaviors.
 	
+]
+
+{ #category : #'instance variables mapping' }
+EP2MLanguage >> instanceVariableMapping [
+	
+	^ instanceVariableMapping ifNil: [ instanceVariableMapping := PBInstanceVariableMappingGeneric on: self ]
 ]
 
 { #category : #initialization }

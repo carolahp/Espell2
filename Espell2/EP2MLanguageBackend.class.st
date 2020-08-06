@@ -15,14 +15,18 @@ EP2MLanguageBackend class >> for: anOLObjVLisp [
 ]
 
 { #category : #'class slots' }
-EP2MLanguageBackend >> addSlot: aString to: aLayout [ 
+EP2MLanguageBackend >> addSlot: aString to: aLayout [
 	| newSlot |
-	
-	newSlot := aLayout remote isClassMetamodel 
-		ifTrue: [  environment class instanceVariableSlotMetaclass named: aString asSymbol parent: aLayout ]
+	newSlot := aLayout remote isClassMetamodel
+		ifTrue: [ 
+			environment class instanceVariableSlotMetaclass
+				named: aString asSymbol
+				parent: aLayout
+				 ]
 		ifFalse: [ self halt ].
-	aLayout slots add: newSlot
-	
+	newSlot index: aLayout slots size + 1.
+	aLayout slots add: newSlot.
+	^ newSlot
 ]
 
 { #category : #accessing }
