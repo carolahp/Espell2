@@ -6,7 +6,7 @@ Class {
 
 { #category : #constants }
 EP2RemoteAssociation class >> allInstVarNames [
-	'key value'
+	^#(#key #value)
 ]
 
 { #category : #constants }

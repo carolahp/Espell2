@@ -107,6 +107,35 @@ EP2Layout >> initialize [
 	slots := self defaultSlots
 ]
 
+{ #category : #'accessing header' }
+EP2Layout >> instSpec [
+	"NEW:
+	 0 = 0 sized objects (UndefinedObject True False et al)
+	 1 = non-indexable objects with inst vars (Point et al)
+	 2 = indexable objects with no inst vars (Array et al)
+	 3 = indexable objects with inst vars (MethodContext AdditionalMethodState et al)
+	 4 = weak indexable objects with inst vars (WeakArray et al)
+	 5 = weak non-indexable objects with inst vars (ephemerons) (Ephemeron)
+	 6 = reserved
+	 7 = forwarder format (also immediate class format)
+	 9          64-bit indexable
+	 10 - 11 32-bit indexable
+	 12 - 15 16-bit indexable
+	 16 - 23 byte indexable
+	 24 - 31 compiled method"
+	(remote isBytes) ifTrue: [ ^ 16 ].
+	(remote isWords) ifTrue: [ ^ 10 ].
+	(remote isCompiledMethod) ifTrue: [ ^ 24 ].
+	(remote isEphemeron) ifTrue: [ ^ 5 ].
+	(remote instSize = 0 and: [ remote isVariable not ]) ifTrue: [ ^ 0 ].
+	(remote instSize > 0 and: [ remote isVariable not ]) ifTrue: [ ^ 1 ].
+	(remote instSize = 0 and: [ remote isVariable     ]) ifTrue: [ ^ 2 ].
+	(remote instSize > 0 and: [ remote isVariable     ]) ifTrue: [ ^ 3 ].
+	(remote instSize > 0 and: [ remote isVariable and: [ remote isWeak ] ]) ifTrue: [ ^ 4 ].
+	(remote instSize > 0 and: [ remote isVariable not and: [ remote isWeak ] ]) ifTrue: [ ^ 5 ].
+	self error: 'illegal old format'
+]
+
 { #category : #accessing }
 EP2Layout >> instanceVariableAtIndex: index [
 	^ (self backend object: self instVarAt: index) asRemoteObject
@@ -223,6 +252,11 @@ EP2Layout >> remote: anEPRemoteObject [
 { #category : #accessing }
 EP2Layout >> slotNamed: aString [
 	^ (self allSlots select: [ :slot | slot name = aString ]) anyOne
+]
+
+{ #category : #'accessing - slots' }
+EP2Layout >> slots [
+	^ slots
 ]
 
 { #category : #'accessing - slots' }

@@ -22,10 +22,3 @@ EP2ObjectLayout >> layoutName [
 
 	^ #ObjectLayout
 ]
-
-{ #category : #accessing }
-EP2ObjectLayout >> slots [ 
-
-	"only for API compatibility purposes"
-	^ Array new
-]

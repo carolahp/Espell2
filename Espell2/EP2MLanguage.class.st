@@ -13,7 +13,8 @@ Class {
 		'packages',
 		'globalVariables',
 		'behaviors',
-		'pbBootstrapper'
+		'pbBootstrapper',
+		'backend'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -52,10 +53,21 @@ EP2MLanguage >> addBehaviorFromTemplate: aClassEP2Remote [
 	template := aClassEP2Remote.
 	model := self
 		classNamed: template role
-		ifAbsent: [ self newBehaviorFromTemplate: template ].
+		ifAbsent: [ self class classMetaclass named: template role parent: self ].
 	self addBehavior: model.
 	self packages anyOne addDefinedBehavior: model.
+	
 	^ model
+]
+
+{ #category : #'accessing all classes' }
+EP2MLanguage >> allClasses [
+	^ behaviors
+]
+
+{ #category : #'accessing backend' }
+EP2MLanguage >> backend [
+	^ backend ifNil: [ backend := EP2MLanguageBackend for: self ]
 ]
 
 { #category : #'accessing backend' }
@@ -68,6 +80,16 @@ EP2MLanguage >> classByRoleOrName: aString [
 	^ self classNamed: aString
 ]
 
+{ #category : #'accessing special classes' }
+EP2MLanguage >> classClass [
+	^ self classWithRole: #Class
+]
+
+{ #category : #'accessing special classes' }
+EP2MLanguage >> classMetaclass [
+	^ self classClass
+]
+
 { #category : #'accessing backend' }
 EP2MLanguage >> classNamed: aString [ 
 	^ self classNamed: aString asSymbol ifAbsent: [ KeyNotFound new key: aString; signal ]
@@ -76,6 +98,11 @@ EP2MLanguage >> classNamed: aString [
 { #category : #'accessing backend' }
 EP2MLanguage >> classNamed: aString ifAbsent: aBlockClosure [
 	^ [self behaviors at: aString] on: KeyNotFound do: [ aBlockClosure value ]
+]
+
+{ #category : #'accessing classes' }
+EP2MLanguage >> classWithRole: aString [ 
+	^ self classNamed: aString
 ]
 
 { #category : #'default model values' }
@@ -88,12 +115,6 @@ EP2MLanguage >> defaultBehaviors [
 EP2MLanguage >> defaultGlobalVariables [
 	
 	^ IdentitySet new
-]
-
-{ #category : #class }
-EP2MLanguage >> defaultMetaclass [ 
-	"Hook: return the class that is instance of itself"
-	^ self classNamed: #Class
 ]
 
 { #category : #'default model values' }
@@ -132,12 +153,9 @@ EP2MLanguage >> loadRequiredBehaviors [
 	| objModel classModel |
 	objModel := self addBehaviorFromTemplate: EP2Remote.
 	classModel := self addBehaviorFromTemplate: EP2RemoteClass.
-	objModel
-		superclass: nil;
-		metaclass: self defaultMetaclass.
-	classModel
-		superclass: (self classNamed: EP2RemoteClass superclass role);
-		metaclass: self defaultMetaclass.
+	objModel initializeWith: EP2Remote.
+	self halt.
+	classModel initializeWith: EP2RemoteClass.
 	
 	" recursive call to load subclasses"
 	EP2Remote
@@ -149,9 +167,7 @@ EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 	| template model |
 	template := aClassEP2Remote.
 	model := self addBehaviorFromTemplate: template.
-	model
-		metaclass: self defaultMetaclass;
-		superclass: (self classNamed: aClassEP2Remote superclass role).
+	model initializeWith: aClassEP2Remote.
 	" Recursive call to load subclasses "
 	template
 		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ]
@@ -161,20 +177,6 @@ EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 EP2MLanguage >> loadTonelRepository: aTonelRepository packagesNames: aCollection classesNames: anUndefinedObject [
 	"retrocompatibility" 
 	^ self
-]
-
-{ #category : #initialization }
-EP2MLanguage >> newBehaviorFromTemplate: aClassEP2Remote [
-	| behavior template |
-	template := aClassEP2Remote.
-	behavior := self class classMetaclass
-		named: template role
-		parent: self.
-	behavior
-		role: template role;
-		layout: (template layoutClass on: behavior).
-	template allInstVarNames do: [ :each | behavior addSlot: each ].
-	^ behavior
 ]
 
 { #category : #'accessing backend' }

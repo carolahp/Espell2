@@ -21,19 +21,25 @@ EP2MClass class >> layout: aClass [
 	layout := aClass
 ]
 
-{ #category : #instanciation }
-EP2MClass class >> named: aString parent: anEP2MLanguage [ 
-	^ self basicNew
-		name: aString asSymbol;
-		parent: anEP2MLanguage;
-		initialize;
-		yourself
+{ #category : #'accessing slots' }
+EP2MClass >> addSlot: aString [ 
+	^ self layout addSlot: aString
+		
 ]
 
 { #category : #'accessing slots' }
-EP2MClass >> addSlot: aString [ 
-	^ self layout addSlot: aString to: self
-		
+EP2MClass >> allSlots [
+	^ self slots
+]
+
+{ #category : #'accessing backend' }
+EP2MClass >> backend [
+	^ self parent backend 
+]
+
+{ #category : #'accessing model' }
+EP2MClass >> basicClass [
+	^ self metaclass
 ]
 
 { #category : #'default model values' }
@@ -59,14 +65,49 @@ EP2MClass >> initialize [
 	methodDict := self defaultMethodDictionary
 ]
 
+{ #category : #initialization }
+EP2MClass >> initializeWith: template [ 
+	self
+		role: template role;
+		layout: (template layoutClass on: self);
+		superclass: ([template superclass role] on: Error do: [nil]).
+	"check if we are installing the class with role Class (it is the only class which is instance of itself)"
+	(template = EP2RemoteClass) 
+		ifTrue: [ self metaclass: self ]
+		ifFalse: [ self metaclass: parent classMetaclass ].
+
+	template allInstVarNames do: [:ivname | self addSlot: ivname ].
+	^ self
+]
+
 { #category : #'accessing header' }
 EP2MClass >> instSize [
-	self shouldBeImplemented.
+	^ (self layout slots select: #isInstanceVariableSlot) size
 ]
 
 { #category : #'accessing header' }
 EP2MClass >> instSpec [
 	^ self layout instSpec
+]
+
+{ #category : #'accessing header' }
+EP2MClass >> isBytes [
+	^ self layout isByteLayout
+]
+
+{ #category : #testing }
+EP2MClass >> isClassMetamodel [
+	^ true
+]
+
+{ #category : #'accessing header' }
+EP2MClass >> isCompiledMethod [
+	^ self layout isCompiledMethodLayout
+]
+
+{ #category : #'accessing header' }
+EP2MClass >> isEphemeron [
+	^ self layout isEphemeronLayout
 ]
 
 { #category : #testing }
@@ -78,6 +119,16 @@ EP2MClass >> isImmediate [
 EP2MClass >> isMetaclass [
 	"languages don't have metaclasses by default"
 	^ false
+]
+
+{ #category : #'accessing header' }
+EP2MClass >> isVariable [
+	^ self layout isVariableLayout
+]
+
+{ #category : #'accessing header' }
+EP2MClass >> isWords [
+	^ self layout isWordLayout
 ]
 
 { #category : #accessing }
@@ -126,6 +177,19 @@ EP2MClass >> role [
 { #category : #accessing }
 EP2MClass >> role: aString [
 	role := aString
+]
+
+{ #category : #'accessing slots' }
+EP2MClass >> slots [
+	| allSlots |
+	allSlots := OrderedCollection new.
+	self slotsDo: [ :each | allSlots add: each].
+	^ allSlots asArray
+]
+
+{ #category : #'accessing slots' }
+EP2MClass >> slotsDo: aBlockClosure [ 
+	self layout slotsDo: aBlockClosure
 ]
 
 { #category : #'accessing-api' }

@@ -9,6 +9,15 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #instanciation }
+EP2MObject class >> named: aString parent: anEP2MLanguage [ 
+	^ self basicNew
+		name: aString asSymbol;
+		parent: anEP2MLanguage;
+		initialize;
+		yourself
+]
+
 { #category : #testing }
 EP2MObject >> hasProperties [
 
