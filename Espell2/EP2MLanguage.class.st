@@ -204,6 +204,11 @@ EP2MLanguage >> formatOfImmediate [
 	^7
 ]
 
+{ #category : #hooks }
+EP2MLanguage >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
+	self subclassResponsibility 
+]
+
 { #category : #'as yet unclassified' }
 EP2MLanguage >> immediateClassRoles [
 	^ #(Character SmallInteger)

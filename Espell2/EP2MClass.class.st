@@ -90,6 +90,11 @@ EP2MClass >> instSpec [
 	^ self layout instSpec
 ]
 
+{ #category : #testing }
+EP2MClass >> isBehavior [ 
+	^ true
+]
+
 { #category : #'accessing header' }
 EP2MClass >> isBytes [
 	^ self layout isByteLayout

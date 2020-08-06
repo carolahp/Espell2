@@ -146,13 +146,13 @@ EP2Backend >> become: anObject into: anotherObject [
 	destiny := self arrayClass basicNew: 1.
 	destiny at: 1 put: anotherObject.
 	
-	[self objectMemory
+	[ self objectMemory
 		become: origin target address
 		with: destiny target address
 		twoWay: false
-		copyHash: true] on: AssertionFailure do: [ :e | 
+		copyHash: true ] on: AssertionFailure do: [ :e | 
 			"Resume, we may have forwarders"
-			e pass "resumeUnchecked: nil" ].
+			e resumeUnchecked: nil "resumeUnchecked: nil" ].
 	
 	extraRoots do: [ :each |
 		"we become also the root objects such as byteSymbol class"

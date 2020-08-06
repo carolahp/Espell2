@@ -79,9 +79,9 @@ EP2Mirror >> asRemoteClass [
 	| remoteClass |
 	self isNilObject ifTrue: [^ backend nilObject ].
 	remoteClass := (EP2RemoteClass on: self).
-	remoteClass target isExternalHandle ifFalse: [ 
+	"remoteClass target isExternalHandle ifFalse: [ 
 		remoteClass asRGClass isMetaclass ifTrue: [ ^ EP2RemoteMetaclass on: self ].
-	]. 
+	]. "
 	^ remoteClass
 ]
 

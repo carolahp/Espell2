@@ -9,6 +9,16 @@ EP2RemoteMetaclass class >> role [
 	^ 'Metaclass'
 ]
 
+{ #category : #accessing }
+EP2RemoteMetaclass >> className [ 
+	^ self asClassDefinition name
+]
+
+{ #category : #accessing }
+EP2RemoteMetaclass >> classPool [ 
+	^ self backend nilObject
+]
+
 { #category : #'inst vars mapping' }
 EP2RemoteMetaclass >> metaclassThisClassIndex [
 

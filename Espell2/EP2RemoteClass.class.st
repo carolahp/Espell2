@@ -117,6 +117,11 @@ EP2RemoteClass >> classFormatIndex [
 ]
 
 { #category : #'accessing-specialInstVars' }
+EP2RemoteClass >> classMethodDictionaryIndex [
+	^ (self systemDefinition instanceVariableMapping classMethodDictionaryIndex) ifNil: [ self class unmappedInstVarIndex ]
+]
+
+{ #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> className [
 	| remoteName |
 	remoteName := [self instanceVariableAtIndex: self classNameIndex] on: SubscriptOutOfBounds do: [ ^ nil ].
@@ -126,10 +131,13 @@ EP2RemoteClass >> className [
 
 { #category : #accessing }
 EP2RemoteClass >> classNameFromAnyOrigin [
-	^ self className 
-		ifNil: [ self asClassDefinition 
+	| result |
+	result := self className. 
+	^ (result isNil or: [result basicSize = 0]) 
+		ifTrue: [ self asClassDefinition 
 					ifNil: [ 'error (', self mirror asString,')' ] 
 					ifNotNil: [:classDef | classDef name] ]
+		ifFalse: [ result ]
 ]
 
 { #category : #'instVars-mapping' }
@@ -274,9 +282,14 @@ EP2RemoteClass >> isRoleMetaclass [
 { #category : #testing }
 EP2RemoteClass >> isStub [
 	self flag: 'find a more stable way to check this'.
-	^ (self format isSmallInteger 
+	^ ((self format isSmallInteger 
 		and: [ self superclass isNilObject ])
-		and: [ ([self classPool] on: AssertionFailure do: [ 42 ]) == 42 ]
+		and: [ self methodDictionary isNilObject ]) 
+]
+
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteClass >> methodDictionary [
+	^ (self instanceVariableAtIndex: self classMethodDictionaryIndex) asRemoteClass
 ]
 
 { #category : #accessing }
