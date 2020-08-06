@@ -9,15 +9,6 @@ EP2RemoteMetaclass class >> role [
 	^ 'Metaclass'
 ]
 
-{ #category : #accessing }
-EP2RemoteMetaclass >> classNameFromAnyOrigin [
-	| soleInstance |
-	soleInstance := self soleInstance.
-	(soleInstance isNotNil and: [ soleInstance isNilObject not ]) 
-		ifTrue: [ ^ soleInstance classNameFromAnyOrigin, ' class' ]
-		ifFalse: [ ^ '' ]
-]
-
 { #category : #'inst vars mapping' }
 EP2RemoteMetaclass >> metaclassThisClassIndex [
 
