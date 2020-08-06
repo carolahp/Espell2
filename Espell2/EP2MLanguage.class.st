@@ -15,7 +15,8 @@ Class {
 		'behaviors',
 		'pbBootstrapper',
 		'backend',
-		'instanceVariableMapping'
+		'instanceVariableMapping',
+		'classRoles'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -130,6 +131,38 @@ EP2MLanguage >> classProcess [
 { #category : #'accessing special classes' }
 EP2MLanguage >> classProcessorScheduler [
 	^ self classWithRole: #ProcessorScheduler
+]
+
+{ #category : #'accessing class roles' }
+EP2MLanguage >> classRoles [
+	^ classRoles ifNil: [ classRoles := {
+		#ProtoObject -> #ProtoObject.
+		#ProcessorScheduler -> #ProcessorScheduler.
+		#Context -> #MethodContext.
+		#Class -> #Class.
+		#Metaclass -> #Class.
+		#Array -> #Array.
+		#MethodDictionary -> #MethodDictionary . 
+		#CompiledMethod -> #CompiledMethod.
+		#Character -> #Character. 
+		#ByteArray -> #ByteArray.
+		#Association -> #Association.
+		#BlockClosure -> #BlockClosure.
+		#Point -> #Point.
+		#Process -> #Process.
+		#ByteString -> #ByteString.
+		#ByteSymbol -> #ByteSymbol.
+		#True -> #True.
+		#False -> #False.
+		#UndefinedObject -> #UndefinedObject.
+		#Float -> #Float.
+		#SmallInteger -> #SmallInteger.
+		#LargePositiveInteger -> #LargePositiveInteger.
+		#LargeNegativeInteger -> #LargeNegativeInteger.
+		#Dictionary -> #Dictionary.
+		#Message -> #Message.
+		#Smalltalk -> #Smalltalk
+		} asDictionary ] 
 ]
 
 { #category : #'accessing special classes' }

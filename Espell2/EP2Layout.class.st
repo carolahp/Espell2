@@ -61,6 +61,11 @@ EP2Layout >> allInstVars [
 		collect: [ :slot | slot name -> (slot read: self remote) ]
 ]
 
+{ #category : #'accessing slots' }
+EP2Layout >> allSlots [
+	^ self slots
+]
+
 { #category : #'accessing - slots' }
 EP2Layout >> allVariables [
 	^ self remote basicClass allSlots collect: [ :slot | slot read: self remote ]
@@ -92,10 +97,7 @@ EP2Layout >> gtInspectorIn: composite [
 	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
 	^ composite table
 		title: self remote asString;
-		display: [ "{ 'self' -> self remote asString },  "
-			(remote isRemoteClass and: [ remote isRoleMetaclass ])  
-				ifTrue: [ { } ] 
-				ifFalse: [ remote basicClass allSlots ] ];
+		display: [ remote basicClass allSlots ];
 		column: 'Variable' evaluated: [:slot | slot name ];
 		column: 'Value' evaluated: [ :slot | (remote readSlotNamed: slot name) asRemoteObjectCasted  ];
 		send: [ :slot | slot ifNotNil: [(remote readSlotNamed: slot name) asRemoteObjectCasted ] ]
@@ -237,6 +239,11 @@ EP2Layout >> localObjectAsRemoteObject: anObject [
 { #category : #'accessing-pvt' }
 EP2Layout >> objectSpace [
 	^ self remote mirror backend objectSpace
+]
+
+{ #category : #accessing }
+EP2Layout >> parent [
+	^ remote
 ]
 
 { #category : #'accessing-pvt' }

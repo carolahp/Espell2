@@ -24,7 +24,7 @@ EP2MLanguageBackend >> addSlot: aString to: aLayout [
 				parent: aLayout
 				 ]
 		ifFalse: [ self halt ].
-	newSlot index: aLayout slots size + 1.
+	newSlot index: aLayout allSlots size + 1.
 	aLayout slots add: newSlot.
 	^ newSlot
 ]
