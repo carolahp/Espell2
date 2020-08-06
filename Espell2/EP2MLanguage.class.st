@@ -154,7 +154,6 @@ EP2MLanguage >> loadRequiredBehaviors [
 	objModel := self addBehaviorFromTemplate: EP2Remote.
 	classModel := self addBehaviorFromTemplate: EP2RemoteClass.
 	objModel initializeWith: EP2Remote.
-	self halt.
 	classModel initializeWith: EP2RemoteClass.
 	
 	" recursive call to load subclasses"
@@ -182,8 +181,7 @@ EP2MLanguage >> loadTonelRepository: aTonelRepository packagesNames: aCollection
 { #category : #'accessing backend' }
 EP2MLanguage >> packageFor: anEP2MBehavior [
 	^ (self packages
-		select:
-			[ :package | package definedBehaviors anySatisfy: [:beh | beh = anEP2MBehavior ] ]) anyOne
+		select: [ :package | package definesBehavior: anEP2MBehavior ]) anyOne
 ]
 
 { #category : #'accessing backend' }

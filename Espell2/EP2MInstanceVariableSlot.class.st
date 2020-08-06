@@ -3,3 +3,8 @@ Class {
 	#superclass : #EP2MIndexedSlot,
 	#category : #'Espell2-Metamodel'
 }
+
+{ #category : #testing }
+EP2MInstanceVariableSlot >> isInstanceVariableSlot [
+	^ true
+]

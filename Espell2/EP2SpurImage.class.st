@@ -79,7 +79,7 @@ EP2SpurImage >> gtInspector: composite [
 		title: 'Remote Image';
 		display: [ { self } ];
 		children: 
-			[ :each | each allVariables  ]
+			[ :each | each allVariables collect: #asRemoteObjectCasted ]
 ]
 
 { #category : #initialization }
@@ -91,16 +91,22 @@ EP2SpurImage >> initialize [
 { #category : #initialization }
 EP2SpurImage >> initializeSpecialObjects [
 	| classes |
-	
 	falseObject := nilObject nextObject asRemoteFalse.
 	trueObject := falseObject nextObject asRemoteTrue.
 	specialObjectsArray := self backend specialObjectsArray asRemoteArray.
 	"calculating class table"
 	classes := #() asOrderedCollection.
-	self classesOopDoWithIndex: [ :classOop :index | 
-			classes add: { index . (self backend mirrorOnAddress: classOop) asRemoteObjectCasted } ].
-	classes sort: [ :c1 :c2 | ((c1 at:2) classNameFromAnyOrigin) < ((c2 at:2) classNameFromAnyOrigin) ].
-	classTable := (classes asArray asRemoteObjectInObjectSpace: self objectSpace) asRemoteArray
+	self
+		classesOopDoWithIndex: [ :classOop :index | 
+			| val |
+			val := (self backend mirrorOnAddress: classOop) asRemoteClass.
+			classes
+				add: ({index .	val} asRemoteObjectInObjectSpace: self objectSpace) asRemoteArray ].
+	classes
+		sort:
+			[ :c1 :c2 | (c1 at: 2) asRemoteClass classNameFromAnyOrigin < (c2 at: 2) asRemoteClass classNameFromAnyOrigin ].
+	classTable := (classes asArray
+		asRemoteObjectInObjectSpace: self objectSpace) asRemoteArray
 ]
 
 { #category : #'accessing-specialObjects' }
