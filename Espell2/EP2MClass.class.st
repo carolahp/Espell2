@@ -208,11 +208,6 @@ EP2MClass >> isImmediate [
 	^ self parent immediateClassRoles contains: [:rol | rol = self role ]
 ]
 
-{ #category : #hooks }
-EP2MClass >> isInstallable [
-	^ true
-]
-
 { #category : #testing }
 EP2MClass >> isMetaclass [
 	"languages don't have metaclasses by default"

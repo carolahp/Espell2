@@ -39,6 +39,11 @@ EP2MObject >> hasPropertyNamed: propertyName [
 ]
 
 { #category : #marking }
+EP2MObject >> isInstallable [
+	^ true
+]
+
+{ #category : #marking }
 EP2MObject >> isMarkedAsAccessed [
 	^ self 
 		propertyNamed: self environment objectAccessedPropertyName 

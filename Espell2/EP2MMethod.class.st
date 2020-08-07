@@ -51,6 +51,17 @@ EP2MMethod >> parseTree [
 
 ]
 
+{ #category : #printing }
+EP2MMethod >> printOn: aStream [
+	self parent name
+		ifNotNil: [ aStream
+				nextPutAll: '"';
+				nextPutAll: self parent name;
+				nextPutAll: '>>' ].
+	aStream print: self selector.
+	aStream nextPutAll: '"'
+]
+
 { #category : #accessing }
 EP2MMethod >> selector [
 	^ selector
