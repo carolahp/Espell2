@@ -157,6 +157,11 @@ EP2MClass >> installMetaclassStub [
 	^ theNewMetaclass
 ]
 
+{ #category : #hooks }
+EP2MClass >> installMethods [
+	self subclassResponsibility 
+]
+
 { #category : #'installing remote' }
 EP2MClass >> installStub [
 		
@@ -292,6 +297,11 @@ EP2MClass >> metaclass [
 { #category : #accessing }
 EP2MClass >> metaclass: anOLClass [ 
 	metaclass := anOLClass
+]
+
+{ #category : #'accessing remote backend' }
+EP2MClass >> methodBuilder [
+	^ self parent methodBuilder
 ]
 
 { #category : #'accessing model' }

@@ -246,7 +246,7 @@ EP2MLanguage >> classRoles [
 
 { #category : #'accessing special classes' }
 EP2MLanguage >> classSmalltalk [
-	^ self classWithRole: #Smalltalk
+	^ self classWithRole: #SmalltalkImage
 ]
 
 { #category : #'accessing classes' }
@@ -320,7 +320,24 @@ EP2MLanguage >> hookInitializeMethodDictionaryFor: anEP2RemoteClass [
 ]
 
 { #category : #hooks }
+EP2MLanguage >> hookInitializeProcessScheduler [
+	|code|
+	code := 'Processor := ProcessorScheduler basicNew.
+				Processor initProcessLists.'.
+	^ (self newInstruction
+		code: code;
+		temps: #();
+		yourself ) evaluate
+
+]
+
+{ #category : #hooks }
 EP2MLanguage >> hookInstallClass: anOLClass [ 
+	self subclassResponsibility 
+]
+
+{ #category : #hooks }
+EP2MLanguage >> hookInstallMethods [
 	self subclassResponsibility 
 ]
 
@@ -336,6 +353,11 @@ EP2MLanguage >> hookNewSystemDictionary [
 ]
 
 { #category : #hooks }
+EP2MLanguage >> hookRegisterClass: anEP2RemoteClass fromDefinition: anOLClass [ 
+	^ self subclassResponsibility 
+]
+
+{ #category : #hooks }
 EP2MLanguage >> hookRegisterClass: anEP2RemoteClass fromDefinition: anOLClass withLoader: aPBClassLoaderGeneric [ 
 	^ self newDummyInstruction
 ]
@@ -343,6 +365,11 @@ EP2MLanguage >> hookRegisterClass: anEP2RemoteClass fromDefinition: anOLClass wi
 { #category : #hooks }
 EP2MLanguage >> hookRegisterClass: anEP2RemoteClass named: aString [ 
 	^ self newDummyInstruction 
+]
+
+{ #category : #'accessing remote backend' }
+EP2MLanguage >> imageBuilder [
+	^ self pbBootstrapper builder
 ]
 
 { #category : #'as yet unclassified' }
@@ -368,6 +395,11 @@ EP2MLanguage >> instanceVariableMapping [
 { #category : #hooks }
 EP2MLanguage >> instructionRegisterInstalledBehaviorInGlobals: anEP2RemoteClass [ 
 	^ self newDummyInstruction 
+]
+
+{ #category : #retrocompatibility }
+EP2MLanguage >> isClassDefinition: aString [ 
+	^ false
 ]
 
 { #category : #initialization }
@@ -416,9 +448,9 @@ EP2MLanguage >> maybeAccessedPropertyName [
 	^ #maybeAccessed
 ]
 
-{ #category : #'instruction hooks' }
-EP2MLanguage >> newDummyInstruction [
-	^ PBInstructionDummy new
+{ #category : #'accessing remote backend' }
+EP2MLanguage >> methodBuilder [
+	^ self pbBootstrapper builder methodBuilder
 ]
 
 { #category : #marking }

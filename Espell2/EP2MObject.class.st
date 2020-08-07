@@ -55,6 +55,19 @@ EP2MObject >> name: aString [
 	name := aString
 ]
 
+{ #category : #'instruction hooks' }
+EP2MObject >> newDummyInstruction [
+	^ PBInstructionDummy new
+]
+
+{ #category : #'hook instructions' }
+EP2MObject >> newInstruction [
+	^ PBInstructionGenericRemote new 
+		languageDefinition: self;
+		imageBuilder: self imageBuilder;
+		yourself
+]
+
 { #category : #accessing }
 EP2MObject >> parent [
 	^ parent
