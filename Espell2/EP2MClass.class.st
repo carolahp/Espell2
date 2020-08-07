@@ -115,6 +115,12 @@ EP2MClass >> initializeWith: template [
 	^ self
 ]
 
+{ #category : #bindings }
+EP2MClass >> innerBindingOf: aSymbol [ 
+	"in ObjVLisp there are no class variables"
+	^nil
+]
+
 { #category : #'accessing header' }
 EP2MClass >> instSize [
 	^ (self layout slots select: #isInstanceVariableSlot) size

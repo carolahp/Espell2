@@ -53,20 +53,25 @@ EP2MLanguage class >> methodMetaclass [
 
 { #category : #'hooks-dynamic method loading' }
 EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject [
-	|selector classModel systemClass methodModel|
+	|selector classModel systemClass methodModel traversedClasses|
 	selector := aRBMessageNode selector.
 	classModel := self classNamed: aRemoteObject basicClass classNameFromAnyOrigin.
 	systemClass := Smalltalk classNamed: classModel name.
+	traversedClasses := #() asOrderedCollection.
 	[systemClass isNotNil] whileTrue: [
 		systemClass methodDict 
 			at: aRBMessageNode selector asSymbol 
-			ifPresent: [:method | |newMethodModel| 
-				classModel :=	self classNamed: systemClass name ifAbsent: [self error: 'class not found'].
-				newMethodModel := self class methodMetaclass newFromLocal: method.
-				self halt.
-				classModel addLocalMethod: newMethodModel
+			ifPresent: [ :method | |newMethodModel|
+				traversedClasses reverseDo: [ :travClass |
+					self classNamed: travClass ifPresent: [ :class |
+						classModel := class.
+						newMethodModel := self class methodMetaclass newFromLocal: method.
+						^ classModel addLocalMethod: newMethodModel.
+						]
+					 ].
+				self error: 'class not found'
 				].
-		
+		traversedClasses add: systemClass name.
 		systemClass := systemClass superclass ]
 	
 	 
@@ -182,6 +187,13 @@ EP2MLanguage >> classNamed: aString ifAbsent: aBlockClosure [
 	^ [ self behaviors at: aSymbol ]
 		on: KeyNotFound
 		do: [ aBlockClosure value ]
+]
+
+{ #category : #'accessing classes' }
+EP2MLanguage >> classNamed: aString ifPresent: aBlockClosure [ 
+	|result|
+	result := self classNamed: aString ifAbsent: [ nil ].
+	result ifNotNil: [ aBlockClosure cull: result ]
 ]
 
 { #category : #'accessing special classes' }
