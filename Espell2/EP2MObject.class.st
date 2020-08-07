@@ -91,6 +91,11 @@ EP2MObject >> propertyNames [
 	^ properties keys
 ]
 
+{ #category : #'accessing remote backend' }
+EP2MObject >> remoteBackend [
+	^ self parent remote espellBackend 
+]
+
 { #category : #'unresolved objects' }
 EP2MObject >> unresolvedValue: aDefaultValue [
 self halt:'do I need this?'.

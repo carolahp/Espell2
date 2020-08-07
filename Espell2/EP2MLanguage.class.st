@@ -67,6 +67,19 @@ EP2MLanguage >> allClasses [
 	^ behaviors
 ]
 
+{ #category : #'accessing classes' }
+EP2MLanguage >> allClassesAndTraits [
+	^ self allClasses
+]
+
+{ #category : #'accessing classes' }
+EP2MLanguage >> allClassesWithRole [
+	" classes with role are installed as Stubs at the beginning of bootstrap"
+
+	^ self allClasses
+		select: [ :beh | beh isBehavior and: [ beh role isNotNil ] ]
+]
+
 { #category : #'accessing backend' }
 EP2MLanguage >> backend [
 	^ backend ifNil: [ backend := EP2MLanguageBackend for: self ]
@@ -108,6 +121,11 @@ EP2MLanguage >> classDictionary [
 	^ self classWithRole: #Dictionary
 ]
 
+{ #category : #'accessing remote backend' }
+EP2MLanguage >> classLoader [
+	^ self pbBootstrapper builder classLoader
+]
+
 { #category : #'accessing special classes' }
 EP2MLanguage >> classMetaclass [
 	^ self classClass
@@ -120,7 +138,9 @@ EP2MLanguage >> classNamed: aString [
 
 { #category : #'accessing backend' }
 EP2MLanguage >> classNamed: aString ifAbsent: aBlockClosure [
-	^ [ self behaviors at: aString asSymbol ]
+	| aSymbol |
+	aSymbol := aString ifNotNil: [ aString asSymbol ].
+	^ [ self behaviors at: aSymbol ]
 		on: KeyNotFound
 		do: [ aBlockClosure value ]
 ]
@@ -133,6 +153,12 @@ EP2MLanguage >> classProcess [
 { #category : #'accessing special classes' }
 EP2MLanguage >> classProcessorScheduler [
 	^ self classWithRole: #ProcessorScheduler
+]
+
+{ #category : #'accessing special classes' }
+EP2MLanguage >> classProtoObject [
+	
+	^ self classWithRole: #ProtoObject
 ]
 
 { #category : #hooks }
@@ -212,8 +238,49 @@ EP2MLanguage >> globalVariables [
 ]
 
 { #category : #hooks }
+EP2MLanguage >> hookCreateInitialObjects [
+	self subclassResponsibility 
+]
+
+{ #category : #hooks }
 EP2MLanguage >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
 	self subclassResponsibility 
+]
+
+{ #category : #hooks }
+EP2MLanguage >> hookInitializeClassStubs [
+	^ self subclassResponsibility 
+]
+
+{ #category : #hooks }
+EP2MLanguage >> hookInitializeMethodDictionaryFor: anEP2RemoteClass [ 
+	^ self newDummyInstruction 
+]
+
+{ #category : #hooks }
+EP2MLanguage >> hookInstallClass: anOLClass [ 
+	self subclassResponsibility 
+]
+
+{ #category : #hooks }
+EP2MLanguage >> hookInstallStubs [
+	^ self allClassesWithRole do: [ :each |
+		each installStub ]
+]
+
+{ #category : #hooks }
+EP2MLanguage >> hookNewSystemDictionary [
+	self subclassResponsibility .
+]
+
+{ #category : #hooks }
+EP2MLanguage >> hookRegisterClass: anEP2RemoteClass fromDefinition: anOLClass withLoader: aPBClassLoaderGeneric [ 
+	^ self newDummyInstruction
+]
+
+{ #category : #hooks }
+EP2MLanguage >> hookRegisterClass: anEP2RemoteClass named: aString [ 
+	^ self newDummyInstruction 
 ]
 
 { #category : #'as yet unclassified' }
@@ -236,6 +303,11 @@ EP2MLanguage >> instanceVariableMapping [
 	^ instanceVariableMapping ifNil: [ instanceVariableMapping := PBInstanceVariableMappingGeneric on: self ]
 ]
 
+{ #category : #hooks }
+EP2MLanguage >> instructionRegisterInstalledBehaviorInGlobals: anEP2RemoteClass [ 
+	^ self newDummyInstruction 
+]
+
 { #category : #initialization }
 EP2MLanguage >> loadRequiredBehaviors [
 	| objModel classModel |
@@ -246,7 +318,9 @@ EP2MLanguage >> loadRequiredBehaviors [
 	
 	" recursive call to load subclasses"
 	EP2Remote
-		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ]
+		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ].
+	
+	self class classMetaclass slots do: [ :slot | classModel addSlot: slot name ].
 ]
 
 { #category : #initialization }
@@ -264,6 +338,11 @@ EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 EP2MLanguage >> loadTonelRepository: aTonelRepository packagesNames: aCollection classesNames: anUndefinedObject [
 	"retrocompatibility" 
 	^ self
+]
+
+{ #category : #'instruction hooks' }
+EP2MLanguage >> newDummyInstruction [
+	^ PBInstructionDummy new
 ]
 
 { #category : #'accessing backend' }
@@ -305,4 +384,9 @@ EP2MLanguage >> printOn: aStream [
 EP2MLanguage >> remote [
 	"we use the imageBuilder to interact with the kernel"
 	^ self pbBootstrapper builder
+]
+
+{ #category : #'class roles' }
+EP2MLanguage >> roleOfClass: anOLClass [ 
+	^ [ self classRoles keyAtValue: anOLClass name ] on: ValueNotFound do: [ nil ]
 ]

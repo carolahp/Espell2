@@ -11,6 +11,11 @@ EP2PointerLayout class >> on: anEP2RemoteObject [
 		yourself
 ]
 
+{ #category : #'accessing instance variables' }
+EP2PointerLayout >> instVarNames [
+	^ self slots collect: #name
+]
+
 { #category : #'testing-types' }
 EP2PointerLayout >> isPointerLayout [
 

@@ -138,6 +138,11 @@ EP2Layout >> instSpec [
 	self error: 'illegal old format'
 ]
 
+{ #category : #'accessing instance variables' }
+EP2Layout >> instVarNames [
+	^#()
+]
+
 { #category : #accessing }
 EP2Layout >> instanceVariableAtIndex: index [
 	^ (self backend object: self instVarAt: index) asRemoteObject
@@ -151,6 +156,11 @@ EP2Layout >> instanceVariableAtIndex: index put: anObject [
 { #category : #'accessing-instVars' }
 EP2Layout >> instanceVariableNamed: aString [ 
 	^ (self remote basicClass slotNamed: aString) read: self 
+]
+
+{ #category : #'accessing instance variables' }
+EP2Layout >> instanceVariableNamed: aString put: aCollection [ 
+	^ (self remote basicClass slotNamed: aString) write: aCollection asArray to: remote
 ]
 
 { #category : #'testing-types' }

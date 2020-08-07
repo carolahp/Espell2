@@ -8,6 +8,22 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #converting }
+EP2MSlot >> asEP2Slot [
+	^ self
+]
+
+{ #category : #accessing }
+EP2MSlot >> backend [
+	^ definingClass backend
+]
+
+{ #category : #accessing }
+EP2MSlot >> definingClass: anEP2RemoteClass [ 
+
+	definingClass := anEP2RemoteClass
+]
+
 { #category : #testing }
 EP2MSlot >> isIndexedSlot [
 	^ false
@@ -22,4 +38,24 @@ EP2MSlot >> isInstanceVariableSlot [
 EP2MSlot >> isSlot [
 
 	^ true
+]
+
+{ #category : #testing }
+EP2MSlot >> printOn: aStream [
+	self subclassResponsibility 
+]
+
+{ #category : #'read-write' }
+EP2MSlot >> read: anEP2RemoteAssociation [ 
+	self subclassResponsibility 
+]
+
+{ #category : #testing }
+EP2MSlot >> slotName [ 
+	self subclassResponsibility 
+]
+
+{ #category : #testing }
+EP2MSlot >> write: aValue to: anObject [
+	^self subclassResponsibility
 ]

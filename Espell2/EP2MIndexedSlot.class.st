@@ -21,3 +21,27 @@ EP2MIndexedSlot >> index: anInteger [
 EP2MIndexedSlot >> isIndexedSlot [
 	^ false
 ]
+
+{ #category : #testing }
+EP2MIndexedSlot >> printOn: aStream [
+	aStream nextPutAll: name ,' => ', self slotName
+]
+
+{ #category : #accessing }
+EP2MIndexedSlot >> read: aRemoteObject [
+	
+	^ (self backend object: aRemoteObject at: index) asRemoteObject
+]
+
+{ #category : #testing }
+EP2MIndexedSlot >> slotName [ 
+	^ 'IndexedSlot'
+]
+
+{ #category : #testing }
+EP2MIndexedSlot >> write: aRemoteValue to: aRemoteObject [
+	self backend 
+		object: aRemoteObject
+		at: index 
+		put: aRemoteValue
+]

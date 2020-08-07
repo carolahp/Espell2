@@ -271,6 +271,11 @@ EP2Remote >> instanceVariableNamed: aString [
 	^ self layout instanceVariableNamed: aString
 ]
 
+{ #category : #'accessing-instVars' }
+EP2Remote >> instanceVariableNamed: aString put: anObject [
+	^ self layout instanceVariableNamed: aString put: anObject
+]
+
 { #category : #testing }
 EP2Remote >> isClassMirror [
 	^ false
@@ -329,6 +334,11 @@ EP2Remote >> mirror: anEP2Mirror [
 { #category : #'executing primitives' }
 EP2Remote >> nextObject [
 	^ self mirror nextObject asRemoteObject
+]
+
+{ #category : #'accessing backend' }
+EP2Remote >> objectSpace [
+	^ mirror backend objectSpace
 ]
 
 { #category : #comparing }

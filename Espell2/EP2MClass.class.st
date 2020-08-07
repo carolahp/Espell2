@@ -42,6 +42,11 @@ EP2MClass >> basicClass [
 	^ self metaclass
 ]
 
+{ #category : #'accessing remote backend' }
+EP2MClass >> classLoader [
+	^ self parent classLoader
+]
+
 { #category : #'accessing-backend' }
 EP2MClass >> classSide [
 	self subclassResponsibility 
@@ -64,6 +69,16 @@ EP2MClass >> format [
 	^ self instSpec << 16 + self instSize
 ]
 
+{ #category : #hooks }
+EP2MClass >> hookInstall [
+	self subclassResponsibility 
+]
+
+{ #category : #query }
+EP2MClass >> includesSelector: aString [ 
+	^ self methodDict anySatisfy: [ :method | method selector = aString ]
+]
+
 { #category : #initialization }
 EP2MClass >> initialize [ 
 	super initialize.
@@ -71,11 +86,14 @@ EP2MClass >> initialize [
 ]
 
 { #category : #initialization }
-EP2MClass >> initializeWith: template [ 
+EP2MClass >> initializeWith: template [
+	| superclassName superclassRemote |
+	superclassName := [template superclass role] on: Error do: [nil].
+	superclassRemote := self parent classNamed: superclassName ifAbsent: [nil].
 	self
 		role: template role;
 		layout: (template layoutClass on: self);
-		superclass: ([template superclass role] on: Error do: [nil]).
+		superclass: superclassRemote.
 	"check if we are installing the class with role Class (it is the only class which is instance of itself)"
 	(template = EP2RemoteClass) 
 		ifTrue: [ self metaclass: self ]
@@ -93,6 +111,48 @@ EP2MClass >> instSize [
 { #category : #'accessing header' }
 EP2MClass >> instSpec [
 	^ self layout instSpec
+]
+
+{ #category : #accessing }
+EP2MClass >> instVarNames [
+	^ self layout instVarNames
+]
+
+{ #category : #'classes remote' }
+EP2MClass >> installMetaclassStub [
+	| theNewMetaclass metaclassIndex |
+	" If the metaclass was already created, it will be found in the bootstrapEnvironment dictionary "
+	self remote
+		ifNotNil: [ :aClass | ^ aClass ].
+
+	" We need to create the metaclass from scratch "
+	metaclassIndex := self classLoader newClassIndex.
+
+	"This is Metaclass, it is instance of itself"
+	theNewMetaclass := self classLoader
+		createStubForClassNamed: self name
+		metaclassIndex: metaclassIndex
+		newClassIndex: metaclassIndex.
+	self classLoader registerClass: theNewMetaclass definition: self fullyLoaded: false.
+
+	self assert: theNewMetaclass basicClass = theNewMetaclass .
+	^ theNewMetaclass
+]
+
+{ #category : #'installing remote' }
+EP2MClass >> installStub [
+		
+	| newClass remoteMetaclassClass |	
+	"this is the class with role metaclass installed in the kernel"
+	remoteMetaclassClass := self parent classMetaclass remote 
+		ifNil: [
+			self parent classMetaclass installMetaclassStub
+		].
+	newClass := remoteMetaclassClass basicNew asRemoteMetaclass.
+	newClass format: self format.
+	self classLoader registerClass: newClass definition: self fullyLoaded: false.
+	
+	^ newClass
 ]
 
 { #category : #testing }
@@ -125,6 +185,11 @@ EP2MClass >> isImmediate [
 	^ self parent immediateClassRoles contains: [:rol | rol = self role ]
 ]
 
+{ #category : #hooks }
+EP2MClass >> isInstallable [
+	^ true
+]
+
 { #category : #testing }
 EP2MClass >> isMetaclass [
 	"languages don't have metaclasses by default"
@@ -149,6 +214,11 @@ EP2MClass >> layout [
 { #category : #'accessing-api' }
 EP2MClass >> layout: anEP2LayoutClass [ 
 	layout := anEP2LayoutClass
+]
+
+{ #category : #'as yet unclassified' }
+EP2MClass >> localMethods [
+	self shouldBeImplemented.
 ]
 
 { #category : #'accessing-api' }
@@ -195,6 +265,11 @@ EP2MClass >> role: aString [
 ]
 
 { #category : #'accessing slots' }
+EP2MClass >> slotNamed: aString [ 
+	^ (self basicClass slots select: [:slot | slot name = aString]) anyOne
+]
+
+{ #category : #'accessing slots' }
 EP2MClass >> slots [
 	| allSlots |
 	allSlots := OrderedCollection new.
@@ -207,7 +282,18 @@ EP2MClass >> slotsDo: aBlockClosure [
 	self layout slotsDo: aBlockClosure
 ]
 
+{ #category : #accessing }
+EP2MClass >> superclass [
+	^ superclass
+]
+
 { #category : #'accessing-api' }
 EP2MClass >> superclass: anEP2MBehavior [
+	
 	superclass := anEP2MBehavior 
+]
+
+{ #category : #hooks }
+EP2MClass >> test [
+	self subclassResponsibility
 ]

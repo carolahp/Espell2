@@ -289,7 +289,12 @@ EP2RemoteClass >> isStub [
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> methodDictionary [
-	^ (self instanceVariableAtIndex: self classMethodDictionaryIndex) asRemoteClass
+	^ self instanceVariableAtIndex: self classMethodDictionaryIndex
+]
+
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteClass >> methodDictionary: aRemoteDictionary [
+	self instanceVariableAtIndex: self classMethodDictionaryIndex put: aRemoteDictionary
 ]
 
 { #category : #accessing }
@@ -333,4 +338,9 @@ EP2RemoteClass >> slotNamed: aString [
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> superclass [
 	^ (self instanceVariableAtIndex: self classSuperclassIndex) asRemoteClass
+]
+
+{ #category : #'as yet unclassified' }
+EP2RemoteClass >> superclass: anEP2RemoteClass [ 
+	^ self instanceVariableAtIndex: self classSuperclassIndex put: anEP2RemoteClass 
 ]

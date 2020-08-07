@@ -214,6 +214,12 @@ EP2RemoteDictionary >> includesKey: anEP2RemoteObject [
 ]
 
 { #category : #'high-level-messages' }
+EP2RemoteDictionary >> initialize [ 
+	super initialize.
+	
+]
+
+{ #category : #'high-level-messages' }
 EP2RemoteDictionary >> noCheckAdd: anEP2RemoteObject [
 	"Must be defined separately for Dictionary because (self findElementOrNil:) expects a key, not an association.  9/7/96 tk"
 
