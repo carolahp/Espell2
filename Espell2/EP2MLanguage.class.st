@@ -17,7 +17,8 @@ Class {
 		'backend',
 		'instanceVariableMapping',
 		'classRoles',
-		'markAccessed'
+		'markAccessed',
+		'announcer'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -43,6 +44,32 @@ EP2MLanguage class >> indexedSlotMetaclass [
 EP2MLanguage class >> instanceVariableSlotMetaclass [
 	" Return the subclass of EP2MSlot that defines the metamodel for slots of the language "
 	self subclassResponsibility 
+]
+
+{ #category : #'hooks-api' }
+EP2MLanguage class >> methodMetaclass [
+	self subclassResponsibility 
+]
+
+{ #category : #'hooks-dynamic method loading' }
+EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject [
+	|selector classModel systemClass methodModel|
+	selector := aRBMessageNode selector.
+	classModel := self classNamed: aRemoteObject basicClass classNameFromAnyOrigin.
+	systemClass := Smalltalk classNamed: classModel name.
+	[systemClass isNotNil] whileTrue: [
+		systemClass methodDict 
+			at: aRBMessageNode selector asSymbol 
+			ifPresent: [:method | |newMethodModel| 
+				classModel :=	self classNamed: systemClass name ifAbsent: [self error: 'class not found'].
+				newMethodModel := self class methodMetaclass newFromLocal: method.
+				self halt.
+				classModel addLocalMethod: newMethodModel
+				].
+		
+		systemClass := systemClass superclass ]
+	
+	 
 ]
 
 { #category : #'accessing backend' }
@@ -81,6 +108,12 @@ EP2MLanguage >> allClassesWithRole [
 		select: [ :beh | beh isBehavior and: [ beh role isNotNil ] ]
 ]
 
+{ #category : #announcer }
+EP2MLanguage >> announcer [
+
+	^ announcer ifNil: [ announcer := Announcer new ]
+]
+
 { #category : #'accessing backend' }
 EP2MLanguage >> backend [
 	^ backend ifNil: [ backend := EP2MLanguageBackend for: self ]
@@ -89,6 +122,11 @@ EP2MLanguage >> backend [
 { #category : #'accessing backend' }
 EP2MLanguage >> behaviors [ 
 	^ behaviors
+]
+
+{ #category : #'browse-code' }
+EP2MLanguage >> browse [
+	self halt.
 ]
 
 { #category : #'accessing special classes' }
@@ -350,6 +388,15 @@ EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 EP2MLanguage >> loadTonelRepository: aTonelRepository packagesNames: aCollection classesNames: anUndefinedObject [
 	"retrocompatibility" 
 	^ self
+]
+
+{ #category : #marking }
+EP2MLanguage >> markMaybeAccessedBehaviorsAsAccessed [
+	"We mark as accessed all behaviors that were previously marked as maybe accessed"
+	(self allClasses
+		select: [ :beh | beh propertyNamed: self maybeAccessedPropertyName ifAbsent: [ false ] ])
+		do: [ :beh | beh removePropertyNamed: self maybeAccessedPropertyName.
+			beh propertyNamed: self objectAccessedPropertyName put: true ]
 ]
 
 { #category : #marking }

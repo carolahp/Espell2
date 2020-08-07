@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemotePoint class >> allInstVarNames [ 
+	^ #(#x #y) 
+]
+
+{ #category : #constants }
 EP2RemotePoint class >> layoutClass [ 
 	^ EP2FixedLayout 
 ]

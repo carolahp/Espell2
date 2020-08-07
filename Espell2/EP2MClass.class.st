@@ -21,6 +21,12 @@ EP2MClass class >> layout: aClass [
 	layout := aClass
 ]
 
+{ #category : #methods }
+EP2MClass >> addLocalMethod: anEP2MMethod [
+	anEP2MMethod parent: self.
+	self methodDict at: anEP2MMethod selector put: anEP2MMethod
+]
+
 { #category : #'accessing slots' }
 EP2MClass >> addSlot: aString [ 
 	^ self layout addSlot: aString
@@ -50,6 +56,12 @@ EP2MClass >> classLoader [
 { #category : #'accessing-backend' }
 EP2MClass >> classSide [
 	self subclassResponsibility 
+]
+
+{ #category : #compiler }
+EP2MClass >> compiler [
+
+	^ self class compiler
 ]
 
 { #category : #'default model values' }
@@ -258,6 +270,14 @@ EP2MClass >> markAsMaybeAccessed [
 		put: true
 ]
 
+{ #category : #'as yet unclassified' }
+EP2MClass >> markMethodAsAccessed: aMethod [ 
+	"We ask the class to mark the method instead of asking the method itself to do it, for handling the case in which aMethod is a compiled method coming from DASTBlock or BlockClosure" 
+	(self methodNamed: aMethod selector)
+		ifNil: [ Transcript show: 'selector ', aMethod selector, 'not found';cr. ]
+		ifNotNil: [ :method | method markAsAccessed ] 
+]
+
 { #category : #'accessing-api' }
 EP2MClass >> metaclass [
 	^ metaclass
@@ -271,6 +291,16 @@ EP2MClass >> metaclass: anOLClass [
 { #category : #'accessing model' }
 EP2MClass >> methodDict [
 	^ methodDict
+]
+
+{ #category : #methods }
+EP2MClass >> methodNamed: aString [ 
+	^ self methodDict at: aString asSymbol
+]
+
+{ #category : #making }
+EP2MClass >> objectAccessedPropertyName [
+	^ parent objectAccessedPropertyName
 ]
 
 { #category : #'accessing-api' }
