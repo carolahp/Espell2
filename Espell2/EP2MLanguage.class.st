@@ -233,6 +233,17 @@ EP2MLanguage >> formatOfImmediate [
 	^7
 ]
 
+{ #category : #marking }
+EP2MLanguage >> getAccessedBehaviorsBySimulatedExecution [ 
+	^ self allClasses select: [ :beh | beh isMarkedAsAccessed ]
+]
+
+{ #category : #marking }
+EP2MLanguage >> getAccessedMethodsBySimulatedExecution [
+		^ (self allClasses flatCollect: #localMethods)
+		select: [ :meth | meth isMarkedAsAccessed ]
+]
+
 { #category : #'accessing globals' }
 EP2MLanguage >> globalVariables [
 	^ globalVariables
