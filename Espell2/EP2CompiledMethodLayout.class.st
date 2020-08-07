@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
+{ #category : #'remote-objects-relationship' }
+EP2CompiledMethodLayout class >> defaultRemoteObjectClass [
+	^ EP2RemoteCompiledMethod
+]
+
 { #category : #accessing }
 EP2CompiledMethodLayout >> at: anIndex [
 	

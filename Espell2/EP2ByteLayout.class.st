@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
+{ #category : #'remote-objects-relationship' }
+EP2ByteLayout class >> defaultRemoteObjectClass [
+	^ EP2RemoteByteString
+]
+
 { #category : #'accessing - slots' }
 EP2ByteLayout >> allVariables [
 	| vars |

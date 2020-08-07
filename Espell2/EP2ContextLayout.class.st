@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #'instance creation' }
+EP2ContextLayout class >> defaultRemoteObjectClass [
+	^ EP2RemoteContext
+]
+
+{ #category : #'instance creation' }
 EP2ContextLayout class >> on: anEP2Mirror [
 	^ self new 
 		remote: anEP2Mirror;
