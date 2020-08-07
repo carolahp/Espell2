@@ -18,6 +18,11 @@ EP2MObject class >> named: aString parent: anEP2MLanguage [
 		yourself
 ]
 
+{ #category : #accessing }
+EP2MObject >> environment [
+	^ parent
+]
+
 { #category : #testing }
 EP2MObject >> hasProperties [
 
@@ -94,6 +99,13 @@ EP2MObject >> propertyNames [
 { #category : #'accessing remote backend' }
 EP2MObject >> remoteBackend [
 	^ self parent remote espellBackend 
+]
+
+{ #category : #marking }
+EP2MObject >> removePropertyNamed: propertyName [ 
+	
+	(self hasPropertyNamed: propertyName)
+		ifTrue: [ properties removeKey: propertyName ]
 ]
 
 { #category : #'unresolved objects' }

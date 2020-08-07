@@ -218,7 +218,44 @@ EP2MClass >> layout: anEP2LayoutClass [
 
 { #category : #'as yet unclassified' }
 EP2MClass >> localMethods [
-	self shouldBeImplemented.
+	^ methodDict
+]
+
+{ #category : #marking }
+EP2MClass >> lookupSelectorAndMarkTraversedClasses: selector [ 
+	"Reimplementation of method RGBehavior >> lookupSelector:
+	In here mark the traversed classes"
+	| lookupClass |
+	lookupClass := self.
+	[lookupClass == nil]
+		whileFalse: [ 
+			"We mark the current behavior as maybe accessed"
+			lookupClass markAsMaybeAccessed.
+			lookupClass methodDict 
+				at: selector
+				ifPresent: [ :method | 
+						"We mark as accessed all the behaviors that we traversed"
+						self environment markMaybeAccessedBehaviorsAsAccessed. 
+						"We load the class in the environment so it is available for inspection during the simulated execution of code"
+						self environment pbBootstrapper builder classNamed: self name.
+						^ method ].
+			lookupClass := lookupClass superclass].
+	"The method was not found, so we remove the maybeAccessed property from all behaviors"
+	self environment removeMaybeAccessedPropertyFromAllBehaviors.
+	^ nil
+]
+
+{ #category : #marking }
+EP2MClass >> markAsAccessed [
+	self propertyNamed: self parent objectAccessedPropertyName put: true
+]
+
+{ #category : #marking }
+EP2MClass >> markAsMaybeAccessed [
+	
+	self 
+		propertyNamed: self environment maybeAccessedPropertyName
+		put: true
 ]
 
 { #category : #'accessing-api' }

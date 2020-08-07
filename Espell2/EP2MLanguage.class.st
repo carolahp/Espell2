@@ -16,7 +16,8 @@ Class {
 		'pbBootstrapper',
 		'backend',
 		'instanceVariableMapping',
-		'classRoles'
+		'classRoles',
+		'markAccessed'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -340,9 +341,24 @@ EP2MLanguage >> loadTonelRepository: aTonelRepository packagesNames: aCollection
 	^ self
 ]
 
+{ #category : #marking }
+EP2MLanguage >> maybeAccessedPropertyName [
+	^ #maybeAccessed
+]
+
 { #category : #'instruction hooks' }
 EP2MLanguage >> newDummyInstruction [
 	^ PBInstructionDummy new
+]
+
+{ #category : #marking }
+EP2MLanguage >> objectAccessedPropertyName [ 
+	^ markAccessed
+]
+
+{ #category : #marking }
+EP2MLanguage >> objectAccessedPropertyName: aString [ 
+	markAccessed := aString
 ]
 
 { #category : #'accessing backend' }
@@ -384,6 +400,21 @@ EP2MLanguage >> printOn: aStream [
 EP2MLanguage >> remote [
 	"we use the imageBuilder to interact with the kernel"
 	^ self pbBootstrapper builder
+]
+
+{ #category : #marking }
+EP2MLanguage >> removeFromAllElementsPropertyNamed: aString [ 
+	self allClasses do: [ :beh | 
+			beh removePropertyNamed: aString.
+			beh localMethods do: [ :meth | meth removePropertyNamed: aString ].
+		 ]
+]
+
+{ #category : #marking }
+EP2MLanguage >> removeMaybeAccessedPropertyFromAllBehaviors [
+	"We remove the property maybeAccessed from all behaviors"
+	(self allClasses do: [ :beh | beh removePropertyNamed: self maybeAccessedPropertyName ])
+		
 ]
 
 { #category : #'class roles' }
