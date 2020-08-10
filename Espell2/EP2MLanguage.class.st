@@ -53,28 +53,28 @@ EP2MLanguage class >> methodMetaclass [
 
 { #category : #'hooks-dynamic method loading' }
 EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject [
-	|selector classModel systemClass methodModel traversedClasses|
+	| selector classModel systemClass traversedClasses |
 	selector := aRBMessageNode selector.
 	classModel := self classNamed: aRemoteObject basicClass classNameFromAnyOrigin.
 	systemClass := Smalltalk classNamed: classModel name.
-	traversedClasses := #() asOrderedCollection.
-	[systemClass isNotNil] whileTrue: [
-		systemClass methodDict 
-			at: aRBMessageNode selector asSymbol 
-			ifPresent: [ :method | |newMethodModel|
-				traversedClasses reverseDo: [ :travClass |
-					self classNamed: travClass ifPresent: [ :class |
-						classModel := class.
-						newMethodModel := self class methodMetaclass newFromLocal: method.
-						^ classModel addLocalMethod: newMethodModel.
-						]
-					 ].
-				self error: 'class not found'
-				].
-		traversedClasses add: systemClass name.
-		systemClass := systemClass superclass ]
-	
-	 
+	traversedClasses := {classModel name} asOrderedCollection.
+	[ systemClass isNotNil ]
+		whileTrue: [ systemClass methodDict
+				at: selector asSymbol
+				ifPresent: [ :method | 
+					| newMethodModel |
+					traversedClasses
+						reverseDo: [ :travClass | 
+							self
+								classNamed: travClass
+								ifPresent: [ :class | 
+									classModel := class.
+									newMethodModel := self class methodMetaclass
+										newFromLocal: method.
+									^ classModel addLocalMethod: newMethodModel ] ].
+					self error: 'class not found' ].
+			traversedClasses add: systemClass name.
+			systemClass := systemClass superclass ]
 ]
 
 { #category : #'accessing backend' }
@@ -177,7 +177,7 @@ EP2MLanguage >> classMetaclass [
 
 { #category : #'accessing backend' }
 EP2MLanguage >> classNamed: aString [ 
-	^ self classNamed: aString ifAbsent: [ KeyNotFound new key: aString; signal ]
+	^ self classNamed: aString ifAbsent: [ PBClassDefinitionNotFound new key: aString; signal ]
 ]
 
 { #category : #'accessing backend' }

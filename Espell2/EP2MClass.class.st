@@ -33,6 +33,11 @@ EP2MClass >> addSlot: aString [
 		
 ]
 
+{ #category : #'accessing instance variables' }
+EP2MClass >> allInstVarNames [
+	^ self allSlots collect: #name
+]
+
 { #category : #'accessing slots' }
 EP2MClass >> allSlots [
 	^ self slots
@@ -129,6 +134,11 @@ EP2MClass >> instSize [
 { #category : #'accessing header' }
 EP2MClass >> instSpec [
 	^ self layout instSpec
+]
+
+{ #category : #'accessing instance variables' }
+EP2MClass >> instVarIndexFor: aString ifAbsent: aBlockClosure [ 
+	^ self allInstVarNames indexOf: aString ifAbsent: aBlockClosure 
 ]
 
 { #category : #accessing }
@@ -343,8 +353,12 @@ EP2MClass >> role: aString [
 ]
 
 { #category : #'accessing slots' }
-EP2MClass >> slotNamed: aString [ 
-	^ (self basicClass slots select: [:slot | slot name = aString]) anyOne
+EP2MClass >> slotNamed: aString [
+	^ (self slots select: [ :slot | slot name = aString ])
+		ifEmpty: [ PBSlotDefinitionNotFound new
+				key: aString;
+				signal ]
+		ifNotEmpty: [ :collection | collection anyOne ]
 ]
 
 { #category : #'accessing slots' }
