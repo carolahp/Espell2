@@ -17,14 +17,15 @@ EP2Environment >> bindingOf: aSymbol [
 	| result |
 	result := (super bindingOf: aSymbol).
 	"maybe aSymbol is the name of class that has not been installed" 
-	result ifNil: [
-			["we try loading the class in the system and retrieving its binding"
-			self classNamed: aSymbol.
-			result := super bindingOf: aSymbol] 
+	result ifNil: [ | found |
+			["the name of the found class may be different from aSymbol because of mapping with system classes"
+			found := self classNamed: aSymbol.
+			"we try loading the class in the system and retrieving its binding"
+			result := super bindingOf: found classNameFromAnyOrigin ] 
 				on: PBClassDefinitionNotFound 
 				do: [ ^ nil]].
 	^ EP2GlobalBinding new
-			name: aSymbol; 
+			name: result name; 
 			objectSpace: builder objectSpace;
 			yourself 
 ]

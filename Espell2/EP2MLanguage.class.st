@@ -140,8 +140,28 @@ EP2MLanguage >> classAssociation [
 ]
 
 { #category : #'accessing classes' }
-EP2MLanguage >> classByRoleOrName: aString [ 
-	^ self classNamed: aString
+EP2MLanguage >> classByRole: aString [ 
+	"We try to return the class using the accessors because accessors know how to handle situations in which a role has not been defined in the dictionary, but another role can replace it (for example the role classClassVariable can be replaces by the class with the role Association. The method classWithRole: should remain private"
+	| role |
+	role := [ self roleOfClassNamed: aString ]
+			on: PBClassDefinitionNotFound 
+			do: [ aString ].
+	
+	^ [self perform: ('class', role) asSymbol] on: Error do: [ nil ]
+]
+
+{ #category : #'accessing classes' }
+EP2MLanguage >> classByRoleOrName: aString [
+	^ self classByRoleOrName: aString ifAbsent: [ PBClassDefinitionNotFound signal ]
+]
+
+{ #category : #'accessing classes' }
+EP2MLanguage >> classByRoleOrName: aString ifAbsent: aBlockClosure [
+	| class |
+	class := (self classNamed: aString ifAbsent: [ nil ]).
+	class ifNil: [ class := self classByRole: aString ].
+	class ifNil: [^ aBlockClosure value].
+	^ class
 ]
 
 { #category : #'accessing special classes' }
@@ -240,7 +260,7 @@ EP2MLanguage >> classRoles [
 		#LargeNegativeInteger -> #LargeNegativeInteger.
 		#Dictionary -> #Dictionary.
 		#Message -> #Message.
-		#Smalltalk -> #Smalltalk
+		#SmalltalkImage -> #SmalltalkImage.
 		} asDictionary ] 
 ]
 
@@ -306,6 +326,11 @@ EP2MLanguage >> hookCreateInitialObjects [
 
 { #category : #hooks }
 EP2MLanguage >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
+	self subclassResponsibility 
+]
+
+{ #category : #hooks }
+EP2MLanguage >> hookGlobalNotFound: aString [ 
 	self subclassResponsibility 
 ]
 
@@ -522,4 +547,23 @@ EP2MLanguage >> removeMaybeAccessedPropertyFromAllBehaviors [
 { #category : #'class roles' }
 EP2MLanguage >> roleOfClass: anOLClass [ 
 	^ [ self classRoles keyAtValue: anOLClass name ] on: ValueNotFound do: [ nil ]
+]
+
+{ #category : #'accessing classes' }
+EP2MLanguage >> roleOfClassNamed: aString [ 
+	^ [self classRoles keyAtValue: aString]
+		on: ValueNotFound 
+		do: [(self classRoles includesKey: aString)
+				ifTrue: [ aString ]
+				ifFalse: [ PBClassDefinitionNotFound signal: 'class "', aString, '" not found' ]]
+]
+
+{ #category : #hooks }
+EP2MLanguage >> systemClassMapping [
+	^ {
+		#ProtoObject -> #ProtoObject.
+		#Object -> #ProtoObject.
+		#Behavior -> #Class.
+		#ClassDescription -> #Class
+		} asDictionary 
 ]

@@ -16,11 +16,6 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
-{ #category : #accessing }
-EP2MClass class >> layout: aClass [ 
-	layout := aClass
-]
-
 { #category : #methods }
 EP2MClass >> addLocalMethod: anEP2MMethod [
 	anEP2MMethod parent: self.
@@ -118,6 +113,17 @@ EP2MClass >> initializeWith: template [
 
 	template allInstVarNames do: [:ivname | self addSlot: ivname ].
 	^ self
+]
+
+{ #category : #initialization }
+EP2MClass >> initializeWithLocal: localClass [
+
+	^ self
+		layout: ((EP2Layout layoutClassForInstSpec: localClass instSpec) on: self);
+		superclass: (self parent classByRoleOrName: localClass superclass name ifAbsent: [ self halt ]);
+		metaclass: self parent classMetaclass;
+		name: localClass name;
+		role: nil
 ]
 
 { #category : #bindings }
