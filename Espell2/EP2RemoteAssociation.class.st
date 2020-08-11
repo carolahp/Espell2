@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteAssociation,
-	#superclass : #EP2Remote,
+	#superclass : #EP2RemoteMagnitude,
 	#category : #'Espell2-Kernel'
 }
 

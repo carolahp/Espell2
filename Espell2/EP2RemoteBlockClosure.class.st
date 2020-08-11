@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteBlockClosure class >> allInstVarNames [
+	^#(#outerContext #startpc #numArgs)
+]
+
+{ #category : #constants }
 EP2RemoteBlockClosure class >> layoutClass [ 
 	^ EP2BlockLayout 
 ]

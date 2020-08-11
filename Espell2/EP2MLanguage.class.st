@@ -53,14 +53,19 @@ EP2MLanguage class >> methodMetaclass [
 
 { #category : #'hooks-dynamic method loading' }
 EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject [
+	"loading the not understood message into the metamodel"
 	| selector classModel systemClass traversedClasses |
 	selector := aRBMessageNode selector.
 	classModel := self
 		classNamed: aRemoteObject basicClass classNameFromAnyOrigin.
 	systemClass := Smalltalk classNamed: classModel name.
-	traversedClasses := {classModel name} asOrderedCollection.
+	traversedClasses := #() asOrderedCollection.
 	[ systemClass isNotNil ]
-		whileTrue: [ systemClass methodDict
+		whileTrue: [ 
+			"we save traversed classes because the systemClass does not always belong to the metamodel.
+			So we install the method in the metamodel class that is nearest to the system class in the inheritance hierarchy "
+			traversedClasses add: systemClass name.
+			systemClass methodDict
 				at: selector asSymbol
 				ifPresent: [ :method | 
 					| newMethodModel |
@@ -76,31 +81,30 @@ EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject 
 									newMethodModel initializeWithLocal: method.
 									^ classModel addLocalMethod: newMethodModel ] ].
 					self error: 'class not found' ].
-			traversedClasses add: systemClass name.
+			
 			systemClass := systemClass superclass ]
 ]
 
 { #category : #'accessing backend' }
 EP2MLanguage >> addBehavior: aMClass [
-	self classNamed: aMClass name ifAbsent: [ self behaviors at: aMClass name put: aMClass ] ifPresent: [ self halt. ]
+	self classNamed: aMClass name ifAbsent: [ self behaviors at: aMClass name put: aMClass ] ifPresent: [  ]
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [ 
-	| addedClass mcDef |
+EP2MLanguage >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
+	| newClass mcDef |
 	mcDef := aMCClassDefinition.
-	addedClass := self classNamed: aMCClassDefinition className ifAbsent: [ 
-		| def |
-		def := self class classMetaclass named: aMCClassDefinition className parent: self.
-		def initializeWithMonticello: mcDef.
-		def ]
-	ifPresent: [:found |
-		self halt.
-		].
-	self addBehavior: addedClass.
-	^ addedClass
-		 
-	
+	self
+		classNamed: aMCClassDefinition className
+		ifAbsent: [ 
+			newClass := self class classMetaclass
+				named: aMCClassDefinition className
+				parent: self.
+			newClass initializeWithMonticello: mcDef.
+			self addBehavior: newClass ]
+		ifPresent: [ :found | 
+			newClass := found extendWithMonticello: mcDef ].
+	^ newClass
 ]
 
 { #category : #'accessing backend' }
@@ -170,6 +174,11 @@ EP2MLanguage >> browse [
 { #category : #'accessing special classes' }
 EP2MLanguage >> classAssociation [
 	^ self classWithRole: #Association
+]
+
+{ #category : #'accessing special classes' }
+EP2MLanguage >> classBlockClosure [
+	^ self classWithRole: #BlockClosure
 ]
 
 { #category : #'accessing classes' }
@@ -426,6 +435,11 @@ EP2MLanguage >> hookInstallStubs [
 ]
 
 { #category : #hooks }
+EP2MLanguage >> hookMainProcess [
+	self subclassResponsibility 
+]
+
+{ #category : #hooks }
 EP2MLanguage >> hookNewSystemDictionary [
 	self subclassResponsibility .
 ]
@@ -638,9 +652,9 @@ EP2MLanguage >> roleOfClassNamed: aString [
 { #category : #hooks }
 EP2MLanguage >> systemClassMapping [
 	^ {
-		#ProtoObject -> #ProtoObject.
+		"#ProtoObject -> #ProtoObject.
 		#Object -> #ProtoObject.
 		#Behavior -> #Class.
 		#ClassDescription -> #Class
-		} asDictionary 
+		"} asDictionary 
 ]

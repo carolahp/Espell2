@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteString,
-	#superclass : #EP2Remote,
+	#superclass : #EP2RemoteArrayedCollection,
 	#category : #'Espell2-Kernel'
 }
 

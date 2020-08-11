@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2RemoteFalse,
-	#superclass : #EP2RemoteBoolean,
+	#superclass : #EP2RemoteTrue,
 	#category : #'Espell2-Kernel'
 }
 

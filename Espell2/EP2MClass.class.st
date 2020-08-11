@@ -69,6 +69,13 @@ EP2MClass >> defaultMethodDictionary [
 	^ IdentityDictionary new 
 ]
 
+{ #category : #initializing }
+EP2MClass >> extendWithMonticello: aMCClassDefinition [ 
+	self instVarNames ifNotEmpty: [ self halt. ].
+	(self superclass name = aMCClassDefinition superclassName) ifFalse: [ self halt. ].
+	^ self
+]
+
 { #category : #'accessing layout' }
 EP2MClass >> format [
 	
@@ -138,8 +145,7 @@ EP2MClass >> initializeWithMonticello: aMCClassDefinition [
 		role: nil.
 	mcDef superclassName = #nil
 		ifTrue: [ self halt ]
-		ifFalse: [ self
-				superclass: (self parent ensureClassNamed: mcDef superclassName) ].
+		ifFalse: [ self superclass: (self parent ensureClassNamed: mcDef superclassName) ].
 	mcDef variables
 		do: [ :each | 
 			"the simplest metamodel considers only instance variables"
@@ -356,8 +362,17 @@ EP2MClass >> methodDict [
 ]
 
 { #category : #methods }
-EP2MClass >> methodNamed: aString [ 
-	^ self methodDict at: aString asSymbol
+EP2MClass >> methodNamed: aString [
+	^ self
+		methodNamed: aString
+		ifAbsent: [ PBMethodDefinitionNotFound
+				signal: 'Method "' , aString , '" not found in class "' , self asString , '"' ]
+]
+
+{ #category : #methods }
+EP2MClass >> methodNamed: aString ifAbsent: aBlock [
+	
+	^ [self methodDict at: aString asSymbol] on: KeyNotFound do: aBlock
 ]
 
 { #category : #making }
