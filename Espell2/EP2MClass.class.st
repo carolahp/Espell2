@@ -117,13 +117,48 @@ EP2MClass >> initializeWith: template [
 
 { #category : #initialization }
 EP2MClass >> initializeWithLocal: localClass [
-
+	self halt.
+	"localClass allInstVarNames do: [:ivname | self addSlot: ivname ]."
 	^ self
-		layout: ((EP2Layout layoutClassForInstSpec: localClass instSpec) on: self);
+		layout: (self parent layoutForInstSpec: localClass instSpec on: self);
 		superclass: (self parent classByRoleOrName: localClass superclass name ifAbsent: [ self halt ]);
 		metaclass: self parent classMetaclass;
 		name: localClass name;
-		role: nil
+		role: nil.
+		
+]
+
+{ #category : #initialization }
+EP2MClass >> initializeWithMonticello: aMCClassDefinition [
+	| mcDef |
+	mcDef := aMCClassDefinition.
+	self
+		layout: (mcDef espell2LayoutType on: self);
+		metaclass: self parent classMetaclass;
+		role: nil.
+	mcDef superclassName = #nil
+		ifTrue: [ self halt ]
+		ifFalse: [ self
+				superclass: (self parent ensureClassNamed: mcDef superclassName) ].
+	mcDef variables
+		do: [ :each | 
+			"the simplest metamodel considers only instance variables"
+			each class type = #instance
+				ifTrue: [ "(each class type = #class) ifTrue: [ 
+				self addClassVariable: (RGClassVariable named: each name parent: self)].
+			(each class type = #classInstance) ifTrue: [ 
+				metaclassDef layout addSlot: (RGInstanceVariableSlot named: each name parent: metaclassDef layout)].
+			(each class type = #pool) ifTrue: [ 
+				self addSharedPool: (RGPoolVariable named: each name parent: self)]."
+					(each name includes: $>)
+						ifFalse: [ self addSlot: each name ]
+						ifTrue: [ | unknownSlot |
+							self halt
+							"unknownSlot := RGUnknownSlot
+								named: ((each name copyUpTo: $=) copyWithout: $#) trimBoth
+								parent: self layout.
+							unknownSlot expression: (each name copyAfter: $>) trimBoth.
+							self layout addSlot: unknownSlot" ] ] ]
 ]
 
 { #category : #bindings }
@@ -333,6 +368,11 @@ EP2MClass >> objectAccessedPropertyName [
 { #category : #'accessing-api' }
 EP2MClass >> package [
 	^ self parent packageFor: self
+]
+
+{ #category : #accessing }
+EP2MClass >> package: anEP2MPackage [ 
+	anEP2MPackage addDefinedBehavior: self
 ]
 
 { #category : #printing }

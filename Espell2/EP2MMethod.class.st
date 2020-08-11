@@ -3,7 +3,9 @@ Class {
 	#superclass : #EP2MObject,
 	#instVars : [
 		'sourceCode',
-		'selector'
+		'selector',
+		'author',
+		'time'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -15,14 +17,6 @@ EP2MMethod class >> newFrom: aCompiledMethod [
 		sourceCode: aCompiledMethod sourceCode
 ]
 
-{ #category : #'instance creation' }
-EP2MMethod class >> newFromLocal: aCompiledMethod [ 
-	^ self new 
-		sourceCode: aCompiledMethod sourceCode;
-		selector: aCompiledMethod selector
-		yourself
-]
-
 { #category : #accessing }
 EP2MMethod >> ast [
 	"Answer my AST with semantic analysis. See #parseTree."
@@ -30,6 +24,32 @@ EP2MMethod >> ast [
 	^ self propertyNamed: #ast ifAbsentPut: [ self parseTree doSemanticAnalysisIn: self methodClass ]
 
 
+]
+
+{ #category : #accessing }
+EP2MMethod >> author: aString [ 
+	author := aString
+]
+
+{ #category : #initialization }
+EP2MMethod >> initializeWithLocal: aCompiledMethod [ 
+	^ self 
+		sourceCode: aCompiledMethod sourceCode;
+		selector: aCompiledMethod selector;
+		yourself
+]
+
+{ #category : #initialization }
+EP2MMethod >> initializeWithMonticello: aMCMethodDefinition [ 
+	| mcDef |
+	mcDef := aMCMethodDefinition.
+	self sourceCode: mcDef source;
+	 selector: mcDef selector";
+	 author: (mcDef authorForStamp: mcDef timeStamp);
+	 time: (mcDef timeForStamp: mcDef timeStamp)"
+	
+	"protocol := self parent ensureProtocolNamed: mcDef category asSymbol.
+	self protocol: protocol"
 ]
 
 { #category : #marking }
@@ -84,4 +104,9 @@ EP2MMethod >> sourceCode: anObject [
 	"ATTENTION: There is no check here if the selector is changed!"
 	sourceCode := anObject asString
 	
+]
+
+{ #category : #accessing }
+EP2MMethod >> time: aDateAndTime [ 
+	time := aDateAndTime 
 ]

@@ -55,7 +55,8 @@ EP2MLanguage class >> methodMetaclass [
 EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject [
 	| selector classModel systemClass traversedClasses |
 	selector := aRBMessageNode selector.
-	classModel := self classNamed: aRemoteObject basicClass classNameFromAnyOrigin.
+	classModel := self
+		classNamed: aRemoteObject basicClass classNameFromAnyOrigin.
 	systemClass := Smalltalk classNamed: classModel name.
 	traversedClasses := {classModel name} asOrderedCollection.
 	[ systemClass isNotNil ]
@@ -70,7 +71,9 @@ EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject 
 								ifPresent: [ :class | 
 									classModel := class.
 									newMethodModel := self class methodMetaclass
-										newFromLocal: method.
+										named: method selector
+										parent: classModel.
+									newMethodModel initializeWithLocal: method.
 									^ classModel addLocalMethod: newMethodModel ] ].
 					self error: 'class not found' ].
 			traversedClasses add: systemClass name.
@@ -79,7 +82,25 @@ EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject 
 
 { #category : #'accessing backend' }
 EP2MLanguage >> addBehavior: aMClass [
-	self classNamed: aMClass name ifAbsent: [ self behaviors at: aMClass name put: aMClass ]
+	self classNamed: aMClass name ifAbsent: [ self behaviors at: aMClass name put: aMClass ] ifPresent: [ self halt. ]
+]
+
+{ #category : #'accessing backend' }
+EP2MLanguage >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [ 
+	| addedClass mcDef |
+	mcDef := aMCClassDefinition.
+	addedClass := self classNamed: aMCClassDefinition className ifAbsent: [ 
+		| def |
+		def := self class classMetaclass named: aMCClassDefinition className parent: self.
+		def initializeWithMonticello: mcDef.
+		def ]
+	ifPresent: [:found |
+		self halt.
+		].
+	self addBehavior: addedClass.
+	^ addedClass
+		 
+	
 ]
 
 { #category : #'accessing backend' }
@@ -95,6 +116,17 @@ EP2MLanguage >> addBehaviorFromTemplate: aClassEP2Remote [
 	^ model
 ]
 
+{ #category : #'accessing backend' }
+EP2MLanguage >> addMethodFromMonticelloDefinition: aMCMethodDefinition [ 
+	| methodDef classDef mcDef |
+	mcDef := aMCMethodDefinition.
+	classDef := self ensureClassNamed: mcDef className.
+	methodDef := self class methodMetaclass named: mcDef selector parent: classDef.
+	methodDef initializeWithMonticello: mcDef.
+	classDef addLocalMethod: methodDef.
+	^ methodDef
+]
+
 { #category : #'accessing classes' }
 EP2MLanguage >> allClasses [
 	^ behaviors
@@ -102,12 +134,13 @@ EP2MLanguage >> allClasses [
 
 { #category : #'accessing classes' }
 EP2MLanguage >> allClassesAndTraits [
+	"added for compatibility"
 	^ self allClasses
 ]
 
 { #category : #'accessing classes' }
 EP2MLanguage >> allClassesWithRole [
-	" classes with role are installed as Stubs at the beginning of bootstrap"
+	" classes with role are installed as Stubs at the beginning of bootstrap, they can be extended by loading classes from host system or from tonel repository"
 
 	^ self allClasses
 		select: [ :beh | beh isBehavior and: [ beh role isNotNil ] ]
@@ -210,10 +243,19 @@ EP2MLanguage >> classNamed: aString ifAbsent: aBlockClosure [
 ]
 
 { #category : #'accessing classes' }
+EP2MLanguage >> classNamed: aString ifAbsent: absentBlock ifPresent: presentBlock [ 
+	|result|
+	result := self classNamed: aString ifAbsent: [nil].
+	result
+		ifNil: [ ^ absentBlock value ] 
+		ifNotNil: [ ^ presentBlock cull: result ]
+]
+
+{ #category : #'accessing classes' }
 EP2MLanguage >> classNamed: aString ifPresent: aBlockClosure [ 
 	|result|
 	result := self classNamed: aString ifAbsent: [ nil ].
-	result ifNotNil: [ aBlockClosure cull: result ]
+	result ifNotNil: [ ^ aBlockClosure cull: result ]
 ]
 
 { #category : #'accessing special classes' }
@@ -265,7 +307,7 @@ EP2MLanguage >> classRoles [
 ]
 
 { #category : #'accessing special classes' }
-EP2MLanguage >> classSmalltalk [
+EP2MLanguage >> classSmalltalkImage [
 	^ self classWithRole: #SmalltalkImage
 ]
 
@@ -296,6 +338,17 @@ EP2MLanguage >> defaultPackages [
 	^ IdentitySet new
 		add: package;
 		yourself
+]
+
+{ #category : #'creating classes' }
+EP2MLanguage >> ensureClassNamed: aString [ 
+	^ self classNamed: aString ifAbsent: [ self halt. ]
+]
+
+{ #category : #'accessing packages' }
+EP2MLanguage >> ensurePackageNamed: aString [ 
+	"considering only one package for the moment"
+	^ self packages anyOne
 ]
 
 { #category : #'vm-constants' }
@@ -427,6 +480,16 @@ EP2MLanguage >> isClassDefinition: aString [
 	^ false
 ]
 
+{ #category : #'vm-constants' }
+EP2MLanguage >> layoutClassForInstSpec: anInteger [
+ ^ EP2Layout layoutClassForInstSpec: anInteger
+]
+
+{ #category : #'vm-constants' }
+EP2MLanguage >> layoutForInstSpec: anInteger on: anEP2Class [
+ ^ (self layoutClassForInstSpec: anInteger) on: anEP2Class 
+]
+
 { #category : #initialization }
 EP2MLanguage >> loadRequiredBehaviors [
 	| objModel classModel |
@@ -455,8 +518,17 @@ EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 
 { #category : #retrocompatibility }
 EP2MLanguage >> loadTonelRepository: aTonelRepository packagesNames: aCollection classesNames: anUndefinedObject [
-	"retrocompatibility" 
-	^ self
+	| packagesNames version snap |
+	packagesNames := aTonelRepository packageDescriptionsFromReadableFileNames collect: [:each | each at: 1].
+	
+	packagesNames	do: [ :pn | | package |
+			package := self ensurePackageNamed: pn.
+			version := aTonelRepository versionWithInfo: (aTonelRepository versionInfoFromVersionNamed: pn).
+			snap := version snapshot.
+			snap definitions do: [ :each | | newClass | 
+				each ensureEspellDefinitionIn: self package: package
+			
+			  ]]
 ]
 
 { #category : #marking }
@@ -527,6 +599,11 @@ EP2MLanguage >> printOn: aStream [
 EP2MLanguage >> remote [
 	"we use the imageBuilder to interact with the kernel"
 	^ self pbBootstrapper builder
+]
+
+{ #category : #'accessing backend' }
+EP2MLanguage >> removeBehavior: aMClass [
+	self classNamed: aMClass name ifPresent: [ self halt ]
 ]
 
 { #category : #marking }
