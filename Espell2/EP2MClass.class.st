@@ -59,6 +59,12 @@ EP2MClass >> classSide [
 ]
 
 { #category : #compiler }
+EP2MClass >> classVarNames [
+	"compiler compatibility"
+	^ #()
+]
+
+{ #category : #compiler }
 EP2MClass >> compiler [
 
 	^ self class compiler
@@ -235,6 +241,12 @@ EP2MClass >> installStub [
 	^ newClass
 ]
 
+{ #category : #compiler }
+EP2MClass >> instanceSide [
+	"compiler compatibility"
+	^ self
+]
+
 { #category : #testing }
 EP2MClass >> isBehavior [ 
 	^ true
@@ -263,6 +275,12 @@ EP2MClass >> isEphemeron [
 { #category : #testing }
 EP2MClass >> isImmediate [
 	^ self parent immediateClassRoles contains: [:rol | rol = self role ]
+]
+
+{ #category : #compiler }
+EP2MClass >> isMeta [
+	"compiler compatibility"
+	^ false
 ]
 
 { #category : #testing }
@@ -413,6 +431,12 @@ EP2MClass >> role: aString [
 	role := aString
 ]
 
+{ #category : #compiler }
+EP2MClass >> sharedPools [
+	"compiler compatibility"
+	^#()
+]
+
 { #category : #'accessing slots' }
 EP2MClass >> slotNamed: aString [
 	^ (self slots select: [ :slot | slot name = aString ])
@@ -449,4 +473,10 @@ EP2MClass >> superclass: anEP2MBehavior [
 { #category : #hooks }
 EP2MClass >> test [
 	self subclassResponsibility
+]
+
+{ #category : #compiler }
+EP2MClass >> theNonMetaClass [
+	"compiler compatibility"
+	^ self
 ]
