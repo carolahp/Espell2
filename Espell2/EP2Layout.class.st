@@ -125,9 +125,9 @@ EP2Layout >> instSpec [
 	 12 - 15 16-bit indexable
 	 16 - 23 byte indexable
 	 24 - 31 compiled method"
+	(remote isCompiledMethod) ifTrue: [ ^ 24 ].
 	(remote isBytes) ifTrue: [ ^ 16 ].
 	(remote isWords) ifTrue: [ ^ 10 ].
-	(remote isCompiledMethod) ifTrue: [ ^ 24 ].
 	(remote isEphemeron) ifTrue: [ ^ 5 ].
 	(remote instSize = 0 and: [ remote isVariable not ]) ifTrue: [ ^ 0 ].
 	(remote instSize > 0 and: [ remote isVariable not ]) ifTrue: [ ^ 1 ].
