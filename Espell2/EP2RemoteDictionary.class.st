@@ -5,13 +5,13 @@ Class {
 }
 
 { #category : #constants }
-EP2RemoteDictionary class >> allInstVarNames [ 
-	^  #(#tally #array)
+EP2RemoteDictionary class >> modelInstSpec [
+	^ 1
 ]
 
 { #category : #constants }
-EP2RemoteDictionary class >> modelInstSpec [
-	^ 1
+EP2RemoteDictionary class >> modelInstVarNames [ 
+	^  #(#tally #array)
 ]
 
 { #category : #'instance creation' }

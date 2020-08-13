@@ -153,7 +153,7 @@ EP2ObjectSpace >> newAssociationWithKey: aKey andValue: aValue [
 EP2ObjectSpace >> newRemoteArrayWithAll: elements [
 	
 	| array |
-	array := self backend arrayClass basicNew: elements size.
+	array := (self backend arrayClass basicNew: elements size) asRemoteArray.
 	elements withIndexDo: [ :element :index |
 		array at: index put: element
 	].

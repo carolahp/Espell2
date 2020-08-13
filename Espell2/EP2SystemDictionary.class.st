@@ -35,9 +35,18 @@ EP2SystemDictionary >> associationAt: aString [
 	^ (aString -> value) asRemoteObjectInObjectSpace: self objectSpace
 ]
 
+{ #category : #'high-level-messages' }
+EP2SystemDictionary >> associations [
+	| assocs |
+	assocs := #() asOrderedCollection.
+	self associationsDo: [ :each |
+		assocs add: each ].
+	^ assocs asArray asRemoteObjectInObjectSpace: self objectSpace
+]
+
 { #category : #'high-level-message' }
 EP2SystemDictionary >> associationsDo: aBlockClosure [ 
-	systemDictionary asRemoteDictionary associationsDo: [ :assoc | aBlockClosure value: assoc ]
+	systemDictionary associationsDo: [ :assoc | aBlockClosure value: assoc ]
 ]
 
 { #category : #testing }
@@ -51,6 +60,13 @@ EP2SystemDictionary >> at: aString [
 EP2SystemDictionary >> at: aString ifAbsent: aBlockClosure [ 
 	  
 	^ [self at: aString] on: EP2RemoteKeyNotFound do: [ cache at: aString put: nil . aBlockClosure value ]
+]
+
+{ #category : #'high-level-messages' }
+EP2SystemDictionary >> at: aString ifAbsentPut: aValue [
+	[ self at: aString ]
+		on: KeyNotFound
+		do: [ self at: aString put: aValue ]
 ]
 
 { #category : #testing }

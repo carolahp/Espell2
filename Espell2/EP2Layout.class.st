@@ -37,7 +37,9 @@ EP2Layout class >> layoutClassForInstSpec: instSpec [
 	(instSpec = 7) ifTrue: [ ^ EP2ImmediateLayout ].
 	(instSpec = 3) ifTrue: [ ^ EP2ObjectLayout ].	
 	(instSpec = 2) ifTrue: [ ^ EP2VariableLayout ].
-	(instSpec = 16) ifTrue: [ ^ EP2ByteLayout ].
+	(instSpec between: 10 and: 11) ifTrue: [ ^ EP2WordLayout ].
+	(instSpec between: 12 and: 15) ifTrue: [ self halt. ].
+	(instSpec between: 16 and: 23) ifTrue: [ ^ EP2ByteLayout ].
 	(instSpec = 24) ifTrue: [ ^ EP2CompiledMethodLayout ].
 	
 	^ EP2Layout

@@ -5,11 +5,6 @@ Class {
 }
 
 { #category : #constants }
-EP2RemoteClass class >> allInstVarNames [
-	^#(#superclass #methodDict #format)
-]
-
-{ #category : #constants }
 EP2RemoteClass class >> layoutClass [
 	^ EP2FixedLayout
 ]
@@ -20,8 +15,13 @@ EP2RemoteClass class >> modelInstSpec [
 ]
 
 { #category : #constants }
+EP2RemoteClass class >> modelInstVarNames [
+	^#(#superclass #methodDict #format)
+]
+
+{ #category : #constants }
 EP2RemoteClass class >> role [ 
-	^ 'Class'
+	^ 'Metaclass'
 ]
 
 { #category : #accessing }
@@ -289,7 +289,7 @@ EP2RemoteClass >> isStub [
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> methodDictionary [
-	^ self instanceVariableAtIndex: self classMethodDictionaryIndex
+	^ (self instanceVariableAtIndex: self classMethodDictionaryIndex) asRemoteDictionary
 ]
 
 { #category : #'accessing-specialInstVars' }

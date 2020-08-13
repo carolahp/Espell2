@@ -5,11 +5,6 @@ Class {
 }
 
 { #category : #constants }
-EP2RemoteProcessorScheduler class >> allInstVarNames [ 
-	^  #(#quiescentProcessLists #activeProcess)
-]
-
-{ #category : #constants }
 EP2RemoteProcessorScheduler class >> layoutClass [ 
 	^ EP2FixedLayout 
 ]
@@ -17,6 +12,11 @@ EP2RemoteProcessorScheduler class >> layoutClass [
 { #category : #constants }
 EP2RemoteProcessorScheduler class >> modelInstSpec [
 	^ 1
+]
+
+{ #category : #constants }
+EP2RemoteProcessorScheduler class >> modelInstVarNames [ 
+	^  #(#quiescentProcessLists #activeProcess)
 ]
 
 { #category : #constants }

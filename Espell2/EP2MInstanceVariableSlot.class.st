@@ -4,6 +4,18 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #'as yet unclassified' }
+EP2MInstanceVariableSlot >> emitStore: methodBuilder [
+
+	methodBuilder storeInstVar: self index
+]
+
+{ #category : #emiting }
+EP2MInstanceVariableSlot >> emitValue: methodBuilder [ 
+	methodBuilder pushInstVar: self index.
+
+]
+
 { #category : #testing }
 EP2MInstanceVariableSlot >> isInstanceVariableSlot [
 	^ true

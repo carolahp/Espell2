@@ -9,11 +9,6 @@ Class {
 }
 
 { #category : #constants }
-EP2Remote class >> allInstVarNames [
-	^#()
-]
-
-{ #category : #constants }
 EP2Remote class >> layoutClass [
 	" generic layout "
 	^ EP2ObjectLayout
@@ -38,6 +33,11 @@ EP2Remote class >> modelInstSpec [
 		16-23	= 8-bit indexable
 		24-31	= compiled methods (CompiledMethod)"
 	^ 0
+]
+
+{ #category : #constants }
+EP2Remote class >> modelInstVarNames [
+	^#()
 ]
 
 { #category : #'instance creation' }

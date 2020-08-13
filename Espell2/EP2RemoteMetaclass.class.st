@@ -6,7 +6,7 @@ Class {
 
 { #category : #constants }
 EP2RemoteMetaclass class >> role [ 
-	^ 'Metaclass'
+	^nil
 ]
 
 { #category : #accessing }

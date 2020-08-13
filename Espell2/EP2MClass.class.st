@@ -7,16 +7,16 @@ Class {
 	#name : #EP2MClass,
 	#superclass : #EP2MObject,
 	#instVars : [
+		'layout',
+		'template',
 		'superclass',
 		'methodDict',
-		'metaclass',
-		'layout',
-		'role'
+		'metaclass'
 	],
 	#category : #'Espell2-Metamodel'
 }
 
-{ #category : #methods }
+{ #category : #'accessing methods' }
 EP2MClass >> addLocalMethod: anEP2MMethod [
 	anEP2MMethod parent: self.
 	self methodDict at: anEP2MMethod selector put: anEP2MMethod
@@ -35,7 +35,9 @@ EP2MClass >> allInstVarNames [
 
 { #category : #'accessing slots' }
 EP2MClass >> allSlots [
-	^ self slots
+	^ self superclass
+		ifNil: [ self slots ]
+		ifNotNil: [ self superclass allSlots , self slots ]
 ]
 
 { #category : #'accessing backend' }
@@ -43,28 +45,28 @@ EP2MClass >> backend [
 	^ self parent backend 
 ]
 
-{ #category : #'accessing model' }
+{ #category : #accessing }
 EP2MClass >> basicClass [
 	^ self metaclass
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'accessing backend' }
 EP2MClass >> classLoader [
 	^ self parent classLoader
 ]
 
-{ #category : #'accessing-backend' }
+{ #category : #accessing }
 EP2MClass >> classSide [
 	self subclassResponsibility 
 ]
 
-{ #category : #compiler }
+{ #category : #'accessing compiler' }
 EP2MClass >> classVarNames [
 	"compiler compatibility"
 	^ #()
 ]
 
-{ #category : #compiler }
+{ #category : #'accessing compiler' }
 EP2MClass >> compiler [
 
 	^ self class compiler
@@ -75,14 +77,17 @@ EP2MClass >> defaultMethodDictionary [
 	^ IdentityDictionary new 
 ]
 
-{ #category : #initializing }
+{ #category : #initialization }
 EP2MClass >> extendWithMonticello: aMCClassDefinition [ 
+	"An existent class stub is extended with a definition read from Monticello.
+	Restrictions should apply here for classes with VM restrictions, therefore, 
+	tests should be applied after the modification in each case"
 	self instVarNames ifNotEmpty: [ self halt. ].
 	(self superclass name = aMCClassDefinition superclassName) ifFalse: [ self halt. ].
 	^ self
 ]
 
-{ #category : #'accessing layout' }
+{ #category : #accessing }
 EP2MClass >> format [
 	
 	"A class format is composed by"
@@ -99,7 +104,7 @@ EP2MClass >> hookInstall [
 	self subclassResponsibility 
 ]
 
-{ #category : #query }
+{ #category : #'accessing methods' }
 EP2MClass >> includesSelector: aString [ 
 	^ self methodDict anySatisfy: [ :method | method selector = aString ]
 ]
@@ -111,31 +116,13 @@ EP2MClass >> initialize [
 ]
 
 { #category : #initialization }
-EP2MClass >> initializeWith: template [
-	| superclassName superclassRemote |
-	superclassName := [template superclass role] on: Error do: [nil].
-	superclassRemote := self parent classNamed: superclassName ifAbsent: [nil].
-	self
-		role: template role;
-		layout: (template layoutClass on: self);
-		superclass: superclassRemote.
-	"check if we are installing the class with role Class (it is the only class which is instance of itself)"
-	(template = EP2RemoteClass) 
-		ifTrue: [ self metaclass: self ]
-		ifFalse: [ self metaclass: parent classMetaclass ].
-
-	template allInstVarNames do: [:ivname | self addSlot: ivname ].
-	^ self
-]
-
-{ #category : #initialization }
 EP2MClass >> initializeWithLocal: localClass [
-	self halt.
-	"localClass allInstVarNames do: [:ivname | self addSlot: ivname ]."
+	
+	localClass modelInstVarNames do: [:ivname | self addSlot: ivname ].
 	^ self
-		layout: (self parent layoutForInstSpec: localClass instSpec on: self);
-		superclass: (self parent classByRoleOrName: localClass superclass name ifAbsent: [ self halt ]);
 		metaclass: self parent classMetaclass;
+		layout: (self parent layoutForInstSpec: localClass instSpec on: self);
+		superclass: (self parent classByRoleOrName: localClass superclass name ifAbsent: [ self halt. ]);
 		name: localClass name;
 		role: nil.
 		
@@ -143,12 +130,13 @@ EP2MClass >> initializeWithLocal: localClass [
 
 { #category : #initialization }
 EP2MClass >> initializeWithMonticello: aMCClassDefinition [
+	"A class is instantiated following the monticello definition"
 	| mcDef |
 	mcDef := aMCClassDefinition.
 	self
 		layout: (mcDef espell2LayoutType on: self);
 		metaclass: self parent classMetaclass;
-		role: nil.
+		template: nil.
 	mcDef superclassName = #nil
 		ifTrue: [ self halt ]
 		ifFalse: [ self superclass: (self parent ensureClassNamed: mcDef superclassName) ].
@@ -173,18 +161,34 @@ EP2MClass >> initializeWithMonticello: aMCClassDefinition [
 							self layout addSlot: unknownSlot" ] ] ]
 ]
 
-{ #category : #bindings }
-EP2MClass >> innerBindingOf: aSymbol [ 
-	"in ObjVLisp there are no class variables"
-	^nil
+{ #category : #initialization }
+EP2MClass >> initializeWithTemplate: aTemplateClass [
+	| superclassName superclassModel |
+	
+	superclassName := [aTemplateClass superclass role] on: Error do: [nil].
+	superclassModel := self parent classNamed: superclassName ifAbsent: [nil].
+	"this happens when a class has more than one role"
+	self haltIf:[superclassName = self name].
+	self
+		superclass: superclassModel.
+	"check if we are installing the class with role Class (it is the only class which is instance of itself)"
+	(aTemplateClass role = 'Metaclass') 
+		ifTrue: [ self metaclass: self ]
+		ifFalse: [ self metaclass: parent classMetaclass ].
+	^ self
 ]
 
-{ #category : #'accessing header' }
+{ #category : #bindings }
+EP2MClass >> innerBindingOf: aSymbol [ 
+	self subclassResponsibility 
+]
+
+{ #category : #accessing }
 EP2MClass >> instSize [
 	^ (self layout slots select: #isInstanceVariableSlot) size
 ]
 
-{ #category : #'accessing header' }
+{ #category : #accessing }
 EP2MClass >> instSpec [
 	^ self layout instSpec
 ]
@@ -199,12 +203,12 @@ EP2MClass >> instVarNames [
 	^ self layout instVarNames
 ]
 
-{ #category : #'classes remote' }
+{ #category : #'installing stubs' }
 EP2MClass >> installMetaclassStub [
 	| theNewMetaclass metaclassIndex |
 	" If the metaclass was already created, it will be found in the bootstrapEnvironment dictionary "
 	self remote
-		ifNotNil: [ :aClass | ^ aClass ].
+		isNilObject ifFalse: [ :aClass | ^ aClass ].
 
 	" We need to create the metaclass from scratch "
 	metaclassIndex := self classLoader newClassIndex.
@@ -225,76 +229,84 @@ EP2MClass >> installMethods [
 	self subclassResponsibility 
 ]
 
-{ #category : #'installing remote' }
+{ #category : #'installing stubs' }
 EP2MClass >> installStub [
-		
-	| newClass remoteMetaclassClass |	
+	| newClass remoteMetaclassClass |
 	"this is the class with role metaclass installed in the kernel"
-	remoteMetaclassClass := self parent classMetaclass remote 
-		ifNil: [
-			self parent classMetaclass installMetaclassStub
-		].
+	remoteMetaclassClass := self parent classMetaclass remote.
+	remoteMetaclassClass isNilObject
+		ifTrue: [ 
+			"install the metaclass"
+			remoteMetaclassClass := self parent classMetaclass
+				installMetaclassStub ].
 	newClass := remoteMetaclassClass basicNew asRemoteMetaclass.
 	newClass format: self format.
-	self classLoader registerClass: newClass definition: self fullyLoaded: false.
-	
+	self classLoader
+		registerClass: newClass
+		definition: self
+		fullyLoaded: false.
 	^ newClass
 ]
 
-{ #category : #compiler }
+{ #category : #'accessing compiler' }
 EP2MClass >> instanceSide [
 	"compiler compatibility"
 	^ self
 ]
 
-{ #category : #testing }
+{ #category : #'testing layout' }
 EP2MClass >> isBehavior [ 
 	^ true
 ]
 
-{ #category : #'accessing header' }
+{ #category : #'testing layout' }
 EP2MClass >> isBytes [
 	^ self layout isByteLayout
 ]
 
-{ #category : #testing }
+{ #category : #'testing layout' }
 EP2MClass >> isClassMetamodel [
 	^ true
 ]
 
-{ #category : #'accessing header' }
+{ #category : #'testing layout' }
 EP2MClass >> isCompiledMethod [
 	^ self layout isCompiledMethodLayout
 ]
 
-{ #category : #'accessing header' }
+{ #category : #'testing layout' }
 EP2MClass >> isEphemeron [
 	^ self layout isEphemeronLayout
 ]
 
-{ #category : #testing }
+{ #category : #'testing layout' }
 EP2MClass >> isImmediate [
 	^ self parent immediateClassRoles contains: [:rol | rol = self role ]
 ]
 
-{ #category : #compiler }
+{ #category : #'accessing compiler' }
 EP2MClass >> isMeta [
 	"compiler compatibility"
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing layout' }
 EP2MClass >> isMetaclass [
 	"languages don't have metaclasses by default"
 	^ false
 ]
 
-{ #category : #'accessing header' }
+{ #category : #testing }
+EP2MClass >> isNilObject [
+	^ false
+]
+
+{ #category : #'testing layout' }
 EP2MClass >> isVariable [
 	^ self layout isVariableLayout
 ]
 
-{ #category : #'accessing header' }
+{ #category : #'testing layout' }
 EP2MClass >> isWords [
 	^ self layout isWordLayout
 ]
@@ -304,7 +316,7 @@ EP2MClass >> layout [
 	^ layout
 ]
 
-{ #category : #'accessing-api' }
+{ #category : #accessing }
 EP2MClass >> layout: anEP2LayoutClass [ 
 	layout := anEP2LayoutClass
 ]
@@ -359,7 +371,7 @@ EP2MClass >> markMethodAsAccessed: aMethod [
 		ifNotNil: [ :method | method markAsAccessed ] 
 ]
 
-{ #category : #'accessing-api' }
+{ #category : #accessing }
 EP2MClass >> metaclass [
 	^ metaclass
 ]
@@ -369,17 +381,17 @@ EP2MClass >> metaclass: anOLClass [
 	metaclass := anOLClass
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'accessing backend' }
 EP2MClass >> methodBuilder [
 	^ self parent methodBuilder
 ]
 
-{ #category : #'accessing model' }
+{ #category : #accessing }
 EP2MClass >> methodDict [
 	^ methodDict
 ]
 
-{ #category : #methods }
+{ #category : #'accessing methods' }
 EP2MClass >> methodNamed: aString [
 	^ self
 		methodNamed: aString
@@ -387,18 +399,23 @@ EP2MClass >> methodNamed: aString [
 				signal: 'Method "' , aString , '" not found in class "' , self asString , '"' ]
 ]
 
-{ #category : #methods }
+{ #category : #'accessing methods' }
 EP2MClass >> methodNamed: aString ifAbsent: aBlock [
 	
 	^ [self methodDict at: aString asSymbol] on: KeyNotFound do: aBlock
 ]
 
-{ #category : #making }
+{ #category : #accessing }
+EP2MClass >> methods [
+	^ self methodDict values asArray
+]
+
+{ #category : #marking }
 EP2MClass >> objectAccessedPropertyName [
 	^ parent objectAccessedPropertyName
 ]
 
-{ #category : #'accessing-api' }
+{ #category : #accessing }
 EP2MClass >> package [
 	^ self parent packageFor: self
 ]
@@ -416,22 +433,25 @@ EP2MClass >> printOn: aStream [
 		nextPutAll: '"'
 ]
 
-{ #category : #'accessing remote objects' }
+{ #category : #'accessing slots' }
+EP2MClass >> readSlotNamed: aString [
+
+	^ (self basicClass slotNamed: #instVarNames) read: self
+]
+
+{ #category : #accessing }
 EP2MClass >> remote [
-	^ self parent remote bootstrapEnvironmentAt: self name
+	^ (self parent remote bootstrapEnvironmentAt: self name)
+		ifNil: [self remoteBackend nilObject]
+		ifNotNil: [:found | found asRemoteClass]
 ]
 
 { #category : #accessing }
 EP2MClass >> role [
-	^ role
+	^ template ifNil: [ nil ] ifNotNil: [ template role ]
 ]
 
-{ #category : #accessing }
-EP2MClass >> role: aString [
-	role := aString
-]
-
-{ #category : #compiler }
+{ #category : #'accessing compiler' }
 EP2MClass >> sharedPools [
 	"compiler compatibility"
 	^#()
@@ -464,18 +484,40 @@ EP2MClass >> superclass [
 	^ superclass
 ]
 
-{ #category : #'accessing-api' }
+{ #category : #accessing }
 EP2MClass >> superclass: anEP2MBehavior [
 	
 	superclass := anEP2MBehavior 
 ]
 
-{ #category : #hooks }
-EP2MClass >> test [
-	self subclassResponsibility
+{ #category : #accessing }
+EP2MClass >> template [
+	^ template 
 ]
 
-{ #category : #compiler }
+{ #category : #accessing }
+EP2MClass >> template: aClass [ 
+	template := aClass
+]
+
+{ #category : #hooks }
+EP2MClass >> test [
+	self template ifNotNil: [ self testVMInstanceVariables ]
+]
+
+{ #category : #testing }
+EP2MClass >> testVMInstanceVariables [
+	self template modelInstVarNames
+		doWithIndex: [ :ivName :index | 
+			self
+				assert: (self instVarIndexFor: ivName ifAbsent: [ 0 ]) = index
+				description:
+					'Instance variable "' , ivName , '" should be in position '
+						, index asString , ' in class ' , self name , ' (role "'
+						, self role , '") ' ]
+]
+
+{ #category : #'accessing compiler' }
 EP2MClass >> theNonMetaClass [
 	"compiler compatibility"
 	^ self

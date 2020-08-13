@@ -87,7 +87,9 @@ EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject 
 
 { #category : #'accessing backend' }
 EP2MLanguage >> addBehavior: aMClass [
-	self classNamed: aMClass name ifAbsent: [ self behaviors at: aMClass name put: aMClass ] ifPresent: [  ]
+	self classNamed: aMClass name ifAbsent: [ 
+		aMClass test.
+		self behaviors at: aMClass name put: aMClass ] ifPresent: [  ]
 ]
 
 { #category : #'accessing backend' }
@@ -97,27 +99,11 @@ EP2MLanguage >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
 	self
 		classNamed: aMCClassDefinition className
 		ifAbsent: [ 
-			newClass := self class classMetaclass
-				named: aMCClassDefinition className
-				parent: self.
-			newClass initializeWithMonticello: mcDef.
+			newClass := self newBehaviorFromMonticelloDefinition: aMCClassDefinition.
 			self addBehavior: newClass ]
 		ifPresent: [ :found | 
 			newClass := found extendWithMonticello: mcDef ].
 	^ newClass
-]
-
-{ #category : #'accessing backend' }
-EP2MLanguage >> addBehaviorFromTemplate: aClassEP2Remote [
-	| template model |
-	template := aClassEP2Remote.
-	model := self
-		classNamed: template role
-		ifAbsent: [ self class classMetaclass named: template role parent: self ].
-	self addBehavior: model.
-	self packages anyOne addDefinedBehavior: model.
-	
-	^ model
 ]
 
 { #category : #'accessing backend' }
@@ -208,7 +194,7 @@ EP2MLanguage >> classByRoleOrName: aString ifAbsent: aBlockClosure [
 
 { #category : #'accessing special classes' }
 EP2MLanguage >> classClass [
-	^ self classWithRole: #Class
+	^ self classMetaclass 
 ]
 
 { #category : #'accessing special classes' }
@@ -234,7 +220,7 @@ EP2MLanguage >> classLoader [
 
 { #category : #'accessing special classes' }
 EP2MLanguage >> classMetaclass [
-	^ self classClass
+	^ self classWithRole: #Metaclass
 ]
 
 { #category : #'accessing backend' }
@@ -244,11 +230,9 @@ EP2MLanguage >> classNamed: aString [
 
 { #category : #'accessing backend' }
 EP2MLanguage >> classNamed: aString ifAbsent: aBlockClosure [
-	| aSymbol |
-	aSymbol := aString ifNotNil: [ aString asSymbol ].
-	^ [ self behaviors at: aSymbol ]
+	^ [ self classNamedExactly: aString ]
 		on: KeyNotFound
-		do: [ aBlockClosure value ]
+		do: [[self classWithRole: aString] on: Error do: aBlockClosure]
 ]
 
 { #category : #'accessing classes' }
@@ -265,6 +249,13 @@ EP2MLanguage >> classNamed: aString ifPresent: aBlockClosure [
 	|result|
 	result := self classNamed: aString ifAbsent: [ nil ].
 	result ifNotNil: [ ^ aBlockClosure cull: result ]
+]
+
+{ #category : #'accessing backend' }
+EP2MLanguage >> classNamedExactly: aString [ 
+	| aSymbol |
+	aSymbol := aString ifNotNil: [ aString asSymbol ].
+	^ self behaviors at: aSymbol
 ]
 
 { #category : #'accessing special classes' }
@@ -286,10 +277,9 @@ EP2MLanguage >> classProtoObject [
 { #category : #hooks }
 EP2MLanguage >> classRoles [
 	^ classRoles ifNil: [ classRoles := {
-		#ProtoObject -> #ProtoObject.
+		#ProtoObject -> #Object.
 		#ProcessorScheduler -> #ProcessorScheduler.
 		#Context -> #MethodContext.
-		#Class -> #Class.
 		#Metaclass -> #Class.
 		#Array -> #Array.
 		#MethodDictionary -> #MethodDictionary . 
@@ -312,6 +302,14 @@ EP2MLanguage >> classRoles [
 		#Dictionary -> #Dictionary.
 		#Message -> #Message.
 		#SmalltalkImage -> #SmalltalkImage.
+		"unnecessary"
+		#ArrayedCollection -> #ArrayedCollection.
+		#String -> #String.
+		#Symbol -> #Symbol.
+		#SystemDictionary -> #SystemDictionary.
+		#Magnitude -> #Magnitude.
+		#Number -> #Number.
+		#Integer -> #Integer
 		} asDictionary ] 
 ]
 
@@ -322,7 +320,7 @@ EP2MLanguage >> classSmalltalkImage [
 
 { #category : #'accessing classes' }
 EP2MLanguage >> classWithRole: aString [ 
-	^ self classNamed: aString
+	^ self classNamedExactly: (self classRoles at: aString ifAbsent: [ aString ])
 ]
 
 { #category : #'default model values' }
@@ -347,6 +345,18 @@ EP2MLanguage >> defaultPackages [
 	^ IdentitySet new
 		add: package;
 		yourself
+]
+
+{ #category : #'initialize-destroy' }
+EP2MLanguage >> destroy [
+	backend ifNotNil: [ 
+		backend environment: nil ].
+	backend := nil.
+	behaviors do: [ :beh | beh parent: nil ].
+	behaviors := nil.
+	packages := nil.
+	globalVariables := nil.
+	
 ]
 
 { #category : #'creating classes' }
@@ -445,8 +455,11 @@ EP2MLanguage >> hookNewSystemDictionary [
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookRegisterClass: anEP2RemoteClass fromDefinition: anOLClass [ 
-	^ self subclassResponsibility 
+EP2MLanguage >> hookRegisterClass: remoteClass fromDefinition: anOLClass [ 
+	self classLoader
+		registerClass: remoteClass asRemoteClass
+		definition: anOLClass
+		fullyLoaded: true.
 ]
 
 { #category : #hooks }
@@ -464,7 +477,7 @@ EP2MLanguage >> imageBuilder [
 	^ self pbBootstrapper builder
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'class roles' }
 EP2MLanguage >> immediateClassRoles [
 	^ #(Character SmallInteger)
 ]
@@ -473,20 +486,13 @@ EP2MLanguage >> immediateClassRoles [
 EP2MLanguage >> initialize [ 
 	behaviors :=  self defaultBehaviors.
 	packages := self defaultPackages.
-	globalVariables := self defaultGlobalVariables.
-	self loadRequiredBehaviors.
-	
+	globalVariables := self defaultGlobalVariables
 ]
 
 { #category : #'vm-constants' }
 EP2MLanguage >> instanceVariableMapping [
 	
 	^ instanceVariableMapping ifNil: [ instanceVariableMapping := PBInstanceVariableMappingGeneric on: self ]
-]
-
-{ #category : #hooks }
-EP2MLanguage >> instructionRegisterInstalledBehaviorInGlobals: anEP2RemoteClass [ 
-	^ self newDummyInstruction 
 ]
 
 { #category : #retrocompatibility }
@@ -507,24 +513,31 @@ EP2MLanguage >> layoutForInstSpec: anInteger on: anEP2Class [
 { #category : #initialization }
 EP2MLanguage >> loadRequiredBehaviors [
 	| objModel classModel |
-	objModel := self addBehaviorFromTemplate: EP2Remote.
-	classModel := self addBehaviorFromTemplate: EP2RemoteClass.
-	objModel initializeWith: EP2Remote.
-	classModel initializeWith: EP2RemoteClass.
-	
+	"we load object and class first because they are special in the inheritance chain. 
+	Object is the root and class is instance of itself"
+
+	objModel := self newBehaviorFromTemplate: EP2Remote.
+	self addBehavior: objModel.
+	classModel := self newBehaviorFromTemplate: EP2RemoteClass.
+	self addBehavior: classModel.
+	objModel initializeWithTemplate: EP2Remote.
+	classModel initializeWithTemplate: EP2RemoteClass.
 	" recursive call to load subclasses"
 	EP2Remote
-		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ].
-	
+		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ].	
 	self class classMetaclass slots do: [ :slot | classModel addSlot: slot name ].
+	
+	
 ]
 
 { #category : #initialization }
 EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 	| template model |
 	template := aClassEP2Remote.
-	model := self addBehaviorFromTemplate: template.
-	model initializeWith: aClassEP2Remote.
+	template role ifNotNil: [ 
+		model := self newBehaviorFromTemplate: template.
+		model initializeWithTemplate: aClassEP2Remote.
+		self addBehavior: model ].
 	" Recursive call to load subclasses "
 	template
 		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ]
@@ -533,6 +546,7 @@ EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 { #category : #retrocompatibility }
 EP2MLanguage >> loadTonelRepository: aTonelRepository packagesNames: aCollection classesNames: anUndefinedObject [
 	| packagesNames version snap |
+	self loadRequiredBehaviors.
 	packagesNames := aTonelRepository packageDescriptionsFromReadableFileNames collect: [:each | each at: 1].
 	
 	packagesNames	do: [ :pn | | package |
@@ -562,6 +576,30 @@ EP2MLanguage >> maybeAccessedPropertyName [
 { #category : #'accessing remote backend' }
 EP2MLanguage >> methodBuilder [
 	^ self pbBootstrapper builder methodBuilder
+]
+
+{ #category : #'accessing backend' }
+EP2MLanguage >> newBehaviorFromMonticelloDefinition: aMCClassDefinition [.
+	^ (self class classMetaclass
+				named: aMCClassDefinition className
+				parent: self) 
+				initializeWithMonticello: aMCClassDefinition;
+				yourself 
+]
+
+{ #category : #'accessing backend' }
+EP2MLanguage >> newBehaviorFromTemplate: aClassEP2Remote [
+	| template model modelName |
+	template := aClassEP2Remote.
+	modelName := self classRoles at: template role.
+	model := self
+		classNamed: modelName
+		ifAbsent: [ self class classMetaclass named: modelName parent: self ].
+	model template: template.
+	model layout: (template layoutClass on: model).
+	template modelInstVarNames do: [:ivname | model addSlot: ivname ].
+	self packages anyOne addDefinedBehavior: model.
+	^ model
 ]
 
 { #category : #marking }
@@ -657,4 +695,9 @@ EP2MLanguage >> systemClassMapping [
 		#Behavior -> #Class.
 		#ClassDescription -> #Class
 		"} asDictionary 
+]
+
+{ #category : #testing }
+EP2MLanguage >> test [
+	self shouldBeImplemented.
 ]

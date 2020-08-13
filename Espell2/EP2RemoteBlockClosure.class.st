@@ -5,11 +5,6 @@ Class {
 }
 
 { #category : #constants }
-EP2RemoteBlockClosure class >> allInstVarNames [
-	^#(#outerContext #startpc #numArgs)
-]
-
-{ #category : #constants }
 EP2RemoteBlockClosure class >> layoutClass [ 
 	^ EP2BlockLayout 
 ]
@@ -17,6 +12,11 @@ EP2RemoteBlockClosure class >> layoutClass [
 { #category : #constants }
 EP2RemoteBlockClosure class >> modelInstSpec [
 	^ 3 "may be 1 too"
+]
+
+{ #category : #constants }
+EP2RemoteBlockClosure class >> modelInstVarNames [
+	^#(#outerContext #startpc #numArgs)
 ]
 
 { #category : #constants }

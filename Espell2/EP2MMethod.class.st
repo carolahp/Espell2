@@ -10,13 +10,6 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
-{ #category : #'instance creation' }
-EP2MMethod class >> newFrom: aCompiledMethod [
-	self halt.
-	^ self new 
-		sourceCode: aCompiledMethod sourceCode
-]
-
 { #category : #accessing }
 EP2MMethod >> ast [
 	"Answer my AST with semantic analysis. See #parseTree."

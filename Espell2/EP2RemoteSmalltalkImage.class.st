@@ -5,13 +5,13 @@ Class {
 }
 
 { #category : #constants }
-EP2RemoteSmalltalkImage class >> allInstVarNames [ 
-	^  #(#globals)
+EP2RemoteSmalltalkImage class >> layoutClass [ 
+	^ EP2FixedLayout 
 ]
 
 { #category : #constants }
-EP2RemoteSmalltalkImage class >> layoutClass [ 
-	^ EP2FixedLayout 
+EP2RemoteSmalltalkImage class >> modelInstVarNames [ 
+	^  #(#globals)
 ]
 
 { #category : #constants }
