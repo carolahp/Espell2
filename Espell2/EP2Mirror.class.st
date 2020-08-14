@@ -43,16 +43,19 @@ EP2Mirror >> asLocalSmallInteger [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteArray [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteArray on: self
 ]
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteAssociation [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteAssociation on: self 
 ]
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteBlock [ 
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteBlockClosure on: self
 ]
 
@@ -66,11 +69,19 @@ EP2Mirror >> asRemoteBoolean [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteByteString [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteByteString on: self
 ]
 
 { #category : #converting }
+EP2Mirror >> asRemoteByteSymbol [
+	self isNilObject ifTrue: [^ backend nilObject ].
+	^ EP2RemoteByteSymbol on: self
+]
+
+{ #category : #converting }
 EP2Mirror >> asRemoteCharacter [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteCharacter on: self
 ]
 
@@ -87,27 +98,38 @@ EP2Mirror >> asRemoteClass [
 
 { #category : #'converting -high level' }
 EP2Mirror >> asRemoteCompiledMethod [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteCompiledMethod on: self
 ]
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteContext [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteContext on: self
 ]
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteDictionary [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteDictionary on: self
 ]
 
 { #category : #converting }
 EP2Mirror >> asRemoteFalse [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteFalse on: self
 ]
 
 { #category : #transforming }
 EP2Mirror >> asRemoteMetaclass [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteMetaclass on: self
+]
+
+{ #category : #'converting remote' }
+EP2Mirror >> asRemoteMethodDictionary [
+	self isNilObject ifTrue: [^ backend nilObject ].
+	^ EP2RemoteMethodDictionary on: self
 ]
 
 { #category : #'converting-high-level' }
@@ -117,6 +139,7 @@ EP2Mirror >> asRemoteNil [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteObject [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2Remote on: self
 ]
 

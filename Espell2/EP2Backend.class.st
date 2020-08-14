@@ -780,6 +780,11 @@ EP2Backend >> methodClass: anEP2RemoteClass [
 	^ self specialObjectsArray at: 17 put: anEP2RemoteClass
 ]
 
+{ #category : #'accessing special classes' }
+EP2Backend >> methodDictionaryClass [
+	^ (self builder classNamed: #MethodDictionary) asRemoteClass
+]
+
 { #category : #'creating-mirrors' }
 EP2Backend >> mirrorOn: anEP2SimulatorHandle [ 
 	^ EP2Mirror on: anEP2SimulatorHandle from: self

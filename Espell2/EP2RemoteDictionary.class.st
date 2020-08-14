@@ -245,7 +245,7 @@ EP2RemoteDictionary >> printOn: aStream [
 				aStream nextPutAll: '[uninitialized]' ]
 ]
 
-{ #category : #'high-level-messages' }
+{ #category : #'accessing-specialInstVars' }
 EP2RemoteDictionary >> scanFor: aRemoteObject [
 	| element start finish object |
 	object := aRemoteObject asRemoteObjectInObjectSpace: self backend objectSpace.

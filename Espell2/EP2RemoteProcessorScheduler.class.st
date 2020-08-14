@@ -16,7 +16,7 @@ EP2RemoteProcessorScheduler class >> modelInstSpec [
 
 { #category : #constants }
 EP2RemoteProcessorScheduler class >> modelInstVarNames [ 
-	^  #(#quiescentProcessLists #activeProcess)
+	^  #(#suspendedProcessLists #activeProcess)
 ]
 
 { #category : #constants }

@@ -289,7 +289,7 @@ EP2RemoteClass >> isStub [
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> methodDictionary [
-	^ (self instanceVariableAtIndex: self classMethodDictionaryIndex) asRemoteDictionary
+	^ (self instanceVariableAtIndex: self classMethodDictionaryIndex) asRemoteMethodDictionary
 ]
 
 { #category : #'accessing-specialInstVars' }

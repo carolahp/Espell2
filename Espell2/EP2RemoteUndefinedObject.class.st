@@ -19,6 +19,11 @@ EP2RemoteUndefinedObject class >> role [
 	^ 'UndefinedObject'
 ]
 
+{ #category : #'converting local' }
+EP2RemoteUndefinedObject >> asLocalLiteral [
+	^ nil
+]
+
 { #category : #printing }
 EP2RemoteUndefinedObject >> printOn: aStream [
 	^ aStream nextPutAll: '*nil*'

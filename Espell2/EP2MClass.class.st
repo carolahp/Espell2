@@ -258,6 +258,8 @@ EP2MClass >> installMethods [
 EP2MClass >> installStub [
 	| newClass remoteMetaclassClass |
 	"this is the class with role metaclass installed in the kernel"
+	
+	self remote isNilObject ifFalse: [ ^ self ].
 	remoteMetaclassClass := self parent classMetaclass remote.
 	remoteMetaclassClass isNilObject
 		ifTrue: [ 
@@ -541,6 +543,18 @@ EP2MClass >> testFormat [
 					'Missing instance variables in class "' , self name , '" (role "'
 						, self role , '"). It should define at least: '
 						, temp modelInstVarNames asString ]
+]
+
+{ #category : #testing }
+EP2MClass >> testRemote [
+	| remote |
+	remote := self remote.
+	self 
+		assert: remote methodDictionary isNilObject not 
+		description: 'method dictionary is nil'.
+	self assert: remote classNameFromAnyOrigin = self name.
+	self assert: remote methodDictionary basicClass instSpec = EP2RemoteMethodDictionary modelInstSpec description: 'Incorrect format of method dictionary. Wrong instSpec of its class'.
+	remote methodDictionary size > 0 ifTrue: [ self halt ]
 ]
 
 { #category : #testing }

@@ -116,6 +116,11 @@ EP2Remote >> asRemoteByteString [
 ]
 
 { #category : #converting }
+EP2Remote >> asRemoteByteSymbol [
+	^ self mirror asRemoteByteSymbol
+]
+
+{ #category : #converting }
 EP2Remote >> asRemoteCharacter [
 	^ self mirror asRemoteCharacter
 ]
@@ -148,6 +153,11 @@ EP2Remote >> asRemoteFalse [
 { #category : #converting }
 EP2Remote >> asRemoteMetaclass [
 	^self mirror asRemoteMetaclass 
+]
+
+{ #category : #'convert remote' }
+EP2Remote >> asRemoteMethodDictionary [
+	^ self mirror asRemoteMethodDictionary 
 ]
 
 { #category : #converting }
@@ -208,6 +218,11 @@ EP2Remote >> at: index put: aReference [
 { #category : #'accessing-pvt' }
 EP2Remote >> backend [
 	^ mirror backend
+]
+
+{ #category : #'accessing-variables' }
+EP2Remote >> basicAt: index [
+	^ self layout basicAt: index
 ]
 
 { #category : #'high-level-message' }
@@ -283,7 +298,7 @@ EP2Remote >> isClassMirror [
 
 { #category : #testing }
 EP2Remote >> isEP2Mirror [
-	^ false
+	^ true
 ]
 
 { #category : #testing }
