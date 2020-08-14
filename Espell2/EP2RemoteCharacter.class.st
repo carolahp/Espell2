@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteCharacter class >> layoutClass [
+	^ EP2ImmediateLayout
+]
+
+{ #category : #constants }
 EP2RemoteCharacter class >> modelInstSpec [
 	^ 7
 ]

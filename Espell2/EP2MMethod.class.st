@@ -10,6 +10,18 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #exporting }
+EP2MMethod >> asMCDefinition [
+	
+	^ MCMethodDefinition 
+		className: self parent name
+		classIsMeta: false
+		selector: self name
+		category: 'as yet unclassified'
+		timeStamp: ''
+		source: self sourceCode
+]
+
 { #category : #accessing }
 EP2MMethod >> ast [
 	"Answer my AST with semantic analysis. See #parseTree."
@@ -53,6 +65,11 @@ EP2MMethod >> markAsAccessed [
 { #category : #accessing }
 EP2MMethod >> methodClass [
 	^ self parent
+]
+
+{ #category : #accesssing }
+EP2MMethod >> package [
+	^ self parent package
 ]
 
 { #category : #ast }

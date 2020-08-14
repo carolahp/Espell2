@@ -3,7 +3,7 @@ vairable sized with instance variables
 "
 Class {
 	#name : #EP2MethodDictionaryLayout,
-	#superclass : #EP2ObjectLayout,
+	#superclass : #EP2VariableLayout,
 	#category : #'Espell2-Kernel-Layouts'
 }
 

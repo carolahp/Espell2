@@ -1,6 +1,6 @@
 Class {
 	#name : #EP2ExternalLayout,
-	#superclass : #EP2Layout,
+	#superclass : #EP2VariableLayout,
 	#category : #'Espell2-Kernel-Layouts'
 }
 

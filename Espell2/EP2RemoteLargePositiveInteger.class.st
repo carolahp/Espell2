@@ -10,6 +10,11 @@ EP2RemoteLargePositiveInteger class >> layoutClass [
 ]
 
 { #category : #constants }
+EP2RemoteLargePositiveInteger class >> modelInstSpec [
+	^ 16
+]
+
+{ #category : #constants }
 EP2RemoteLargePositiveInteger class >> role [ 
 	^ 'LargePositiveInteger'
 ]

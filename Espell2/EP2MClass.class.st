@@ -526,8 +526,11 @@ EP2MClass >> test [
 EP2MClass >> testFormat [
 	self template
 		ifNotNil: [ :temp | 
+			| myInstSpec goodInstSpec |
+			myInstSpec := self instSpec.
+			goodInstSpec := temp modelInstSpec.
 			self
-				assert: temp modelInstSpec = self instSpec
+				assert: (myInstSpec = goodInstSpec or: (goodInstSpec = 1 and: myInstSpec = 0))
 				description:
 					'Wrong inst spec in class "' , self name , '" (role "' , self role
 						, '"). It should be ' , temp modelInstSpec asString
@@ -535,8 +538,9 @@ EP2MClass >> testFormat [
 			self
 				assert: temp modelInstVarNames size <= self instSize
 				description:
-					'Missing instance variables in class "' , self name , '" (role "' , self role
-						, '"). It should define at least: ' , temp modelInstVarNames asString ]
+					'Missing instance variables in class "' , self name , '" (role "'
+						, self role , '"). It should define at least: '
+						, temp modelInstVarNames asString ]
 ]
 
 { #category : #testing }

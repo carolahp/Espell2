@@ -17,6 +17,11 @@ EP2ImmediateLayout >> gtInspectorIn: composite [
 		display: #yourself
 ]
 
+{ #category : #'accessing header' }
+EP2ImmediateLayout >> instSpec [
+	^ 7
+]
+
 { #category : #'testing-types' }
 EP2ImmediateLayout >> isImmediateLayout [
 

@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteByteString class >> layoutClass [ 
+	^ EP2ByteLayout 
+]
+
+{ #category : #constants }
 EP2RemoteByteString class >> modelInstSpec [
 	^ 16
 ]

@@ -490,6 +490,11 @@ EP2MLanguage >> hookRegisterClass: anEP2RemoteClass named: aString [
 	^ self newDummyInstruction 
 ]
 
+{ #category : #hooks }
+EP2MLanguage >> hookSetSpecialObjectsArray: anEP2RemoteArray [
+	^ self newDummyInstruction 
+]
+
 { #category : #'accessing remote backend' }
 EP2MLanguage >> imageBuilder [
 	^ self pbBootstrapper builder

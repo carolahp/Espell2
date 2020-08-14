@@ -248,6 +248,12 @@ EP2Layout >> localObjectAsRemoteObject: anObject [
 	^ self remote mirror backend localObjectAsRemoteObject: anObject
 ]
 
+{ #category : #'testing-types' }
+EP2Layout >> mcType [
+
+	^ #normal 
+]
+
 { #category : #'accessing-pvt' }
 EP2Layout >> objectSpace [
 	^ self remote mirror backend objectSpace

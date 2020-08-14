@@ -6,7 +6,7 @@ Class {
 
 { #category : #constants }
 EP2RemoteString class >> layoutClass [ 
-	^ EP2ByteLayout 
+	^ EP2FixedLayout 
 ]
 
 { #category : #constants }
