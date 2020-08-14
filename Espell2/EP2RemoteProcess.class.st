@@ -25,7 +25,7 @@ EP2RemoteProcess class >> modelInstSpec [
 
 { #category : #constants }
 EP2RemoteProcess class >> modelInstVarNames [ 
-	^  #(#nextLink #suspendedContext #priority #myList #name #env #effectiveProcess #terminating #level)
+	^  #(#nextLink #suspendedContext #priority #myList #threadId #errorHandler)
 ]
 
 { #category : #constants }

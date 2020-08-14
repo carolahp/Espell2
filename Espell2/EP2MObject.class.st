@@ -50,6 +50,19 @@ EP2MObject >> isMarkedAsAccessed [
 		ifAbsent: [ false ]
 ]
 
+{ #category : #marking }
+EP2MObject >> markAsAccessed [
+	self propertyNamed: self parent objectAccessedPropertyName put: true
+]
+
+{ #category : #marking }
+EP2MObject >> markAsMaybeAccessed [
+	
+	self 
+		propertyNamed: self environment maybeAccessedPropertyName
+		put: true
+]
+
 { #category : #'accessing-api' }
 EP2MObject >> name [ 
 	^ name

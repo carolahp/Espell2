@@ -36,3 +36,9 @@ EP2VariableLayout >> layoutName [
 
 	^ #VariableLayout
 ]
+
+{ #category : #exporting }
+EP2VariableLayout >> mcType [
+
+	^ #variable 
+]

@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteArrayedCollection class >> layoutClass [
+	^ EP2FixedLayout 
+]
+
+{ #category : #constants }
 EP2RemoteArrayedCollection class >> modelInstSpec [
 	^ 0
 ]

@@ -40,6 +40,24 @@ EP2MClass >> allSlots [
 		ifNotNil: [ self superclass allSlots , self slots ]
 ]
 
+{ #category : #exporting }
+EP2MClass >> asMCDefinition [
+
+	^ MCClassDefinition 
+		name: self name
+		superclassName: (self superclass ifNil: [ 'nil' ] ifNotNil: [ :aSuperclass | aSuperclass name ])
+		traitComposition: ''
+		classTraitComposition: ''
+		category: 'as yet unclassified'
+		instVarNames: self instVarNames
+		classVarNames: ''
+		poolDictionaryNames: ''
+		classInstVarNames: ''
+		type: self mcType
+		comment: ''
+		commentStamp: ''
+]
+
 { #category : #'accessing backend' }
 EP2MClass >> backend [
 	^ self parent backend 
@@ -78,12 +96,19 @@ EP2MClass >> defaultMethodDictionary [
 ]
 
 { #category : #initialization }
-EP2MClass >> extendWithMonticello: aMCClassDefinition [ 
+EP2MClass >> extendWithMonticello: aMCClassDefinition [
 	"An existent class stub is extended with a definition read from Monticello.
 	Restrictions should apply here for classes with VM restrictions, therefore, 
 	tests should be applied after the modification in each case"
-	self instVarNames ifNotEmpty: [ self halt. ].
-	(self superclass name = aMCClassDefinition superclassName) ifFalse: [ self halt. ].
+
+	| mcDef instVarsDefs |
+	mcDef := aMCClassDefinition.
+	instVarsDefs := (mcDef variables
+		select: [ :var | var class type = #instance ])
+		reject: [ :var | (self allInstVarNames indexOf: var name) > 0 ].
+	instVarsDefs do: [ :each | self addSlot: each name ].
+	self superclass name = mcDef superclassName
+		ifFalse: [ self halt ].
 	^ self
 ]
 
@@ -118,14 +143,14 @@ EP2MClass >> initialize [
 { #category : #initialization }
 EP2MClass >> initializeWithLocal: localClass [
 	
-	localClass modelInstVarNames do: [:ivname | self addSlot: ivname ].
-	^ self
+	self
 		metaclass: self parent classMetaclass;
 		layout: (self parent layoutForInstSpec: localClass instSpec on: self);
-		superclass: (self parent classByRoleOrName: localClass superclass name ifAbsent: [ self halt. ]);
+		superclass: (self parent classByRoleOrName: localClass superclass name ifAbsent: [ self parent classNamed: #ProtoObject ]);
 		name: localClass name;
-		role: nil.
-		
+		template: nil.
+	localClass instVarNames do: [:ivname | self addSlot: ivname ].
+	^ self
 ]
 
 { #category : #initialization }
@@ -350,25 +375,17 @@ EP2MClass >> lookupSelectorAndMarkTraversedClasses: selector [
 	^ nil
 ]
 
-{ #category : #marking }
-EP2MClass >> markAsAccessed [
-	self propertyNamed: self parent objectAccessedPropertyName put: true
-]
-
-{ #category : #marking }
-EP2MClass >> markAsMaybeAccessed [
-	
-	self 
-		propertyNamed: self environment maybeAccessedPropertyName
-		put: true
-]
-
 { #category : #'as yet unclassified' }
 EP2MClass >> markMethodAsAccessed: aMethod [ 
 	"We ask the class to mark the method instead of asking the method itself to do it, for handling the case in which aMethod is a compiled method coming from DASTBlock or BlockClosure" 
 	(self methodNamed: aMethod selector)
 		ifNil: [ Transcript show: 'selector ', aMethod selector, 'not found';cr. ]
 		ifNotNil: [ :method | method markAsAccessed ] 
+]
+
+{ #category : #exporting }
+EP2MClass >> mcType [
+	^ self layout mcType
 ]
 
 { #category : #accessing }
@@ -502,7 +519,24 @@ EP2MClass >> template: aClass [
 
 { #category : #hooks }
 EP2MClass >> test [
-	self template ifNotNil: [ self testVMInstanceVariables ]
+	self template ifNotNil: [ self testVMInstanceVariables. self testFormat ]
+]
+
+{ #category : #testing }
+EP2MClass >> testFormat [
+	self template
+		ifNotNil: [ :temp | 
+			self
+				assert: temp modelInstSpec = self instSpec
+				description:
+					'Wrong inst spec in class "' , self name , '" (role "' , self role
+						, '"). It should be ' , temp modelInstSpec asString
+						, ' but it is ' , self instSpec asString.
+			self
+				assert: temp modelInstVarNames size <= self instSize
+				description:
+					'Missing instance variables in class "' , self name , '" (role "' , self role
+						, '"). It should define at least: ' , temp modelInstVarNames asString ]
 ]
 
 { #category : #testing }

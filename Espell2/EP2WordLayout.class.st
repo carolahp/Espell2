@@ -15,3 +15,9 @@ EP2WordLayout >> layoutName [
 
 	^ #WordLayout
 ]
+
+{ #category : #exporting }
+EP2WordLayout >> mcType [
+
+	^ #words 
+]

@@ -28,3 +28,9 @@ EP2ImmediateLayout >> layoutName [
 
 	^ #ImmediateLayout
 ]
+
+{ #category : #exporting }
+EP2ImmediateLayout >> mcType [
+
+	^ #immediate 
+]

@@ -62,3 +62,8 @@ EP2Environment >> globalNamed: aString put: aRemoteObject [
 	
 	builder bootstrapEnvironment at: aString put: aRemoteObject
 ]
+
+{ #category : #globals }
+EP2Environment >> setGlobal: aString value: anEP2Remote [ 
+	self at: aString asSymbol put: anEP2Remote
+]

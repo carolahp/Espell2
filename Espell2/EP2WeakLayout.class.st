@@ -21,3 +21,9 @@ EP2WeakLayout >> layoutName [
 
 	^ #EphemeronLayout
 ]
+
+{ #category : #exporting }
+EP2WeakLayout >> mcType [
+
+	^ #weak 
+]

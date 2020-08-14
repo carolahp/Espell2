@@ -99,7 +99,7 @@ EP2RemoteClass >> bindingOf: aSymbol [
 	(self superclass isNilObject) ifFalse:  [
 		(self superclass bindingOf: aSymbol) ifNotNil: [ :bind | ^ bind ]].
 	
-	(self backend builder systemDefinition at: aSymbol)
+	(self backend builder systemDefinition globalVariableNamed: aSymbol)
 	ifNotNil: [ 
 		"checking that the remote class exists"
 		(self backend objectSpace systemDictionary at: aSymbol) ifNil: [ self halt: 'asking for a class that has not yet been installed' ].

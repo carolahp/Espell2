@@ -76,3 +76,9 @@ EP2CompiledMethodLayout >> layoutName [
 
 	^ #CompiledMethodLayout
 ]
+
+{ #category : #exporting }
+EP2CompiledMethodLayout >> mcType [
+
+	^ #compiledMethod 
+]

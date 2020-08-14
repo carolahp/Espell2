@@ -20,6 +20,11 @@ EP2RemoteContext class >> createContextForMethod: aRemoteCompiledMethod inObject
 ]
 
 { #category : #constants }
+EP2RemoteContext class >> layoutClass [
+	^ EP2ContextLayout
+]
+
+{ #category : #constants }
 EP2RemoteContext class >> modelInstSpec [
 	^ 3
 ]

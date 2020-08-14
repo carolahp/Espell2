@@ -40,3 +40,9 @@ EP2ByteLayout >> layoutName [
 
 	^ #ByteLayout
 ]
+
+{ #category : #exporting }
+EP2ByteLayout >> mcType [
+
+	^ #bytes 
+]

@@ -15,3 +15,9 @@ EP2FixedLayout >> layoutName [
 
 	^ #FixedLayout
 ]
+
+{ #category : #exporting }
+EP2FixedLayout >> mcType [
+
+	^ #normal 
+]

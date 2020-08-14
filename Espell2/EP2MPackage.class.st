@@ -19,6 +19,19 @@ EP2MPackage >> allDefinedBehaviors [
 	^ self definedBehaviors 
 ]
 
+{ #category : #exporting }
+EP2MPackage >> asMCSnapshot [
+	
+	| definitions | 
+	
+	definitions := ((((self definedBehaviors reject: #isMeta) sorted: [:a :b | a name < b name ]) collect: #asMCDefinition), (self extensionMethods collect: #asMCDefinition)) asOrderedCollection.
+	definitions addAll: ((self definedBehaviors, (self definedBehaviors collect: #classSide)) flatCollect: [ :behavior |
+		(behavior localMethods reject: [:each | (each  parent instanceSide package = each package) not])
+			collect: [ :method | method asMCDefinition] ]).
+	
+	^ MCSnapshot fromDefinitions: definitions.
+]
+
 { #category : #initialize }
 EP2MPackage >> defaultDefinedBehaviors [
 	^ Set new
@@ -38,6 +51,11 @@ EP2MPackage >> definesBehavior: anOLClass [
 EP2MPackage >> initialize [ 
 	super initialize.
 	definedBehaviors := self defaultDefinedBehaviors
+]
+
+{ #category : #testing }
+EP2MPackage >> isEmpty [
+	^ self definedBehaviors isEmpty
 ]
 
 { #category : #printing }

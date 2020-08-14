@@ -106,6 +106,11 @@ EP2MLanguage >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
 	^ newClass
 ]
 
+{ #category : #'accessing globals' }
+EP2MLanguage >> addGlobalVariable: anEP2MGlobalVariable [
+	self globalVariables add: anEP2MGlobalVariable
+]
+
 { #category : #'accessing backend' }
 EP2MLanguage >> addMethodFromMonticelloDefinition: aMCMethodDefinition [ 
 	| methodDef classDef mcDef |
@@ -279,7 +284,7 @@ EP2MLanguage >> classRoles [
 	^ classRoles ifNil: [ classRoles := {
 		#ProtoObject -> #Object.
 		#ProcessorScheduler -> #ProcessorScheduler.
-		#Context -> #MethodContext.
+		#Context -> #Context.
 		#Metaclass -> #Class.
 		#Array -> #Array.
 		#MethodDictionary -> #MethodDictionary . 
@@ -332,7 +337,10 @@ EP2MLanguage >> defaultBehaviors [
 { #category : #'default model values' }
 EP2MLanguage >> defaultGlobalVariables [
 	
-	^ IdentitySet new
+	^ (IdentitySet new)
+		add: (EP2MGlobalVariable named: #Processor parent: self);
+		add: (EP2MGlobalVariable named: #Undeclared parent: self);
+		yourself
 ]
 
 { #category : #'default model values' }
@@ -386,6 +394,15 @@ EP2MLanguage >> getAccessedMethodsBySimulatedExecution [
 		select: [ :meth | meth isMarkedAsAccessed ]
 ]
 
+{ #category : #binding }
+EP2MLanguage >> globalVariableNamed: aString [
+	self globalVariables
+		do: [ :global | 
+			global name = aString
+				ifTrue: [ ^ global ] ].
+	^ nil
+]
+
 { #category : #'accessing globals' }
 EP2MLanguage >> globalVariables [
 	^ globalVariables
@@ -421,6 +438,7 @@ EP2MLanguage >> hookInitializeProcessScheduler [
 	|code|
 	code := 'Processor := ProcessorScheduler basicNew.
 				Processor initProcessLists.'.
+				self halt.
 	^ (self newInstruction
 		code: code;
 		temps: #();
@@ -700,4 +718,19 @@ EP2MLanguage >> systemClassMapping [
 { #category : #testing }
 EP2MLanguage >> test [
 	self shouldBeImplemented.
+]
+
+{ #category : #exporting }
+EP2MLanguage >> writeIntoTonel: aFileReference [ 
+	
+	(self packages select: [:pkg | pkg isEmpty not]) do: [ :aPackage |
+		| aSnapshot info aVersion |
+		aSnapshot := aPackage asMCSnapshot.
+
+		info := MCVersionInfo new.
+		info instVarNamed: #name put: aPackage name, '-author'.
+		aVersion := MCVersion package: (MCPackage new name: aPackage name) info: info snapshot: aSnapshot dependencies: #().
+		TonelWriter 
+			fileOut: (aVersion)
+			on: aFileReference ]
 ]

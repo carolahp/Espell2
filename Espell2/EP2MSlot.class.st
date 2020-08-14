@@ -8,6 +8,11 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #writing }
+EP2MSlot >> accept: anInterpreter assign: aValue inNode: aVariableNode [
+	^ anInterpreter write: aValue at: self index named: self name
+]
+
 { #category : #converting }
 EP2MSlot >> asEP2Slot [
 	^ self
