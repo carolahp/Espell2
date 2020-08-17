@@ -35,11 +35,44 @@ EP2RemoteArray >> associationsDo: aBlockClosure [
 ]
 
 { #category : #'high-level-messages' }
+EP2RemoteArray >> collect: aBlock [
+	"Evaluate aBlock with each of the remote receiver's elements as the argument.
+	Collect the resulting values into a local collection"
+
+	| newCollection |
+	newCollection := self class
+		newWithSize: self basicSize
+		withBackend: self backend.
+	self
+		doWithIndex: [ :each :index | newCollection at: index put: (aBlock value: each) ].
+	^ newCollection asRemoteArray
+]
+
+{ #category : #'high-level-messages' }
 EP2RemoteArray >> do: aBlock [ 
 	"Evaluate a Block on non nil elements of the receiver"
 	| dep |
 	1 to: self basicSize do:[:i|
 		(dep := self at: i) isNilObject ifFalse:[aBlock value: dep]].
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteArray >> doWithIndex: aBlock [ 
+	"Evaluate a Block on non nil elements of the receiver"
+	| each |
+	1 to: self basicSize do: [:i|
+		each := self at: i.
+		aBlock value: each value: i]
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteArray >> localCollect: aBlock [ 
+	"Evaluate aBlock with each of the remote receiver's elements as the argument.
+	Collect the resulting values into a local collection"
+	| newCollection |
+	newCollection := #() asOrderedCollection.
+	self do: [ :each | newCollection add: (aBlock value: each) ].
+	^ newCollection 
 ]
 
 { #category : #printing }
