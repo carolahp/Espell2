@@ -36,7 +36,7 @@ EP2RemoteString >> asLocalString [
 
 { #category : #printing }
 EP2RemoteString >> printOn: aStream [
-	aStream nextPutAll: '* ''';
+	aStream nextPutAll: '*''';
 		nextPutAll: self asLocalByteString;
-		nextPutAll: ''' *'
+		nextPutAll: '''*'
 ]

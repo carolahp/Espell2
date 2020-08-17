@@ -17,6 +17,12 @@ EP2ContextLayout class >> on: anEP2Mirror [
 ]
 
 { #category : #'gt-extension' }
+EP2ContextLayout >> allVariables [
+	^ (self remote basicClass allSlots select: #isInstanceVariableSlot)
+		collect: [ :slot | slot read: self remote ]
+]
+
+{ #category : #'gt-extension' }
 EP2ContextLayout >> gtInspectorIn: composite [
 	^ composite text
 		title: self remote asRemoteContext asString;

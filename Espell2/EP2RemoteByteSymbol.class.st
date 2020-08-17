@@ -18,3 +18,10 @@ EP2RemoteByteSymbol class >> modelInstSpec [
 EP2RemoteByteSymbol class >> role [ 
 	^ 'ByteSymbol'
 ]
+
+{ #category : #printing }
+EP2RemoteByteSymbol >> printOn: aStream [
+	aStream nextPutAll: '*#';
+		nextPutAll: self asLocalByteSymbol;
+		nextPutAll: '*'
+]

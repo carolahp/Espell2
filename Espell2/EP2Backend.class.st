@@ -262,6 +262,7 @@ EP2Backend >> classHandle: handleFrom setTo: handleTo [
 
 { #category : #'querying-objects' }
 EP2Backend >> classOf: anEP2SimulatorAddressHandle [
+	anEP2SimulatorAddressHandle address == 0 ifTrue: [self error: 'Corrupt object: address is 0'].
 	^ self objectMemory fetchClassOf: anEP2SimulatorAddressHandle address
 ]
 

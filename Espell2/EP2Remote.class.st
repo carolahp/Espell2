@@ -85,6 +85,11 @@ EP2Remote >> asContextMirror [
 	^ self asRemoteContext asContextMirror
 ]
 
+{ #category : #converting }
+EP2Remote >> asLocalByteSymbol [
+	^self backend fromRemoteByteSymbol: self mirror 
+]
+
 { #category : #'converting loca' }
 EP2Remote >> asLocalSmallInteger [
 	^ self mirror asLocalSmallInteger

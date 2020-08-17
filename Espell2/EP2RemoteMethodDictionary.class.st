@@ -116,7 +116,7 @@ EP2RemoteMethodDictionary >> gtInspector2RawIn: composite [
 					(#array -> self array asString)} ];
 		column: 'Index' evaluated: [ :assoc | assoc key asString ];
 		column: 'Value' evaluated: [ :assoc | assoc value asString ];
-		send: [ :assoc | assoc value asRemoteObjectCasted ]
+		send: [ :assoc | assoc value ]
 ]
 
 { #category : #'gt-inspector' }
@@ -140,6 +140,7 @@ EP2RemoteMethodDictionary >> keys [
 
 { #category : #printing }
 EP2RemoteMethodDictionary >> printElementsOn: aStream [ 
+	aStream nextPut: $*.
 	aStream nextPut: $(.
 	self size > 100
 		ifTrue: [aStream nextPutAll: 'size '.
@@ -149,7 +150,9 @@ EP2RemoteMethodDictionary >> printElementsOn: aStream [
 						 nextPutAll: '->';				
 						 print: (self at: key);
 						 space]].
-	aStream nextPut: $)
+	aStream nextPut: $).
+	aStream nextPut: $*.
+	
 ]
 
 { #category : #printing }
