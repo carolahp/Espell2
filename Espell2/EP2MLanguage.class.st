@@ -438,7 +438,6 @@ EP2MLanguage >> hookInitializeProcessScheduler [
 	|code|
 	code := 'Processor := ProcessorScheduler basicNew.
 				Processor initProcessLists.'.
-				self halt.
 	^ (self newInstruction
 		code: code;
 		temps: #();

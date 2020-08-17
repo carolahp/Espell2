@@ -168,7 +168,7 @@ EP2RemoteMethodDictionary >> scanFor: aRemoteObject [
 	| element start finish object |
 	object := aRemoteObject asRemoteObjectInObjectSpace: self backend objectSpace.
 	finish := self array size.
-	start := (object remoteIdentityHash \\ finish) + 1.
+	start := (object remoteBasicIdentityHash \\ finish) + 1.
 
 	"Search from (hash mod size) to the end."
 	start to: finish do:
