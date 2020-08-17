@@ -111,6 +111,11 @@ EP2Remote >> asRemoteBlock [
 ]
 
 { #category : #converting }
+EP2Remote >> asRemoteByteArray [
+	^ self mirror asRemoteByteArray
+]
+
+{ #category : #converting }
 EP2Remote >> asRemoteByteString [
 	^ EP2RemoteByteString on: self mirror 
 ]
@@ -132,7 +137,7 @@ EP2Remote >> asRemoteClass [
 
 { #category : #converting }
 EP2Remote >> asRemoteCompiledMethod [
-	^ EP2RemoteCompiledMethod on: self mirror
+	^ self mirror asRemoteCompiledMethod
 ]
 
 { #category : #converting }

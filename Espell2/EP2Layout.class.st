@@ -97,12 +97,19 @@ EP2Layout >> defaultSlots [
 { #category : #'gt-extension' }
 EP2Layout >> gtInspectorIn: composite [
 	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
+
 	^ composite table
 		title: self remote asString;
-		display: [ remote basicClass allSlots ];
-		column: 'Variable' evaluated: [:slot | slot name ];
-		column: 'Value' evaluated: [ :slot | (remote readSlotNamed: slot name) asRemoteObjectCasted  ];
-		send: [ :slot | slot ifNotNil: [(remote readSlotNamed: slot name) asRemoteObjectCasted ] ]
+		display: [ 
+			{ 'self' -> remote },
+			(remote basicClass allSlots
+				collect:
+					[ :slot | slot name -> (remote readSlotNamed: slot name) asRemoteObjectCasted ]) ];
+		column: 'Variable' evaluated: [ :assoc | assoc key ];
+		column: 'Value' evaluated: [ :assoc | assoc value ];
+		send: [ :assoc | 
+			assoc
+				ifNotNil: [ assoc value ] ]
 ]
 
 { #category : #accessing }
@@ -162,7 +169,7 @@ EP2Layout >> instanceVariableNamed: aString [
 
 { #category : #'accessing instance variables' }
 EP2Layout >> instanceVariableNamed: aString put: aCollection [ 
-	^ (self remote basicClass slotNamed: aString) write: aCollection asArray to: remote
+	^ (self remote basicClass slotNamed: aString) write: aCollection to: remote
 ]
 
 { #category : #'testing-types' }

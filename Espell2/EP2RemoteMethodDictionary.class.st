@@ -106,15 +106,31 @@ EP2RemoteMethodDictionary >> grow [
 ]
 
 { #category : #'gt-inspector' }
-EP2RemoteMethodDictionary >> gtInspectorIn: composite [
+EP2RemoteMethodDictionary >> gtInspector2RawIn: composite [
+	<gtInspectorPresentationOrder: 2>
 	^ composite table
-		title: self asString;
-		display: [ (self array allVariables
-				collectWithIndex: [ :var :index | index -> var ])
-				, (self slots collect: [ :slot | slot name -> (slot read: self) ])	" reject: [ :item | item isNilObject ]" ];
+		title: '*Raw*';
+		display: [ (self slots collect: [ :slot | slot name -> (slot read: self) ])
+				,
+					{(#tally -> self tally asString).
+					(#array -> self array asString)} ];
 		column: 'Index' evaluated: [ :assoc | assoc key asString ];
 		column: 'Value' evaluated: [ :assoc | assoc value asString ];
-		send: [ :assoc | assoc value asRemoteCompiledMethod ]
+		send: [ :assoc | assoc value asRemoteObjectCasted ]
+]
+
+{ #category : #'gt-inspector' }
+EP2RemoteMethodDictionary >> gtInspectorIn: composite [
+	^ composite table
+		title: '*a Remote Method Dictionary*';
+		display: [ ( self array allVariables 
+			collectWithIndex: [ :var :index | (self basicAt: index) asRemoteObjectCasted -> var ])
+			reject: [ :assoc | 
+					(assoc key) isNilObject and: [
+					(assoc value) isNilObject] ] ];
+		column: 'Key' evaluated: [ :assoc | assoc key asString ];
+		column: 'Value' evaluated: [ :assoc | assoc value asString ];
+		send: [ :assoc | assoc value ifNotNil: [ :val | val asRemoteObjectCasted ] ]
 ]
 
 { #category : #accessing }

@@ -67,6 +67,12 @@ EP2Mirror >> asRemoteBoolean [
 	
 ]
 
+{ #category : #converting }
+EP2Mirror >> asRemoteByteArray [
+	self isNilObject ifTrue: [^ backend nilObject ].
+	^ EP2RemoteByteArray on: self
+]
+
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteByteString [
 	self isNilObject ifTrue: [^ backend nilObject ].

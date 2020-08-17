@@ -178,6 +178,12 @@ EP2RemoteClass >> classSuperclassIndex [
 	^ (self systemDefinition instanceVariableMapping classSuperclassIndex) ifNil: [ self error: 'undefined index for superclass inst var in Class' ]
 ]
 
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteClass >> classTableIndex [
+
+	^ self target asClassIndexHandle classIndex
+]
+
 { #category : #'accessing-header' }
 EP2RemoteClass >> compactClassIndex [
 	^ self backend compactClassIndexOf: self

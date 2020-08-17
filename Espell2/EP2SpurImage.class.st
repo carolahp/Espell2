@@ -82,6 +82,25 @@ EP2SpurImage >> gtInspector: composite [
 			[ :each | each allVariables collect: #asRemoteObjectCasted ]
 ]
 
+{ #category : #'gt-inspector' }
+EP2SpurImage >> gtInspectorClassTable: composite [
+	<gtInspectorPresentationOrder: 2>
+	^ composite table
+		title: 'Class Table';
+		display: [ 
+			self classTable
+				localCollect: [ :row | 
+					| class |
+					class := (row at: 2) asRemoteClass.
+					{(row at: 1) .
+					class classTableIndex .
+					class} ] ];
+		column: 'index' evaluated: [ :array | array at: 1 ];
+		column: 'tag' evaluated: [ :array | array at: 2 ];
+		column: 'class' evaluated: [ :array | array at: 3 ];
+		send: [ :array | array ifNotNil: [ array at: 3 ] ]
+]
+
 { #category : #initialization }
 EP2SpurImage >> initialize [
 	super initialize.

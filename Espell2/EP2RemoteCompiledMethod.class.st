@@ -31,9 +31,11 @@ EP2RemoteCompiledMethod >> byteAt: anInteger put: anEP2RemoteSmallInteger [
 
 { #category : #'as yet unclassified' }
 EP2RemoteCompiledMethod >> bytecodes [
-	^ ByteArray streamContents: [ :s |
-		self initialPC to: self endPC do: [:i | 
-			s nextPut: (self byteAt: i) asLocalSmallInteger ] ].
+	| bytecodes |
+	bytecodes := EP2RemoteByteArray newWithSize: 100 withBackend: self backend.
+	self initialPC to: self endPC do: [:i | 
+			bytecodes at:i put: (self byteAt: i) ].
+	^ bytecodes asRemoteByteArray
 ]
 
 { #category : #accessing }
@@ -97,7 +99,15 @@ EP2RemoteCompiledMethod >> literalAt: anIndex put: aLiteralMirror [
 { #category : #accessing }
 EP2RemoteCompiledMethod >> literals [
 	^(1 to: self numberOfLiterals) collect: [ :index |
-		(self literalAt: index) asRemoteObjectCasted asLocalLiteral ]
+		(self literalAt: index) asRemoteObjectCasted ]
+]
+
+{ #category : #'as yet unclassified' }
+EP2RemoteCompiledMethod >> localBytecodes [
+	
+	^ ByteArray streamContents: [ :s |
+		self initialPC to: self endPC do: [:i | 
+			s nextPut: (self byteAt: i) asLocalSmallInteger ] ].
 ]
 
 { #category : #accessing }
