@@ -18,9 +18,34 @@ EP2MObject class >> named: aString parent: anEP2MLanguage [
 		yourself
 ]
 
+{ #category : #'evaluate ast' }
+EP2MObject >> debugCode: aString temps: aCollection [ 
+	^ (self newInstruction code: aString; temps: aCollection) debug
+]
+
 { #category : #accessing }
 EP2MObject >> environment [
 	^ parent
+]
+
+{ #category : #'ast-evaluation' }
+EP2MObject >> evaluateCode: aString [ 
+	^ self evaluateCode: aString temps: #()
+]
+
+{ #category : #'evaluating ast' }
+EP2MObject >> evaluateCode: aString temps: aCollection [ 
+	^ (self newInstruction code: aString; temps: aCollection) evaluate
+]
+
+{ #category : #'evaluating ast' }
+EP2MObject >> evaluateLoadingMissingDefinitionsFromPharo: aString [ 
+	^ self evaluateLoadingMissingDefinitionsFromPharo: aString temps: #()
+]
+
+{ #category : #'evaluating ast' }
+EP2MObject >> evaluateLoadingMissingDefinitionsFromPharo: aString temps: aCollection [ 
+	^ (self newInstruction code: aString; temps: aCollection) evaluateLoadingMissingDefinitionsFromPharo
 ]
 
 { #category : #testing }
@@ -80,7 +105,6 @@ EP2MObject >> newDummyInstruction [
 
 { #category : #'hook instructions' }
 EP2MObject >> newInstruction [
-	self halt.
 	^ PBInstructionGenericRemote new 
 		languageDefinition: self;
 		imageBuilder: self imageBuilder;

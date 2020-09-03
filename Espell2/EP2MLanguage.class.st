@@ -76,6 +76,7 @@ EP2MLanguage class >> instanceVariableSlotMetaclass [
 
 { #category : #'hooks-api' }
 EP2MLanguage class >> methodMetaclass [
+	" Return the subclass of EP2MMethod that defines the metamodel for slots of the language "
 	self subclassResponsibility 
 ]
 

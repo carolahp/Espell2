@@ -81,9 +81,10 @@ EP2MClass >> classLoader [
 	^ self parent classLoader
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing-backend' }
 EP2MClass >> classSide [
-	self subclassResponsibility 
+	self deprecated: 'use metaclass instead'.
+	^ self metaclass
 ]
 
 { #category : #'accessing compiler' }
@@ -135,7 +136,15 @@ EP2MClass >> format [
 
 { #category : #hooks }
 EP2MClass >> hookInstall [
-	self subclassResponsibility 
+	| remoteMethodDict remoteSuperclass |
+	
+	"we install an empty methodDict, it will be filled later"
+	remoteMethodDict := EP2RemoteMethodDictionary newWithBackend: self parent remote espellBackend.
+	remoteSuperclass := self superclass ifNil: [nil] ifNotNil:[self parent remote classNamed: self superclass name].
+	self remote 
+		methodDictionary: remoteMethodDict;
+		superclass: remoteSuperclass;
+		format: self format
 ]
 
 { #category : #'accessing methods' }
@@ -228,7 +237,7 @@ EP2MClass >> instVarIndexFor: aString ifAbsent: aBlockClosure [
 
 { #category : #accessing }
 EP2MClass >> instVarNames [
-	^ self layout instVarNames
+	^ self slots collect: #name
 ]
 
 { #category : #'installing stubs' }
@@ -254,7 +263,11 @@ EP2MClass >> installMetaclassStub [
 
 { #category : #hooks }
 EP2MClass >> installMethods [
-	self subclassResponsibility 
+	| methods |
+	methods := (self methodBuilder methodsFromDefinition: self)
+		sorted: [ :a :b | a selector < b selector ].
+	methods do:
+			[ :method | self remote methodDictionary at: method selector put: method ]
 ]
 
 { #category : #'installing stubs' }
@@ -395,9 +408,9 @@ EP2MClass >> mcType [
 	^ self layout mcType
 ]
 
-{ #category : #accessing }
-EP2MClass >> metaclass [ 
-	^ self subclassResponsibility 
+{ #category : #'accessing-backend' }
+EP2MClass >> metaclass [
+	^ self parent classMetaclass
 ]
 
 { #category : #'accessing backend' }

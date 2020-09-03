@@ -12,6 +12,13 @@ EP2BlockLayout class >> on: anEP2Mirror [
 ]
 
 { #category : #'gt-extension' }
+EP2BlockLayout >> allInstVars [
+	
+	^ (self remote target object basicClass allSlots)
+		collect: [ :slot | self remote target object instVarNamed: slot name ]
+]
+
+{ #category : #'gt-extension' }
 EP2BlockLayout >> gtInspectorIn: composite [
 	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
 	^ composite text
