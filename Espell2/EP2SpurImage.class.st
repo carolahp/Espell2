@@ -107,7 +107,16 @@ EP2SpurImage >> gtInspectorLoadedClasses: composite [
 	^ composite table
 		title: 'Loaded classes';
 		display: [ self backend systemDefinition allClasses
-				collect: [ :class | {class name . class remote classTableIndex . class remote} ] ];
+				collect: [ :class | 
+					| remoteClass |
+					remoteClass := class remote.
+					(remoteClass isNil or: [remoteClass isNilObject])
+						ifTrue: [ {class name.
+							nil.
+							class remote} ]
+						ifFalse: [ {class name.
+							remoteClass classTableIndex.
+							remoteClass} ] ] ];
 		column: 'name' evaluated: [ :array | array at: 1 ];
 		column: 'tag' evaluated: [ :array | array at: 2 ];
 		column: 'remote' evaluated: [ :array | array at: 3 ];

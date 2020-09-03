@@ -10,8 +10,10 @@ EP2RemoteMetaclass class >> role [
 ]
 
 { #category : #accessing }
-EP2RemoteMetaclass >> className [ 
-	^ self asClassDefinition name
+EP2RemoteMetaclass >> className [
+	^ self asClassDefinition
+		ifNil: [ nil ]
+		ifNotNil: [ :classDef | classDef name ]
 ]
 
 { #category : #accessing }

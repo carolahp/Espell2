@@ -7,6 +7,16 @@ Class {
 	#category : #'Espell2-Handles'
 }
 
+{ #category : #compatibility }
+EP2ExternalObjectHandle >> address [
+	^ backend nilObject target address
+]
+
+{ #category : #converting }
+EP2ExternalObjectHandle >> asClassIndexHandle [
+	^ self
+]
+
 { #category : #accessing }
 EP2ExternalObjectHandle >> basicClassHandle [
 	

@@ -419,6 +419,7 @@ EP2Remote >> setClass: aRemoteClass [
 
 { #category : #'accessing-header' }
 EP2Remote >> setHashBitsTo: anInteger [ 
+	
 	self mirror setHashBitsTo: anInteger
 ]
 

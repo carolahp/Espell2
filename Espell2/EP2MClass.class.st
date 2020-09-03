@@ -1,7 +1,16 @@
 "
-I am an abstract class that defines the metamodel of classes in a bootstrapped language.
-Subclass me to define the metamodel of classes in your own language.
-Return the reference to your subclass from the hook EP2MLanguage>>classMetaclass.
+I define the basic metamodel of classes in a bootstrapped language.
+In this description classes are referred by the name of their role.
+
+According to my metamodel: 
+	- The metaclass of every class is #'Metaclass'
+	- The metaclass of #'Metaclass' is #'Metaclass' 
+=====================================================================
+Usage: 
+- Subclass me to define the metamodel of classes in your own language.
+- In your Language metamodel implement the hook EP2MLanguage>>classMetaclass and return the subclass you just created.
+=====================================================================
+
 "
 Class {
 	#name : #EP2MClass,
@@ -10,8 +19,7 @@ Class {
 		'layout',
 		'template',
 		'superclass',
-		'methodDict',
-		'metaclass'
+		'methodDict'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -101,13 +109,14 @@ EP2MClass >> extendWithMonticello: aMCClassDefinition [
 	Restrictions should apply here for classes with VM restrictions, therefore, 
 	tests should be applied after the modification in each case"
 
-	| mcDef instVarsDefs |
+	| mcDef instVarsDefs superclassName |
 	mcDef := aMCClassDefinition.
 	instVarsDefs := (mcDef variables
 		select: [ :var | var class type = #instance ])
 		reject: [ :var | (self allInstVarNames indexOf: var name) > 0 ].
 	instVarsDefs do: [ :each | self addSlot: each name ].
-	self superclass name = mcDef superclassName
+	superclassName := self superclass ifNil:[#nil] ifNotNil:[:sc |sc name].
+	superclassName = mcDef superclassName
 		ifFalse: [ self halt ].
 	^ self
 ]
@@ -144,7 +153,6 @@ EP2MClass >> initialize [
 EP2MClass >> initializeWithLocal: localClass [
 	
 	self
-		metaclass: self parent classMetaclass;
 		layout: (self parent layoutForInstSpec: localClass instSpec on: self);
 		superclass: (self parent classByRoleOrName: localClass superclass name ifAbsent: [ self parent classNamed: #ProtoObject ]);
 		name: localClass name;
@@ -160,7 +168,6 @@ EP2MClass >> initializeWithMonticello: aMCClassDefinition [
 	mcDef := aMCClassDefinition.
 	self
 		layout: (mcDef espell2LayoutType on: self);
-		metaclass: self parent classMetaclass;
 		template: nil.
 	mcDef superclassName = #nil
 		ifTrue: [ self halt ]
@@ -196,10 +203,6 @@ EP2MClass >> initializeWithTemplate: aTemplateClass [
 	self haltIf:[superclassName = self name].
 	self
 		superclass: superclassModel.
-	"check if we are installing the class with role Class (it is the only class which is instance of itself)"
-	(aTemplateClass role = 'Metaclass') 
-		ifTrue: [ self metaclass: self ]
-		ifFalse: [ self metaclass: parent classMetaclass ].
 	^ self
 ]
 
@@ -232,8 +235,8 @@ EP2MClass >> instVarNames [
 EP2MClass >> installMetaclassStub [
 	| theNewMetaclass metaclassIndex |
 	" If the metaclass was already created, it will be found in the bootstrapEnvironment dictionary "
-	self remote
-		isNilObject ifFalse: [ :aClass | ^ aClass ].
+	self remote isNilObject
+		ifFalse: [ ^ self remote ].
 
 	" We need to create the metaclass from scratch "
 	metaclassIndex := self classLoader newClassIndex.
@@ -243,9 +246,9 @@ EP2MClass >> installMetaclassStub [
 		createStubForClassNamed: self name
 		metaclassIndex: metaclassIndex
 		newClassIndex: metaclassIndex.
-	self classLoader registerClass: theNewMetaclass definition: self fullyLoaded: false.
-
-	self assert: theNewMetaclass basicClass = theNewMetaclass .
+	self assert: theNewMetaclass basicClass = theNewMetaclass.
+	self assert: theNewMetaclass classTableIndex = metaclassIndex.
+	
 	^ theNewMetaclass
 ]
 
@@ -257,21 +260,23 @@ EP2MClass >> installMethods [
 { #category : #'installing stubs' }
 EP2MClass >> installStub [
 	| newClass remoteMetaclassClass |
+	self remote isNilObject
+		ifFalse: [ ^ self ].
+		
 	"this is the class with role metaclass installed in the kernel"
-	
-	self remote isNilObject ifFalse: [ ^ self ].
-	remoteMetaclassClass := self parent classMetaclass remote.
+	remoteMetaclassClass := self metaclass remote.
 	remoteMetaclassClass isNilObject
-		ifTrue: [ 
-			"install the metaclass"
-			remoteMetaclassClass := self parent classMetaclass
-				installMetaclassStub ].
-	newClass := remoteMetaclassClass basicNew asRemoteMetaclass.
+		ifTrue: [ "install the metaclass"
+			remoteMetaclassClass := self metaclass installMetaclassStub ].
+	newClass := remoteMetaclassClass basicNew asRemoteMetaclass
+		initialize.
 	newClass format: self format.
+	newClass setHashBitsTo: self classLoader newClassIndex.
 	self classLoader
 		registerClass: newClass
 		definition: self
 		fullyLoaded: false.
+	newClass testStub.
 	^ newClass
 ]
 
@@ -391,13 +396,8 @@ EP2MClass >> mcType [
 ]
 
 { #category : #accessing }
-EP2MClass >> metaclass [
-	^ metaclass
-]
-
-{ #category : #accessing }
-EP2MClass >> metaclass: anOLClass [ 
-	metaclass := anOLClass
+EP2MClass >> metaclass [ 
+	^ self subclassResponsibility 
 ]
 
 { #category : #'accessing backend' }

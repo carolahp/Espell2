@@ -80,6 +80,7 @@ EP2MObject >> newDummyInstruction [
 
 { #category : #'hook instructions' }
 EP2MObject >> newInstruction [
+	self halt.
 	^ PBInstructionGenericRemote new 
 		languageDefinition: self;
 		imageBuilder: self imageBuilder;

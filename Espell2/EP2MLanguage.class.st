@@ -2,7 +2,34 @@
 I am an abstract class that defines the metamodel of a bootstrapped language.
 Subclass me to define the metamodel of your own language.
 
-To bootstrap a new language using the bootstrapper UI, open the UI evaluating 'PBBuilder new openUI' and put the name of your subclass in the 'metaclass' textfield, fill the name of your new language and push the button ""New Repository""
+=====================================================================
+Example of usage:
+
+"" Create your language model ""
+myLanguage := OLObjVLisp new name: 'MyLanguage'.
+
+"" Clone or download the basic definition of classes and methods required by the bootstrapper ""
+$ git clone https://github.com/carolahp/KernelBasic.git
+
+"" Load these definitions into your language model ""
+myLanguage loadTonelRepository: './location/of/KernelBasic'.
+
+"" Generate the image in memory ""
+imageInMemory := myLanguage bootstrap.		
+
+"" You can inspect the image at any moment during or after the bootstrap ""
+imageInMemory inspect.
+
+"" Write the image to disk ""
+imageInDisk := myLanguage writeImage.
+
+"" Run the image standalone using the Pharo VM ""
+imageInDisk runBashScript
+
+=====================================================================
+Requirements:
+- PharoBootstrapGeneric and its dependencies (including Espell2).
+
 "
 Class {
 	#name : #EP2MLanguage,
@@ -18,7 +45,8 @@ Class {
 		'instanceVariableMapping',
 		'classRoles',
 		'markAccessed',
-		'announcer'
+		'announcer',
+		'builder'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -157,6 +185,13 @@ EP2MLanguage >> behaviors [
 	^ behaviors
 ]
 
+{ #category : #bootstrap }
+EP2MLanguage >> bootstrap [
+	self prepareBuilder.
+	builder bootstrap.
+	^ builder spurImage
+]
+
 { #category : #'browse-code' }
 EP2MLanguage >> browse [
 	self halt.
@@ -189,12 +224,34 @@ EP2MLanguage >> classByRoleOrName: aString [
 ]
 
 { #category : #'accessing classes' }
-EP2MLanguage >> classByRoleOrName: aString ifAbsent: aBlockClosure [
-	| class |
+EP2MLanguage >> classByRoleOrName: aString ifAbsent: aBlock [
+		"extending the original classByRoleOrName:ifAbsent: method to consider searching classes by system mapping"
+	|class|
+	class := (self classNamed: aString ifAbsent: [ nil ]).
+	class ifNil: [ class := self classByRole: aString ].
+	class ifNil: [ class := self classBySystemMapping: aString ifAbsent: [ nil ] ].
+	class ifNil: [^ aBlock value].
+	^ class
+	
+	"| class |
 	class := (self classNamed: aString ifAbsent: [ nil ]).
 	class ifNil: [ class := self classByRole: aString ].
 	class ifNil: [^ aBlockClosure value].
-	^ class
+	^ class"
+]
+
+{ #category : #'accessing classes' }
+EP2MLanguage >> classBySystemMapping: aString [ 
+	^ self classBySystemMapping: aString ifAbsent: [  PBClassDefinitionNotFound signal ]
+]
+
+{ #category : #hooks }
+EP2MLanguage >> classBySystemMapping: aString ifAbsent: aBlockClosure [ 
+	"Classes in metamodel map classes in the system according to systemClassMapping definition"
+	| className |
+	className := self systemClassMapping at: aString ifAbsent: nil.
+	className ifNil: [^ aBlockClosure value].
+	^ self classNamed: className
 ]
 
 { #category : #'accessing special classes' }
@@ -410,7 +467,7 @@ EP2MLanguage >> globalVariables [
 
 { #category : #hooks }
 EP2MLanguage >> hookCreateInitialObjects [
-	self subclassResponsibility 
+	^ self newDummyInstruction 
 ]
 
 { #category : #hooks }
@@ -419,25 +476,49 @@ EP2MLanguage >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookGlobalNotFound: aString [ 
+EP2MLanguage >> hookEntryPoint [
 	self subclassResponsibility 
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInitializeClassStubs [
-	^ self subclassResponsibility 
+EP2MLanguage >> hookGlobalNotFound: aString [
+	| localClass |
+	"load missing class from the system"
+	localClass := Smalltalk classNamed: aString.
+	localClass ifNil: [ ^ nil ].
+	(self
+		confirm: 'Load class ' , aString , ' from host system to model?')
+		ifTrue: [ | newClass |
+			"getting the class from the system"
+			newClass := self class classMetaclass new
+				parent: self;
+				initializeWithLocal: localClass;
+				yourself.
+			self addBehavior: newClass.
+			^ newClass ]
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInitializeMethodDictionaryFor: anEP2RemoteClass [ 
+EP2MLanguage >> hookInitalizeGlobals [
+	^ self newDummyInstruction
+]
+
+{ #category : #hooks }
+EP2MLanguage >> hookInitializeClassStubs [
 	^ self newDummyInstruction 
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInitializeProcessScheduler [
+EP2MLanguage >> hookInitializeMethodDictionaryFor: anEP2RemoteClass [ 
+	^ self newDummyInstruction   
+]
+
+{ #category : #hooks }
+EP2MLanguage >> hookInitializeProcessScheduler [ 
 	|code|
 	code := 'Processor := ProcessorScheduler basicNew.
 				Processor initProcessLists.'.
+	
 	^ (self newInstruction
 		code: code;
 		temps: #();
@@ -446,13 +527,16 @@ EP2MLanguage >> hookInitializeProcessScheduler [
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInstallClass: anOLClass [ 
-	self subclassResponsibility 
+EP2MLanguage >> hookInstallClass: aClassDefinition [
+	
+	aClassDefinition hookInstall.
+	aClassDefinition testRemote.
+	^ aClassDefinition remote
 ]
 
 { #category : #hooks }
 EP2MLanguage >> hookInstallMethods [
-	self subclassResponsibility 
+	self allClasses do: [ :class | class installMethods ]
 ]
 
 { #category : #hooks }
@@ -462,17 +546,13 @@ EP2MLanguage >> hookInstallStubs [
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookMainProcess [
-	self subclassResponsibility 
-]
-
-{ #category : #hooks }
 EP2MLanguage >> hookNewSystemDictionary [
-	self subclassResponsibility .
+	^ self newDummyInstruction 
 ]
 
 { #category : #hooks }
 EP2MLanguage >> hookRegisterClass: remoteClass fromDefinition: anOLClass [ 
+	
 	self classLoader
 		registerClass: remoteClass asRemoteClass
 		definition: anOLClass
@@ -481,11 +561,13 @@ EP2MLanguage >> hookRegisterClass: remoteClass fromDefinition: anOLClass [
 
 { #category : #hooks }
 EP2MLanguage >> hookRegisterClass: anEP2RemoteClass fromDefinition: anOLClass withLoader: aPBClassLoaderGeneric [ 
+	self halt.
 	^ self newDummyInstruction
 ]
 
 { #category : #hooks }
 EP2MLanguage >> hookRegisterClass: anEP2RemoteClass named: aString [ 
+	
 	^ self newDummyInstruction 
 ]
 
@@ -508,7 +590,8 @@ EP2MLanguage >> immediateClassRoles [
 EP2MLanguage >> initialize [ 
 	behaviors :=  self defaultBehaviors.
 	packages := self defaultPackages.
-	globalVariables := self defaultGlobalVariables
+	globalVariables := self defaultGlobalVariables.
+	self loadRequiredBehaviors
 ]
 
 { #category : #'vm-constants' }
@@ -565,20 +648,26 @@ EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ]
 ]
 
-{ #category : #retrocompatibility }
-EP2MLanguage >> loadTonelRepository: aTonelRepository packagesNames: aCollection classesNames: anUndefinedObject [
-	| packagesNames version snap |
-	self loadRequiredBehaviors.
-	packagesNames := aTonelRepository packageDescriptionsFromReadableFileNames collect: [:each | each at: 1].
+{ #category : #'tonel repository' }
+EP2MLanguage >> loadTonelRepository: aFileReference [
+	| tonel packagesNames  | 
+	tonel := TonelRepository new
+		directory: aFileReference asFileReference. 
+	packagesNames := tonel packageDescriptionsFromReadableFileNames collect: [:each | each at: 1].
 	
-	packagesNames	do: [ :pn | | package |
+	packagesNames	do: [ :pn | | package snap version |
 			package := self ensurePackageNamed: pn.
-			version := aTonelRepository versionWithInfo: (aTonelRepository versionInfoFromVersionNamed: pn).
+			version := tonel versionWithInfo: (tonel versionInfoFromVersionNamed: pn).
 			snap := version snapshot.
-			snap definitions do: [ :each | | newClass | 
+			snap definitions do: [ :each | 
 				each ensureEspellDefinitionIn: self package: package
-			
-			  ]]
+			 ]]
+]
+
+{ #category : #'tonel repository' }
+EP2MLanguage >> loadTonelRepository: aTonelRepository packagesNames: aCollection classesNames: anUndefinedObject [
+	"I exist for compatibility reasons"
+	self loadTonelRepository: aTonelRepository directory
 ]
 
 { #category : #marking }
@@ -661,6 +750,24 @@ EP2MLanguage >> pbRepository: aPBRepository [
 	pbRepository := aPBRepository 
 ]
 
+{ #category : #bootstrap }
+EP2MLanguage >> prepareBuilder [
+	| repo |
+	builder ifNotNil: [ builder destroy ].
+	self assert: self name isNotNil.
+		 
+	repo := PBRepository new 
+		systemDefinition: self;
+		bootstrapper: PBBootstrapGeneric for32Bits;
+		yourself.
+	
+	builder := PBBuilder new
+		bootstrapping: true;
+		pbRepository: repo;
+		imageName: self name.
+	
+]
+
 { #category : #printing }
 EP2MLanguage >> printOn: aStream [
 	aStream 
@@ -722,6 +829,11 @@ EP2MLanguage >> systemClassMapping [
 { #category : #testing }
 EP2MLanguage >> test [
 	self shouldBeImplemented.
+]
+
+{ #category : #bootstrap }
+EP2MLanguage >> writeImage [
+	^ [builder writeImage] ensure: [ builder destroy ]
 ]
 
 { #category : #exporting }

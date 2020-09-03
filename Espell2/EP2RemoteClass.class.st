@@ -36,7 +36,12 @@ EP2RemoteClass >> allSlots [
 
 { #category : #'converting-local' }
 EP2RemoteClass >> asClassDefinition [
-	^ [self addressDefinitionMap at: self target address ] on: KeyNotFound do: [ self backend builder systemDefinitionAt: #Class ]
+	| result |
+	result := self systemDefinition allClasses
+		select: [ :classDef | classDef remote isNotNil and: [ classDef remote target address = self target address] ].
+	result size = 0
+		ifTrue: [ ^ self systemDefinition classClass ].
+	^ result anyOne
 ]
 
 { #category : #compatibility }
@@ -124,7 +129,7 @@ EP2RemoteClass >> classMethodDictionaryIndex [
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> className [
 	| remoteName |
-	remoteName := [self instanceVariableAtIndex: self classNameIndex] on: SubscriptOutOfBounds do: [ ^ nil ].
+	remoteName := [self instanceVariableAtIndex: self classNameIndex] on: SubscriptOutOfBounds, Error do: [ ^ nil ].
 	remoteName isNilObject ifTrue: [^nil].
 	^ self backend fromRemoteByteSymbol: remoteName
 ]
@@ -135,7 +140,7 @@ EP2RemoteClass >> classNameFromAnyOrigin [
 	result := self className. 
 	^ (result isNil or: [result basicSize = 0]) 
 		ifTrue: [ self asClassDefinition 
-					ifNil: [ 'error (', self mirror asString,')' ] 
+					ifNil: [ 'Class with no name (', self mirror asString,')' ] 
 					ifNotNil: [:classDef | classDef name] ]
 		ifFalse: [ result ]
 ]
@@ -349,4 +354,26 @@ EP2RemoteClass >> superclass [
 { #category : #'as yet unclassified' }
 EP2RemoteClass >> superclass: anEP2RemoteClass [ 
 	^ self instanceVariableAtIndex: self classSuperclassIndex put: anEP2RemoteClass 
+]
+
+{ #category : #accessing }
+EP2RemoteClass >> target [
+	
+	^ mirror target asClassIndexHandle address = mirror backend nilObject target address
+		ifTrue: [ mirror target ]
+		ifFalse: [ mirror target asClassIndexHandle ]
+]
+
+{ #category : #testing }
+EP2RemoteClass >> testStub [
+	| existentIndexes myIndex |
+	self assert: self superclass isNilObject.
+	self assert: self methodDictionary isNilObject.
+	self assert: self format isNilObject not.
+	myIndex := self classTableIndex.
+	self assert: self target address equals: (self backend objectMemory classAtIndex: myIndex).	
+
+	existentIndexes := ((self backend builder bootstrapEnvironment allClasses) collect: [ :remoteClasss | remoteClasss classTableIndex ]) values.
+	existentIndexes := existentIndexes select: [ :index | index = myIndex ].
+	self assert: existentIndexes size = 1 description: 'Index ', myIndex asString, ' appears twice in the class table' 
 ]

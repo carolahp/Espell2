@@ -62,12 +62,15 @@ EP2Backend >> arrayClass [
 ]
 
 { #category : #'accessing-special classes' }
-EP2Backend >> arrayClass: anEP2RemoteClass [ 
+EP2Backend >> arrayClass: aRemoteClass [
 	"The Array class in special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Array"
-	self specialObjectsArray at: 8 put: anEP2RemoteClass.
+	self builder classLoader
+		installClass: aRemoteClass 
+		inClassTableIndex: 51
+		inBootstrapEnvironment: aRemoteClass classNameFromAnyOrigin.
 	
-	self installClass: anEP2RemoteClass inClassTableIndex: 51.
+	self specialObjectsArray at: 8 put: aRemoteClass.
 	
 	"Array is a special class that resides in the first page of the class table.
 	Array is duplicated in the special class index 16, that can also be obtained by querying the memory manager as follows:
@@ -76,7 +79,8 @@ EP2Backend >> arrayClass: anEP2RemoteClass [
 		
 	Usually, a class hash must be the same as the class index in the class table. But, since the class is in two different positions, one of them does not hold that invariant.
 	To install the class in the table in both positions, we use an Unchecked version of the method that contains no assertions of that invariant."
-	self objectMemory classAtIndex: self objectMemory arrayClassIndexPun putUnchecked: anEP2RemoteClass target address.
+	
+	self objectMemory classAtIndex: self objectMemory arrayClassIndexPun putUnchecked: aRemoteClass target address.
 ]
 
 { #category : #'accessing special classes' }
@@ -94,7 +98,7 @@ EP2Backend >> basicIdentityHashOf: anEP2Mirror [
 	^ self objectMemory hashBitsOf: anEP2Mirror target address
 ]
 
-{ #category : #'creating-stub-instances' }
+{ #category : #'public api - creating stub instances' }
 EP2Backend >> basicNewOn: aRemoteClass [
 	
 	| newOop newObject |
@@ -113,7 +117,7 @@ EP2Backend >> basicNewOn: aRemoteClass [
 	^ newObject
 ]
 
-{ #category : #'creating-stub-instances' }
+{ #category : #'public api - creating stub instances' }
 EP2Backend >> basicNewOn: aRemoteClass withSize: aSize [ 
 	| newOop newObject |
 	newOop := self objectMemory instantiateClass: aRemoteClass target address indexableSize: aSize.
@@ -170,12 +174,16 @@ EP2Backend >> blockClass [
 ]
 
 { #category : #'accessing-special classes' }
-EP2Backend >> blockClass: anEP2RemoteClass [ 
+EP2Backend >> blockClass: aRemoteClass [ 
 
 	"The Point class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: BlockClosure"
-	self specialObjectsArray at: 37 put: anEP2RemoteClass.
-	self installClass: anEP2RemoteClass inClassTableIndex: 37
+	self builder classLoader
+		installClass: aRemoteClass 
+		inClassTableIndex: 37
+		inBootstrapEnvironment: aRemoteClass classNameFromAnyOrigin.
+
+	self specialObjectsArray at: 37 put: aRemoteClass.
 ]
 
 { #category : #accessing }
@@ -190,12 +198,16 @@ EP2Backend >> byteArrayClass [
 ]
 
 { #category : #'accessing-special classes' }
-EP2Backend >> byteArrayClass: anEP2RemoteClass [ 
-
+EP2Backend >> byteArrayClass: aRemoteClass [ 
+	
 	"The twenty-seventh special object.
 	Smalltalk specialObjectsArray indexOf: ByteArray"
-	self specialObjectsArray at: 27 put: anEP2RemoteClass.
-	self installClass: anEP2RemoteClass inClassTableIndex: 50.
+	self builder classLoader
+		installClass: aRemoteClass 
+		inClassTableIndex: 50
+		inBootstrapEnvironment: aRemoteClass classNameFromAnyOrigin.
+	
+	self specialObjectsArray at: 27 put: aRemoteClass.
 ]
 
 { #category : #'accessing-special classes' }
@@ -204,13 +216,18 @@ EP2Backend >> byteStringClass [
 ]
 
 { #category : #'accessing-special classes' }
-EP2Backend >> byteStringClass: anEP2RemoteClass [ 
+EP2Backend >> byteStringClass: aRemoteClass [ 
 	"The seventh special object.
 	Smalltalk specialObjectsArray indexOf: ByteString"
-	self specialObjectsArray at: 7 put: anEP2RemoteClass.
-	self objectMemory setHashBitsOf: anEP2RemoteClass target address to: 52.
+	self builder classLoader
+		installClass: aRemoteClass 
+		inClassTableIndex: 52
+		inBootstrapEnvironment: aRemoteClass classNameFromAnyOrigin.
+	
+	self specialObjectsArray at: 7 put: aRemoteClass.
+	"self objectMemory setHashBitsOf: anEP2RemoteClass target address to: 52.
 	self objectMemory classAtIndex: 52 putUnchecked: anEP2RemoteClass target address.
-	anEP2RemoteClass target: anEP2RemoteClass target asClassIndexHandle.
+	anEP2RemoteClass target: anEP2RemoteClass target asClassIndexHandle."
 ]
 
 { #category : #'accessing-special classes' }
@@ -235,10 +252,15 @@ EP2Backend >> characterClass [
 EP2Backend >> characterClass: aClass [ 
 	"The twentieth special object.
 	Smalltalk specialObjectsArray indexOf: Character"
+	self builder classLoader
+		installClass: aClass
+		inClassTableIndex: 2
+		inBootstrapEnvironment: aClass classNameFromAnyOrigin.
+	
 	self specialObjectsArray at: 20 put: aClass.
-	self objectMemory setHashBitsOf: aClass target address to: 2.
+	"self objectMemory setHashBitsOf: aClass target address to: 2.
 	self objectMemory classAtIndex: 2 putUnchecked: aClass target address.
-	aClass target: aClass target asClassIndexHandle.
+	aClass target: aClass target asClassIndexHandle."
 ]
 
 { #category : #'accessing special objects' }
@@ -292,11 +314,15 @@ EP2Backend >> contextClass [
 ]
 
 { #category : #'accessing-special classes' }
-EP2Backend >> contextClass: anEP2RemoteClass [ 
+EP2Backend >> contextClass: aRemoteClass [ 
 	"The method Comtext class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Context"
-	self specialObjectsArray at: 11 put: anEP2RemoteClass. 
-	self installClass: anEP2RemoteClass inClassTableIndex: 36
+	self builder classLoader
+		installClass: aRemoteClass 
+		inClassTableIndex: 36
+		inBootstrapEnvironment: aRemoteClass classNameFromAnyOrigin.
+	
+	self specialObjectsArray at: 11 put: aRemoteClass. 
 ]
 
 { #category : #'method-compiling' }
@@ -311,7 +337,7 @@ EP2Backend >> createCompiledMethodWithSize: bytecodeSize andHeader: methodHeader
 		value asRemoteCompiledMethod
 ]
 
-{ #category : #'creating-stub-instances' }
+{ #category : #'public api - creating stub instances' }
 EP2Backend >> createObjectWithFormat: classFormat withSize: aSize classIndex: classIndex [
 	
 	| oop |
@@ -474,11 +500,15 @@ EP2Backend >> floatClass [
 ]
 
 { #category : #'accessing-special classes' }
-EP2Backend >> floatClass: anEP2RemoteClass [ 
+EP2Backend >> floatClass: aRemoteClass [ 
 	"The tenth special object.
 	Smalltalk specialObjectsArray indexOf: Float"
-	self specialObjectsArray at: 10 put: anEP2RemoteClass.
-	self installClass: anEP2RemoteClass inClassTableIndex: 34
+	self builder classLoader
+		installClass: aRemoteClass 
+		inClassTableIndex: 34
+		inBootstrapEnvironment: aRemoteClass classNameFromAnyOrigin.
+	
+	self specialObjectsArray at: 10 put: aRemoteClass.
 ]
 
 { #category : #initializing }
@@ -667,11 +697,26 @@ EP2Backend >> instSpecOfClass: anEP2Mirror [
 ]
 
 { #category : #'accessing-class table' }
-EP2Backend >> installClass: anEP2RemoteClass inClassTableIndex: anInteger [ 
+EP2Backend >> installClass: aClassMirror inClassTableIndex: anInteger [ 
+	| oldAddress newAddress mirror oldIndex className |
 	
-	self objectMemory setHashBitsOf: anEP2RemoteClass target address to: anInteger.
-	self objectMemory classAtIndex: anInteger putUnchecked: anEP2RemoteClass target address.
-	anEP2RemoteClass target: anEP2RemoteClass target asClassIndexHandle.
+	"we perform validations before registering the class"
+	self assert: aClassMirror isNilObject not.
+	self assert: aClassMirror backend simulator objectMemory classTableRootObj isNotNil.
+	self assert: (aClassMirror target isKindOf: EP2Handle).
+	self assert: aClassMirror classTableIndex isNotNil.
+	oldAddress:= aClassMirror target address.
+	oldIndex := aClassMirror classTableIndex.
+	"className := aClassMirror classNameFromAnyOrigin."
+	mirror := self mirrorOnAddress: oldAddress.
+	"we remove the class from its previous position in the class table"
+	self objectMemory classAtIndex: oldIndex put: self nilObject target address.
+	"we set the new index for the class"
+	mirror setHashBitsTo: anInteger.
+	"we register the class in the class table in the position of its new index"
+	self objectMemory classAtIndex: anInteger put: mirror target address.
+	self assert: (self mirrorOnAddress: (self classAtIndex: anInteger)) asRemoteClass classTableIndex equals: anInteger.
+	aClassMirror target: mirror target asClassIndexHandle.
 ]
 
 { #category : #'querying-objects' }
@@ -724,11 +769,15 @@ EP2Backend >> largeNegativeIntegerClass [
 ]
 
 { #category : #'accessing-special classes' }
-EP2Backend >> largeNegativeIntegerClass: anEP2RemoteClass [ 
+EP2Backend >> largeNegativeIntegerClass: aRemoteClass [ 
 	"The forty-third special object.
 	Smalltalk specialObjectsArray indexOf: LargeNegativeInteger"
-	self specialObjectsArray at: 43 put: anEP2RemoteClass.
-	self installClass: anEP2RemoteClass inClassTableIndex: 32
+	self builder classLoader
+		installClass: aRemoteClass 
+		inClassTableIndex: 32
+		inBootstrapEnvironment: aRemoteClass classNameFromAnyOrigin.
+	
+	self specialObjectsArray at: 43 put: aRemoteClass.
 ]
 
 { #category : #'accessing special classes' }
@@ -739,11 +788,15 @@ EP2Backend >> largePositiveIntegerClass [
 ]
 
 { #category : #'accessing-special classes' }
-EP2Backend >> largePositiveIntegerClass: anEP2RemoteClass [ 
+EP2Backend >> largePositiveIntegerClass: aRemoteClass [ 
 	"The fourteenth special object.
 	Smalltalk specialObjectsArray indexOf: LargePositiveInteger"
-	self specialObjectsArray at: 14 put: anEP2RemoteClass.
-	self installClass: anEP2RemoteClass inClassTableIndex: 33
+	self builder classLoader
+		installClass: aRemoteClass 
+		inClassTableIndex: 33
+		inBootstrapEnvironment: aRemoteClass classNameFromAnyOrigin.
+	
+	self specialObjectsArray at: 14 put: aRemoteClass.
 ]
 
 { #category : #'from local to remote' }
@@ -760,12 +813,16 @@ EP2Backend >> messageClass [
 ]
 
 { #category : #'accessing-special classes' }
-EP2Backend >> messageClass: anEP2RemoteClass [ 
+EP2Backend >> messageClass: aRemoteClass [ 
 
 	"The method Comtext class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Message"
-	self specialObjectsArray at: 16 put: anEP2RemoteClass.
-	self installClass: anEP2RemoteClass inClassTableIndex: 35
+	self builder classLoader
+		installClass: aRemoteClass 
+		inClassTableIndex: 35
+		inBootstrapEnvironment: aRemoteClass classNameFromAnyOrigin.
+	
+	self specialObjectsArray at: 16 put: aRemoteClass.
 ]
 
 { #category : #'accessing-special classes' }
@@ -921,12 +978,16 @@ EP2Backend >> pointClass [
 ]
 
 { #category : #'accessing-special classes' }
-EP2Backend >> pointClass: anEP2RemoteClass [ 
+EP2Backend >> pointClass: aRemoteClass [ 
 
 	"The Point class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Point"
-	self specialObjectsArray at: 13 put: anEP2RemoteClass.
-	self installClass: anEP2RemoteClass inClassTableIndex: 54.
+	self builder classLoader
+		installClass: aRemoteClass 
+		inClassTableIndex: 54
+		inBootstrapEnvironment: aRemoteClass classNameFromAnyOrigin.
+	
+	self specialObjectsArray at: 13 put: aRemoteClass.
 ]
 
 { #category : #'primitive access' }
@@ -1047,12 +1108,9 @@ EP2Backend >> smallIntegerClass [
 
 { #category : #'accessing-special classes' }
 EP2Backend >> smallIntegerClass: aClass [
-
-	
 	"The Smalltalk instance in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: SmallInteger"
-	self specialObjectsArray at: 6 put: aClass.
-	
+
 	"SmallInteger is a special class that resides in the first page of the class table.
 	For some reason that we ignore so far, this class is in two different indexes of the table: 1 and 3.
 	
@@ -1062,10 +1120,16 @@ EP2Backend >> smallIntegerClass: aClass [
 	Also the hash of the class is set to 1, following the current behavior of the system:
 	
 	SmallInteger basicIdentityHash."
-	self objectMemory setHashBitsOf: aClass target address to: 1.
-	self objectMemory classAtIndex: 1 putUnchecked: aClass target address.
-	self objectMemory classAtIndex: 3 putUnchecked: aClass target address.
-	aClass target: aClass target asClassIndexHandle.
+
+	self builder classLoader
+		installClass: aClass
+		inClassTableIndex: 1
+		inBootstrapEnvironment: aClass classNameFromAnyOrigin.
+		
+	self specialObjectsArray at: 6 put: aClass.
+	"aClass setHashBitsTo: 1.
+	self objectMemory classAtIndex: 1 putUnchecked: aClass target address."
+	self objectMemory classAtIndex: 3 putUnchecked: aClass target address
 ]
 
 { #category : #'accessing special classes' }

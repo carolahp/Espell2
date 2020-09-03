@@ -47,6 +47,11 @@ EP2InternalObjectHandle >> instanceVariableAtIndex: anInteger [
 	^ backend object: self address instVarAt: anInteger
 ]
 
+{ #category : #testing }
+EP2InternalObjectHandle >> isClassTableHandler [
+	^ false
+]
+
 { #category : #accessing }
 EP2InternalObjectHandle >> isExternalHandle [
 	^ false
