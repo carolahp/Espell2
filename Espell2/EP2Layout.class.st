@@ -70,7 +70,9 @@ EP2Layout >> allInstVars [
 
 { #category : #'accessing slots' }
 EP2Layout >> allSlots [
-	^ self slots
+	^ self remote superclass
+		ifNil: [ self slots ]
+		ifNotNil: [ self remote superclass allSlots , self slots ]
 ]
 
 { #category : #'accessing - slots' }

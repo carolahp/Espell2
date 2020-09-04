@@ -43,9 +43,10 @@ EP2MClass >> allInstVarNames [
 
 { #category : #'accessing slots' }
 EP2MClass >> allSlots [
-	^ self superclass
+	^ self layout allSlots
+	"^ self superclass
 		ifNil: [ self slots ]
-		ifNotNil: [ self superclass allSlots , self slots ]
+		ifNotNil: [ self superclass allSlots , self slots ]"
 ]
 
 { #category : #exporting }
