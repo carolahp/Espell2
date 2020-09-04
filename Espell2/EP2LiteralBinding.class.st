@@ -58,6 +58,5 @@ EP2LiteralBinding >> objectSpace: anEP2ObjectSpace [
 
 { #category : #evaluating }
 EP2LiteralBinding >> value [
-	self halt.
-"	^ (objectSpace classNamed: name) mirror"
+	^ objectSpace  systemDictionary at: name 
 ]
