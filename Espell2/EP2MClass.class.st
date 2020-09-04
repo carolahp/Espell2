@@ -222,7 +222,7 @@ EP2MClass >> innerBindingOf: aSymbol [
 
 { #category : #accessing }
 EP2MClass >> instSize [
-	^ (self layout slots select: #isInstanceVariableSlot) size
+	^ (self layout allSlots select: #isInstanceVariableSlot) size
 ]
 
 { #category : #accessing }
