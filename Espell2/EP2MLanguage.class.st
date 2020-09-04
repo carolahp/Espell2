@@ -190,7 +190,7 @@ EP2MLanguage >> behaviors [
 EP2MLanguage >> bootstrap [
 	self prepareBuilder.
 	builder bootstrap.
-	^ builder spurImage
+	^ self spurImage
 ]
 
 { #category : #'browse-code' }
@@ -616,6 +616,11 @@ EP2MLanguage >> layoutForInstSpec: anInteger on: anEP2Class [
  ^ (self layoutClassForInstSpec: anInteger) on: anEP2Class 
 ]
 
+{ #category : #hooks }
+EP2MLanguage >> loadCustomClasses [
+	^ self 
+]
+
 { #category : #initialization }
 EP2MLanguage >> loadRequiredBehaviors [
 	| objModel classModel |
@@ -815,6 +820,11 @@ EP2MLanguage >> roleOfClassNamed: aString [
 		do: [(self classRoles includesKey: aString)
 				ifTrue: [ aString ]
 				ifFalse: [ PBClassDefinitionNotFound signal: 'class "', aString, '" not found' ]]
+]
+
+{ #category : #accessing }
+EP2MLanguage >> spurImage [
+	^ builder spurImage
 ]
 
 { #category : #hooks }

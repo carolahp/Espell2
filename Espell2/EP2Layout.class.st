@@ -8,6 +8,11 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
+{ #category : #'instance variables' }
+EP2Layout class >> addSlot: aName [
+	self error: 'You should call this method from the instance side. Instantiate a layout using the message EP2Layout >> on:'
+]
+
 { #category : #'remote-objects-relationship' }
 EP2Layout class >> defaultRemoteObjectClass [
 	^ EP2Remote

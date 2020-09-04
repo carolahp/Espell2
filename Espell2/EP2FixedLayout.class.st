@@ -1,6 +1,9 @@
 Class {
 	#name : #EP2FixedLayout,
 	#superclass : #EP2PointerLayout,
+	#instVars : [
+		'grades'
+	],
 	#category : #'Espell2-Kernel-Layouts'
 }
 
