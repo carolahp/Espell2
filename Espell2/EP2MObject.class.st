@@ -19,6 +19,11 @@ EP2MObject class >> named: aString parent: anEP2MLanguage [
 ]
 
 { #category : #'evaluate ast' }
+EP2MObject >> debugCode: aString [ 
+	^ self debugCode: aString temps: #()
+]
+
+{ #category : #'evaluate ast' }
 EP2MObject >> debugCode: aString temps: aCollection [ 
 	^ (self newInstruction code: aString; temps: aCollection) debug
 ]
@@ -61,6 +66,11 @@ EP2MObject >> hasPropertyNamed: propertyName [
 		ifTrue: [ properties includesKey: propertyName ]	
 		ifFalse:[ false ].
 
+]
+
+{ #category : #accessing }
+EP2MObject >> imageBuilder [
+	^ self remote backend builder
 ]
 
 { #category : #marking }
