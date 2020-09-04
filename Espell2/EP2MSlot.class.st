@@ -55,6 +55,11 @@ EP2MSlot >> read: anEP2RemoteAssociation [
 	self subclassResponsibility 
 ]
 
+{ #category : #reading }
+EP2MSlot >> readWith: anEPASTInterpreter inNode: aRBInstanceVariableNode [ 
+	self error: 'only for InstanceVariableSlots'
+]
+
 { #category : #testing }
 EP2MSlot >> slotName [ 
 	self subclassResponsibility 

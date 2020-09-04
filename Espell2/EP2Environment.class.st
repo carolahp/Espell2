@@ -15,6 +15,7 @@ EP2Environment >> allClasses [
 { #category : #accessing }
 EP2Environment >> bindingOf: aSymbol [
 	| result |
+	self flag: 'need to add globals'.
 	result := (super bindingOf: aSymbol).
 	"maybe aSymbol is the name of class that has not been installed" 
 	result ifNil: [ | found |

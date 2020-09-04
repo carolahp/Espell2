@@ -32,6 +32,12 @@ EP2MInstanceVariableSlot >> read: aRemoteObject [
 ]
 
 { #category : #'read-write' }
+EP2MInstanceVariableSlot >> readWith: anInterpreter inNode: aRBInstanceVariableNode [ 
+
+	^ anInterpreter readInstVarAt: self index named: name
+]
+
+{ #category : #'read-write' }
 EP2MInstanceVariableSlot >> slotName [ 
 	^ 'InstVarSlot'
 ]

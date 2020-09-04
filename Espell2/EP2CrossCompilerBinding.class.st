@@ -31,7 +31,7 @@ EP2CrossCompilerBinding >> binding [
 
 { #category : #binding }
 EP2CrossCompilerBinding >> bindingOf: aString [
-self halt.
+
 	(class classVarNames includes: aString asSymbol)
 		ifTrue: [ self assert: environment notNil.
 			^ EP2ClassVariableBinding new
