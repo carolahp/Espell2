@@ -373,8 +373,10 @@ EP2RemoteClass >> test [
 
 	self assert: self classNameFromAnyOrigin equals: self asClassDefinition name.
 	self assert: self methodDictionary basicClass instSpec = EP2RemoteMethodDictionary modelInstSpec description: 'Incorrect format of method dictionary: Wrong instSpec of its class'.
-	self methodDictionary size > 0 ifTrue: [ self halt ].
-
+	self methodDictionary associations do: [ :assoc | 
+		assoc value asRemoteCompiledMethod test
+	].
+	
 	"Class table tests"
 	myIndex := self classTableIndex.	
 	self assert: self target address equals: (self backend objectMemory classAtIndex: myIndex).	

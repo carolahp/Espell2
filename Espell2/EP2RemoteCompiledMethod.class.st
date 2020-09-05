@@ -207,3 +207,10 @@ EP2RemoteCompiledMethod >> sourceCode [
 		ifNotEmpty: [ :found | ^ found anyOne sourceCode ].
 	^ nil
 ]
+
+{ #category : #'vm-tests' }
+EP2RemoteCompiledMethod >> test [ 
+	self assert: self basicClass instSpec = EP2RemoteCompiledMethod modelInstSpec description: 'Incorrect format of compiled method: Wrong instSpec of its class'.
+	self localBytecodes do: [ :bc | bc isInteger ].
+	self literals do: [ :lit | lit test ]
+]
