@@ -35,6 +35,15 @@ EP2RemoteMethodDictionary class >> role [
 ]
 
 { #category : #'gt-inspector' }
+EP2RemoteMethodDictionary >> arrayWithoutNils [
+	^ ( self array allVariables 
+			collectWithIndex: [ :var :index | (self basicAt: index) asRemoteObjectCasted -> var ])
+			reject: [ :assoc | 
+					(assoc key) isNilObject and: [
+					(assoc value) isNilObject] ]
+]
+
+{ #category : #'gt-inspector' }
 EP2RemoteMethodDictionary >> associations [
 	| assocs |
 	self tally = 0 ifTrue: [^ self].
@@ -101,7 +110,10 @@ EP2RemoteMethodDictionary >> grow [
 	| newSelf |
 	newSelf := self class newWithBackend: self backend size: self basicSize * 2.
 	1 to: self basicSize do:
-		[:i | (self basicAt: i) ifNotNil: [ :key | newSelf at: key put: (self array at: i)]].
+		[:i | | key |
+		key := self basicAt: i.
+		key isNotNilObject 
+			ifTrue: [ newSelf at: key put: (self array at: i)]].
 	self becomeInto: newSelf
 ]
 
@@ -123,11 +135,7 @@ EP2RemoteMethodDictionary >> gtInspector2RawIn: composite [
 EP2RemoteMethodDictionary >> gtInspectorIn: composite [
 	^ composite table
 		title: '*a Remote Method Dictionary*';
-		display: [ ( self array allVariables 
-			collectWithIndex: [ :var :index | (self basicAt: index) asRemoteObjectCasted -> var ])
-			reject: [ :assoc | 
-					(assoc key) isNilObject and: [
-					(assoc value) isNilObject] ] ];
+		display: [ self arrayWithoutNils ];
 		column: 'Key' evaluated: [ :assoc | assoc key asString ];
 		column: 'Value' evaluated: [ :assoc | assoc value asString ];
 		send: [ :assoc | assoc value ifNotNil: [ :val | val asRemoteObjectCasted ] ]
@@ -191,4 +199,16 @@ EP2RemoteMethodDictionary >> size [
 	tally := 0.
 	self do: [:each | tally := tally + 1].
 	^ tally
+]
+
+{ #category : #'vm-tests' }
+EP2RemoteMethodDictionary >> test [
+	self
+		assert:
+			self basicClass instSpec
+				= EP2RemoteMethodDictionary modelInstSpec
+		description: 'Incorrect format of method dictionary: Wrong instSpec of its class'.
+	self
+		assert: self tally asLocalSmallInteger
+		equals: self arrayWithoutNils size
 ]

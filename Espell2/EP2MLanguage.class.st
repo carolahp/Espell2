@@ -539,6 +539,12 @@ EP2MLanguage >> hookInstallClass: aClassDefinition [
 ]
 
 { #category : #hooks }
+EP2MLanguage >> hookInstallClasses [
+	self allClasses do: [ :class | 
+		class hookInstall ]
+]
+
+{ #category : #hooks }
 EP2MLanguage >> hookInstallMethods [
 	self allClasses do: [ :class | class installMethods ]
 ]

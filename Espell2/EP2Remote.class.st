@@ -396,18 +396,24 @@ EP2Remote >> readSlotNamed: aName [
 
 { #category : #'high-level-messages' }
 EP2Remote >> remoteBasicIdentityHash [
-	| result |
+	^ self mirror basicIdentityHash.
+	"| result |
 	
 	result := self backend executePrimitiveNumber: self backend primitiveBasicIdentityHashNumber on: self withArguments: #().
 	result hasFailed 
 		ifTrue: [ ^ self error: 'Impossible to apply primitive basicIdentityHash' ].
-	^ result value asLocalSmallInteger
+	^ result value asLocalSmallInteger"
 ]
 
 { #category : #'high-level-message' }
 EP2Remote >> remoteIdentityHash [
 	"identityHash of the remote object in the remote kernel"
 	^ (self remoteBasicIdentityHash bitShift: 18)
+]
+
+{ #category : #hash }
+EP2Remote >> remoteRawHashBits [
+	^ self mirror remoteRawHashBits
 ]
 
 { #category : #'public-api' }

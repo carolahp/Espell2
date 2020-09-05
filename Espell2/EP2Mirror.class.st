@@ -323,6 +323,11 @@ EP2Mirror >> isNilObject [
 ]
 
 { #category : #testing }
+EP2Mirror >> isNotNilObject [
+	^ self isNilObject not
+]
+
+{ #category : #testing }
 EP2Mirror >> isSmallInteger [
 	^ target isSmallInteger
 ]
@@ -362,6 +367,11 @@ EP2Mirror >> printOn: aStream [
 		nextPutAll: 'aMirror [ ';
 		nextPutAll: self target asString;
 		nextPutAll: ' ]'
+]
+
+{ #category : #hash }
+EP2Mirror >> remoteRawHashBits [
+	^ self backend simulator objectMemory rawHashBitsOf: self target address
 ]
 
 { #category : #'accessing-header' }

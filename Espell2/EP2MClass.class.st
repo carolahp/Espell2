@@ -138,14 +138,20 @@ EP2MClass >> format [
 { #category : #hooks }
 EP2MClass >> hookInstall [
 	| remoteMethodDict remoteSuperclass |
-	
+	self remote isNilObject ifTrue: [ self installStub ].
+	self remote isStub ifFalse: [
+		"class is fully loaded"
+		^ self remote ].
 	"we install an empty methodDict, it will be filled later"
 	remoteMethodDict := EP2RemoteMethodDictionary newWithBackend: self parent remote espellBackend.
 	remoteSuperclass := self superclass ifNil: [nil] ifNotNil:[self parent remote classNamed: self superclass name].
 	self remote 
 		methodDictionary: remoteMethodDict;
 		superclass: remoteSuperclass;
-		format: self format
+		format: self format.
+	self remoteSystemDictionary at: self name put: self remote.
+	self basicClass hookInstall.
+	^ self remote
 ]
 
 { #category : #'accessing methods' }
@@ -268,7 +274,10 @@ EP2MClass >> installMethods [
 	methods := (self methodBuilder methodsFromDefinition: self)
 		sorted: [ :a :b | a selector < b selector ].
 	methods do:
-			[ :method | self remote methodDictionary at: method selector put: method ]
+			[ :method | 
+			self remote methodDictionary test.
+			self remote methodDictionary at: method selector put: method .
+			self remote methodDictionary test]
 ]
 
 { #category : #'installing stubs' }
@@ -477,6 +486,11 @@ EP2MClass >> remote [
 	^ (self parent remote bootstrapEnvironmentAt: self name)
 		ifNil: [self remoteBackend nilObject]
 		ifNotNil: [:found | found asRemoteClass]
+]
+
+{ #category : #'accessing remote backend' }
+EP2MClass >> remoteSystemDictionary [
+	^ self parent remote espellBackend objectSpace systemDictionary
 ]
 
 { #category : #accessing }

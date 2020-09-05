@@ -366,13 +366,13 @@ EP2RemoteClass >> target [
 
 { #category : #testing }
 EP2RemoteClass >> test [
-	| existentIndexes myIndex |
+	| existentIndexes myIndex metaclass |
 	self assert: (self superclass isNotNilObject or: [self asClassDefinition role = #ProtoObject]).
 	self assert: self methodDictionary isNotNilObject.
 	self assert: self format isNotNilObject.
 
 	self assert: self classNameFromAnyOrigin equals: self asClassDefinition name.
-	self assert: self methodDictionary basicClass instSpec = EP2RemoteMethodDictionary modelInstSpec description: 'Incorrect format of method dictionary: Wrong instSpec of its class'.
+	self methodDictionary test.
 	self methodDictionary associations do: [ :assoc | 
 		assoc value asRemoteCompiledMethod test
 	].
@@ -383,7 +383,10 @@ EP2RemoteClass >> test [
 
 	existentIndexes := ((self backend builder bootstrapEnvironment allClasses) collect: [ :remoteClasss | remoteClasss classTableIndex ]) values.
 	existentIndexes := existentIndexes select: [ :index | index = myIndex ].
-	self assert: existentIndexes size = 1 description: 'Index ', myIndex asString, ' appears twice in the class table'
+	self assert: existentIndexes size = 1 description: 'Index ', myIndex asString, ' appears twice in the class table'.
+	"Testing metaclass"
+	"metaclass := self basicClass."
+	"metaclass = self ifFalse: [metaclass testStub]."
 ]
 
 { #category : #testing }
