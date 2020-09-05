@@ -844,7 +844,7 @@ EP2MLanguage >> systemClassMapping [
 
 { #category : #testing }
 EP2MLanguage >> test [
-	self shouldBeImplemented.
+	self behaviors do: [ :beh | beh test ]
 ]
 
 { #category : #bootstrap }
