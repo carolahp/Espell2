@@ -561,14 +561,7 @@ EP2MClass >> testFormat [
 
 { #category : #testing }
 EP2MClass >> testRemote [
-	| remote |
-	remote := self remote.
-	self 
-		assert: remote methodDictionary isNilObject not 
-		description: 'method dictionary is nil'.
-	self assert: remote classNameFromAnyOrigin = self name.
-	self assert: remote methodDictionary basicClass instSpec = EP2RemoteMethodDictionary modelInstSpec description: 'Incorrect format of method dictionary. Wrong instSpec of its class'.
-	remote methodDictionary size > 0 ifTrue: [ self halt ]
+	self remote test
 ]
 
 { #category : #testing }

@@ -367,10 +367,15 @@ EP2RemoteClass >> target [
 { #category : #testing }
 EP2RemoteClass >> test [
 	| existentIndexes myIndex |
-	self assert: self superclass isNotNilObject.
+	self assert: (self superclass isNotNilObject or: [self asClassDefinition role = #ProtoObject]).
 	self assert: self methodDictionary isNotNilObject.
 	self assert: self format isNotNilObject.
 
+	self assert: self classNameFromAnyOrigin equals: self asClassDefinition name.
+	self assert: self methodDictionary basicClass instSpec = EP2RemoteMethodDictionary modelInstSpec description: 'Incorrect format of method dictionary: Wrong instSpec of its class'.
+	self methodDictionary size > 0 ifTrue: [ self halt ].
+
+	"Class table tests"
 	myIndex := self classTableIndex.	
 	self assert: self target address equals: (self backend objectMemory classAtIndex: myIndex).	
 
