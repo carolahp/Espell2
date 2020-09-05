@@ -183,8 +183,8 @@ EP2RemoteCompiledMethod >> remoteLiterals [
 	^(1 to: self numberOfLiterals) collect: [ :index | self literalAt: index]
 ]
 
-{ #category : #'high-level-message' }
-EP2RemoteCompiledMethod >> selector [
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> remoteSelector [
 	| penultimateLiteral remoteSelector isSymbol |
 	penultimateLiteral := self penultimateLiteral.
 	penultimateLiteral isNilObject ifTrue: [ ^nil ].
@@ -193,7 +193,12 @@ EP2RemoteCompiledMethod >> selector [
 	remoteSelector := isSymbol ifTrue: [ penultimateLiteral ]
 										ifFalse: [ "It is a method properties object whose second inst var has the selector"
 														penultimateLiteral instanceVariableAtIndex: 2 ].
-	^ self backend fromRemoteByteSymbol: remoteSelector
+	^ remoteSelector asRemoteByteSymbol
+]
+
+{ #category : #'high-level-message' }
+EP2RemoteCompiledMethod >> selector [
+	^ self backend fromRemoteByteSymbol: self remoteSelector
 ]
 
 { #category : #accessing }

@@ -492,6 +492,12 @@ EP2Backend >> falseObject: anEP2Mirror [
 	simulator objectMemory falseObject: anEP2Mirror target address
 ]
 
+{ #category : #'accessing low level' }
+EP2Backend >> fetchPointer: index ofObject: aRemoteObject [ 
+	"one based index"
+	^ (self mirrorOnAddress: (self objectMemory fetchPointer: index - 1 ofObject: aRemoteObject target address)) asRemoteObjectCasted
+]
+
 { #category : #'accessing special classes' }
 EP2Backend >> floatClass [
 	"The tenth special object.

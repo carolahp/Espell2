@@ -397,12 +397,7 @@ EP2Remote >> readSlotNamed: aName [
 { #category : #'high-level-messages' }
 EP2Remote >> remoteBasicIdentityHash [
 	^ self mirror basicIdentityHash.
-	"| result |
 	
-	result := self backend executePrimitiveNumber: self backend primitiveBasicIdentityHashNumber on: self withArguments: #().
-	result hasFailed 
-		ifTrue: [ ^ self error: 'Impossible to apply primitive basicIdentityHash' ].
-	^ result value asLocalSmallInteger"
 ]
 
 { #category : #'high-level-message' }

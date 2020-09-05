@@ -102,7 +102,9 @@ EP2RemoteMethodDictionary >> basicAt: index put: value [
 EP2RemoteMethodDictionary >> do: aBlock [ 
 	self tally asLocalSmallInteger = 0 ifTrue: [^ self].
 	1 to: self basicSize do:
-		[:i | (self array at: i) ifNotNil: [ :value | aBlock value: value]]
+		[:i | | value |
+		value := self array at: i.
+		value isNilObject ifFalse: [ aBlock value: value]]
 ]
 
 { #category : #'gt-inspector' }
@@ -204,11 +206,24 @@ EP2RemoteMethodDictionary >> size [
 { #category : #'vm-tests' }
 EP2RemoteMethodDictionary >> test [
 	self
-		assert:
-			self basicClass instSpec
-				= EP2RemoteMethodDictionary modelInstSpec
+		assert: self basicClass instSpec = EP2RemoteMethodDictionary modelInstSpec
 		description: 'Incorrect format of method dictionary: Wrong instSpec of its class'.
 	self
+		assert: (self backend fetchPointer: 1 ofObject: self)
+		equals: self tally.
+	self
+		assert: (self backend fetchPointer: 2 ofObject: self)
+		equals: self array.
+	self
 		assert: self tally asLocalSmallInteger
-		equals: self arrayWithoutNils size
+		equals: self arrayWithoutNils size.
+	self array
+		doWithIndex: [:meth :index | 
+			| method |
+			method := meth asRemoteCompiledMethod.
+			method isNotNilObject
+				ifTrue: [ 
+					self
+						assert: method remoteSelector target address
+						equals: (self backend fetchPointer: index + 4 ofObject: self) target address ] ]
 ]
