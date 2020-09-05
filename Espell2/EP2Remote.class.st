@@ -327,6 +327,11 @@ EP2Remote >> isNilObject [
 ]
 
 { #category : #testing }
+EP2Remote >> isNotNilObject [
+	^ self isNilObject not 
+]
+
+{ #category : #testing }
 EP2Remote >> isRemoteClass [
 	^ false
 ]

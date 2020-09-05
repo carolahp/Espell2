@@ -170,6 +170,14 @@ EP2SpurImage >> specialObjectsArray [
 	^ specialObjectsArray
 ]
 
+{ #category : #testing }
+EP2SpurImage >> test [
+	self nilObject test.
+	self classTable do: [ :assoc | | class | 
+		class := assoc asRemoteAssociation value.
+		class asRemoteClass test ]
+]
+
 { #category : #'accessing-specialObjects' }
 EP2SpurImage >> trueObject [
 	^ trueObject

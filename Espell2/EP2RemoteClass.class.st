@@ -365,6 +365,21 @@ EP2RemoteClass >> target [
 ]
 
 { #category : #testing }
+EP2RemoteClass >> test [
+	| existentIndexes myIndex |
+	self assert: self superclass isNotNilObject.
+	self assert: self methodDictionary isNotNilObject.
+	self assert: self format isNotNilObject.
+
+	myIndex := self classTableIndex.	
+	self assert: self target address equals: (self backend objectMemory classAtIndex: myIndex).	
+
+	existentIndexes := ((self backend builder bootstrapEnvironment allClasses) collect: [ :remoteClasss | remoteClasss classTableIndex ]) values.
+	existentIndexes := existentIndexes select: [ :index | index = myIndex ].
+	self assert: existentIndexes size = 1 description: 'Index ', myIndex asString, ' appears twice in the class table'
+]
+
+{ #category : #testing }
 EP2RemoteClass >> testStub [
 	| existentIndexes myIndex |
 	self assert: self superclass isNilObject.

@@ -189,7 +189,10 @@ EP2MLanguage >> behaviors [
 { #category : #bootstrap }
 EP2MLanguage >> bootstrap [
 	self prepareBuilder.
-	builder bootstrap.
+	builder
+		installClasses;
+		installMethods;
+		installProcess.
 	^ self spurImage
 ]
 
@@ -660,7 +663,7 @@ EP2MLanguage >> loadTonelRepository: aFileReference [
 	tonel := TonelRepository new
 		directory: aFileReference asFileReference. 
 	packagesNames := tonel packageDescriptionsFromReadableFileNames collect: [:each | each at: 1].
-	
+	self assert: packagesNames size > 0 description: 'The repository is empty'.
 	packagesNames	do: [ :pn | | package snap version |
 			package := self ensurePackageNamed: pn.
 			version := tonel versionWithInfo: (tonel versionInfoFromVersionNamed: pn).
@@ -771,6 +774,8 @@ EP2MLanguage >> prepareBuilder [
 		bootstrapping: true;
 		pbRepository: repo;
 		imageName: self name.
+		
+	builder initializeImage
 	
 ]
 
