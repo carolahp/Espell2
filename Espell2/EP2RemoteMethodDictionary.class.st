@@ -124,8 +124,8 @@ EP2RemoteMethodDictionary >> gtInspector2RawIn: composite [
 		title: '*Raw*';
 		display: [ (self slots collect: [ :slot | slot name -> (slot read: self) ])
 				,
-					{(#tally -> self tally asString).
-					(#array -> self array asString)} ];
+					{(#tally -> self tally).
+					(#array -> self array)} ];
 		column: 'Index' evaluated: [ :assoc | assoc key asString ];
 		column: 'Value' evaluated: [ :assoc | assoc value asString ];
 		send: [ :assoc | assoc value ]
