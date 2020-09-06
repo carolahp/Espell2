@@ -22,7 +22,10 @@ EP2Remote class >> modelAcceptsExtraInstVars [
 
 { #category : #constants }
 EP2Remote class >> modelAllInstVarNames [
-	^#()
+	" I am the root of the remote objects hierarchy "
+	^ (self = EP2Remote)
+		ifTrue: [ self modelInstVarNames ] 
+		ifFalse: [ self superclass modelAllInstVarNames, self modelInstVarNames ]
 ]
 
 { #category : #constants }
@@ -44,6 +47,11 @@ EP2Remote class >> modelInstSpec [
 		16-23	= 8-bit indexable
 		24-31	= compiled methods (CompiledMethod)"
 	^ 0
+]
+
+{ #category : #constants }
+EP2Remote class >> modelInstVarNames [
+	^ #()
 ]
 
 { #category : #'instance creation' }

@@ -15,6 +15,11 @@ EP2RemoteByteSymbol class >> modelInstSpec [
 ]
 
 { #category : #constants }
+EP2RemoteByteSymbol class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #constants }
 EP2RemoteByteSymbol class >> role [ 
 	^ 'ByteSymbol'
 ]

@@ -10,13 +10,13 @@ EP2RemoteProcessorScheduler class >> layoutClass [
 ]
 
 { #category : #constants }
-EP2RemoteProcessorScheduler class >> modelAllInstVarNames [ 
-	^ #(#suspendedProcessLists #activeProcess)
+EP2RemoteProcessorScheduler class >> modelInstSpec [
+	^ 1
 ]
 
 { #category : #constants }
-EP2RemoteProcessorScheduler class >> modelInstSpec [
-	^ 1
+EP2RemoteProcessorScheduler class >> modelInstVarNames [ 
+	^ #(#suspendedProcessLists #activeProcess)
 ]
 
 { #category : #constants }

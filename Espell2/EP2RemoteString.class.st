@@ -15,6 +15,11 @@ EP2RemoteString class >> modelInstSpec [
 ]
 
 { #category : #constants }
+EP2RemoteString class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #constants }
 EP2RemoteString class >> role [ 
 	^ 'String'
 ]

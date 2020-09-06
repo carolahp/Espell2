@@ -10,13 +10,13 @@ EP2RemoteClass class >> layoutClass [
 ]
 
 { #category : #constants }
-EP2RemoteClass class >> modelAllInstVarNames [
-	^ #(#superclass #methodDict #format)
+EP2RemoteClass class >> modelInstSpec [
+	^ 1
 ]
 
 { #category : #constants }
-EP2RemoteClass class >> modelInstSpec [
-	^ 1
+EP2RemoteClass class >> modelInstVarNames [
+	^ #(#superclass #methodDict #format)
 ]
 
 { #category : #constants }

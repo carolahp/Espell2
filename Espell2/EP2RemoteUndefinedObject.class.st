@@ -15,6 +15,11 @@ EP2RemoteUndefinedObject class >> modelInstSpec [
 ]
 
 { #category : #constants }
+EP2RemoteUndefinedObject class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #constants }
 EP2RemoteUndefinedObject class >> role [ 
 	^ 'UndefinedObject'
 ]

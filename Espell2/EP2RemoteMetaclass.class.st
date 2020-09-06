@@ -5,6 +5,12 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteMetaclass class >> modelInstVarNames [
+	"I inherit #(#superclass #methodDict #format) from RemoteClass"
+	^ #()
+]
+
+{ #category : #constants }
 EP2RemoteMetaclass class >> role [ 
 	^nil
 ]

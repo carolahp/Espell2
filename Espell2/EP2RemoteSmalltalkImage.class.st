@@ -10,13 +10,13 @@ EP2RemoteSmalltalkImage class >> layoutClass [
 ]
 
 { #category : #constants }
-EP2RemoteSmalltalkImage class >> modelAllInstVarNames [ 
-	^ #(#globals)
+EP2RemoteSmalltalkImage class >> modelInstSpec [
+	^ 1
 ]
 
 { #category : #constants }
-EP2RemoteSmalltalkImage class >> modelInstSpec [
-	^ 1
+EP2RemoteSmalltalkImage class >> modelInstVarNames [ 
+	^ #(#globals)
 ]
 
 { #category : #constants }

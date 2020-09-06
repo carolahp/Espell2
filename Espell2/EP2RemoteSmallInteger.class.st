@@ -14,6 +14,11 @@ EP2RemoteSmallInteger class >> modelInstSpec [
 	^ 7
 ]
 
+{ #category : #constants }
+EP2RemoteSmallInteger class >> modelInstVarNames [
+	^ #()
+]
+
 { #category : #'instance creation' }
 EP2RemoteSmallInteger class >> on: anEP2SimulatorAddressHandle from: anEP2Backend [ 
 	^ self on: (EP2Mirror on: anEP2SimulatorAddressHandle from: anEP2Backend)

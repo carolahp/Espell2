@@ -208,7 +208,8 @@ EP2MClass >> initializeWithMonticello: aMCClassDefinition [
 								named: ((each name copyUpTo: $=) copyWithout: $#) trimBoth
 								parent: self layout.
 							unknownSlot expression: (each name copyAfter: $>) trimBoth.
-							self layout addSlot: unknownSlot" ] ] ]
+							self layout addSlot: unknownSlot" ] ] ].
+	self test
 ]
 
 { #category : #initialization }
@@ -221,6 +222,7 @@ EP2MClass >> initializeWithTemplate: aTemplateClass [
 	self haltIf:[superclassName = self name].
 	self
 		superclass: superclassModel.
+	self test.
 	^ self
 ]
 

@@ -15,6 +15,11 @@ EP2RemoteTrue class >> modelInstSpec [
 ]
 
 { #category : #constants }
+EP2RemoteTrue class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #constants }
 EP2RemoteTrue class >> role [ 
 	^ 'True'
 ]

@@ -15,6 +15,11 @@ EP2RemoteArray class >> modelInstSpec [
 ]
 
 { #category : #'instance creation' }
+EP2RemoteArray class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #'instance creation' }
 EP2RemoteArray class >> newWithSize: anInteger withBackend: anEP2Backend [ 
 	^ anEP2Backend basicNewOn: anEP2Backend arrayClass withSize: anInteger
 ]

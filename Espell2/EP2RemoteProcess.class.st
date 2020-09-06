@@ -19,13 +19,13 @@ EP2RemoteProcess class >> layoutClass [
 ]
 
 { #category : #constants }
-EP2RemoteProcess class >> modelAllInstVarNames [ 
-	^ #(#nextLink #suspendedContext #priority #myList #threadId #errorHandler)
+EP2RemoteProcess class >> modelInstSpec [
+	^ 1
 ]
 
 { #category : #constants }
-EP2RemoteProcess class >> modelInstSpec [
-	^ 1
+EP2RemoteProcess class >> modelInstVarNames [ 
+	^ #(#nextLink #suspendedContext #priority #myList #threadId #errorHandler)
 ]
 
 { #category : #constants }

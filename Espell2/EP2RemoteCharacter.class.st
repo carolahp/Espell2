@@ -15,6 +15,11 @@ EP2RemoteCharacter class >> modelInstSpec [
 ]
 
 { #category : #constants }
+EP2RemoteCharacter class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #constants }
 EP2RemoteCharacter class >> role [ 
 	^ 'Character'
 ]

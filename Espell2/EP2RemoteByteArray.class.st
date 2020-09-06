@@ -15,6 +15,11 @@ EP2RemoteByteArray class >> modelInstSpec [
 ]
 
 { #category : #'instance creation' }
+EP2RemoteByteArray class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #'instance creation' }
 EP2RemoteByteArray class >> newWithSize: anInteger withBackend: anEP2Backend [ 
 	^ anEP2Backend basicNewOn: anEP2Backend byteArrayClass withSize: anInteger
 ]

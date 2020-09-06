@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteFalse class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #constants }
 EP2RemoteFalse class >> role [ 
 	^ 'False'
 ]

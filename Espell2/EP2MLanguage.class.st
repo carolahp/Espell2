@@ -676,7 +676,8 @@ EP2MLanguage >> loadTonelRepository: aFileReference [
 			snap := version snapshot.
 			snap definitions do: [ :each | 
 				each ensureEspellDefinitionIn: self package: package
-			 ]]
+			 ]].
+	self test.
 ]
 
 { #category : #'tonel repository' }
@@ -723,8 +724,9 @@ EP2MLanguage >> newBehaviorFromTemplate: aClassEP2Remote [
 		ifAbsent: [ self class classMetaclass named: modelName parent: self ].
 	model template: template.
 	model layout: (template layoutClass on: model).
-	template modelAllInstVarNames do: [:ivname | model addSlot: ivname ].
+	template modelInstVarNames do: [:ivname | model addSlot: ivname ].
 	self packages anyOne addDefinedBehavior: model.
+
 	^ model
 ]
 

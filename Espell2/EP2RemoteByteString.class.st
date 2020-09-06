@@ -15,6 +15,11 @@ EP2RemoteByteString class >> modelInstSpec [
 ]
 
 { #category : #constants }
+EP2RemoteByteString class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #constants }
 EP2RemoteByteString class >> role [ 
 	^ 'ByteString'
 ]
