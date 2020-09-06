@@ -15,6 +15,17 @@ EP2Remote class >> layoutClass [
 ]
 
 { #category : #constants }
+EP2Remote class >> modelAcceptsExtraInstVars [
+	"the user can add instance variables beside after those specified in EP2Remote >> modelInstVarNames"
+	^true
+]
+
+{ #category : #constants }
+EP2Remote class >> modelAllInstVarNames [
+	^#()
+]
+
+{ #category : #constants }
 EP2Remote class >> modelInstSpec [
 	"Answer the instance specification part of the format that defines what kind of object
 	 an instance of the receiver is.  The formats are
@@ -33,11 +44,6 @@ EP2Remote class >> modelInstSpec [
 		16-23	= 8-bit indexable
 		24-31	= compiled methods (CompiledMethod)"
 	^ 0
-]
-
-{ #category : #constants }
-EP2Remote class >> modelInstVarNames [
-	^#()
 ]
 
 { #category : #'instance creation' }

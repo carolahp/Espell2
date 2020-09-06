@@ -120,6 +120,7 @@ EP2MClass >> extendWithMonticello: aMCClassDefinition [
 	superclassName := self superclass ifNil:[#nil] ifNotNil:[:sc |sc name].
 	superclassName = mcDef superclassName
 		ifFalse: [ self halt ].
+	self test.
 	^ self
 ]
 
@@ -144,6 +145,7 @@ EP2MClass >> hookInstall [
 		^ self remote ].
 	"we install an empty methodDict, it will be filled later"
 	remoteMethodDict := EP2RemoteMethodDictionary newWithBackend: self parent remote espellBackend.
+	remoteMethodDict test.
 	remoteSuperclass := self superclass ifNil: [nil] ifNotNil:[self parent remote classNamed: self superclass name].
 	self remote 
 		methodDictionary: remoteMethodDict;
@@ -566,11 +568,11 @@ EP2MClass >> testFormat [
 						, '"). It should be ' , temp modelInstSpec asString
 						, ' but it is ' , self instSpec asString.
 			self
-				assert: temp modelInstVarNames size <= self instSize
+				assert: temp modelAllInstVarNames size <= self instSize
 				description:
 					'Missing instance variables in class "' , self name , '" (role "'
 						, self role , '"). It should define at least: '
-						, temp modelInstVarNames asString ]
+						, temp modelAllInstVarNames asString ]
 ]
 
 { #category : #testing }
@@ -580,14 +582,25 @@ EP2MClass >> testRemote [
 
 { #category : #testing }
 EP2MClass >> testVMInstanceVariables [
-	self template modelInstVarNames
+	self template modelAllInstVarNames
 		doWithIndex: [ :ivName :index | 
 			self
 				assert: (self instVarIndexFor: ivName ifAbsent: [ 0 ]) = index
 				description:
 					'Instance variable "' , ivName , '" should be in position '
 						, index asString , ' in class ' , self name , ' (role "'
-						, self role , '") ' ]
+						, self role , '") ' ].
+	self template modelAcceptsExtraInstVars
+		ifFalse: [ | instVarsNames expectedInstVarsNames |
+			instVarsNames := self allInstVarNames.
+			expectedInstVarsNames := self template modelAllInstVarNames.
+			self
+				assert: instVarsNames size = expectedInstVarsNames size
+				description:
+					self name , ' defines ' , instVarsNames size asString
+						, ' instance variables, but it must have exactly '
+						, expectedInstVarsNames size asString , ' inst vars, which are: '
+						, expectedInstVarsNames asString ]
 ]
 
 { #category : #'accessing compiler' }

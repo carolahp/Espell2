@@ -10,13 +10,13 @@ EP2RemoteClass class >> layoutClass [
 ]
 
 { #category : #constants }
-EP2RemoteClass class >> modelInstSpec [
-	^ 1
+EP2RemoteClass class >> modelAllInstVarNames [
+	^ #(#superclass #methodDict #format)
 ]
 
 { #category : #constants }
-EP2RemoteClass class >> modelInstVarNames [
-	^#(#superclass #methodDict #format)
+EP2RemoteClass class >> modelInstSpec [
+	^ 1
 ]
 
 { #category : #constants }
@@ -233,6 +233,11 @@ EP2RemoteClass >> innerBindingOf: aSymbol [
 	(self superclass isNilObject) ifFalse:  [^ self superclass innerBindingOf: aSymbol].
 	
 	^ nil
+]
+
+{ #category : #'accessing header' }
+EP2RemoteClass >> instSize [
+	^ self mirror target instSize
 ]
 
 { #category : #'accessing-specialInstVars' }

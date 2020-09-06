@@ -697,6 +697,12 @@ EP2Backend >> initializeTempsInStackOfContext: anEP2RemoteContext [
 ]
 
 { #category : #'querying-objects' }
+EP2Backend >> instSizeOfClass: anEP2Mirror [ 
+	
+	^ self simulator objectMemory instanceSizeOf: anEP2Mirror target address
+]
+
+{ #category : #'querying-objects' }
 EP2Backend >> instSpecOfClass: anEP2Mirror [ 
 	
 	^ self simulator objectMemory instSpecOfClass: anEP2Mirror target address

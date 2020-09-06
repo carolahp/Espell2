@@ -10,13 +10,13 @@ EP2RemotePoint class >> layoutClass [
 ]
 
 { #category : #constants }
-EP2RemotePoint class >> modelInstSpec [
-	^ 1
+EP2RemotePoint class >> modelAllInstVarNames [ 
+	^ #(#x #y) 
 ]
 
 { #category : #constants }
-EP2RemotePoint class >> modelInstVarNames [ 
-	^ #(#x #y) 
+EP2RemotePoint class >> modelInstSpec [
+	^ 1
 ]
 
 { #category : #constants }

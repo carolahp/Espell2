@@ -25,13 +25,13 @@ EP2RemoteContext class >> layoutClass [
 ]
 
 { #category : #constants }
-EP2RemoteContext class >> modelInstSpec [
-	^ 3
+EP2RemoteContext class >> modelAllInstVarNames [ 
+	^ #(#sender #pc #stackp #method #closureOrNil #receiver)
 ]
 
 { #category : #constants }
-EP2RemoteContext class >> modelInstVarNames [ 
-	^  #(#sender #pc #stackp #method #closureOrNil #receiver)
+EP2RemoteContext class >> modelInstSpec [
+	^ 3
 ]
 
 { #category : #constants }

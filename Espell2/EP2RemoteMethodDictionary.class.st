@@ -10,6 +10,12 @@ EP2RemoteMethodDictionary class >> layoutClass [
 ]
 
 { #category : #constants }
+EP2RemoteMethodDictionary class >> modelAcceptsExtraInstVars [
+	"inst vars in method dictionary must be exactly #(tally array), the user can't add more"
+	^false
+]
+
+{ #category : #constants }
 EP2RemoteMethodDictionary class >> modelInstSpec [
 	^ 3
 ]
@@ -214,16 +220,20 @@ EP2RemoteMethodDictionary >> test [
 	self
 		assert: (self backend fetchPointer: 2 ofObject: self)
 		equals: self array.
+	" tally must save the number of elements in the dictionary "
 	self
 		assert: self tally asLocalSmallInteger
 		equals: self arrayWithoutNils size.
+	" One slot for array, one for tally and one for the selector of each element in array (including nils)"
+	self
+		assert: (self objectSpace objectMemory numSlotsOf: self target address)
+		equals: self array size + 2.
 	self array
-		doWithIndex: [:meth :index | 
+		doWithIndex: [ :meth :index | 
 			| method |
 			method := meth asRemoteCompiledMethod.
 			method isNotNilObject
-				ifTrue: [ 
-					self
+				ifTrue: [ self
 						assert: method remoteSelector target address
-						equals: (self backend fetchPointer: index + 4 ofObject: self) target address ] ]
+						equals: (self backend fetchPointer: index + 2 ofObject: self) target address ] ]
 ]
