@@ -43,10 +43,17 @@ EP2MClass >> allInstVarNames [
 
 { #category : #'accessing slots' }
 EP2MClass >> allSlots [
-	^ self layout allSlots
+	^ self layout ifNil: [ #() ] ifNotNil: [:layo | layo allSlots ]
 	"^ self superclass
 		ifNil: [ self slots ]
 		ifNotNil: [ self superclass allSlots , self slots ]"
+]
+
+{ #category : #querying }
+EP2MClass >> allSubclasses [
+	^ (self parent allClasses
+		reject: [ :class | class = self ]) 
+		select: [ :class | class superclass = self ]
 ]
 
 { #category : #exporting }
@@ -107,20 +114,20 @@ EP2MClass >> defaultMethodDictionary [
 
 { #category : #initialization }
 EP2MClass >> extendWithMonticello: aMCClassDefinition [
-	"An existent class stub is extended with a definition read from Monticello.
-	Restrictions should apply here for classes with VM restrictions, therefore, 
-	tests should be applied after the modification in each case"
-
-	| mcDef instVarsDefs superclassName |
+	"An existent class is extended with a definition read from Monticello.
+	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we test the class at the end"
+	| mcDef instVarsDefs |
 	mcDef := aMCClassDefinition.
+	self superclass:
+			(mcDef superclassName = #nil
+				ifTrue: [ nil ]
+				ifFalse: [ self parent ensureClassNamed: mcDef superclassName ]).
+	self setLayoutKeepingSlots: (mcDef espell2LayoutType on: self).
 	instVarsDefs := (mcDef variables
 		select: [ :var | var class type = #instance ])
 		reject: [ :var | (self allInstVarNames indexOf: var name) > 0 ].
 	instVarsDefs do: [ :each | self addSlot: each name ].
-	superclassName := self superclass ifNil:[#nil] ifNotNil:[:sc |sc name].
-	superclassName = mcDef superclassName
-		ifFalse: [ self halt ].
-	self test.
+	" we can't test yet since not all classes have been loaded "
 	^ self
 ]
 
@@ -497,9 +504,23 @@ EP2MClass >> remoteSystemDictionary [
 	^ self parent remote espellBackend objectSpace systemDictionary
 ]
 
+{ #category : #'accessing slots' }
+EP2MClass >> removeSlot: aString [ 
+	^ self layout removeSlot: aString
+		
+]
+
 { #category : #accessing }
 EP2MClass >> role [
 	^ template ifNil: [ nil ] ifNotNil: [ template role ]
+]
+
+{ #category : #accessing }
+EP2MClass >> setLayoutKeepingSlots: anEP2Layout [
+	| oldSlots |
+	oldSlots := self layout ifNil: [#()] ifNotNil: [self slots].
+	self layout: anEP2Layout.
+	oldSlots do: [ :slot | self addSlot: slot name ]
 ]
 
 { #category : #'accessing compiler' }
@@ -560,11 +581,11 @@ EP2MClass >> test [
 EP2MClass >> testFormat [
 	self template
 		ifNotNil: [ :temp | 
-			| myInstSpec goodInstSpec |
+			| myInstSpec correctInstSpec |
 			myInstSpec := self instSpec.
-			goodInstSpec := temp modelInstSpec.
+			correctInstSpec := temp modelInstSpec.
 			self
-				assert: (myInstSpec = goodInstSpec or: (goodInstSpec = 1 and: myInstSpec = 0))
+				assert: (myInstSpec = correctInstSpec or: (correctInstSpec = 1 and: myInstSpec = 0))
 				description:
 					'Wrong inst spec in class "' , self name , '" (role "' , self role
 						, '"). It should be ' , temp modelInstSpec asString

@@ -116,23 +116,24 @@ EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject 
 
 { #category : #'accessing backend' }
 EP2MLanguage >> addBehavior: aMClass [
-	self classNamed: aMClass name ifAbsent: [ 
-		aMClass test.
-		self behaviors at: aMClass name put: aMClass ] ifPresent: [  ]
+	self
+		classNamed: aMClass name
+		ifAbsent: [ aMClass test.
+			self behaviors at: aMClass name put: aMClass ]
+		ifPresent: [ :found | 
+			aMClass = found
+				ifFalse: [ self error: 'trying to replace existent behavior' ]
+				ifTrue: [ found ] ]
 ]
 
 { #category : #'accessing backend' }
 EP2MLanguage >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
 	| newClass mcDef |
 	mcDef := aMCClassDefinition.
-	self
-		classNamed: aMCClassDefinition className
-		ifAbsent: [ 
-			newClass := self newBehaviorFromMonticelloDefinition: aMCClassDefinition.
-			self addBehavior: newClass ]
-		ifPresent: [ :found | 
-			newClass := found extendWithMonticello: mcDef ].
+	newClass := self ensureClassNamed: aMCClassDefinition className.
+	newClass extendWithMonticello: mcDef.
 	^ newClass
+	
 ]
 
 { #category : #'accessing globals' }
@@ -144,9 +145,10 @@ EP2MLanguage >> addGlobalVariable: anEP2MGlobalVariable [
 EP2MLanguage >> addMethodFromMonticelloDefinition: aMCMethodDefinition [ 
 	| methodDef classDef mcDef |
 	mcDef := aMCMethodDefinition.
+	self haltIf: classDef = 'Context'.
 	classDef := self ensureClassNamed: mcDef className.
 	methodDef := self class methodMetaclass named: mcDef selector parent: classDef.
-	methodDef initializeWithMonticello: mcDef.
+	methodDef extendWithMonticello: mcDef.
 	classDef addLocalMethod: methodDef.
 	^ methodDef
 ]
@@ -389,6 +391,20 @@ EP2MLanguage >> classWithRole: aString [
 	^ self classNamedExactly: (self classRoles at: aString ifAbsent: [ aString ])
 ]
 
+{ #category : #cleaning }
+EP2MLanguage >> cleanInstVars [
+	" we remove duplicated inst vars due to missmatch between the basic espell classes definitions and the definitions found in Tonel repository"
+	self allClasses do: [ :class | 
+		| toRemove |
+		toRemove := #() asOrderedCollection.
+		class slots do: [ :slot | 
+			class superclass ifNotNil: [ :superclass | 
+				(superclass allSlots contains: [:s | s name = slot name]) ifTrue: [ toRemove add: slot name ] ] ].
+		toRemove do: [ :slot | class removeSlot: slot ]
+		 ]
+
+]
+
 { #category : #'default model values' }
 EP2MLanguage >> defaultBehaviors [
 	
@@ -429,14 +445,34 @@ EP2MLanguage >> destroy [
 ]
 
 { #category : #'creating classes' }
-EP2MLanguage >> ensureClassNamed: aString [ 
-	^ self classNamed: aString ifAbsent: [ self halt. ]
+EP2MLanguage >> ensureClassNamed: aString [
+	^ self
+		classNamed: aString
+		ifAbsent: [ | newBeh |
+			newBeh := self class classMetaclass named: aString parent: self.
+			self addBehavior: newBeh.
+			newBeh ]
 ]
 
-{ #category : #'accessing packages' }
+{ #category : #'accessing backend' }
 EP2MLanguage >> ensurePackageNamed: aString [ 
 	"considering only one package for the moment"
 	^ self packages anyOne
+]
+
+{ #category : #'tonel repository' }
+EP2MLanguage >> exportAsTonelRepository: aFileReference [ 
+	
+	(self packages select: [:pkg | pkg isNotEmpty]) do: [ :aPackage |
+		| aSnapshot info aVersion |
+		aSnapshot := aPackage asMCSnapshot.
+
+		info := MCVersionInfo new.
+		info instVarNamed: #name put: aPackage name, '-author'.
+		aVersion := MCVersion package: (MCPackage new name: aPackage name) info: info snapshot: aSnapshot dependencies: #().
+		TonelWriter 
+			fileOut: (aVersion)
+			on: aFileReference ]
 ]
 
 { #category : #'vm-constants' }
@@ -669,14 +705,15 @@ EP2MLanguage >> loadTonelRepository: aFileReference [
 	tonel := TonelRepository new
 		directory: aFileReference asFileReference. 
 	packagesNames := tonel packageDescriptionsFromReadableFileNames collect: [:each | each at: 1].
-	self assert: packagesNames size > 0 description: 'The repository is empty'.
+	self assert: packagesNames isNotEmpty description: 'The repository is empty'.
 	packagesNames	do: [ :pn | | package snap version |
 			package := self ensurePackageNamed: pn.
 			version := tonel versionWithInfo: (tonel versionInfoFromVersionNamed: pn).
 			snap := version snapshot.
-			snap definitions do: [ :each | 
+			snap definitions do: [ :each |
 				each ensureEspellDefinitionIn: self package: package
 			 ]].
+	self cleanInstVars.
 	self test.
 ]
 
@@ -707,6 +744,7 @@ EP2MLanguage >> methodBuilder [
 
 { #category : #'accessing backend' }
 EP2MLanguage >> newBehaviorFromMonticelloDefinition: aMCClassDefinition [.
+	self deprecated: 'use extendWithMonticello: instead'.
 	^ (self class classMetaclass
 				named: aMCClassDefinition className
 				parent: self) 
@@ -719,14 +757,11 @@ EP2MLanguage >> newBehaviorFromTemplate: aClassEP2Remote [
 	| template model modelName |
 	template := aClassEP2Remote.
 	modelName := self classRoles at: template role.
-	model := self
-		classNamed: modelName
-		ifAbsent: [ self class classMetaclass named: modelName parent: self ].
+	model := self ensureClassNamed: modelName.
 	model template: template.
 	model layout: (template layoutClass on: model).
 	template modelInstVarNames do: [:ivname | model addSlot: ivname ].
 	self packages anyOne addDefinedBehavior: model.
-
 	^ model
 ]
 
@@ -826,7 +861,7 @@ EP2MLanguage >> roleOfClass: anOLClass [
 	^ [ self classRoles keyAtValue: anOLClass name ] on: ValueNotFound do: [ nil ]
 ]
 
-{ #category : #'accessing classes' }
+{ #category : #'class roles' }
 EP2MLanguage >> roleOfClassNamed: aString [ 
 	^ [self classRoles keyAtValue: aString]
 		on: ValueNotFound 
@@ -858,19 +893,4 @@ EP2MLanguage >> test [
 { #category : #bootstrap }
 EP2MLanguage >> writeImage [
 	^ [builder writeImage] ensure: [ builder destroy ]
-]
-
-{ #category : #exporting }
-EP2MLanguage >> writeIntoTonel: aFileReference [ 
-	
-	(self packages select: [:pkg | pkg isEmpty not]) do: [ :aPackage |
-		| aSnapshot info aVersion |
-		aSnapshot := aPackage asMCSnapshot.
-
-		info := MCVersionInfo new.
-		info instVarNamed: #name put: aPackage name, '-author'.
-		aVersion := MCVersion package: (MCPackage new name: aPackage name) info: info snapshot: aSnapshot dependencies: #().
-		TonelWriter 
-			fileOut: (aVersion)
-			on: aFileReference ]
 ]

@@ -173,8 +173,8 @@ EP2SpurImage >> specialObjectsArray [
 { #category : #testing }
 EP2SpurImage >> test [
 	self testClasses.
-	self testMethods.
-	self testProcess
+	"self testMethods.
+	self testProcess"
 ]
 
 { #category : #testing }

@@ -8,6 +8,15 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #testing }
+EP2MSlot >> = other [
+	"Every subclass that adds state must redefine this method"
+	self == other
+		ifTrue: [ ^ true ].
+	^ (self species == other species) 
+			and: [ name = other name ]
+]
+
 { #category : #writing }
 EP2MSlot >> accept: anInterpreter assign: aValue inNode: aVariableNode [
 	^ anInterpreter write: aValue at: self index named: self name

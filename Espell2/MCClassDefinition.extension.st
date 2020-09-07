@@ -17,14 +17,14 @@ MCClassDefinition >> ensureEspellDefinitionIn: aEP2MLanguage package: anEP2MPack
 
 { #category : #'*Espell2' }
 MCClassDefinition >> espell2LayoutType [
-
+	
 	^ (Dictionary newFrom: {	
 		#compiledMethod -> EP2CompiledMethodLayout. 
 		#bytes -> EP2ByteLayout. 
 		#immediate -> EP2ImmediateLayout. 
 		#words -> EP2WordLayout. 
 		#week -> EP2WeakLayout.
-		#variable -> EP2VariableLayout.
+		#variable -> (self instVarNames isEmpty ifTrue: EP2VariableLayout ifFalse: EP2VariableWithInstVarsLayout).
 		"#ephemeron -> EP2EphemeronLayout."
 		#normal -> EP2FixedLayout.
 		#weak -> EP2WeakLayout.

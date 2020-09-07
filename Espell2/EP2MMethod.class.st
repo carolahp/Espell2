@@ -37,24 +37,25 @@ EP2MMethod >> author: aString [
 ]
 
 { #category : #initialization }
+EP2MMethod >> extendWithMonticello: aMCMethodDefinition [
+	| mcDef |
+	mcDef := aMCMethodDefinition.
+	self
+		sourceCode: mcDef source;
+		selector: mcDef selector	";
+	  Variable or expression expected ->author: (mcDef authorForStamp: mcDef timeStamp);
+	 time: (mcDef timeForStamp: mcDef timeStamp)"
+
+	"protocol := self parent ensureProtocolNamed: mcDef category asSymbol.
+	self protocol: protocol"
+]
+
+{ #category : #initialization }
 EP2MMethod >> initializeWithLocal: aCompiledMethod [ 
 	^ self 
 		sourceCode: aCompiledMethod sourceCode;
 		selector: aCompiledMethod selector;
 		yourself
-]
-
-{ #category : #initialization }
-EP2MMethod >> initializeWithMonticello: aMCMethodDefinition [ 
-	| mcDef |
-	mcDef := aMCMethodDefinition.
-	self sourceCode: mcDef source;
-	 selector: mcDef selector";
-	 author: (mcDef authorForStamp: mcDef timeStamp);
-	 time: (mcDef timeForStamp: mcDef timeStamp)"
-	
-	"protocol := self parent ensureProtocolNamed: mcDef category asSymbol.
-	self protocol: protocol"
 ]
 
 { #category : #marking }

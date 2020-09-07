@@ -58,6 +58,11 @@ EP2MPackage >> isEmpty [
 	^ self definedBehaviors isEmpty
 ]
 
+{ #category : #testing }
+EP2MPackage >> isNotEmpty [
+	^ self definedBehaviors size > 0
+]
+
 { #category : #printing }
 EP2MPackage >> printOn: aStream [
 	aStream 

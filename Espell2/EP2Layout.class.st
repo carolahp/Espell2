@@ -295,6 +295,10 @@ EP2Layout >> slotNamed: aString [
 
 { #category : #'accessing - slots' }
 EP2Layout >> slots [
+	"| result |
+	result := #() asOrderedCollection.
+	self slotsDo: [ :slot |  result add: slot ].
+	^ result"
 	^ slots
 ]
 
