@@ -28,6 +28,16 @@ MExplicitMetaclassesClass >> initializeWithTemplateCustom: aTemplate [
 	self metaclass: self parent classMetaclass.
 ]
 
+{ #category : #'stubs creation' }
+MExplicitMetaclassesClass >> installStubCustom [
+	self metaclass = self
+		ifTrue: [ ^ self installMetacircularStub ].
+	"first install the stub of my metaclass"
+	self metaclass installStub.
+	"instantiate my metaclass to create a stub of me"
+	^ self metaclass newStubWithFormat: self format
+]
+
 { #category : #accessing }
 MExplicitMetaclassesClass >> metaclass [
 	^ metaclass

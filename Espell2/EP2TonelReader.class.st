@@ -1,7 +1,10 @@
 Class {
 	#name : #EP2TonelReader,
 	#superclass : #TonelReader,
-	#category : #Espell2
+	#instVars : [
+		'metamodel'
+	],
+	#category : #'Espell2-Tonel'
 }
 
 { #category : #accessing }
@@ -23,11 +26,6 @@ EP2TonelReader class >> definitionOrders [
 ]
 
 { #category : #accessing }
-EP2TonelReader class >> extension [ 
-	^ 'metal'
-]
-
-{ #category : #accessing }
 EP2TonelReader class >> isAbstract [ 
 	^ false
 ]
@@ -39,7 +37,7 @@ EP2TonelReader >> loadDefinitions [
 	definitionOrders := self class definitionOrders.
 	newDefinitions := ((self packageDirectory entries
 		select: [ :each | self canBeLoaded: each ]) 
-		collect: [ :each | each readStreamDo: [ :s | EP2TonelParser parseStream: s ] ])
+		collect: [ :each | each readStreamDo: [ :s | EP2TonelParser parseStream: s metamodel: self metamodel ] ])
 		flattened
 		sort: [ :a :b | (definitionOrders at: a class) < (definitionOrders at: b class) ].
 
@@ -49,4 +47,14 @@ EP2TonelReader >> loadDefinitions [
 	organization := MCOrganizationDefinition categories: newCategories.
 	
 	definitions := (newDefinitions copyWithFirst: organization) sort
+]
+
+{ #category : #accessing }
+EP2TonelReader >> metamodel [
+	^ metamodel
+]
+
+{ #category : #accessing }
+EP2TonelReader >> metamodel: anEP2MLanguage [  
+	metamodel := anEP2MLanguage
 ]

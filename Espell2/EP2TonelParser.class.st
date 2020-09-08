@@ -1,18 +1,37 @@
 Class {
 	#name : #EP2TonelParser,
 	#superclass : #TonelParser,
-	#category : #Espell2
+	#instVars : [
+		'metamodel'
+	],
+	#category : #'Espell2-Tonel'
 }
+
+{ #category : #instantiation }
+EP2TonelParser class >> parseStream: aStream metamodel: anEP2MLanguage [
+	^ (self on: aStream)
+		metamodel: anEP2MLanguage;
+		start
+]
+
+{ #category : #accessing }
+EP2TonelParser >> metamodel [
+	^ metamodel
+]
+
+{ #category : #accessing }
+EP2TonelParser >> metamodel: anOLObjVLisp [ 
+	metamodel := anOLObjVLisp
+]
 
 { #category : #'private factory' }
 EP2TonelParser >> newClassDefinitionFrom: anArray [
 	| metadata class |
+
 	metadata := anArray sixth.
 	class := EP2MCClassDefinition
 		name: (metadata at: #name)
 		superclassName: (metadata at: #superclass)
-		traitComposition: (metadata at: #traits ifAbsent: [ '{}' ])
-		classTraitComposition: (metadata at: #classTraits ifAbsent: [ '{}' ])
 		category: (metadata at: #category)
 		instVarNames: (metadata at: #instVars ifAbsent: [ #() ])
 		classVarNames: (metadata at: 'classVars' ifAbsent: [ #() ])
@@ -24,6 +43,6 @@ EP2TonelParser >> newClassDefinitionFrom: anArray [
 	
 	(metadata keys
 		reject: [ :key | (#(name superclass traits classTraits category instVars classVars pools classInstVars type) indexOf: key) > 0 ])
-		do: [ : key | class instVarNamed: key put: (metadata at: key ifAbsent: ['']) ].
+		do: [ : key | class extraInstVarNamed: key put: (metadata at: key ifAbsent: ['']) ].
 	^ class
 ]

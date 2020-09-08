@@ -134,7 +134,7 @@ EP2MClass >> extendWithMonticello: aMCClassDefinition [
 		reject: [ :var | (self allInstVarNames indexOf: var name) > 0 ].
 	instVarsDefs do: [ :each | self addSlot: each name ].
 	"role"
-	mcDef role
+	(mcDef extraInstVarNamed: #role)
 		ifNotNil: [ self role ~= mcDef role
 				ifTrue: [ self halt ] ].
 	" we can't test yet since not all classes have been loaded "
@@ -245,8 +245,8 @@ EP2MClass >> initializeWithTemplate: aTemplateClass [
 	self haltIf:[superclassName = self name].
 	self
 		superclass: superclassModel.
-	self test.
 	self initializeWithTemplateCustom: aTemplateClass.
+	self test.
 	^ self
 ]
 
