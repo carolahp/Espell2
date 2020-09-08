@@ -25,7 +25,7 @@ EP2MLanguageBackend >> addSlot: aString to: aLayout [
 				definingClass: aLayout remote;
 				yourself
 				 ]
-		ifFalse: [ self halt ].
+		ifFalse: [ self error: 'Implementation supports only Instance variable slots' ].
 	newSlot index: aLayout allSlots size + 1.
 	aLayout slots add: newSlot.
 	^ newSlot

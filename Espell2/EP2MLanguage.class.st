@@ -390,16 +390,27 @@ EP2MLanguage >> classWithRole: aString [
 
 { #category : #cleaning }
 EP2MLanguage >> cleanInstVars [
-	" we remove duplicated inst vars due to missmatch between the basic espell classes definitions and the definitions found in Tonel repository"
-	self allClasses do: [ :class | 
-		| toRemove |
-		toRemove := #() asOrderedCollection.
-		class slots do: [ :slot | 
-			class superclass ifNotNil: [ :superclass | 
-				(superclass allSlots contains: [:s | s name = slot name]) ifTrue: [ toRemove add: slot name ] ] ].
-		toRemove do: [ :slot | class removeSlot: slot ]
-		 ]
-
+	| toRemove |
+	toRemove := #() asOrderedCollection.
+	" we remove duplicated inst vars due to missmatch between the basic espell classes definitions and the definitions found in Tonel repository"			
+	self allClasses
+		do: [ :class | 
+			class slots
+				do: [ :slot | 
+					class superclass
+						ifNotNil: [ :superclass | 
+							(superclass allSlots contains: [ :s | s name = slot name ])
+								ifTrue: [ toRemove add: slot name ] ] ].
+			toRemove do: [ :slot | class removeSlot: slot ] .
+			toRemove removeAll].
+	" we recalculate the index of all slots "
+	self allClasses
+		do: [ :class |
+			| index | 
+			index := (class superclass
+				ifNotNil: [ :superclass | superclass allSlots size ]
+				ifNil: [ 0 ]).
+			class slots do: [ :slot | slot index: (index := index + 1) ] ]
 ]
 
 { #category : #'default model values' }
