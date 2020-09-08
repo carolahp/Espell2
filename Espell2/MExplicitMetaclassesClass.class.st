@@ -41,7 +41,7 @@ MExplicitMetaclassesClass >> metaclass: anObject [
 { #category : #accessing }
 MExplicitMetaclassesClass >> test [ 
 	super test.
-	self assert: self metaclass isNotNil.
-	self assert: self metaclass layout isFixedLayout
+	self assert: metaclass isNotNil.
+	self assert: metaclass layout isFixedLayout
 
 ]

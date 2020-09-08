@@ -634,6 +634,11 @@ EP2MClass >> testRemote [
 ]
 
 { #category : #testing }
+EP2MClass >> testRemoteStub [
+	self remote testStub
+]
+
+{ #category : #testing }
 EP2MClass >> testVMInstanceVariables [
 	self template modelAllInstVarNames
 		doWithIndex: [ :ivName :index | 

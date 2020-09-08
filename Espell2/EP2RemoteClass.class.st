@@ -402,7 +402,7 @@ EP2RemoteClass >> testStub [
 	self assert: self format isNilObject not.
 	myIndex := self classTableIndex.
 	self assert: self target address equals: (self backend objectMemory classAtIndex: myIndex).	
-
+	self assert: self asClassDefinition format equals: self format asLocalSmallInteger.
 	existentIndexes := ((self backend builder bootstrapEnvironment allClasses) collect: [ :remoteClasss | remoteClasss classTableIndex ]) values.
 	existentIndexes := existentIndexes select: [ :index | index = myIndex ].
 	self assert: existentIndexes size = 1 description: 'Index ', myIndex asString, ' appears twice in the class table' 
