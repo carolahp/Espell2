@@ -19,8 +19,7 @@ Class {
 		'layout',
 		'template',
 		'superclass',
-		'methodDict',
-		'metaClass'
+		'methodDict'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -127,13 +126,6 @@ EP2MClass >> extendWithMonticello: aMCClassDefinition [
 			(mcDef superclassName = #nil
 				ifTrue: [ nil ]
 				ifFalse: [ self parent ensureClassNamed: mcDef superclassName ]).
-
-	"metaclass"
-	self
-		metaclass:
-			(mcDef metaclass
-				ifNotNil: [ self parent ensureClassNamed: mcDef metaclass ]
-				ifNil: [ self parent classMetaclass ]).
 	"layout"
 	self setLayoutKeepingSlots: (mcDef espell2LayoutType on: self).
 	"instance variables"
@@ -146,7 +138,13 @@ EP2MClass >> extendWithMonticello: aMCClassDefinition [
 		ifNotNil: [ self role ~= mcDef role
 				ifTrue: [ self halt ] ].
 	" we can't test yet since not all classes have been loaded "
+	self extendWithMonticelloCustom: mcDef.
 	^ self
+]
+
+{ #category : #hooks }
+EP2MClass >> extendWithMonticelloCustom: aMCClassDefinition [
+	self subclassResponsibility 
 ]
 
 { #category : #accessing }
@@ -247,12 +245,17 @@ EP2MClass >> initializeWithTemplate: aTemplateClass [
 	self haltIf:[superclassName = self name].
 	self
 		superclass: superclassModel.
-	self metaclass: self parent classMetaclass.
 	self test.
+	self initializeWithTemplateCustom: aTemplateClass.
 	^ self
 ]
 
-{ #category : #bindings }
+{ #category : #initialization }
+EP2MClass >> initializeWithTemplateCustom: aTemplateClass [.
+	self subclassResponsibility 
+]
+
+{ #category : #hooks }
 EP2MClass >> innerBindingOf: aSymbol [ 
 	self subclassResponsibility 
 ]
@@ -277,8 +280,9 @@ EP2MClass >> instVarNames [
 	^ self slots collect: #name
 ]
 
-{ #category : #'installing stubs' }
-EP2MClass >> installMetaclassStub [
+{ #category : #'api - stubs creation' }
+EP2MClass >> installMetacircularStub [
+	"I install a class stub that is instance of itself"
 	| theNewMetaclass metaclassIndex |
 	" If the metaclass was already created, it will be found in the bootstrapEnvironment dictionary "
 	self remote isNilObject
@@ -310,27 +314,26 @@ EP2MClass >> installMethods [
 			self remote methodDictionary test]
 ]
 
-{ #category : #'installing stubs' }
+{ #category : #'stubs creation' }
 EP2MClass >> installStub [
-	| newClass remoteMetaclassClass |
+	" I install the stub of my corresponding class in the kernel.
+	I depend on the implementation of installStubCustom "
+	| newClass |
 	self remote isNilObject
 		ifFalse: [ ^ self ].
-		
-	"this is the class with role metaclass installed in the kernel"
-	remoteMetaclassClass := self metaclass remote.
-	remoteMetaclassClass isNilObject
-		ifTrue: [ "install the metaclass"
-			remoteMetaclassClass := self metaclass installMetaclassStub ].
-	newClass := remoteMetaclassClass basicNew asRemoteMetaclass
-		initialize.
-	newClass format: self format.
-	newClass setHashBitsTo: self classLoader newClassIndex.
+	newClass := self installStubCustom.
 	self classLoader
 		registerClass: newClass
 		definition: self
 		fullyLoaded: false.
 	newClass testStub.
 	^ newClass
+]
+
+{ #category : #'stubs creation' }
+EP2MClass >> installStubCustom [
+	"Using method from protocol 'api-stubs creation' create your own stub and return it"
+	self subclassResponsibility
 ]
 
 { #category : #'accessing compiler' }
@@ -448,16 +451,6 @@ EP2MClass >> mcType [
 	^ self layout mcType
 ]
 
-{ #category : #'accessing-backend' }
-EP2MClass >> metaclass [
-	^ metaClass
-]
-
-{ #category : #'metaclass setting' }
-EP2MClass >> metaclass: aMObjVLispClass [ 
-	metaClass := aMObjVLispClass 
-]
-
 { #category : #'accessing backend' }
 EP2MClass >> methodBuilder [
 	^ self parent methodBuilder
@@ -485,6 +478,18 @@ EP2MClass >> methodNamed: aString ifAbsent: aBlock [
 { #category : #accessing }
 EP2MClass >> methods [
 	^ self methodDict values asArray
+]
+
+{ #category : #'api - stubs creation' }
+EP2MClass >> newStubWithFormat: anInteger [
+	" Only valid for metaclasses. 
+	I create a new class stub in the kernel by instantiating myself "
+	| newClass |
+	self assert: (self remote isNotNil and: [self remote isNotNilObject]).
+	newClass := self remote basicNew asRemoteMetaclass initialize.
+	newClass format: anInteger.
+	newClass setHashBitsTo: self classLoader newClassIndex.
+	^ newClass
 ]
 
 { #category : #marking }
@@ -599,10 +604,7 @@ EP2MClass >> template: aClass [
 { #category : #hooks }
 EP2MClass >> test [
 	self template ifNotNil: [ self testVMInstanceVariables. self testFormat ].
-	self assert: self metaclass isNotNil.
-	self assert: self layout isNotNil.
-	self assert: self metaclass layout isFixedLayout
-
+	self assert: self layout isNotNil
 ]
 
 { #category : #testing }

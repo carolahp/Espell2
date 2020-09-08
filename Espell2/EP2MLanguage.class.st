@@ -64,20 +64,17 @@ EP2MLanguage class >> defaultPackagesListFull [
 
 { #category : #'hooks-api' }
 EP2MLanguage class >> indexedSlotMetaclass [
-	" Return the subclass of EP2MSlot that defines the metamodel for slots of the language "
-	self subclassResponsibility 
+	^ EP2MIndexedSlot
 ]
 
 { #category : #'hooks-api' }
 EP2MLanguage class >> instanceVariableSlotMetaclass [
-	" Return the subclass of EP2MSlot that defines the metamodel for slots of the language "
-	self subclassResponsibility 
+	^ EP2MInstanceVariableSlot 
 ]
 
 { #category : #'hooks-api' }
-EP2MLanguage class >> methodMetaclass [
-	" Return the subclass of EP2MMethod that defines the metamodel for slots of the language "
-	self subclassResponsibility 
+EP2MLanguage class >> methodMetaclass [ 
+	^ EP2MMethod
 ]
 
 { #category : #'hooks-dynamic method loading' }
