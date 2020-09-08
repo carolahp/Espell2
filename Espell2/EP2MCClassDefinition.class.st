@@ -2,6 +2,7 @@ Class {
 	#name : #EP2MCClassDefinition,
 	#superclass : #MCClassDefinition,
 	#instVars : [
+		'role',
 		'extraInstVarsDict'
 	],
 	#category : #'Espell2-Tonel'
@@ -26,4 +27,14 @@ EP2MCClassDefinition >> extraInstVarsDict [
 EP2MCClassDefinition >> initialize [ 
 	super initialize.
 	extraInstVarsDict := IdentityDictionary new
+]
+
+{ #category : #accessing }
+EP2MCClassDefinition >> role [
+	^ role
+]
+
+{ #category : #accessing }
+EP2MCClassDefinition >> role: anObject [
+	role := anObject
 ]

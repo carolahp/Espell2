@@ -14,12 +14,14 @@ Class {
 { #category : #accessing }
 MExplicitMetaclassesClass >> extendWithMonticelloCustom: aMCClassDefinition [ 
 	"metaclass"
-	| mcDef |
+	| mcDef metaclassDef |
+	
 	mcDef := aMCClassDefinition.
+	metaclassDef := mcDef extraInstVarNamed: #metaclass. 
 	self
 		metaclass:
-			(mcDef metaclass
-				ifNotNil: [ self parent ensureClassNamed: mcDef metaclass ]
+			(metaclassDef
+				ifNotNil: [ self parent ensureClassNamed: metaclassDef ]
 				ifNil: [ self parent classMetaclass ]).
 ]
 

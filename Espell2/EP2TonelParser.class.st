@@ -41,6 +41,8 @@ EP2TonelParser >> newClassDefinitionFrom: anArray [
 		comment: (anArray second ifNil: [ '' ])
 		commentStamp: nil.
 	
+	class role: (metadata at: #role ifAbsent: [ nil ]).
+	
 	(metadata keys
 		reject: [ :key | (#(name superclass traits classTraits category instVars classVars pools classInstVars type) indexOf: key) > 0 ])
 		do: [ : key | class extraInstVarNamed: key put: (metadata at: key ifAbsent: ['']) ].
