@@ -118,7 +118,7 @@ EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject 
 EP2MLanguage >> addBehavior: aMClass [
 	self
 		classNamed: aMClass name
-		ifAbsent: [ aMClass test.
+		ifAbsent: [ 
 			self behaviors at: aMClass name put: aMClass ]
 		ifPresent: [ :found | 
 			aMClass = found
@@ -702,8 +702,9 @@ EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 { #category : #'tonel repository' }
 EP2MLanguage >> loadTonelRepository: aFileReference [
 	| tonel packagesNames  | 
-	tonel := TonelRepository new
-		directory: aFileReference asFileReference. 
+	tonel := EP2TonelRepository new
+		directory: aFileReference asFileReference;
+		metamodel: self. 
 	packagesNames := tonel packageDescriptionsFromReadableFileNames collect: [:each | each at: 1].
 	self assert: packagesNames isNotEmpty description: 'The repository is empty'.
 	packagesNames	do: [ :pn | | package snap version |

@@ -19,7 +19,8 @@ Class {
 		'layout',
 		'template',
 		'superclass',
-		'methodDict'
+		'methodDict',
+		'metaClass'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -116,17 +117,34 @@ EP2MClass >> defaultMethodDictionary [
 EP2MClass >> extendWithMonticello: aMCClassDefinition [
 	"An existent class is extended with a definition read from Monticello.
 	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we test the class at the end"
+
 	| mcDef instVarsDefs |
 	mcDef := aMCClassDefinition.
-	self superclass:
+
+	"superclass"
+	self
+		superclass:
 			(mcDef superclassName = #nil
 				ifTrue: [ nil ]
 				ifFalse: [ self parent ensureClassNamed: mcDef superclassName ]).
+
+	"metaclass"
+	self
+		metaclass:
+			(mcDef metaclass
+				ifNotNil: [ self parent ensureClassNamed: mcDef metaclass ]
+				ifNil: [ self parent classMetaclass ]).
+	"layout"
 	self setLayoutKeepingSlots: (mcDef espell2LayoutType on: self).
+	"instance variables"
 	instVarsDefs := (mcDef variables
 		select: [ :var | var class type = #instance ])
 		reject: [ :var | (self allInstVarNames indexOf: var name) > 0 ].
 	instVarsDefs do: [ :each | self addSlot: each name ].
+	"role"
+	mcDef role
+		ifNotNil: [ self role ~= mcDef role
+				ifTrue: [ self halt ] ].
 	" we can't test yet since not all classes have been loaded "
 	^ self
 ]
@@ -229,6 +247,7 @@ EP2MClass >> initializeWithTemplate: aTemplateClass [
 	self haltIf:[superclassName = self name].
 	self
 		superclass: superclassModel.
+	self metaclass: self parent classMetaclass.
 	self test.
 	^ self
 ]
@@ -431,7 +450,12 @@ EP2MClass >> mcType [
 
 { #category : #'accessing-backend' }
 EP2MClass >> metaclass [
-	^ self parent classMetaclass
+	^ metaClass
+]
+
+{ #category : #'metaclass setting' }
+EP2MClass >> metaclass: aMObjVLispClass [ 
+	metaClass := aMObjVLispClass 
 ]
 
 { #category : #'accessing backend' }
@@ -574,7 +598,11 @@ EP2MClass >> template: aClass [
 
 { #category : #hooks }
 EP2MClass >> test [
-	self template ifNotNil: [ self testVMInstanceVariables. self testFormat ]
+	self template ifNotNil: [ self testVMInstanceVariables. self testFormat ].
+	self assert: self metaclass isNotNil.
+	self assert: self layout isNotNil.
+	self assert: self metaclass layout isFixedLayout
+
 ]
 
 { #category : #testing }

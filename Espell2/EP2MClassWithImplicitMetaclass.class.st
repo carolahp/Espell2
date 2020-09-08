@@ -28,8 +28,8 @@ EP2MClassWithImplicitMetaclass >> initializeWithTemplate: aTemplateClass [
 	"check if we are installing the class with role Class (it is the only class which is instance of itself)"
 	self flag:'implenent this'.
 	(aTemplateClass role = 'Metaclass') 
-		ifTrue: [ metaclass := self ]
-		ifFalse: [ metaclass := parent classMetaclass ].
+		ifTrue: [ metaClass := self ]
+		ifFalse: [ metaClass := parent classMetaclass ].
 	
 	^ self
 ]
