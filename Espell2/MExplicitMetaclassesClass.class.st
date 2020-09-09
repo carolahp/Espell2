@@ -17,7 +17,7 @@ MExplicitMetaclassesClass >> extendWithMonticelloCustom: aMCClassDefinition [
 	| mcDef metaclassDef |
 	
 	mcDef := aMCClassDefinition.
-	metaclassDef := mcDef extraInstVarNamed: #metaclass. 
+	metaclassDef := mcDef metaclass. 
 	self
 		metaclass:
 			(metaclassDef

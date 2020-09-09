@@ -26,25 +26,35 @@ EP2TonelParser >> metamodel: anOLObjVLisp [
 
 { #category : #'private factory' }
 EP2TonelParser >> newClassDefinitionFrom: anArray [
-	| metadata class |
-
+	| metadata class required excluded missing missing2 |
+	
 	metadata := anArray sixth.
-	class := EP2MCClassDefinition
+
+	"Adding fixed fields for classes"
+	class := EP2MCClassDefinition 	
 		name: (metadata at: #name)
 		superclassName: (metadata at: #superclass)
 		category: (metadata at: #category)
-		instVarNames: (metadata at: #instVars ifAbsent: [ #() ])
-		classVarNames: (metadata at: 'classVars' ifAbsent: [ #() ])
-		poolDictionaryNames: (metadata at: 'pools' ifAbsent: [ #() ])
-		classInstVarNames: (metadata at: 'classInstVars' ifAbsent: [ #() ])
-		type: (metadata at: #type ifAbsent: [ #normal ]) asSymbol
-		comment: (anArray second ifNil: [ '' ])
-		commentStamp: nil.
+		instVarNames: (metadata at: #instVars ifAbsent: [#()])
+		comment: ''.
+	class	type: (metadata at: #type ifAbsent: [ #normal ]);
+		role: (metadata at: #role ifAbsent: [ nil ]).
 	
-	class role: (metadata at: #role ifAbsent: [ nil ]).
+	"To continue with the addition we exclude fields we already added"
+	excluded := #(name superclass type category role) asSet. 
 	
-	(metadata keys
-		reject: [ :key | (#(name superclass traits classTraits category instVars classVars pools classInstVars type) indexOf: key) > 0 ])
-		do: [ : key | class extraInstVarNamed: key put: (metadata at: key ifAbsent: ['']) ].
+	"We also exclude fields defined by the base class metamodel (EP2MClass)"
+	excluded := excluded , #(properties parent layout template superclass methodDict format).
+	
+	"We get the name of fields specified in the class metamodel defined by the user (subclass of EP2MClass)"
+	required := metamodel class classMetaclass allInstVarNames.
+	missing := required reject: [:key | excluded includes: key ].
+
+	"We get extra fields found in the .class.st file"
+	missing2 := metadata keys reject: [ :key | (excluded includes: key) and: (missing includes: key) ].
+	
+	"We force the addition of these fields"
+	(missing, missing2) do: [ : key | class extraInstVarNamed: key put: (metadata at: key ifAbsent: [nil]) ].
+	
 	^ class
 ]

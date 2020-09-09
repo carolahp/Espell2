@@ -108,7 +108,7 @@ EP2Layout >> defaultSlots [
 
 { #category : #'gt-extension' }
 EP2Layout >> gtInspectorIn: composite [
-	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
+	"self object isRoleMetaclass ifTrue: [ self haltOnce. ]."
 
 	^ composite table
 		title: object asString;
