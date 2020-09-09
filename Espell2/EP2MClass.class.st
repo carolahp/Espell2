@@ -112,6 +112,11 @@ EP2MClass >> classVarNames [
 	^ #()
 ]
 
+{ #category : #calypso }
+EP2MClass >> comment [
+	^ ''
+]
+
 { #category : #'accessing compiler' }
 EP2MClass >> compiler [
 
@@ -447,6 +452,14 @@ EP2MClass >> layout [
 { #category : #accessing }
 EP2MClass >> layout: anEP2LayoutClass [ 
 	layout := anEP2LayoutClass
+]
+
+{ #category : #calypso }
+EP2MClass >> localMethodNamed: aSymbol ifAbsent: aBlock [
+
+	self localMethods do: [ :each | (each name = aSymbol) ifTrue: [^ each]].
+	
+	^ aBlock value.
 ]
 
 { #category : #accessing }
