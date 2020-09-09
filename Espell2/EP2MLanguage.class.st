@@ -80,15 +80,23 @@ EP2MLanguage class >> methodMetaclass [
 { #category : #'hooks-dynamic method loading' }
 EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject [
 	"loading the not understood message into the metamodel"
+
 	| selector classModel systemClass traversedClasses |
+	(self
+		confirm:
+			aRemoteObject asString , ' doesNotUnderstand message #'
+				, aRBMessageNode selector asString
+				, '. Load it from host system to the language model?')
+		ifFalse: [ ^ self ].
+	
 	selector := aRBMessageNode selector.
 	classModel := self
 		classNamed: aRemoteObject basicClass classNameFromAnyOrigin.
 	systemClass := Smalltalk classNamed: classModel name.
 	traversedClasses := #() asOrderedCollection.
 	[ systemClass isNotNil ]
-		whileTrue: [ 
-			"we save traversed classes because the systemClass does not always belong to the metamodel.
+		whileTrue:
+			[ "we save traversed classes because the systemClass does not always belong to the metamodel.
 			So we install the method in the metamodel class that is nearest to the system class in the inheritance hierarchy "
 			traversedClasses add: systemClass name.
 			systemClass methodDict
@@ -107,8 +115,8 @@ EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject 
 									newMethodModel initializeWithLocal: method.
 									^ classModel addLocalMethod: newMethodModel ] ].
 					self error: 'class not found' ].
-			
-			systemClass := systemClass superclass ]
+			systemClass := systemClass superclass ].
+		self error: 'Method #', aRBMessageNode selector ,' not found in host system!'
 ]
 
 { #category : #'accessing backend' }
@@ -142,7 +150,6 @@ EP2MLanguage >> addGlobalVariable: anEP2MGlobalVariable [
 EP2MLanguage >> addMethodFromMonticelloDefinition: aMCMethodDefinition [ 
 	| methodDef classDef mcDef |
 	mcDef := aMCMethodDefinition.
-	self haltIf: classDef = 'Context'.
 	classDef := self ensureClassNamed: mcDef className.
 	methodDef := self class methodMetaclass named: mcDef selector parent: classDef.
 	methodDef extendWithMonticello: mcDef.
