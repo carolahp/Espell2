@@ -727,6 +727,7 @@ EP2MLanguage >> loadTonelRepository: aFileReference [
 			snap definitions do: [ :each |
 				each ensureEspellDefinitionIn: self package: package
 			 ]].
+	self testCompletitude.
 	self cleanInstVars.
 	self test.
 ]
@@ -902,6 +903,11 @@ EP2MLanguage >> systemClassMapping [
 { #category : #testing }
 EP2MLanguage >> test [
 	self behaviors do: [ :beh | beh test ]
+]
+
+{ #category : #testing }
+EP2MLanguage >> testCompletitude [
+	self allClasses do: [ :class | self assert: class layout isNotNil description: 'Class #', class name, ' referenced but not defined' ].
 ]
 
 { #category : #bootstrap }
