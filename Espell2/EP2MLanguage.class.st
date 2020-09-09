@@ -453,7 +453,6 @@ EP2MLanguage >> cleanInstVars [
 EP2MLanguage >> cleanPackages [
 	"removing empty packages"
 	| toRemove |
-	self halt.
 	toRemove := self packages select: [ :pkg | pkg definedBehaviors isEmpty ].
 	toRemove do: [ :pkg | self packages remove: pkg ]
 ]
@@ -964,7 +963,7 @@ EP2MLanguage >> test [
 
 { #category : #testing }
 EP2MLanguage >> testCompletitude [
-	self allClasses do: [ :class | self assert: class layout isNotNil description: 'Class #', class name, ' referenced but not defined' ].
+	self allClasses do: [ :class | self assert: class layout isNotNil description: 'Class #', class name, ' referenced in the properties of another class (like superclass) but not defined' ].
 ]
 
 { #category : #bootstrap }

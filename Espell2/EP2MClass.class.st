@@ -198,7 +198,6 @@ EP2MClass >> extendWithMonticello: aMCClassDefinition [
 				ifTrue: [ self halt ] ].
 	"package"
 	packageDef := mcDef category.
-	self haltIf: self name = 'Class'.
 	(self package isNotNil and: [self package name ~= packageDef]) 
 		ifTrue: [ self package definedBehaviors remove: self ].
 	
