@@ -176,7 +176,7 @@ EP2MClass >> extendWithMonticello: aMCClassDefinition [
 	"An existent class is extended with a definition read from Monticello.
 	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we test the class at the end"
 
-	| mcDef instVarsDefs |
+	| mcDef instVarsDefs packageDef |
 	mcDef := aMCClassDefinition.
 
 	"superclass"
@@ -196,6 +196,16 @@ EP2MClass >> extendWithMonticello: aMCClassDefinition [
 	mcDef role
 		ifNotNil: [ self role ~= mcDef role
 				ifTrue: [ self halt ] ].
+	"package"
+	packageDef := mcDef category.
+	self haltIf: self name = 'Class'.
+	(self package isNotNil and: [self package name ~= packageDef]) 
+		ifTrue: [ self package definedBehaviors remove: self ].
+	
+	self package isNil
+		ifTrue: [ | newPkg |
+			newPkg := self parent ensurePackageNamed: packageDef.
+			self package: newPkg ].
 	" we can't test yet since not all classes have been loaded "
 	self extendWithMonticelloCustom: mcDef.
 	^ self

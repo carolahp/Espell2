@@ -449,6 +449,15 @@ EP2MLanguage >> cleanInstVars [
 			class slots do: [ :slot | slot index: (index := index + 1) ] ]
 ]
 
+{ #category : #cleaning }
+EP2MLanguage >> cleanPackages [
+	"removing empty packages"
+	| toRemove |
+	self halt.
+	toRemove := self packages select: [ :pkg | pkg definedBehaviors isEmpty ].
+	toRemove do: [ :pkg | self packages remove: pkg ]
+]
+
 { #category : #'default model values' }
 EP2MLanguage >> defaultBehaviors [
 	
@@ -471,8 +480,8 @@ EP2MLanguage >> defaultPackages [
 		name: #'Kernel-VM';
 		parent: self;
 		yourself.
-	^ IdentitySet new
-		add: package;
+	^ IdentityDictionary new
+		at: package name put: package;
 		yourself
 ]
 
@@ -499,9 +508,17 @@ EP2MLanguage >> ensureClassNamed: aString [
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> ensurePackageNamed: aString [ 
-	"considering only one package for the moment"
-	^ self packages anyOne
+EP2MLanguage >> ensurePackageNamed: aString [
+
+	^ self packages
+		at: aString
+		ifAbsent: [ | package |
+			package := EP2MPackage new
+				name: aString asSymbol;
+				parent: self;
+				yourself.
+			self packages at: package name put: package.
+			package ]
 ]
 
 { #category : #'tonel repository' }
@@ -752,6 +769,7 @@ EP2MLanguage >> loadTonelRepository: aFileReference [
 	packagesNames := tonel packageDescriptionsFromReadableFileNames collect: [:each | each at: 1].
 	self assert: packagesNames isNotEmpty description: 'The repository is empty'.
 	packagesNames	do: [ :pn | | package snap version |
+			
 			package := self ensurePackageNamed: pn.
 			version := tonel versionWithInfo: (tonel versionInfoFromVersionNamed: pn).
 			snap := version snapshot.
@@ -760,6 +778,7 @@ EP2MLanguage >> loadTonelRepository: aFileReference [
 			 ]].
 	self testCompletitude.
 	self cleanInstVars.
+	self cleanPackages.
 	self test.
 ]
 
@@ -825,7 +844,14 @@ EP2MLanguage >> objectAccessedPropertyName: aString [
 EP2MLanguage >> packageFor: anEP2MBehavior [
 	^ (self packages
 		select: [ :package | package definesBehavior: anEP2MBehavior ])
-		anyOne
+		ifEmpty: [ nil ]
+		ifNotEmpty: [ :collection | 
+			collection size > 1
+				ifTrue: [ self
+						error:
+							'Class #' , anEP2MBehavior name
+								, ' contained by more than one package' ].
+			collection anyOne ]
 ]
 
 { #category : #'accessing backend' }
