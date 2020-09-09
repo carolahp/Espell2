@@ -31,9 +31,19 @@ EP2MMethod >> ast [
 
 ]
 
+{ #category : #calypso }
+EP2MMethod >> astForStylingInCalypso [
+	^ self ast
+]
+
 { #category : #accessing }
 EP2MMethod >> author: aString [ 
 	author := aString
+]
+
+{ #category : #calypso }
+EP2MMethod >> calypsoEnvironmentType [
+	^ClyMethod
 ]
 
 { #category : #initialization }
@@ -58,6 +68,11 @@ EP2MMethod >> initializeWithLocal: aCompiledMethod [
 		yourself
 ]
 
+{ #category : #calypso }
+EP2MMethod >> isExtension [
+	^ false
+]
+
 { #category : #marking }
 EP2MMethod >> markAsAccessed [
 	self propertyNamed: self parent parent objectAccessedPropertyName put: true
@@ -65,6 +80,11 @@ EP2MMethod >> markAsAccessed [
 
 { #category : #accessing }
 EP2MMethod >> methodClass [
+	^ self parent
+]
+
+{ #category : #calypso }
+EP2MMethod >> origin [
 	^ self parent
 ]
 
@@ -115,6 +135,12 @@ EP2MMethod >> sourceCode: anObject [
 	"ATTENTION: There is no check here if the selector is changed!"
 	sourceCode := anObject asString
 	
+]
+
+{ #category : #calypso }
+EP2MMethod >> tags [
+	"ToDo"
+	^ #()
 ]
 
 { #category : #accessing }

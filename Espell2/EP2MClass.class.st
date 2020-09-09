@@ -90,6 +90,11 @@ EP2MClass >> basicClass [
 	^ self metaclass
 ]
 
+{ #category : #calypso }
+EP2MClass >> calypsoEnvironmentType [
+	^ClyClass
+]
+
 { #category : #'accessing backend' }
 EP2MClass >> classLoader [
 	^ self parent classLoader
@@ -163,6 +168,11 @@ EP2MClass >> format [
 		[^ self parent formatOfImmediate ].
 	
 	^ self instSpec << 16 + self instSize
+]
+
+{ #category : #calypso }
+EP2MClass >> hasComment [
+	^ false
 ]
 
 { #category : #hooks }
@@ -367,6 +377,11 @@ EP2MClass >> isClassMetamodel [
 	^ true
 ]
 
+{ #category : #calypso }
+EP2MClass >> isClassSide [
+	^ false
+]
+
 { #category : #'testing layout' }
 EP2MClass >> isCompiledMethod [
 	^ self layout isCompiledMethodLayout
@@ -380,6 +395,11 @@ EP2MClass >> isEphemeron [
 { #category : #'testing layout' }
 EP2MClass >> isImmediate [
 	^ self parent immediateClassRoles contains: [:rol | rol = self role ]
+]
+
+{ #category : #calypso }
+EP2MClass >> isInstanceSide [
+	^ true
 ]
 
 { #category : #'accessing compiler' }
@@ -397,6 +417,16 @@ EP2MClass >> isMetaclass [
 { #category : #testing }
 EP2MClass >> isNilObject [
 	^ false
+]
+
+{ #category : #calypso }
+EP2MClass >> isObsolete [
+	^ false
+]
+
+{ #category : #calypso }
+EP2MClass >> isRootInEnvironment [
+	^ self superclass == nil
 ]
 
 { #category : #'testing layout' }
@@ -422,6 +452,11 @@ EP2MClass >> layout: anEP2LayoutClass [
 { #category : #accessing }
 EP2MClass >> localMethods [
 	^ methodDict
+]
+
+{ #category : #calypso }
+EP2MClass >> localSelectors [
+	^ self localMethods collect: #name
 ]
 
 { #category : #marking }
@@ -608,6 +643,13 @@ EP2MClass >> superclass [
 { #category : #accessing }
 EP2MClass >> superclass: anEP2MBehavior [
 	^ superclass := anEP2MBehavior 
+]
+
+{ #category : #calypso }
+EP2MClass >> tagsForAllMethods [
+	"I act as #tagsForMethods but I also takes into account methods comming from traits"
+
+	^ self methods flatCollect: [ :each  | each tags ] as: Set
 ]
 
 { #category : #accessing }

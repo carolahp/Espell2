@@ -175,6 +175,12 @@ EP2MLanguage >> announcer [
 	^ announcer ifNil: [ announcer := Announcer new ]
 ]
 
+{ #category : #calypso }
+EP2MLanguage >> at: aSymbol [
+
+	^ self classNamed: aSymbol
+]
+
 { #category : #'accessing backend' }
 EP2MLanguage >> backend [
 	^ backend ifNil: [ backend := EP2MLanguageBackend for: self ]
@@ -197,7 +203,25 @@ EP2MLanguage >> bootstrap [
 
 { #category : #'browse-code' }
 EP2MLanguage >> browse [
-	self halt.
+	self browseAs: self name
+]
+
+{ #category : #browser }
+EP2MLanguage >> browseAs: browserTitleString [ 
+	| clyEnv clyNavEnv browser |
+	clyEnv := ClyEspell2Environment new.
+	clyEnv environment: self.
+	clyEnv name: browserTitleString.
+
+	clyNavEnv := (ClyNavigationEnvironment over: clyEnv)
+		addPlugin: ClyDefaultSystemEnvironmentPlugin new;
+	   attachToSystem.
+
+	browser := ClyFullBrowser new 
+		navigationEnvironment: clyNavEnv;
+		addPlugin: ClyStandardBrowserPlugin new.
+
+	^ browser open.
 ]
 
 { #category : #accessing }

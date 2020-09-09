@@ -7,6 +7,19 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #calypso }
+EP2MPackage class >> convertToCalypsoBrowserItem: anEP2MPackage [ 
+	^ClyBrowserItem named: anEP2MPackage name with: anEP2MPackage
+]
+
+{ #category : #calypso }
+EP2MPackage class >> prepareClassQueriesFrom: packages in: aNavigationEnvironment [ 
+	^{
+		ClyAllClassesQuery from: ClyPackageScope ofAll: packages in: aNavigationEnvironment.
+		ClyAllClassesQuery from: ClyPackageExtensionScope ofAll: packages in: aNavigationEnvironment 
+	}
+]
+
 { #category : #'accessing-backend' }
 EP2MPackage >> addDefinedBehavior: aClass [ 
 	(self definesBehavior: aClass)
@@ -32,6 +45,16 @@ EP2MPackage >> asMCSnapshot [
 	^ MCSnapshot fromDefinitions: definitions.
 ]
 
+{ #category : #calypso }
+EP2MPackage >> calypsoEnvironmentType [
+	^RPackage
+]
+
+{ #category : #calypso }
+EP2MPackage >> classes [
+	^ self allDefinedBehaviors 
+]
+
 { #category : #initialize }
 EP2MPackage >> defaultDefinedBehaviors [
 	^ Set new
@@ -42,15 +65,30 @@ EP2MPackage >> definedBehaviors [
 	^ definedBehaviors
 ]
 
+{ #category : #calypso }
+EP2MPackage >> definedClasses [
+	^ self definedBehaviors 
+]
+
 { #category : #testing }
 EP2MPackage >> definesBehavior: anOLClass [ 
 	^ self definedBehaviors anySatisfy: [:beh | beh = anOLClass ].
+]
+
+{ #category : #'abstract instructions' }
+EP2MPackage >> extendedClasses [
+	^ #()
 ]
 
 { #category : #initialize }
 EP2MPackage >> initialize [ 
 	super initialize.
 	definedBehaviors := self defaultDefinedBehaviors
+]
+
+{ #category : #calypso }
+EP2MPackage >> isAboutPackage: anEP2MPackage [ 
+	^ self == anEP2MPackage 
 ]
 
 { #category : #testing }
@@ -63,10 +101,20 @@ EP2MPackage >> isNotEmpty [
 	^ self definedBehaviors size > 0
 ]
 
+{ #category : #calypso }
+EP2MPackage >> packageManifestOrNil [
+	^ nil
+]
+
 { #category : #printing }
 EP2MPackage >> printOn: aStream [
 	aStream 
 		nextPutAll: 'a Package "';
 		nextPutAll: self name asString;
 		nextPutAll: '"'
+]
+
+{ #category : #calypso }
+EP2MPackage >> tagsForClasses [
+	^ IdentitySet new
 ]
