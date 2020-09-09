@@ -95,14 +95,18 @@ EP2MClass >> calypsoEnvironmentType [
 	^ClyClass
 ]
 
+{ #category : #calypso }
+EP2MClass >> category [
+	^ self package name
+]
+
 { #category : #'accessing backend' }
 EP2MClass >> classLoader [
 	^ self parent classLoader
 ]
 
-{ #category : #'accessing-backend' }
+{ #category : #calypso }
 EP2MClass >> classSide [
-	self deprecated: 'use metaclass instead'.
 	^ self metaclass
 ]
 
@@ -126,6 +130,45 @@ EP2MClass >> compiler [
 { #category : #'default model values' }
 EP2MClass >> defaultMethodDictionary [
 	^ IdentityDictionary new 
+]
+
+{ #category : #calypso }
+EP2MClass >> definition [
+
+	| aStream |
+	
+	aStream := (String new: 800) writeStream.
+	self superclass
+		ifNil: [ aStream nextPutAll: 'nil' ]
+		ifNotNil: [ aStream nextPutAll: self superclass name ].
+	aStream
+		nextPutAll: self kindOfSubclass;
+		store: self name.
+	aStream
+		cr;
+		tab;
+		nextPutAll: 'instanceVariableNames: ';
+		store: self instanceVariablesString.
+	"aStream
+		cr;
+		tab;
+		nextPutAll: 'classVariableNames: ';
+		store: self owner classVariablesString."
+	aStream
+		cr;
+		tab;
+		nextPutAll: 'package: ';
+		store: self category asString.
+	self superclass
+		ifNil:
+			[ aStream
+				nextPutAll: '.';
+				cr.
+			aStream nextPutAll: self name.
+			aStream
+				space;
+				nextPutAll: 'superclass: nil' ].
+	^ aStream contents
 ]
 
 { #category : #initialization }
@@ -367,9 +410,24 @@ EP2MClass >> instanceSide [
 	^ self
 ]
 
+{ #category : #calypso }
+EP2MClass >> instanceVariablesString [
+	"Answer a string of my instance variable names separated by spaces."
+
+	^String streamContents: [ :stream |
+		self instVarNames 
+			do: [ :each | stream nextPutAll: each ]
+			separatedBy: [ stream space ] ]
+]
+
 { #category : #'testing layout' }
 EP2MClass >> isBehavior [ 
 	^ true
+]
+
+{ #category : #testing }
+EP2MClass >> isBits [
+	^ self layout isBitsLayout 
 ]
 
 { #category : #'testing layout' }
@@ -397,9 +455,19 @@ EP2MClass >> isEphemeron [
 	^ self layout isEphemeronLayout
 ]
 
+{ #category : #testing }
+EP2MClass >> isEphemeronClass [
+	^ self layout isEphemeronLayout 
+]
+
 { #category : #'testing layout' }
 EP2MClass >> isImmediate [
 	^ self parent immediateClassRoles contains: [:rol | rol = self role ]
+]
+
+{ #category : #testing }
+EP2MClass >> isImmediateClass [
+	^ self layout isImmediateLayout
 ]
 
 { #category : #calypso }
@@ -439,9 +507,40 @@ EP2MClass >> isVariable [
 	^ self layout isVariableLayout
 ]
 
+{ #category : #testing }
+EP2MClass >> isWeak [
+	^ self layout isWeakLayout
+]
+
 { #category : #'testing layout' }
 EP2MClass >> isWords [
 	^ self layout isWordLayout
+]
+
+{ #category : #calypso }
+EP2MClass >> kindOfSubclass [
+	"Answer a String that is the keyword that describes the receiver's kind of subclass,
+	 either a regular subclass, a variableSubclass, a variableByteSubclass,
+	 a variableWordSubclass, a weakSubclass, an ephemeronSubclass or an immediateSubclass.
+	 c.f. typeOfClass"
+	^self isVariable
+		ifTrue:
+			[self isBits
+				ifTrue:
+					[self isBytes
+						ifTrue: [' variableByteSubclass: ']
+						ifFalse: [' variableWordSubclass: ']]
+				ifFalse:
+					[self isWeak
+						ifTrue: [' weakSubclass: ']
+						ifFalse: [' variableSubclass: ']]]
+		ifFalse:
+			[self isImmediateClass
+				ifTrue: [' immediateSubclass: ']
+				ifFalse:
+					[self isEphemeronClass
+						ifTrue: [' ephemeronSubclass: ']
+						ifFalse: [' subclass: ']]]
 ]
 
 { #category : #accessing }
@@ -646,6 +745,18 @@ EP2MClass >> slots [
 { #category : #'accessing slots' }
 EP2MClass >> slotsDo: aBlockClosure [ 
 	self layout slotsDo: aBlockClosure
+]
+
+{ #category : #calypso }
+EP2MClass >> sourceCodeTemplate [
+	"Answer an expression to be edited and evaluated in order to define 
+	methods in this class or trait."
+
+	^ 'messageSelectorAndArgumentNames
+	"comment stating purpose of message"
+
+	| temporary variable names |
+	statements'
 ]
 
 { #category : #accessing }

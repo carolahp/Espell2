@@ -10,6 +10,11 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #calypso }
+EP2MMethod >> argumentNames [
+	^ self ast argumentNames
+]
+
 { #category : #exporting }
 EP2MMethod >> asMCDefinition [
 	
@@ -58,6 +63,12 @@ EP2MMethod >> extendWithMonticello: aMCMethodDefinition [
 
 	"protocol := self parent ensureProtocolNamed: mcDef category asSymbol.
 	self protocol: protocol"
+]
+
+{ #category : #calypso }
+EP2MMethod >> hasSelector: aString specialSelectorIndex: anUndefinedObject [ 
+	self halt.
+	^ self ast sentMessages includes: selector
 ]
 
 { #category : #initialization }

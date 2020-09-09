@@ -22,6 +22,11 @@ ClyEspell2Environment >> bindingOf: aSymbol [
 ]
 
 { #category : #accessing }
+ClyEspell2Environment >> classes [
+	^ self environment allClasses
+]
+
+{ #category : #accessing }
 ClyEspell2Environment >> environment [
 	^ environment
 ]
@@ -29,6 +34,11 @@ ClyEspell2Environment >> environment [
 { #category : #accessing }
 ClyEspell2Environment >> environment: anEP2MLanguage [ 
 	environment := anEP2MLanguage
+]
+
+{ #category : #accessing }
+ClyEspell2Environment >> name [
+	^ name
 ]
 
 { #category : #accessing }
