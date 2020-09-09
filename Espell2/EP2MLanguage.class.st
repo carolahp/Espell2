@@ -572,6 +572,7 @@ EP2MLanguage >> hookCreateInitialObjects [
 
 { #category : #hooks }
 EP2MLanguage >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
+	self deprecated: 'use hooks in EP2MClass instead'.
 	self subclassResponsibility 
 ]
 
