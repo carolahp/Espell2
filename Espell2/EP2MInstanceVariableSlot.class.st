@@ -28,7 +28,7 @@ EP2MInstanceVariableSlot >> printOn: aStream [
 
 { #category : #'read-write' }
 EP2MInstanceVariableSlot >> read: aRemoteObject [
-	^ (self backend object: aRemoteObject instVarAt: index) asRemoteObject
+	^ self backend object: aRemoteObject instVarAt: index
 ]
 
 { #category : #'read-write' }

@@ -15,9 +15,9 @@ EP2MethodDictionaryLayout class >> defaultRemoteObjectClass [
 { #category : #accessing }
 EP2MethodDictionaryLayout >> basicAt: anIndex [
 	
-	^ (self backend 
-		object: remote  
-		at: anIndex)
+	^ self backend 
+		object: object  
+		at: anIndex
 ]
 
 { #category : #accessing }

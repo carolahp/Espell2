@@ -200,6 +200,11 @@ EP2MLanguage >> browse [
 	self halt.
 ]
 
+{ #category : #accessing }
+EP2MLanguage >> builder [
+	^ builder
+]
+
 { #category : #'accessing special classes' }
 EP2MLanguage >> classAssociation [
 	^ self classWithRole: #Association
@@ -769,7 +774,7 @@ EP2MLanguage >> newBehaviorFromTemplate: aClassEP2Remote [
 	model := self ensureClassNamed: modelName.
 	model template: template.
 	model layout: (template layoutClass on: model).
-	template modelInstVarNames do: [:ivname | model addSlot: ivname ].
+	template modelInstVarNames doWithIndex: [ :ivname :index| model addSlot: ivname index: index ].
 	self packages anyOne addDefinedBehavior: model.
 	^ model
 ]

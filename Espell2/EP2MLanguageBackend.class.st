@@ -14,21 +14,26 @@ EP2MLanguageBackend class >> for: anOLObjVLisp [
 		yourself.
 ]
 
-{ #category : #'class slots' }
-EP2MLanguageBackend >> addSlot: aString to: aLayout [
+{ #category : #slots }
+EP2MLanguageBackend >> addSlot: aString index: anInteger to: anEP2MClass [
 	| newSlot |
-	newSlot := aLayout remote isClassMetamodel
+	newSlot := anEP2MClass isClassMetamodel
 		ifTrue: [ 
 			(environment class instanceVariableSlotMetaclass
 				named: aString asSymbol
-				parent: aLayout)
-				definingClass: aLayout remote;
+				parent: anEP2MClass)
+				definingClass: anEP2MClass;
 				yourself
 				 ]
 		ifFalse: [ self error: 'Implementation supports only Instance variable slots' ].
-	newSlot index: aLayout allSlots size + 1.
-	aLayout slots add: newSlot.
+	newSlot index: anInteger.
+	anEP2MClass layout slots add: newSlot.
 	^ newSlot
+]
+
+{ #category : #'class slots' }
+EP2MLanguageBackend >> addSlot: aString to: aLayout [
+	self addSlot: aString index: aLayout allSlots size + 1 to: aLayout
 ]
 
 { #category : #accessing }
@@ -37,16 +42,30 @@ EP2MLanguageBackend >> environment: anOLObjVLisp [
 ]
 
 { #category : #'accessing instance variables' }
-EP2MLanguageBackend >> object: anOLClass instVarAt: anInteger [ 
-	"Classes EP2MObject and EP2MClass add up 5 instance variables before the IV superclass 
-	(superclass is the first IV for classes according to VM requirements)"
-	^ anOLClass instVarAt: anInteger + 5
+EP2MLanguageBackend >> object: anEP2MClass instVarAt: anInteger [ 
+	| key dict |
+	
+	self deprecated: 'usage of slots in the metamodel is not supported'.
+	dict := anEP2MClass instVarsDict. 
+	key := dict keys at: anInteger ifAbsent: [ ^ KeyNotFound signal: 'Instance variable at ', anInteger asString, ' does not exist' ].
+	^ dict at: key
+]
+
+{ #category : #slots }
+EP2MLanguageBackend >> object: anEP2MClass instVarAt: anInteger put: anObject [ 
+	| key dict |
+	
+	self deprecated: 'usage of slots in the metamodel is not supported'.
+	dict := anEP2MClass instVarsDict. 
+	key := dict keys at: anInteger ifAbsent: [dict size + 1].
+	dict at: key put: anObject
 ]
 
 { #category : #'accessing slots' }
 EP2MLanguageBackend >> slotsFor: aClassOrVariableSizedObject do: aBlockClosure [
+	
 	aClassOrVariableSizedObject isBehavior 
 		ifTrue: [ aClassOrVariableSizedObject layout slots do: [:slot | aBlockClosure value: slot] ] 
-		ifFalse: [ self halt. ]
+		ifFalse: [ self error: 'For the moment slots are implemented only to store instance variables' ]
 	
 ]

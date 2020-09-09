@@ -2,7 +2,7 @@ Class {
 	#name : #EP2Layout,
 	#superclass : #Object,
 	#instVars : [
-		'remote',
+		'object',
 		'slots'
 	],
 	#category : #'Espell2-Kernel-Layouts'
@@ -53,31 +53,36 @@ EP2Layout class >> layoutClassForInstSpec: instSpec [
 { #category : #'instance creation' }
 EP2Layout class >> on: anEP2Remote [
 	^ (self layoutClassForClass: anEP2Remote basicClass ) new 
-		remote: anEP2Remote;
+		object: anEP2Remote;
 		yourself
 ]
 
 { #category : #'accessing - slots' }
 EP2Layout >> addSlot: aSlot [ 
-	self backend addSlot: aSlot to: self 
+	self backend addSlot: aSlot to: self object
+]
+
+{ #category : #slots }
+EP2Layout >> addSlot: aName index: anInteger [ 
+	self backend addSlot: aName index: anInteger to: self object
 ]
 
 { #category : #'accessing - slots' }
 EP2Layout >> allInstVars [
-	^ (self remote basicClass allSlots select: #isInstanceVariableSlot)
-		collect: [ :slot | slot name -> (slot read: self remote) ]
+	^ (self object basicClass allSlots select: #isInstanceVariableSlot)
+		collect: [ :slot | slot name -> (slot read: self object) ]
 ]
 
 { #category : #'accessing slots' }
 EP2Layout >> allSlots [
-	^ self remote superclass
+	^ self object superclass
 		ifNil: [ self slots ]
-		ifNotNil: [ self remote superclass allSlots , self slots ]
+		ifNotNil: [ self object superclass allSlots , self slots ]
 ]
 
 { #category : #'accessing - slots' }
 EP2Layout >> allVariables [
-	^ self remote basicClass allSlots collect: [ :slot | slot read: self remote ]
+	^ self object basicClass allSlots collect: [ :slot | slot read: self object ]
 ]
 
 { #category : #accessing }
@@ -93,7 +98,7 @@ EP2Layout >> at: index put: anObject [
 
 { #category : #'accessing-pvt' }
 EP2Layout >> backend [ 
-	^ self remote backend
+	^ self object backend
 ]
 
 { #category : #accessing }
@@ -106,12 +111,12 @@ EP2Layout >> gtInspectorIn: composite [
 	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
 
 	^ composite table
-		title: self remote asString;
+		title: object asString;
 		display: [ 
-			{ 'self' -> remote },
-			(remote basicClass allSlots
+			{ 'self' -> object },
+			(object basicClass allSlots
 				collect:
-					[ :slot | slot name -> (remote readSlotNamed: slot name) asRemoteObjectCasted ]) ];
+					[ :slot | slot name -> (object readSlotNamed: slot name) asRemoteObjectCasted ]) ];
 		column: 'Variable' evaluated: [ :assoc | assoc key ];
 		column: 'Value' evaluated: [ :assoc | assoc value ];
 		send: [ :assoc | 
@@ -141,16 +146,16 @@ EP2Layout >> instSpec [
 	 12 - 15 16-bit indexable
 	 16 - 23 byte indexable
 	 24 - 31 compiled method"
-	(remote isCompiledMethod) ifTrue: [ ^ 24 ].
-	(remote isBytes) ifTrue: [ ^ 16 ].
-	(remote isWords) ifTrue: [ ^ 10 ].
-	(remote isEphemeron) ifTrue: [ ^ 5 ].
-	(remote instSize = 0 and: [ remote isVariable not ]) ifTrue: [ ^ 0 ].
-	(remote instSize > 0 and: [ remote isVariable not ]) ifTrue: [ ^ 1 ].
-	(remote instSize = 0 and: [ remote isVariable     ]) ifTrue: [ ^ 2 ].
-	(remote instSize > 0 and: [ remote isVariable     ]) ifTrue: [ ^ 3 ].
-	(remote instSize > 0 and: [ remote isVariable and: [ remote isWeak ] ]) ifTrue: [ ^ 4 ].
-	(remote instSize > 0 and: [ remote isVariable not and: [ remote isWeak ] ]) ifTrue: [ ^ 5 ].
+	(object isCompiledMethod) ifTrue: [ ^ 24 ].
+	(object isBytes) ifTrue: [ ^ 16 ].
+	(object isWords) ifTrue: [ ^ 10 ].
+	(object isEphemeron) ifTrue: [ ^ 5 ].
+	(object instSize = 0 and: [ object isVariable not ]) ifTrue: [ ^ 0 ].
+	(object instSize > 0 and: [ object isVariable not ]) ifTrue: [ ^ 1 ].
+	(object instSize = 0 and: [ object isVariable     ]) ifTrue: [ ^ 2 ].
+	(object instSize > 0 and: [ object isVariable     ]) ifTrue: [ ^ 3 ].
+	(object instSize > 0 and: [ object isVariable and: [ object isWeak ] ]) ifTrue: [ ^ 4 ].
+	(object instSize > 0 and: [ object isVariable not and: [ object isWeak ] ]) ifTrue: [ ^ 5 ].
 	self error: 'illegal old format'
 ]
 
@@ -161,7 +166,7 @@ EP2Layout >> instVarNames [
 
 { #category : #accessing }
 EP2Layout >> instanceVariableAtIndex: index [
-	^ (self backend object: self instVarAt: index) asRemoteObject
+	^ self backend object: self instVarAt: index
 ]
 
 { #category : #accessing }
@@ -171,12 +176,12 @@ EP2Layout >> instanceVariableAtIndex: index put: anObject [
 
 { #category : #'accessing-instVars' }
 EP2Layout >> instanceVariableNamed: aString [ 
-	^ (self remote basicClass slotNamed: aString) read: self 
+	^ (self object basicClass slotNamed: aString) read: self 
 ]
 
 { #category : #'accessing instance variables' }
 EP2Layout >> instanceVariableNamed: aString put: aCollection [ 
-	^ (self remote basicClass slotNamed: aString) write: aCollection to: remote
+	^ (self object basicClass slotNamed: aString) write: aCollection to: object
 ]
 
 { #category : #'testing-types' }
@@ -258,8 +263,9 @@ EP2Layout >> isWordLayout [
 ]
 
 { #category : #utils }
-EP2Layout >> localObjectAsRemoteObject: anObject [ 
-	^ self remote mirror backend localObjectAsRemoteObject: anObject
+EP2Layout >> localObjectAsRemoteObject: anObject [
+	"we assume backend is Espell backend (to the kernel)" 
+	^ self backend localObjectAsRemoteObject: anObject
 ]
 
 { #category : #'testing-types' }
@@ -269,23 +275,23 @@ EP2Layout >> mcType [
 ]
 
 { #category : #'accessing-pvt' }
+EP2Layout >> object [
+	^ object 
+]
+
+{ #category : #'accessing-pvt' }
+EP2Layout >> object: anEPRemoteObject [
+	object := anEPRemoteObject
+]
+
+{ #category : #'accessing-pvt' }
 EP2Layout >> objectSpace [
-	^ self remote mirror backend objectSpace
+	^ self backend objectSpace
 ]
 
 { #category : #accessing }
 EP2Layout >> parent [
-	^ remote
-]
-
-{ #category : #'accessing-pvt' }
-EP2Layout >> remote [
-	^ remote 
-]
-
-{ #category : #'accessing-pvt' }
-EP2Layout >> remote: anEPRemoteObject [
-	remote := anEPRemoteObject
+	^ object
 ]
 
 { #category : #accessing }
@@ -304,12 +310,12 @@ EP2Layout >> slots [
 
 { #category : #'accessing - slots' }
 EP2Layout >> slotsDo: aBlock [
-	self backend slotsFor: self remote do: aBlock
+	self backend slotsFor: self object do: aBlock
 ]
 
 { #category : #'accessing-pvt' }
 EP2Layout >> target [ 
-	^ self remote mirror target
+	^ self object mirror target
 ]
 
 { #category : #'vm-tests' }

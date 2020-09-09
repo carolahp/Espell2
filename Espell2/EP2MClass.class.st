@@ -19,7 +19,8 @@ Class {
 		'layout',
 		'template',
 		'superclass',
-		'methodDict'
+		'methodDict',
+		'format'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -34,6 +35,11 @@ EP2MClass >> addLocalMethod: anEP2MMethod [
 EP2MClass >> addSlot: aString [ 
 	^ self layout addSlot: aString
 		
+]
+
+{ #category : #slots }
+EP2MClass >> addSlot: aString index: anInteger [  
+	self layout addSlot: aString index: anInteger
 ]
 
 { #category : #'accessing instance variables' }
@@ -187,7 +193,7 @@ EP2MClass >> includesSelector: aString [
 { #category : #initialization }
 EP2MClass >> initialize [ 
 	super initialize.
-	methodDict := self defaultMethodDictionary
+	methodDict := IdentityDictionary new
 ]
 
 { #category : #initialization }
@@ -243,8 +249,7 @@ EP2MClass >> initializeWithTemplate: aTemplateClass [
 	superclassModel := self parent classNamed: superclassName ifAbsent: [nil].
 	"this happens when a class has more than one role"
 	self haltIf:[superclassName = self name].
-	self
-		superclass: superclassModel.
+	self superclass: superclassModel.
 	self initializeWithTemplateCustom: aTemplateClass.
 	self test.
 	^ self
@@ -278,6 +283,11 @@ EP2MClass >> instVarIndexFor: aString ifAbsent: aBlockClosure [
 { #category : #accessing }
 EP2MClass >> instVarNames [
 	^ self slots collect: #name
+]
+
+{ #category : #accessing }
+EP2MClass >> instVarsDict [
+	^ instVarsDict
 ]
 
 { #category : #'api - stubs creation' }
@@ -409,7 +419,7 @@ EP2MClass >> layout: anEP2LayoutClass [
 	layout := anEP2LayoutClass
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 EP2MClass >> localMethods [
 	^ methodDict
 ]
@@ -438,7 +448,7 @@ EP2MClass >> lookupSelectorAndMarkTraversedClasses: selector [
 	^ nil
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #marking }
 EP2MClass >> markMethodAsAccessed: aMethod [ 
 	"We ask the class to mark the method instead of asking the method itself to do it, for handling the case in which aMethod is a compiled method coming from DASTBlock or BlockClosure" 
 	(self methodNamed: aMethod selector)
@@ -459,6 +469,11 @@ EP2MClass >> methodBuilder [
 { #category : #accessing }
 EP2MClass >> methodDict [
 	^ methodDict
+]
+
+{ #category : #accessing }
+EP2MClass >> methodDict: aDictionary [
+	^ self writeSlotNamed: #methodDict value: aDictionary 
 ]
 
 { #category : #'accessing methods' }
@@ -517,8 +532,8 @@ EP2MClass >> printOn: aStream [
 
 { #category : #'accessing slots' }
 EP2MClass >> readSlotNamed: aString [
-
-	^ (self basicClass slotNamed: #instVarNames) read: self
+	
+	^ (self basicClass slotNamed: aString) read: self
 ]
 
 { #category : #accessing }
@@ -549,7 +564,7 @@ EP2MClass >> setLayoutKeepingSlots: anEP2Layout [
 	| oldSlots |
 	oldSlots := self layout ifNil: [#()] ifNotNil: [self slots].
 	self layout: anEP2Layout.
-	oldSlots do: [ :slot | self addSlot: slot name ]
+	oldSlots do: [ :slot | self addSlot: slot name index: slot index ]
 ]
 
 { #category : #'accessing compiler' }
@@ -565,6 +580,11 @@ EP2MClass >> slotNamed: aString [
 				key: aString;
 				signal ]
 		ifNotEmpty: [ :collection | collection anyOne ]
+]
+
+{ #category : #'accessing slots' }
+EP2MClass >> slotNamed: aString ifNone: aBlockClosure [ 
+	^ [ self slotNamed: aString ] on: KeyNotFound do: aBlockClosure
 ]
 
 { #category : #'accessing slots' }
@@ -587,8 +607,7 @@ EP2MClass >> superclass [
 
 { #category : #accessing }
 EP2MClass >> superclass: anEP2MBehavior [
-	
-	superclass := anEP2MBehavior 
+	^ superclass := anEP2MBehavior 
 ]
 
 { #category : #accessing }
@@ -665,4 +684,10 @@ EP2MClass >> testVMInstanceVariables [
 EP2MClass >> theNonMetaClass [
 	"compiler compatibility"
 	^ self
+]
+
+{ #category : #'accessing slots' }
+EP2MClass >> writeSlotNamed: aString value: anObject [
+	
+	(self basicClass slotNamed: aString) write: anObject to: self
 ]

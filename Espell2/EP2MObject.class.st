@@ -18,6 +18,11 @@ EP2MObject class >> named: aString parent: anEP2MLanguage [
 		yourself
 ]
 
+{ #category : #compatibility }
+EP2MObject >> asRemoteObject [
+	^ self 
+]
+
 { #category : #'evaluate ast' }
 EP2MObject >> debugCode: aString [ 
 	^ self debugCode: aString temps: #()

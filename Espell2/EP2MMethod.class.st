@@ -95,7 +95,7 @@ EP2MMethod >> printOn: aStream [
 
 { #category : #accessing }
 EP2MMethod >> selector [
-	^ selector
+	^ selector asSymbol
 ]
 
 { #category : #accessing }

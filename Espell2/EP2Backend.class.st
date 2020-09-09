@@ -917,9 +917,9 @@ EP2Backend >> object: object at: index put: value [
 
 { #category : #'accessing-objects body' }
 EP2Backend >> object: object instVarAt: index [ 
-	^ self 
+	^ (self 
 		objectOop: object target address 
-		instVarAt: index
+		instVarAt: index) asRemoteObject
 ]
 
 { #category : #'accessing-objects body' }
@@ -939,7 +939,7 @@ EP2Backend >> objectMemory [
 
 { #category : #'accessing-objects body' }
 EP2Backend >> objectOop: objectOop at: index [ 
-	^ self mirrorOnAddress: (simulator stObject: objectOop at: index)
+	^ (self mirrorOnAddress: (simulator stObject: objectOop at: index)) asRemoteObject
 ]
 
 { #category : #'accessing-objects body' }
@@ -962,7 +962,7 @@ EP2Backend >> objectOop: objectOop instVarAt: index [
 				forwardedObject := self objectMemory followForwarded: address.
 				self objectOop: objectOop instVarAt: index putOop: forwardedObject.
 				address := forwardedObject ].
-	^ self mirrorOnAddress: address
+	^ (self mirrorOnAddress: address) asRemoteObject
 ]
 
 { #category : #'accessing-objects body' }
@@ -1093,7 +1093,7 @@ EP2Backend >> slotsFor: aClassOrVariableSizedObject do: aBlockClosure [
 	aClassOrVariableSizedObject asClassDefinition
 		ifNotNil: [ :classDef | 
 			classDef allSlots do: [:each | | newSlot slotDefiningClass | 
-				slotDefiningClass := self builder classNamed: each parent parent name.
+				slotDefiningClass := self builder classNamed: each parent name.
 				"we create a new EP2Slot from the definition"
 				newSlot := each asEP2Slot definingClass: slotDefiningClass; index: each index; yourself.
 				aBlockClosure value: newSlot ]]

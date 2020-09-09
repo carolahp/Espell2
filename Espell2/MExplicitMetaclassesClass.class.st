@@ -30,6 +30,11 @@ MExplicitMetaclassesClass >> initializeWithTemplateCustom: aTemplate [
 	self metaclass: self parent classMetaclass.
 ]
 
+{ #category : #hooks }
+MExplicitMetaclassesClass >> innerBindingOf: aString [ 
+	^ nil
+]
+
 { #category : #'stubs creation' }
 MExplicitMetaclassesClass >> installStubCustom [
 	self metaclass = self

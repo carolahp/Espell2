@@ -7,7 +7,7 @@ Class {
 { #category : #'gt-inspector-extension' }
 EP2EmptyLayout class >> on: anEP2Mirror [
 	^ self new 
-		remote: anEP2Mirror;
+		object: anEP2Mirror;
 		yourself
 ]
 
@@ -15,7 +15,7 @@ EP2EmptyLayout class >> on: anEP2Mirror [
 EP2EmptyLayout >> gtInspectorIn: composite [
 	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
 	^ composite text
-		title: self remote asRemoteObjectCasted asString
+		title: self object asRemoteObjectCasted asString
 ]
 
 { #category : #'testing-layouts' }
@@ -32,6 +32,6 @@ EP2EmptyLayout >> layoutName [
 
 { #category : #'vm-tests' }
 EP2EmptyLayout >> testRemote [
-	self assert: (self remote mirror backend basicSizeOf: self remote mirror) equals: 0.
-	self assert: self remote basicClass format asLocalSmallInteger equals: 0
+	self assert: (self object mirror backend basicSizeOf: self object mirror) equals: 0.
+	self assert: self object basicClass format asLocalSmallInteger equals: 0
 ]

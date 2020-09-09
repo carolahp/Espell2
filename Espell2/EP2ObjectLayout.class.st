@@ -7,7 +7,7 @@ Class {
 { #category : #'gt-inspector-extension' }
 EP2ObjectLayout class >> on: anEP2Mirror [
 	^ self new 
-		remote: anEP2Mirror;
+		object: anEP2Mirror;
 		yourself
 ]
 

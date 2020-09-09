@@ -30,7 +30,7 @@ EP2MIndexedSlot >> printOn: aStream [
 { #category : #accessing }
 EP2MIndexedSlot >> read: aRemoteObject [
 	
-	^ (self backend object: aRemoteObject at: index) asRemoteObject
+	^ self backend object: aRemoteObject at: index
 ]
 
 { #category : #testing }

@@ -29,6 +29,11 @@ EP2UndeclaredBinding >> isUninitialized [
 	^ false
 ]
 
+{ #category : #evaluation }
+EP2UndeclaredBinding >> markWrite [
+	self error: 'Can not compile a method that tries to write an undefined variable named: #', self name 
+]
+
 { #category : #accessing }
 EP2UndeclaredBinding >> semanticNodeClass [
 	

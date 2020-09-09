@@ -12,16 +12,16 @@ EP2CompiledMethodLayout class >> defaultRemoteObjectClass [
 { #category : #accessing }
 EP2CompiledMethodLayout >> at: anIndex [
 	
-	^ (self backend 
-		object: remote  
-		at: anIndex)
+	^ self backend 
+		object: object  
+		at: anIndex
 ]
 
 { #category : #accessing }
 EP2CompiledMethodLayout >> at: anIndex put: aRemoteObject [
 	
 	self backend 
-		object: remote 
+		object: object 
 		at: anIndex 
 		put: aRemoteObject 
 ]
@@ -29,8 +29,8 @@ EP2CompiledMethodLayout >> at: anIndex put: aRemoteObject [
 { #category : #'gt-extension' }
 EP2CompiledMethodLayout >> gtInspectorIn: composite [
 	^ composite text
-		title: self remote asRemoteCompiledMethod asString;
-		display: [ self remote asRemoteCompiledMethod sourceCode ]
+		title: self object asRemoteCompiledMethod asString;
+		display: [ self object asRemoteCompiledMethod sourceCode ]
 ]
 
 { #category : #'gt-extension' }
@@ -38,8 +38,8 @@ EP2CompiledMethodLayout >> gtInspectorRawIn: composite [
 	^ composite table
 		title: [ '*Raw*' ];
 		display: [ |literals  bytecodes |
-			literals := remote literals collectWithIndex: [ :val :index | ('(remote) #literal', index asString) -> val ].
-			bytecodes := remote localBytecodes asOrderedCollection collectWithIndex: [ :val :index | ('(local) #bc', index asString) -> val ]. 
+			literals := object literals collectWithIndex: [ :val :index | ('(remote) #literal', index asString) -> val ].
+			bytecodes := object localBytecodes asOrderedCollection collectWithIndex: [ :val :index | ('(local) #bc', index asString) -> val ]. 
 			literals , bytecodes];
 		column: 'Variable'
 			evaluated: [:assoc |	assoc key ];
