@@ -9,3 +9,11 @@ MExplicitMetaclasses class >> classMetaclass [
 	" Return the subclass of EP2MClass that defines the metamodel for classes of the language "
 	^ MExplicitMetaclassesClass 
 ]
+
+{ #category : #hooks }
+MExplicitMetaclasses >> hookEntryPoint [
+	| code |
+	code := 'System start'.
+	^ self newInstruction 
+		code: code
+]
