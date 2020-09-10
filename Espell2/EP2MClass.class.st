@@ -20,15 +20,26 @@ Class {
 		'template',
 		'superclass',
 		'methodDict',
-		'format'
+		'format',
+		'tagsForMethods'
 	],
 	#category : #'Espell2-Metamodel'
 }
+
+{ #category : #calypso }
+EP2MClass >> >> aString [ 
+	^ self methodDict at: aString
+]
 
 { #category : #'accessing methods' }
 EP2MClass >> addLocalMethod: anEP2MMethod [
 	anEP2MMethod parent: self.
 	self methodDict at: anEP2MMethod selector put: anEP2MMethod
+]
+
+{ #category : #calypso }
+EP2MClass >> addMethodTag: aSymbol [ 
+	self backend addMethodTag: aSymbol to: self
 ]
 
 { #category : #'accessing slots' }
@@ -121,6 +132,27 @@ EP2MClass >> comment [
 	^ ''
 ]
 
+{ #category : #calypso }
+EP2MClass >> compile: aString classified: aCategory notifying: aRubScrolledTextMorph [ 
+
+	| parseTree ast selector newMethod | 
+	
+	parseTree := (RBParser 
+		parseMethod: aString
+		onError: [ :msg :pos | ^ nil ]) methodClass: self.
+		
+	ast :=  parseTree doSemanticAnalysisIn: self.  
+	
+	selector := ast selector.
+	newMethod := self ensureLocalMethodNamed: selector.
+	newMethod sourceCode: aString.
+	aCategory ifNotNil: [ 
+		newMethod tagWith: aCategory ].
+	
+	^ selector.
+
+]
+
 { #category : #'accessing compiler' }
 EP2MClass >> compiler [
 
@@ -169,6 +201,16 @@ EP2MClass >> definition [
 				space;
 				nextPutAll: 'superclass: nil' ].
 	^ aStream contents
+]
+
+{ #category : #calypso }
+EP2MClass >> ensureLocalMethodNamed: aSymbol [
+	
+	^ self localMethodNamed: aSymbol ifAbsent: [ 
+		| newMethod |
+		newMethod := EP2MMethod named: aSymbol asSymbol parent: self.
+		self addLocalMethod: newMethod.
+		newMethod].
 ]
 
 { #category : #initialization }
@@ -260,7 +302,8 @@ EP2MClass >> includesSelector: aString [
 { #category : #initialization }
 EP2MClass >> initialize [ 
 	super initialize.
-	methodDict := IdentityDictionary new
+	methodDict := IdentityDictionary new.
+	tagsForMethods := Set new.
 ]
 
 { #category : #initialization }
@@ -686,6 +729,11 @@ EP2MClass >> printOn: aStream [
 		nextPutAll: '"'
 ]
 
+{ #category : #calypso }
+EP2MClass >> pvtAddMethodTag: aSymbol [ 
+	self tagsForMethods add: aSymbol
+]
+
 { #category : #'accessing slots' }
 EP2MClass >> readSlotNamed: aString [
 	
@@ -783,6 +831,11 @@ EP2MClass >> tagsForAllMethods [
 	"I act as #tagsForMethods but I also takes into account methods comming from traits"
 
 	^ self methods flatCollect: [ :each  | each tags ] as: Set
+]
+
+{ #category : #calypso }
+EP2MClass >> tagsForMethods [
+	^ tagsForMethods
 ]
 
 { #category : #accessing }

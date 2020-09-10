@@ -55,9 +55,9 @@ EP2RemoteAssociation >> key: aString [
 
 { #category : #printing }
 EP2RemoteAssociation >> printOn: aStream [
-	self key printOn: aStream.
+	self key asRemoteByteSymbol printOn: aStream.
 	aStream nextPutAll: ' -> '.
-	self value printOn: aStream
+	self value asRemoteObjectCasted printOn: aStream
 ]
 
 { #category : #'high-level-message' }

@@ -5,10 +5,17 @@ Class {
 		'sourceCode',
 		'selector',
 		'author',
-		'time'
+		'time',
+		'tags'
 	],
 	#category : #'Espell2-Metamodel'
 }
+
+{ #category : #calypso }
+EP2MMethod class >> asYetUnclassifiedProtocolName [
+
+	^ 'as yet unclassified' asSymbol
+]
 
 { #category : #calypso }
 EP2MMethod >> argumentNames [
@@ -46,6 +53,11 @@ EP2MMethod >> author: aString [
 	author := aString
 ]
 
+{ #category : #accessing }
+EP2MMethod >> backend [ 
+	^ self parent backend
+]
+
 { #category : #calypso }
 EP2MMethod >> calypsoEnvironmentType [
 	^ClyMethod
@@ -69,6 +81,12 @@ EP2MMethod >> extendWithMonticello: aMCMethodDefinition [
 EP2MMethod >> hasSelector: aString specialSelectorIndex: anUndefinedObject [ 
 	self halt.
 	^ self ast sentMessages includes: selector
+]
+
+{ #category : #initialization }
+EP2MMethod >> initialize [ 
+	super initialize.
+	tags := Set new
 ]
 
 { #category : #initialization }
@@ -99,7 +117,7 @@ EP2MMethod >> origin [
 	^ self parent
 ]
 
-{ #category : #accesssing }
+{ #category : #accessing }
 EP2MMethod >> package [
 	^ self parent package
 ]
@@ -122,6 +140,23 @@ EP2MMethod >> printOn: aStream [
 				nextPutAll: '>>' ].
 	aStream print: self selector.
 	aStream nextPutAll: '"'
+]
+
+{ #category : #calypso }
+EP2MMethod >> protocol [
+
+	| methodTags |
+	
+	methodTags := self tags.
+	^	methodTags
+		ifEmpty: [  self class asYetUnclassifiedProtocolName]
+		ifNotEmpty: [ methodTags sorted first ]
+
+]
+
+{ #category : #calypso }
+EP2MMethod >> pvtTagWith: aSymbol [ 
+	tags add: aSymbol
 ]
 
 { #category : #accessing }
@@ -149,6 +184,12 @@ EP2MMethod >> sourceCode: anObject [
 ]
 
 { #category : #calypso }
+EP2MMethod >> tagWith: aSymbol [
+	self backend tagMethod: self with: aSymbol.
+	self parent addMethodTag: aSymbol.
+]
+
+{ #category : #calypso }
 EP2MMethod >> tags [
 	"ToDo"
 	^ #()
@@ -157,4 +198,11 @@ EP2MMethod >> tags [
 { #category : #accessing }
 EP2MMethod >> time: aDateAndTime [ 
 	time := aDateAndTime 
+]
+
+{ #category : #'tonel repository' }
+EP2MMethod >> writeIntoTonel [
+	| snapshot |
+	snapshot := self parent package  asMCSnapshot.
+	
 ]

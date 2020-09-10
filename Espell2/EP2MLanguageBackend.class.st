@@ -14,6 +14,11 @@ EP2MLanguageBackend class >> for: anOLObjVLisp [
 		yourself.
 ]
 
+{ #category : #calypso }
+EP2MLanguageBackend >> addMethodTag: aSymbol to: anEP2MClass [ 
+	anEP2MClass pvtAddMethodTag: aSymbol
+]
+
 { #category : #slots }
 EP2MLanguageBackend >> addSlot: aString index: anInteger to: anEP2MClass [
 	| newSlot |
@@ -68,4 +73,9 @@ EP2MLanguageBackend >> slotsFor: aClassOrVariableSizedObject do: aBlockClosure [
 		ifTrue: [ aClassOrVariableSizedObject layout slots do: [:slot | aBlockClosure value: slot] ] 
 		ifFalse: [ self error: 'For the moment slots are implemented only to store instance variables' ]
 	
+]
+
+{ #category : #calypso }
+EP2MLanguageBackend >> tagMethod: anEP2MMethod with: aSymbol [ 
+	anEP2MMethod pvtTagWith: aSymbol
 ]
