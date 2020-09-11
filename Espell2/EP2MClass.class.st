@@ -395,11 +395,6 @@ EP2MClass >> instVarNames [
 	^ self slots collect: #name
 ]
 
-{ #category : #accessing }
-EP2MClass >> instVarsDict [
-	^ instVarsDict
-]
-
 { #category : #'api - stubs creation' }
 EP2MClass >> installMetacircularStub [
 	"I install a class stub that is instance of itself"

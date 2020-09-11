@@ -24,7 +24,7 @@ EP2MIndexedSlot >> isIndexedSlot [
 
 { #category : #testing }
 EP2MIndexedSlot >> printOn: aStream [
-	aStream nextPutAll: name ,' => ', self slotName
+	aStream nextPutAll: objectName ,' => ', self slotName
 ]
 
 { #category : #accessing }

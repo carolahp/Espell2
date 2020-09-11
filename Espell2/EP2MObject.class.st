@@ -3,8 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'properties',
-		'name',
-		'parent'
+		'parent',
+		'objectName'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -105,12 +105,12 @@ EP2MObject >> markAsMaybeAccessed [
 
 { #category : #'accessing-api' }
 EP2MObject >> name [ 
-	^ name
+	^ objectName
 ]
 
 { #category : #'accessing-api' }
 EP2MObject >> name: aString [ 
-	name := aString
+	objectName := aString
 ]
 
 { #category : #'instruction hooks' }
@@ -184,6 +184,11 @@ EP2MObject >> removePropertyNamed: propertyName [
 	
 	(self hasPropertyNamed: propertyName)
 		ifTrue: [ properties removeKey: propertyName ]
+]
+
+{ #category : #'transforming objects' }
+EP2MObject >> toRemoteObject: aLocalObject [ 
+	^ aLocalObject asRemoteObjectInObjectSpace: self remoteBackend objectSpace
 ]
 
 { #category : #'unresolved objects' }

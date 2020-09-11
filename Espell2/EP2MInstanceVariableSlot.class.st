@@ -23,7 +23,7 @@ EP2MInstanceVariableSlot >> isInstanceVariableSlot [
 
 { #category : #'read-write' }
 EP2MInstanceVariableSlot >> printOn: aStream [
-	aStream nextPutAll: name ,' => ', self slotName
+	aStream nextPutAll: objectName ,' => ', self slotName
 ]
 
 { #category : #'read-write' }
@@ -34,7 +34,7 @@ EP2MInstanceVariableSlot >> read: aRemoteObject [
 { #category : #'read-write' }
 EP2MInstanceVariableSlot >> readWith: anInterpreter inNode: aRBInstanceVariableNode [ 
 
-	^ anInterpreter readInstVarAt: self index named: name
+	^ anInterpreter readInstVarAt: self index named: objectName
 ]
 
 { #category : #'read-write' }

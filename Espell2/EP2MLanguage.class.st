@@ -967,6 +967,11 @@ EP2MLanguage >> testCompletitude [
 	self allClasses do: [ :class | self assert: class layout isNotNil description: 'Class #', class name, ' referenced in the properties of another class (like superclass) but not defined' ].
 ]
 
+{ #category : #testing }
+EP2MLanguage >> testRemote [
+	self allClasses do: [ :class | class testRemote ]
+]
+
 { #category : #bootstrap }
 EP2MLanguage >> writeImage [
 	^ [builder writeImage] ensure: [ builder destroy ]

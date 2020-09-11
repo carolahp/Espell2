@@ -163,7 +163,7 @@ EP2RemoteClass >> classPool: anObject [
 
 { #category : #'instVars-mapping' }
 EP2RemoteClass >> classPoolIndex [
-	^ (self systemDefinition instanceVariableMapping classPoolIndex) ifNil: [ self class unmappedInstVarIndex ]
+	^ (self asClassDefinition metaclass allInstVarNames indexOf: 'classPool') = 0 ifTrue: [ self class unmappedInstVarIndex ]
 ]
 
 { #category : #'instVars-mapping' }
@@ -193,6 +193,27 @@ EP2RemoteClass >> classTableIndex [
 EP2RemoteClass >> compactClassIndex [
 	^ self backend compactClassIndexOf: self
 	
+]
+
+{ #category : #'accessors does not understand' }
+EP2RemoteClass >> doesNotUnderstand: aMessage [
+	| selector index result instVarName |
+	"this allows the user to access instance variables defined in their class model by accessors"
+	selector := aMessage selector.
+	index := selector indexOf: $:.
+	[index > 0
+		ifTrue: [ 
+			"possibly a setter"
+			selector size = index
+				ifFalse: [ self error ]
+				ifTrue: [ 
+					instVarName := selector copyUpTo: $:.
+					result := self instanceVariableNamed: instVarName put: (aMessage arguments at: 1) ] ]
+		ifFalse: [ 
+			"possibly a getter"
+			result := result := self instanceVariableNamed: aMessage selector  ].
+	] on: Exception do: [ super doesNotUnderstand: aMessage ].
+	^ result
 ]
 
 { #category : #'public-api' }
@@ -319,9 +340,10 @@ EP2RemoteClass >> name [
 ]
 
 { #category : #'high-level-messages' }
-EP2RemoteClass >> name: aString [ 
-
-	self instanceVariableAtIndex: self classNameIndex put: aString asSymbol
+EP2RemoteClass >> name: anObject [ 
+	| name |
+	name := (anObject isKindOf: String) ifTrue: [anObject asSymbol] ifFalse: [anObject].
+	self instanceVariableAtIndex: self classNameIndex put: name 
 ]
 
 { #category : #'high-level-messages' }

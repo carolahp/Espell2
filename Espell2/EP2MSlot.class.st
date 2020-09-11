@@ -14,7 +14,7 @@ EP2MSlot >> = other [
 	self == other
 		ifTrue: [ ^ true ].
 	^ (self species == other species) 
-			and: [ name = other name ]
+			and: [ objectName = other name ]
 ]
 
 { #category : #writing }
