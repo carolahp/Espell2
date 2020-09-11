@@ -530,9 +530,11 @@ EP2MLanguage >> exportAsTonelRepository: aFileReference [
 		info := MCVersionInfo new.
 		info instVarNamed: #name put: aPackage name, '-author'.
 		aVersion := MCVersion package: (MCPackage new name: aPackage name) info: info snapshot: aSnapshot dependencies: #().
-		TonelWriter 
+		
+		EP2TonelWriter 
 			fileOut: (aVersion)
-			on: aFileReference ]
+			on: aFileReference
+			metamodel: self ]
 ]
 
 { #category : #'vm-constants' }
@@ -852,6 +854,11 @@ EP2MLanguage >> packageFor: anEP2MBehavior [
 							'Class #' , anEP2MBehavior name
 								, ' contained by more than one package' ].
 			collection anyOne ]
+]
+
+{ #category : #'accessing backend' }
+EP2MLanguage >> packageNamed: aString [ 
+	^ self packages at: aString
 ]
 
 { #category : #'accessing backend' }

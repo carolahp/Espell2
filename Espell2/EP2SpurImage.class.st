@@ -11,6 +11,53 @@ Class {
 	#category : #'Espell2-Image'
 }
 
+{ #category : #constants }
+EP2SpurImage class >> metadataFileExtension [
+	^ 'metal'
+]
+
+{ #category : #'instance creation' }
+EP2SpurImage class >> onFile: aFileRefernce [ 
+	| espellBackend model image repository metadata languageMetaclass simulator objectSpace interpreter |
+	image := aFileRefernce asFileReference.
+	metadata := image parent / image basenameWithoutExtension, self metadataFileExtension.
+	metadata contents.
+	"I need to remove the hardcoded access to the languageMetaclass and to tonel repository, by getting this values from the metadata file"
+	languageMetaclass := MCandleExplicitMetaclasses.
+	repository := image parent / image basenameWithoutExtension.
+	
+	self assert: repository exists description: 'Model saved as tonel repository not found in ', repository asString.
+	
+	"initializing language model"
+	model := languageMetaclass new name: image basename, ' (from disk)'; yourself.
+	model loadTonelRepository: repository.
+	
+	"initializing VM simulator"
+	simulator := StackInterpreterSimulator newWithOptions: #(
+    ObjectMemory Spur32BitMemoryManager
+    MULTIPLEBYTECODESETS true).
+	simulator desiredNumStackPages: 8. "Speeds up scavenging when simulating.  Set to e.g. 64 for something like the real VM."
+	simulator assertValidExecutionPointersAtEachStep: false. 
+	simulator openOn: image .
+	
+	"initializing espell"
+	espellBackend := EP2Backend new 
+		simulator: simulator; 
+		systemDefinition: model;
+		yourself.
+	objectSpace := EP2ObjectSpace new
+		backend: espellBackend; 
+		yourself.
+	interpreter := EPASTEvaluator new
+		codeProvider: model;
+		environment: interpreter;
+		objectSpace: objectSpace.
+	objectSpace interpreter: interpreter.
+	espellBackend objectSpace: objectSpace.
+	
+	self onFirstObject: objectSpace nilObject.
+]
+
 { #category : #instantiation }
 EP2SpurImage class >> onFirstObject: anEP2Mirror [
 	^ self basicNew 
@@ -129,12 +176,20 @@ EP2SpurImage >> initialize [
 	self initializeSpecialObjects 
 ]
 
+{ #category : #initializing }
+EP2SpurImage >> initializeImageFromDiskWithNilObject: anEP2RemoteUndefinedObject [ 
+	self shouldBeImplemented.
+]
+
 { #category : #initialization }
 EP2SpurImage >> initializeSpecialObjects [
 	| classes |
 	falseObject := nilObject nextObject asRemoteFalse.
 	trueObject := falseObject nextObject asRemoteTrue.
-	specialObjectsArray := self backend specialObjectsArray asRemoteArray.
+	specialObjectsArray := (self backend
+		mirrorOnAddress: self backend simulator objectMemory specialObjectsOop)
+		asRemoteArray.
+	"self setRemoteForClassDefinitions."
 	"calculating class table"
 	classes := #() asOrderedCollection.
 	self
@@ -142,12 +197,20 @@ EP2SpurImage >> initializeSpecialObjects [
 			| val |
 			val := (self backend mirrorOnAddress: classOop) asRemoteClass.
 			classes
-				add: ({index .	val} asRemoteObjectInObjectSpace: self objectSpace) asRemoteArray ].
+				add:
+					({index.
+					val} asRemoteObjectInObjectSpace: self objectSpace) asRemoteArray ].
 	classes
-		sort:
-			[ :c1 :c2 | (c1 at: 2) asRemoteClass classNameFromAnyOrigin < (c2 at: 2) asRemoteClass classNameFromAnyOrigin ].
+		sort: [ :c1 :c2 | 
+			(c1 at: 2) asRemoteClass classNameFromAnyOrigin
+				< (c2 at: 2) asRemoteClass classNameFromAnyOrigin ].
 	classTable := (classes asArray
 		asRemoteObjectInObjectSpace: self objectSpace) asRemoteArray
+]
+
+{ #category : #accessing }
+EP2SpurImage >> languageDefinition [ 
+	^ self backend systemDefinition
 ]
 
 { #category : #'accessing-specialObjects' }
@@ -163,6 +226,21 @@ EP2SpurImage >> nilObject: anEP2Mirror [
 { #category : #accessing }
 EP2SpurImage >> objectSpace [
 	^ self backend interpreter objectSpace
+]
+
+{ #category : #'initializing disk image' }
+EP2SpurImage >> setRemoteForClassDefinitions [
+	| addressDict |
+	addressDict := IdentityDictionary new.
+	self classesOopDoWithIndex: [ :classOop :classIndex | | remoteClass |
+		remoteClass := (self backend mirrorOnAddress: classOop) asRemoteClass.
+		addressDict at: remoteClass indexInClassTable put: remoteClass.
+	].
+	self languageDefinition allClasses do: [ :classDef | | remoteClass | 
+		remoteClass := addressDict at: classDef indexInClassTable.
+		classDef remote:  remoteClass.
+		self assert: (classDef remote isNotNil and: [classDef remote isNotNilObject])
+	]
 ]
 
 { #category : #'accessing-specialObjects' }

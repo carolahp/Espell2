@@ -32,22 +32,43 @@ EP2MPackage >> allDefinedBehaviors [
 	^ self definedBehaviors 
 ]
 
+{ #category : #tonel }
+EP2MPackage >> asMCDefinition [
+	^ MCOrganizationDefinition categories: self categories asOrderedCollection 
+]
+
 { #category : #exporting }
 EP2MPackage >> asMCSnapshot [
-	
-	| definitions | 
-	
-	definitions := ((((self definedBehaviors reject: #isMeta) sorted: [:a :b | a name < b name ]) collect: #asMCDefinition)", (self extensionMethods collect: #asMCDefinition)") asOrderedCollection.
-	definitions addAll: ((self definedBehaviors, (self definedBehaviors collect: #metaclass)) flatCollect: [ :behavior |
-		(behavior localMethods reject: [:each | (each  parent instanceSide package = each package) not])
-			collect: [ :method | method asMCDefinition] ]).
-	
-	^ MCSnapshot fromDefinitions: definitions.
+	| definitions |
+	definitions := #() asOrderedCollection.
+	"adding the package"
+	definitions add: self asMCDefinition.
+	"adding behaviors"
+	definitions
+		addAll:
+			(((self definedBehaviors reject: #isMeta)
+				sorted: [ :a :b | a name < b name ]) collect: #asMCDefinition).
+	"adding methods"
+	definitions
+		addAll:
+			(self definedBehaviors , (self definedBehaviors collect: #metaclass)
+				flatCollect: [ :behavior | 
+					(behavior localMethods
+						reject: [ :each | (each parent instanceSide package = each package) not ])
+						collect: [ :method | method asMCDefinition ] ]).
+	^ MCSnapshot fromDefinitions: definitions
 ]
 
 { #category : #calypso }
 EP2MPackage >> calypsoEnvironmentType [
 	^RPackage
+]
+
+{ #category : #tonel }
+EP2MPackage >> categories [
+	
+	^ self definedBehaviors collect: #category as: Set
+
 ]
 
 { #category : #calypso }

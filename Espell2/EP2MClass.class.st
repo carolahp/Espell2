@@ -16,6 +16,8 @@ Class {
 	#name : #EP2MClass,
 	#superclass : #EP2MObject,
 	#instVars : [
+		'remote',
+		'indexInClassTable',
 		'layout',
 		'template',
 		'superclass',
@@ -291,12 +293,23 @@ EP2MClass >> hookInstall [
 		format: self format.
 	self remoteSystemDictionary at: self name put: self remote.
 	self basicClass hookInstall.
+	self indexInClassTable: self remote indexInClassTable.
 	^ self remote
 ]
 
 { #category : #'accessing methods' }
 EP2MClass >> includesSelector: aString [ 
 	^ self methodDict anySatisfy: [ :method | method selector = aString ]
+]
+
+{ #category : #accessing }
+EP2MClass >> indexInClassTable [
+	^ indexInClassTable
+]
+
+{ #category : #accessing }
+EP2MClass >> indexInClassTable: anInteger [ 
+	indexInClassTable := anInteger
 ]
 
 { #category : #initialization }
@@ -737,9 +750,15 @@ EP2MClass >> readSlotNamed: aString [
 
 { #category : #accessing }
 EP2MClass >> remote [
-	^ (self parent remote bootstrapEnvironmentAt: self name)
-		ifNil: [self remoteBackend nilObject]
-		ifNotNil: [:found | found asRemoteClass]
+	^ remote
+		ifNil: [ (self parent remote bootstrapEnvironmentAt: self name)
+				ifNil: [ self remoteBackend nilObject ]
+				ifNotNil: [ :found | found asRemoteClass ] ]
+]
+
+{ #category : #accessing }
+EP2MClass >> remote: anEP2RemoteClass [ 
+	remote := anEP2RemoteClass
 ]
 
 { #category : #'accessing remote backend' }
@@ -847,6 +866,12 @@ EP2MClass >> template: aClass [
 EP2MClass >> test [
 	self template ifNotNil: [ self testVMInstanceVariables. self testFormat ].
 	self assert: self layout isNotNil
+]
+
+{ #category : #hooks }
+EP2MClass >> testForWriting [
+	self test.
+	self assert: self indexInClassTable isNotNil.
 ]
 
 { #category : #testing }

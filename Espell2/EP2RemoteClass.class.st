@@ -26,6 +26,7 @@ EP2RemoteClass class >> role [
 
 { #category : #accessing }
 EP2RemoteClass >> addressDefinitionMap [
+	"self deprecated: 'use EP2MClass >> remote instead'."
 	^ self backend objectSpace interpreter codeProvider classLoader addressDefinitionMap
 ]
 
@@ -229,6 +230,11 @@ EP2RemoteClass >> format [
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> format: anInteger [
 	^self layout instanceVariableAtIndex: self classFormatIndex put: anInteger
+]
+
+{ #category : #'accessing header' }
+EP2RemoteClass >> indexInClassTable [
+	^ self classTableIndex
 ]
 
 { #category : #initialize }
