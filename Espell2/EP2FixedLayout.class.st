@@ -8,14 +8,6 @@ Class {
 }
 
 { #category : #'testing-types' }
-EP2FixedLayout >> allSlots [
-	^ (self object superclass isNil
-		or: [ self object superclass isNilObject ])
-		ifTrue: [ self object slots ]
-		ifFalse: [ self object superclass allSlots , self object slots ]
-]
-
-{ #category : #'testing-types' }
 EP2FixedLayout >> isFixedLayout [
 
 	^ true
