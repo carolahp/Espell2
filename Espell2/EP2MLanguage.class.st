@@ -436,8 +436,8 @@ EP2MLanguage >> cleanInstVars [
 					class superclass
 						ifNotNil: [ :superclass | 
 							(superclass allSlots contains: [ :s | s name = slot name ])
-								ifTrue: [ toRemove add: slot name ] ] ].
-			toRemove do: [ :slot | class removeSlot: slot ] .
+								ifTrue: [ toRemove add: slot ] ] ].
+			toRemove do: [ :slot | class layout pvtRemoveSlot: slot ] .
 			toRemove removeAll].
 	" we recalculate the index of all slots "
 	self allClasses

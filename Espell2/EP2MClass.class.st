@@ -55,6 +55,11 @@ EP2MClass >> addSlot: aString index: anInteger [
 	self layout addSlot: aString index: anInteger
 ]
 
+{ #category : #'accessing inst vars' }
+EP2MClass >> allInstVarNames [
+	^ (self allSlots select: #isInstanceVariableSlot) collect: #name
+]
+
 { #category : #'accessing slots' }
 EP2MClass >> allSlots [
 	^ self layout ifNil: [ #() ] ifNotNil: [:layo | layo allSlots ]
