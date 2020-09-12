@@ -163,9 +163,6 @@ EP2Mirror >> asRemoteObjectCasted [
 		ifTrue: [ ^ self asRemoteTrue ].
 	self isFalseObject
 		ifTrue: [ ^ self asRemoteFalse ].
-	layoutClass := self isSmallInteger
-		ifTrue: [ EP2ImmediateLayout ]
-		ifFalse: [ EP2Layout layoutClassForInstSpec: basicClass instSpec ].
 	
 	basicClass isNilObject
 		ifFalse: [ 
@@ -177,6 +174,10 @@ EP2Mirror >> asRemoteObjectCasted [
 						ifTrue: [ ^ EP2RemoteClass on: self ].
 					^ localClass on: self ]
 				 ].
+	layoutClass := self isSmallInteger
+		ifTrue: [ EP2ImmediateLayout ]
+		ifFalse: [ EP2Layout layoutClassForInstSpec: basicClass instSpec ].
+		
 	^ layoutClass defaultRemoteObjectClass on: self
 ]
 
