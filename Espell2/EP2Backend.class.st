@@ -232,7 +232,9 @@ EP2Backend >> byteStringClass: aRemoteClass [
 
 { #category : #'accessing-special classes' }
 EP2Backend >> byteSymbolClass [
-	^ (byteSymbolClass) asRemoteClass
+	^ byteSymbolClass
+		ifNil:
+			[ (self systemDefinition classNamed: #ByteSymbol) remote asRemoteClass ]
 ]
 
 { #category : #'accessing-special classes' }

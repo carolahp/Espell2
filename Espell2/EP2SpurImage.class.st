@@ -66,7 +66,6 @@ EP2SpurImage class >> onFile: aFileRefernce [
 			(espellBackend
 				mirrorOnAddress: simulator objectMemory specialObjectsOop)
 				asRemoteArray.
-				
 	^ self onFirstObject: objectSpace nilObject fromFile: true
 ]
 

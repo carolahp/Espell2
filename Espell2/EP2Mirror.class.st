@@ -231,8 +231,8 @@ EP2Mirror >> basicClass [
 
 { #category : #comparing }
 EP2Mirror >> basicIdentityHash [
-	"^ backend basicIdentityHashOf: self"
-
+	^ backend basicIdentityHashOf: self
+"
 	| result |
 	result := self backend
 		executePrimitiveNumber: self backend primitiveBasicIdentityHashNumber
@@ -240,7 +240,7 @@ EP2Mirror >> basicIdentityHash [
 		withArguments: #().
 	result hasFailed
 		ifTrue: [ ^ self error: 'Impossible to apply primitive basicIdentityHash' ].
-	^ result value asLocalSmallInteger
+	^ result value asLocalSmallInteger"
 ]
 
 { #category : #'accessing-header' }
