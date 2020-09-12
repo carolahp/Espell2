@@ -153,15 +153,10 @@ EP2Mirror >> asRemoteObjectCasted [
 	"gets the corresponding layout according to my instSpec and then uses it to create a remoteObject with the correct type"
 
 	| basicClass layoutClass |
+	
+	
 	basicClass := self basicRemoteClass.
-	basicClass isNilObject
-		ifFalse: [ basicClass asLocalClass
-				ifNotNil: [ :localClass | 
-					basicClass = (basicClass asClassDefinition parent classWithRole: #Metaclass) remote
-						ifTrue: [ ^ EP2RemoteMetaclass on: self ].
-					localClass = EP2RemoteMetaclass
-						ifTrue: [ ^ EP2RemoteClass on: self ].
-					^ localClass on: self ] ].
+	
 	self isNilObject
 		ifTrue: [ ^ self asRemoteNil ].
 	self isTrueObject
@@ -171,6 +166,17 @@ EP2Mirror >> asRemoteObjectCasted [
 	layoutClass := self isSmallInteger
 		ifTrue: [ EP2ImmediateLayout ]
 		ifFalse: [ EP2Layout layoutClassForInstSpec: basicClass instSpec ].
+	
+	basicClass isNilObject
+		ifFalse: [ 
+			basicClass asLocalClass
+				ifNotNil: [ :localClass | 
+					basicClass = (self backend systemDefinition classWithRole: #Metaclass) remote
+						ifTrue: [ ^ EP2RemoteMetaclass on: self ].
+					localClass = EP2RemoteMetaclass
+						ifTrue: [ ^ EP2RemoteClass on: self ].
+					^ localClass on: self ]
+				 ].
 	^ layoutClass defaultRemoteObjectClass on: self
 ]
 
