@@ -46,7 +46,7 @@ EP2TonelParser >> newClassDefinitionFrom: anArray [
 	
 	"We also exclude fields defined by the base class metamodel (EP2MClass)"
 	excluded := excluded , #(tagsForMethods objectName remote properties parent layout template superclass methodDict format).
-	
+
 	"We get the name of fields specified in the class metamodel defined by the user (subclass of EP2MClass)"
 	required := metamodel class classMetaclass allInstVarNames.
 	missing := required reject: [:key | excluded includes: key ].

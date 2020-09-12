@@ -30,6 +30,16 @@ EP2RemoteByteArray class >> role [
 ]
 
 { #category : #'gt-inspector' }
+EP2RemoteByteArray >> asRemoteByteArray [
+	^ self
+]
+
+{ #category : #'gt-inspector' }
+EP2RemoteByteArray >> asRemoteObjectCasted [
+	^ self
+]
+
+{ #category : #'gt-inspector' }
 EP2RemoteByteArray >> gtInspector2RawIn: composite [
 	<gtInspectorPresentationOrder: 2>
 	^ self layout gtInspectorRawIn: composite

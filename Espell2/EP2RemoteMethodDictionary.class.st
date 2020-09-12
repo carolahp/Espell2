@@ -49,10 +49,15 @@ EP2RemoteMethodDictionary class >> role [
 { #category : #'gt-inspector' }
 EP2RemoteMethodDictionary >> arrayWithoutNils [
 	^ ( self array allVariables 
-			collectWithIndex: [ :var :index | (self basicAt: index) asRemoteObjectCasted -> var ])
+			collectWithIndex: [ :var :index | (self basicAt: index) asRemoteObject -> var ])
 			reject: [ :assoc | 
 					(assoc key) isNilObject and: [
 					(assoc value) isNilObject] ]
+]
+
+{ #category : #'gt-inspector' }
+EP2RemoteMethodDictionary >> asRemoteMethodDictionary [
+	^ self
 ]
 
 { #category : #'gt-inspector' }

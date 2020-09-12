@@ -436,8 +436,8 @@ EP2MLanguage >> cleanInstVars [
 					class superclass
 						ifNotNil: [ :superclass | 
 							(superclass allSlots contains: [ :s | s name = slot name ])
-								ifTrue: [ toRemove add: slot name ] ] ].
-			toRemove do: [ :slot | class removeSlot: slot ] .
+								ifTrue: [ toRemove add: slot ] ] ].
+			toRemove do: [ :slot | class layout pvtRemoveSlot: slot ] .
 			toRemove removeAll].
 	" we recalculate the index of all slots "
 	self allClasses
@@ -535,6 +535,11 @@ EP2MLanguage >> exportAsTonelRepository: aFileReference [
 			fileOut: (aVersion)
 			on: aFileReference
 			metamodel: self ]
+]
+
+{ #category : #refactor }
+EP2MLanguage >> fixCircularInheritance [
+	self allClasses do: [ :class | class superclass = self ifTrue: [ class superclass: nil ] ]
 ]
 
 { #category : #'vm-constants' }
@@ -778,6 +783,7 @@ EP2MLanguage >> loadTonelRepository: aFileReference [
 			snap definitions do: [ :each |
 				each ensureEspellDefinitionIn: self package: package
 			 ]].
+	self fixCircularInheritance.
 	self testCompletitude.
 	self cleanInstVars.
 	self cleanPackages.
@@ -977,6 +983,12 @@ EP2MLanguage >> testCompletitude [
 { #category : #testing }
 EP2MLanguage >> testRemote [
 	self allClasses do: [ :class | class testRemote ]
+]
+
+{ #category : #testing }
+EP2MLanguage >> testStub [
+	self allClasses do: [ :class | 
+		class remote isNotNilObject ifTrue: [ class remote asRemoteClass testStub ] ]
 ]
 
 { #category : #bootstrap }

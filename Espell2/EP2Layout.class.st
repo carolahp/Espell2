@@ -73,11 +73,13 @@ EP2Layout >> allInstVars [
 		collect: [ :slot | slot name -> (slot read: self object) ]
 ]
 
-{ #category : #'accessing slots' }
+{ #category : #'testing-types' }
 EP2Layout >> allSlots [
-	^ self object superclass
-		ifNil: [ self slots ]
-		ifNotNil: [ self object superclass allSlots , self slots ]
+	^ ((self object superclass isNil
+		or: [ self object superclass isNilObject ])
+		or: [ self object superclass = self object ])
+		ifTrue: [ self object slots ]
+		ifFalse: [ self object superclass allSlots , self object slots ]
 ]
 
 { #category : #'accessing - slots' }
@@ -294,6 +296,24 @@ EP2Layout >> parent [
 	^ object
 ]
 
+{ #category : #slots }
+EP2Layout >> pvtAddSlot: aSlot [
+	(slots includes: aSlot)
+		ifFalse: [ slots add: aSlot ]
+]
+
+{ #category : #slots }
+EP2Layout >> pvtRemoveSlot: aSlot [
+	(slots includes: aSlot)
+		ifTrue: [ slots remove: aSlot ]
+		ifFalse: [ SlotNotFound signal: 'Trying to remove an unexistent slot' ]
+]
+
+{ #category : #slots }
+EP2Layout >> pvtSlots [
+	^ slots
+]
+
 { #category : #accessing }
 EP2Layout >> slotNamed: aString [
 	^ (self allSlots select: [ :slot | slot name = aString ]) anyOne
@@ -301,11 +321,10 @@ EP2Layout >> slotNamed: aString [
 
 { #category : #'accessing - slots' }
 EP2Layout >> slots [
-	"| result |
+	| result |
 	result := #() asOrderedCollection.
 	self slotsDo: [ :slot |  result add: slot ].
-	^ result"
-	^ slots
+	^ result
 ]
 
 { #category : #'accessing - slots' }

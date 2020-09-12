@@ -20,6 +20,16 @@ EP2RemoteCompiledMethod class >> role [
 ]
 
 { #category : #accessing }
+EP2RemoteCompiledMethod >> asRemoteCompiledMethod [
+	^ self
+]
+
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> asRemoteObjectCasted [
+	^ self
+]
+
+{ #category : #accessing }
 EP2RemoteCompiledMethod >> byteAt: anIndex [
 	^ self at: anIndex
 ]
@@ -98,8 +108,9 @@ EP2RemoteCompiledMethod >> literalAt: anIndex put: aLiteralMirror [
 
 { #category : #accessing }
 EP2RemoteCompiledMethod >> literals [
-	^(1 to: self numberOfLiterals) collect: [ :index |
-		(self literalAt: index) asRemoteObjectCasted ]
+	^(1 to: self numberOfLiterals) collect: [ :index | | literal |
+		literal := self literalAt: index.
+		literal asRemoteObject ]
 ]
 
 { #category : #'as yet unclassified' }

@@ -24,6 +24,16 @@ EP2RemoteByteString class >> role [
 	^ 'ByteString'
 ]
 
+{ #category : #converting }
+EP2RemoteByteString >> asRemoteByteString [
+	^ self
+]
+
+{ #category : #converting }
+EP2RemoteByteString >> asRemoteObjectCasted [
+	^ self
+]
+
 { #category : #'gt-extension' }
 EP2RemoteByteString >> gtInspectorRaw2In: composite [ 
 	<gtInspectorPresentationOrder: 2>

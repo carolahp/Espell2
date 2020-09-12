@@ -24,6 +24,16 @@ EP2RemoteTrue class >> role [
 	^ 'True'
 ]
 
+{ #category : #printing }
+EP2RemoteTrue >> asRemoteObjectCasted [
+	^ self
+]
+
+{ #category : #printing }
+EP2RemoteTrue >> asRemoteTrue [
+	^ self
+]
+
 { #category : #testing }
 EP2RemoteTrue >> isTrueObject [
 	^ true

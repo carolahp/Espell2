@@ -451,10 +451,7 @@ EP2Remote >> size [
 
 { #category : #'accessing-slots' }
 EP2Remote >> slots [
-	| allSlots |
-	allSlots := OrderedCollection new.
-	self slotsDo: [ :each | allSlots add: each].
-	^ allSlots asArray
+	^ self layout slots
 ]
 
 { #category : #'accessing-slots' }

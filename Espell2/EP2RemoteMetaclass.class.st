@@ -16,6 +16,11 @@ EP2RemoteMetaclass class >> role [
 ]
 
 { #category : #accessing }
+EP2RemoteMetaclass >> asRemoteMetaclass [
+	^ self
+]
+
+{ #category : #accessing }
 EP2RemoteMetaclass >> className [
 	^ self asClassDefinition
 		ifNil: [ nil ]
