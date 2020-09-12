@@ -15,11 +15,6 @@ EP2ImmediateLayout >> allInstVars [
 ]
 
 { #category : #'testing-types' }
-EP2ImmediateLayout >> allSlots [
-	^ #()
-]
-
-{ #category : #'testing-types' }
 EP2ImmediateLayout >> allVariables [
 	^ #()
 ]

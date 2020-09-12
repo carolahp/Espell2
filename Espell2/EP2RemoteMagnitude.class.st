@@ -23,3 +23,8 @@ EP2RemoteMagnitude class >> modelInstVarNames [
 EP2RemoteMagnitude class >> role [ 
 	^ 'Magnitude'
 ]
+
+{ #category : #converting }
+EP2RemoteMagnitude >> asRemoteObjectCasted [
+	^ self
+]

@@ -25,6 +25,16 @@ EP2RemoteByteSymbol class >> role [
 ]
 
 { #category : #printing }
+EP2RemoteByteSymbol >> asRemoteByteSymbol [
+	^ self
+]
+
+{ #category : #printing }
+EP2RemoteByteSymbol >> asRemoteObjectCasted [
+	^ self
+]
+
+{ #category : #printing }
 EP2RemoteByteSymbol >> printOn: aStream [
 	aStream nextPutAll: '*#';
 		nextPutAll: self asLocalByteSymbol;

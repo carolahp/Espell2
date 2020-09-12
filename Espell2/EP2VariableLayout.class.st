@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #'accessing-variables' }
+EP2VariableLayout >> allSlots [ 
+	^ self object slots
+]
+
+{ #category : #'accessing-variables' }
 EP2VariableLayout >> allVariables [
 	| vars |
 	vars := #() asOrderedCollection.

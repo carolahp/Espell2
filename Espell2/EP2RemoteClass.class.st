@@ -32,7 +32,7 @@ EP2RemoteClass >> addressDefinitionMap [
 
 { #category : #'accessing-slots' }
 EP2RemoteClass >> allSlots [ 
-	^ self slots
+	^ self layout allSlots
 ]
 
 { #category : #'converting-local' }
@@ -42,6 +42,8 @@ EP2RemoteClass >> asClassDefinition [
 		select: [ :classDef | classDef remote isNotNil and: [ classDef remote target address = self target address] ].
 	result size = 0
 		ifTrue: [ ^ self systemDefinition classClass ].
+	result size > 1
+		ifTrue: [ self error: 'More than one definition for one class' ].
 	^ result anyOne
 ]
 
@@ -58,9 +60,7 @@ EP2RemoteClass >> asLocalClass [
 	"^ self addressLocalClassMap 
 		at: self mirror target address 
 		ifAbsentPut: [" | definition role localClassOrNil |
-			definition := [self addressDefinitionMap at: self mirror target address] 
-				on: KeyNotFound 
-				do: [ ^ nil " self backend builder systemDefinitionAt: #Class" ].
+			definition := self asClassDefinition.
 			"if I am a metaclass, my instances can be represented as instances of EP2RemoteMetaclass"
 			definition isMetaclass ifTrue: [^ EP2RemoteMetaclass].
 			role := self backend systemDefinition roleOfClass: definition.
@@ -72,6 +72,16 @@ EP2RemoteClass >> asLocalClass [
 { #category : #'converting-local' }
 EP2RemoteClass >> asRGClass [
 	^ self asClassDefinition
+]
+
+{ #category : #accessing }
+EP2RemoteClass >> asRemoteClass [
+	^ self
+]
+
+{ #category : #'accessing-slots' }
+EP2RemoteClass >> asRemoteObjectCasted [
+	^ self
 ]
 
 { #category : #'high-level-messages' }
@@ -399,7 +409,7 @@ EP2RemoteClass >> target [
 
 { #category : #testing }
 EP2RemoteClass >> test [
-	| existentIndexes myIndex metaclass |
+	| existentIndexes myIndex |
 	self assert: (self superclass isNotNilObject or: [self asClassDefinition role = #ProtoObject]).
 	self assert: self methodDictionary isNotNilObject.
 	self assert: self format isNotNilObject.
@@ -417,9 +427,6 @@ EP2RemoteClass >> test [
 	existentIndexes := ((self backend builder bootstrapEnvironment allClasses) collect: [ :remoteClasss | remoteClasss classTableIndex ]) values.
 	existentIndexes := existentIndexes select: [ :index | index = myIndex ].
 	self assert: existentIndexes size = 1 description: 'Index ', myIndex asString, ' appears twice in the class table'.
-	"Testing metaclass"
-	"metaclass := self basicClass."
-	"metaclass = self ifFalse: [metaclass testStub]."
 ]
 
 { #category : #testing }

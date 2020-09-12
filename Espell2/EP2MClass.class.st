@@ -18,12 +18,12 @@ Class {
 	#instVars : [
 		'remote',
 		'indexInClassTable',
+		'tagsForMethods',
 		'layout',
 		'template',
 		'superclass',
 		'methodDict',
-		'format',
-		'tagsForMethods'
+		'format'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -53,11 +53,6 @@ EP2MClass >> addSlot: aString [
 { #category : #slots }
 EP2MClass >> addSlot: aString index: anInteger [  
 	self layout addSlot: aString index: anInteger
-]
-
-{ #category : #'accessing instance variables' }
-EP2MClass >> allInstVarNames [
-	^ self allSlots collect: #name
 ]
 
 { #category : #'accessing slots' }
@@ -249,6 +244,8 @@ EP2MClass >> extendWithMonticello: aMCClassDefinition [
 		ifTrue: [ | newPkg |
 			newPkg := self parent ensurePackageNamed: packageDef.
 			self package: newPkg ].
+	"index in class table"
+	self indexInClassTable: mcDef indexInClassTable.		
 	" we can't test yet since not all classes have been loaded "
 	self extendWithMonticelloCustom: mcDef.
 	^ self
@@ -437,9 +434,9 @@ EP2MClass >> installMethods [
 		sorted: [ :a :b | a selector < b selector ].
 	methods do:
 			[ :method | 
-			self remote methodDictionary test.
-			self remote methodDictionary at: method selector put: method .
-			self remote methodDictionary test]
+			method test.
+			self remote methodDictionary at: method selector put: method ].
+	self remote methodDictionary test.
 ]
 
 { #category : #'stubs creation' }
@@ -789,6 +786,11 @@ EP2MClass >> setLayoutKeepingSlots: anEP2Layout [
 EP2MClass >> sharedPools [
 	"compiler compatibility"
 	^#()
+]
+
+{ #category : #slots }
+EP2MClass >> slotAt: anInteger [ 
+	^ self layout slotAt: anInteger
 ]
 
 { #category : #'accessing slots' }

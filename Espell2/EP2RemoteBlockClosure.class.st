@@ -29,6 +29,11 @@ EP2RemoteBlockClosure >> argumentNames [
 	^ self target object argumentNames
 ]
 
+{ #category : #'high-level-messages' }
+EP2RemoteBlockClosure >> asRemoteObjectCasted [
+	^ self
+]
+
 { #category : #accessing }
 EP2RemoteBlockClosure >> basicSize [
 	^ 0

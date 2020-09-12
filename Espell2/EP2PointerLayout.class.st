@@ -32,3 +32,8 @@ EP2PointerLayout >> layoutName [
 EP2PointerLayout >> removeSlot: aString [ 
 	self slots remove: (self slotNamed: aString)
 ]
+
+{ #category : #slots }
+EP2PointerLayout >> slotAt: anInteger [ 
+	^ self allSlots at: anInteger
+]

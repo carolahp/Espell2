@@ -145,7 +145,6 @@ EP2Mirror >> asRemoteNil [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteObject [
-	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2Remote on: self
 ]
 
@@ -158,7 +157,7 @@ EP2Mirror >> asRemoteObjectCasted [
 	basicClass isNilObject
 		ifFalse: [ basicClass asLocalClass
 				ifNotNil: [ :localClass | 
-					basicClass = backend builder classLoader metaclassClass
+					basicClass = (basicClass asClassDefinition parent classWithRole: #Metaclass) remote
 						ifTrue: [ ^ EP2RemoteMetaclass on: self ].
 					localClass = EP2RemoteMetaclass
 						ifTrue: [ ^ EP2RemoteClass on: self ].

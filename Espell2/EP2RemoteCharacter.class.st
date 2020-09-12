@@ -34,6 +34,11 @@ EP2RemoteCharacter >> asLocalLiteral [
 	 ^ self asLocalCharacter
 ]
 
+{ #category : #'high-level-message' }
+EP2RemoteCharacter >> asRemoteCharacter [
+	^ self
+]
+
 { #category : #accessing }
 EP2RemoteCharacter >> at: index [ 
 	self shouldNotImplement 

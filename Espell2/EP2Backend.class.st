@@ -495,7 +495,7 @@ EP2Backend >> falseObject: anEP2Mirror [
 { #category : #'accessing low level' }
 EP2Backend >> fetchPointer: index ofObject: aRemoteObject [ 
 	"one based index"
-	^ (self mirrorOnAddress: (self objectMemory fetchPointer: index - 1 ofObject: aRemoteObject target address)) asRemoteObjectCasted
+	^ (self mirrorOnAddress: (self objectMemory fetchPointer: index - 1 ofObject: aRemoteObject target address)) asRemoteObject
 ]
 
 { #category : #'accessing special classes' }
@@ -1087,27 +1087,33 @@ EP2Backend >> simulator: aStackInterpreterSimulatorLSB [
 ]
 
 { #category : #'accessing-slots' }
-EP2Backend >> slotsFor: aClassOrVariableSizedObject do: aBlockClosure [ 
-
-	"getting the corresponding definition from systemDefinition" 
-	aClassOrVariableSizedObject asClassDefinition
-		ifNotNil: [ :classDef | 
-			classDef allSlots do: [:each | | newSlot slotDefiningClass | 
-				slotDefiningClass := self builder classNamed: each parent name.
-				"we create a new EP2Slot from the definition"
-				newSlot := each asEP2Slot definingClass: slotDefiningClass; index: each index; yourself.
-				aBlockClosure value: newSlot ]]
-		ifNil: [ | variableObj |
+EP2Backend >> slotsFor: aClassOrVariableSizedObject do: aBlockClosure [
+	"getting the corresponding definition from systemDefinition"
+	aClassOrVariableSizedObject isRemoteClass
+		ifTrue: [ 
+			| class superclass start |
+			class := aClassOrVariableSizedObject.
+			superclass := class superclass.
+			start := superclass isNilObject ifTrue: [ 0 ] ifFalse: [ superclass instSize ].
+			start + 1 to: class instSize 
+				do: [ :index | | newSlot |
+					"we create a new EP2Slot from the definition"
+					newSlot := EP2InstanceVariableSlot new 
+						owningClass: class;
+						index: index;
+						yourself.
+					aBlockClosure value: newSlot ] ]
+		ifFalse: [ | variableObj |
+			
 			variableObj := aClassOrVariableSizedObject.
-			1 to: variableObj basicSize do: [ :index | | newSlot |
-				newSlot := EP2IndexedSlot new 
-					definingClass: variableObj basicClass; 
+			1 to: variableObj basicSize do: [ :index | 
+				| newSlot |
+				newSlot := EP2IndexedSlot new
+					owningClass: variableObj basicClass;
 					index: index;
 					name: index asString;
 					yourself.
-				aBlockClosure value: newSlot
-		]
-			 ]
+				aBlockClosure value: newSlot ] ]
 ]
 
 { #category : #'accessing special classes' }
@@ -1174,10 +1180,9 @@ EP2Backend >> stackIsEmpty [
 	^ self simulator stackPointer - self simulator framePointer == (self simulator objectMemory wordSize * 4) negated
 ]
 
-{ #category : #'accessing-special classes' }
+{ #category : #accessing }
 EP2Backend >> symbolTableClass: anEP2RemoteClass [ 
-	
-	symbolTableClass := anEP2RemoteClass
+	self flag: 'Implement later'
 ]
 
 { #category : #accessing }

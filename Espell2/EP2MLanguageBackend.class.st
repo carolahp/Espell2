@@ -69,10 +69,12 @@ EP2MLanguageBackend >> object: anEP2MClass instVarAt: anInteger put: anObject [
 { #category : #'accessing slots' }
 EP2MLanguageBackend >> slotsFor: aClassOrVariableSizedObject do: aBlockClosure [
 	
-	aClassOrVariableSizedObject isBehavior 
-		ifTrue: [ aClassOrVariableSizedObject layout slots do: [:slot | aBlockClosure value: slot] ] 
-		ifFalse: [ self error: 'For the moment slots are implemented only to store instance variables' ]
-	
+	aClassOrVariableSizedObject isBehavior
+		ifTrue: [ (aClassOrVariableSizedObject layout instVarNamed: #slots)
+				do: [ :slot | aBlockClosure value: slot ] ]
+		ifFalse: [ self
+				error:
+					'For the moment slots are implemented only to store instance variables' ]
 ]
 
 { #category : #calypso }

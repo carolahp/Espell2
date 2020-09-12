@@ -75,9 +75,7 @@ EP2Layout >> allInstVars [
 
 { #category : #'accessing slots' }
 EP2Layout >> allSlots [
-	^ self object superclass
-		ifNil: [ self slots ]
-		ifNotNil: [ self object superclass allSlots , self slots ]
+	^ #()
 ]
 
 { #category : #'accessing - slots' }
@@ -301,11 +299,10 @@ EP2Layout >> slotNamed: aString [
 
 { #category : #'accessing - slots' }
 EP2Layout >> slots [
-	"| result |
+	| result |
 	result := #() asOrderedCollection.
 	self slotsDo: [ :slot |  result add: slot ].
-	^ result"
-	^ slots
+	^ result
 ]
 
 { #category : #'accessing - slots' }

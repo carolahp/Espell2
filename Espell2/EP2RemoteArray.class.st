@@ -34,6 +34,16 @@ EP2RemoteArray >> asDictionary [
 	^ EP2RemoteDictionary newFrom: self
 ]
 
+{ #category : #converting }
+EP2RemoteArray >> asRemoteArray [
+	^ self
+]
+
+{ #category : #converting }
+EP2RemoteArray >> asRemoteObjectCasted [
+	^ self
+]
+
 { #category : #'high-level-messages' }
 EP2RemoteArray >> associationsDo: aBlockClosure [ 
 	self do: aBlockClosure

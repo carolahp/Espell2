@@ -34,6 +34,16 @@ EP2RemoteProcess class >> role [
 ]
 
 { #category : #accessing }
+EP2RemoteProcess >> asRemoteObjectCasted [
+	^ self
+]
+
+{ #category : #accessing }
+EP2RemoteProcess >> asRemoteProcess [
+	^ self
+]
+
+{ #category : #accessing }
 EP2RemoteProcess >> context: anEP2RemoteContext [ 
 	self 
 		instanceVariableAtIndex: self processContextIndex

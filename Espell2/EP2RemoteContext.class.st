@@ -44,6 +44,16 @@ EP2RemoteContext >> asContextMirror [
 	^ self 
 ]
 
+{ #category : #'inst-var mapping' }
+EP2RemoteContext >> asRemoteContext [
+	^ self
+]
+
+{ #category : #converting }
+EP2RemoteContext >> asRemoteObjectCasted [
+	^ self
+]
+
 { #category : #accessing }
 EP2RemoteContext >> closure: aRemoteObject [ 
 	self instanceVariableAtIndex: self contextClosureOrNilIndex put: aRemoteObject 

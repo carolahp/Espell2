@@ -6,7 +6,8 @@ Class {
 		'trueObject',
 		'falseObject',
 		'specialObjectsArray',
-		'classTable'
+		'classTable',
+		'fromFile'
 	],
 	#category : #'Espell2-Image'
 }
@@ -17,51 +18,68 @@ EP2SpurImage class >> metadataFileExtension [
 ]
 
 { #category : #'instance creation' }
-EP2SpurImage class >> onFile: aFileRefernce [ 
+EP2SpurImage class >> onFile: aFileRefernce [
 	| espellBackend model image repository metadata languageMetaclass simulator objectSpace interpreter |
 	image := aFileRefernce asFileReference.
-	metadata := image parent / image basenameWithoutExtension, self metadataFileExtension.
+	metadata := image parent / image basenameWithoutExtension
+		, self metadataFileExtension.
 	metadata contents.
 	"I need to remove the hardcoded access to the languageMetaclass and to tonel repository, by getting this values from the metadata file"
 	languageMetaclass := MCandleExplicitMetaclasses.
 	repository := image parent / image basenameWithoutExtension.
-	
-	self assert: repository exists description: 'Model saved as tonel repository not found in ', repository asString.
-	
+	self
+		assert: repository exists
+		description: 'Model saved as tonel repository not found in ' , repository asString.
+
 	"initializing language model"
-	model := languageMetaclass new name: image basename, ' (from disk)'; yourself.
+	model := languageMetaclass new
+		name: image basename , ' (from disk)';
+		yourself.
 	model loadTonelRepository: repository.
-	
+
 	"initializing VM simulator"
-	simulator := StackInterpreterSimulator newWithOptions: #(
-    ObjectMemory Spur32BitMemoryManager
-    MULTIPLEBYTECODESETS true).
-	simulator desiredNumStackPages: 8. "Speeds up scavenging when simulating.  Set to e.g. 64 for something like the real VM."
-	simulator assertValidExecutionPointersAtEachStep: false. 
-	simulator openOn: image .
-	
+	simulator := StackInterpreterSimulator
+		newWithOptions:
+			#(ObjectMemory Spur32BitMemoryManager MULTIPLEBYTECODESETS true).
+	simulator desiredNumStackPages: 8.	"Speeds up scavenging when simulating.  Set to e.g. 64 for something like the real VM."
+	simulator assertValidExecutionPointersAtEachStep: false.
+	simulator openOn: image.
+
 	"initializing espell"
-	espellBackend := EP2Backend new 
-		simulator: simulator; 
+	espellBackend := EP2Backend new
+		simulator: simulator;
 		systemDefinition: model;
 		yourself.
 	objectSpace := EP2ObjectSpace new
-		backend: espellBackend; 
+		backend: espellBackend;
 		yourself.
-	interpreter := EPASTEvaluator new
+	interpreter := EPASTEvaluator new.
+	interpreter
 		codeProvider: model;
 		environment: interpreter;
 		objectSpace: objectSpace.
 	objectSpace interpreter: interpreter.
 	espellBackend objectSpace: objectSpace.
-	
-	self onFirstObject: objectSpace nilObject.
+	"set special objects array"
+	objectSpace
+		specialObjectsArray:
+			(espellBackend
+				mirrorOnAddress: simulator objectMemory specialObjectsOop)
+				asRemoteArray.
+				
+	^ self onFirstObject: objectSpace nilObject fromFile: true
 ]
 
 { #category : #instantiation }
-EP2SpurImage class >> onFirstObject: anEP2Mirror [
+EP2SpurImage class >> onFirstObject: anEP2Mirror [ 
+	^ self onFirstObject: anEP2Mirror fromFile: false
+]
+
+{ #category : #instantiation }
+EP2SpurImage class >> onFirstObject: anEP2Mirror fromFile: aBoolean [
 	^ self basicNew 
 		nilObject: anEP2Mirror asRemoteNil;
+		fromFile: aBoolean;
 		initialize;
 		yourself
 ]
@@ -115,6 +133,16 @@ EP2SpurImage >> classesOopDoWithIndex: aBlock [
 EP2SpurImage >> falseObject [
 
 	^ falseObject
+]
+
+{ #category : #accessing }
+EP2SpurImage >> fromFile [
+	^ fromFile ifNil: [ fromFile := false ]
+]
+
+{ #category : #accessing }
+EP2SpurImage >> fromFile: aBoolean [ 
+	fromFile := aBoolean
 ]
 
 { #category : #'gt-inspector' }
@@ -176,20 +204,13 @@ EP2SpurImage >> initialize [
 	self initializeSpecialObjects 
 ]
 
-{ #category : #initializing }
-EP2SpurImage >> initializeImageFromDiskWithNilObject: anEP2RemoteUndefinedObject [ 
-	self shouldBeImplemented.
-]
-
 { #category : #initialization }
 EP2SpurImage >> initializeSpecialObjects [
 	| classes |
 	falseObject := nilObject nextObject asRemoteFalse.
 	trueObject := falseObject nextObject asRemoteTrue.
-	specialObjectsArray := (self backend
-		mirrorOnAddress: self backend simulator objectMemory specialObjectsOop)
-		asRemoteArray.
-	"self setRemoteForClassDefinitions."
+	specialObjectsArray := self backend specialObjectsArray.
+	self fromFile ifTrue: [ self setRemoteForClassDefinitions ].
 	"calculating class table"
 	classes := #() asOrderedCollection.
 	self
@@ -237,38 +258,15 @@ EP2SpurImage >> setRemoteForClassDefinitions [
 		addressDict at: remoteClass indexInClassTable put: remoteClass.
 	].
 	self languageDefinition allClasses do: [ :classDef | | remoteClass | 
-		remoteClass := addressDict at: classDef indexInClassTable.
+		remoteClass := addressDict at: classDef indexInClassTable ifAbsent: [ EP2RemoteDeleted new ].
 		classDef remote:  remoteClass.
-		self assert: (classDef remote isNotNil and: [classDef remote isNotNilObject])
+		"self assert: (classDef remote isNotNil and: [classDef remote isNotNilObject])"
 	]
 ]
 
 { #category : #'accessing-specialObjects' }
 EP2SpurImage >> specialObjectsArray [
 	^ specialObjectsArray
-]
-
-{ #category : #testing }
-EP2SpurImage >> test [
-	self testClasses.
-	"self testMethods.
-	self testProcess"
-]
-
-{ #category : #testing }
-EP2SpurImage >> testClasses [
-	self classTable do: [ :assoc | | class | 
-		class := assoc asRemoteAssociation value asRemoteClass.
-		class test.
-		class basicClass test.
-		class superclass test. ]
-]
-
-{ #category : #testing }
-EP2SpurImage >> testStub [
-	self classTable do: [ :assoc | | class | 
-		class := assoc asRemoteAssociation value.
-		class asRemoteClass testStub ]
 ]
 
 { #category : #'accessing-specialObjects' }

@@ -81,6 +81,16 @@ EP2RemoteDictionary >> array: anEP2RemoteObject [
 	(self instanceVariableAtIndex: self dictionaryArrayIndex put: anEP2RemoteObject asRemoteArray) 
 ]
 
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteDictionary >> asRemoteDictionary [
+	^ self
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> asRemoteObjectCasted [
+	^ self
+]
+
 { #category : #'high-level-messages' }
 EP2RemoteDictionary >> associationAt: key [ 
 	^ self associationAt: key ifAbsent: [ self error: 'key not found in dictionary' ]

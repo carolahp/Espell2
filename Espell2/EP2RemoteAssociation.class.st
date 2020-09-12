@@ -33,6 +33,11 @@ EP2RemoteAssociation >> asLocalLiteral [
 	^ self key -> self value
 ]
 
+{ #category : #converting }
+EP2RemoteAssociation >> asRemoteAssociation [
+	^ self
+]
+
 { #category : #'instance-variables-mapping' }
 EP2RemoteAssociation >> associationKeyIndex [
 	^ self systemDefinition instanceVariableMapping associationKeyIndex 
