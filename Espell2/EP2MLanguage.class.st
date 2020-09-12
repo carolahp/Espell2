@@ -988,7 +988,7 @@ EP2MLanguage >> testRemote [
 { #category : #testing }
 EP2MLanguage >> testStub [
 	self allClasses do: [ :class | 
-		class remote isNotNilObject ifTrue: [ class remote asRemoteClass testStub ] ]
+		class remoteIsInstalled ifTrue: [ class remote asRemoteClass testStub ] ]
 ]
 
 { #category : #bootstrap }

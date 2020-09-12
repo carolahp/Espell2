@@ -11,7 +11,7 @@ EP2InstanceVariableSlot >> isInstanceVariableSlot [
 
 { #category : #'meta-object-protocol' }
 EP2InstanceVariableSlot >> name [ 
-	^ name ifNil: [ name := (owningRemoteClass asClassDefinition slotAt: index) name ]
+	^ name ifNil: [ name := (owningRemoteClass asClassDefinition allSlots at: index) name ]
 ]
 
 { #category : #printing }

@@ -39,7 +39,7 @@ EP2RemoteClass >> allSlots [
 EP2RemoteClass >> asClassDefinition [
 	| result |
 	result := self systemDefinition allClasses
-		select: [ :classDef | classDef remote isNotNil and: [ classDef remote target address = self target address] ].
+		select: [ :classDef | classDef remote = self ].
 	result size = 0
 		ifTrue: [ ^ self systemDefinition classClass ].
 	result size > 1

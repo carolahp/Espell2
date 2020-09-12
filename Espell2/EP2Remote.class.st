@@ -405,6 +405,8 @@ EP2Remote >> printOn: aStream [
 
 { #category : #'accessing-slots' }
 EP2Remote >> readSlotNamed: aName [
+	
+	self deprecated: 'use Slot>>read: instead'.
 	^ (self basicClass slotNamed: aName) read: self 
 ]
 

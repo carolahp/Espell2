@@ -281,7 +281,7 @@ EP2MClass >> hasComment [
 { #category : #hooks }
 EP2MClass >> hookInstall [
 	| remoteMethodDict remoteSuperclass |
-	self remote isNilObject ifTrue: [ self installStub ].
+	self remoteIsInstalled ifFalse: [ self installStub ].
 	self remote isStub ifFalse: [
 		"class is fully loaded"
 		^ self remote ].
@@ -318,7 +318,7 @@ EP2MClass >> indexInClassTable: anInteger [
 EP2MClass >> initialize [ 
 	super initialize.
 	methodDict := IdentityDictionary new.
-	tagsForMethods := Set new.
+	tagsForMethods := Set new
 ]
 
 { #category : #initialization }
@@ -415,8 +415,8 @@ EP2MClass >> installMetacircularStub [
 	"I install a class stub that is instance of itself"
 	| theNewMetaclass metaclassIndex |
 	" If the metaclass was already created, it will be found in the bootstrapEnvironment dictionary "
-	self remote isNilObject
-		ifFalse: [ ^ self remote ].
+	self remoteIsInstalled
+		ifTrue: [ ^ self remote ].
 
 	" We need to create the metaclass from scratch "
 	metaclassIndex := self classLoader newClassIndex.
@@ -449,13 +449,14 @@ EP2MClass >> installStub [
 	" I install the stub of my corresponding class in the kernel.
 	I depend on the implementation of installStubCustom "
 	| newClass |
-	self remote isNilObject
-		ifFalse: [ ^ self ].
+	self remoteIsInstalled
+		ifTrue: [ ^ self ].
 	newClass := self installStubCustom.
 	self classLoader
 		registerClass: newClass
 		definition: self
 		fullyLoaded: false.
+	self remote: newClass.
 	newClass testStub.
 	^ newClass
 ]
@@ -709,7 +710,7 @@ EP2MClass >> newStubWithFormat: anInteger [
 	" Only valid for metaclasses. 
 	I create a new class stub in the kernel by instantiating myself "
 	| newClass |
-	self assert: (self remote isNotNil and: [self remote isNotNilObject]).
+	self assert: self remoteIsInstalled.
 	newClass := self remote basicNew asRemoteMetaclass initialize.
 	newClass format: anInteger.
 	newClass setHashBitsTo: self classLoader newClassIndex.
@@ -746,21 +747,26 @@ EP2MClass >> pvtAddMethodTag: aSymbol [
 
 { #category : #'accessing slots' }
 EP2MClass >> readSlotNamed: aString [
-	
+	self deprecated: 'use Slot>>read: instead'.
 	^ (self basicClass slotNamed: aString) read: self
 ]
 
 { #category : #accessing }
 EP2MClass >> remote [
 	^ remote
-		ifNil: [ (self parent remote bootstrapEnvironmentAt: self name)
+		"ifNil: [ (self parent remote bootstrapEnvironmentAt: self name)
 				ifNil: [ self remoteBackend nilObject ]
-				ifNotNil: [ :found | found asRemoteClass ] ]
+				ifNotNil: [ :found | found asRemoteClass ] ]"
 ]
 
 { #category : #accessing }
 EP2MClass >> remote: anEP2RemoteClass [ 
 	remote := anEP2RemoteClass
+]
+
+{ #category : #testing }
+EP2MClass >> remoteIsInstalled [
+	^ self remote isNotNil and: [ self remote isNotNilObject ]
 ]
 
 { #category : #'accessing remote backend' }
@@ -791,11 +797,6 @@ EP2MClass >> setLayoutKeepingSlots: anEP2Layout [
 EP2MClass >> sharedPools [
 	"compiler compatibility"
 	^#()
-]
-
-{ #category : #slots }
-EP2MClass >> slotAt: anInteger [ 
-	^ self layout slotAt: anInteger
 ]
 
 { #category : #'accessing slots' }
