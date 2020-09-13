@@ -289,7 +289,7 @@ EP2Remote >> executePrimitiveMethod: aCompiledMethod withArguments: arguments [
 
 { #category : #'gt-inspector' }
 EP2Remote >> gtInspectorIn: composite [
-	<gtInspectorPresentationOrder: 1>
+	<gtInspectorPresentationOrder: 2>
 	^ self layout gtInspectorIn: composite
 ]
 

@@ -55,6 +55,11 @@ EP2RemoteContext >> asRemoteObjectCasted [
 ]
 
 { #category : #accessing }
+EP2RemoteContext >> closure [ 
+	^ self instanceVariableAtIndex: self contextClosureOrNilIndex 
+]
+
+{ #category : #accessing }
 EP2RemoteContext >> closure: aRemoteObject [ 
 	self instanceVariableAtIndex: self contextClosureOrNilIndex put: aRemoteObject 
 ]
@@ -87,6 +92,25 @@ EP2RemoteContext >> contextSenderIndex [
 { #category : #'inst-var mapping' }
 EP2RemoteContext >> contextStackpIndex [
 	^ (self systemDefinition instanceVariableMapping contextStackpIndex) ifNil: [ self class unmappedInstVarIndex ]
+]
+
+{ #category : #'gt-extension' }
+EP2RemoteContext >> gtInspectorIn: composite [
+	^ composite table
+		title: [ '*Raw*' ];
+		display: [ 
+			{ #self -> self . 
+			#sender -> self sender .
+			#pc -> self startpc.
+			#stackpc ->self stackPointer .
+			#method ->self method .
+			#closureOrNil ->self closure .
+			#receiver ->self receiver } ];
+		column: 'Variable'
+			evaluated: [:assoc |	assoc key ];
+		column: 'Value'
+			evaluated: [:assoc | assoc value ];
+		send: [ :assoc | assoc value ].
 ]
 
 { #category : #initializing }
@@ -122,8 +146,18 @@ EP2RemoteContext >> printOn: aStream [
 ]
 
 { #category : #accessing }
+EP2RemoteContext >> receiver [
+	^ self instanceVariableAtIndex: self contextReceiverIndex
+]
+
+{ #category : #accessing }
 EP2RemoteContext >> receiver: aRemoteObject [
 	self instanceVariableAtIndex: self contextReceiverIndex put: aRemoteObject
+]
+
+{ #category : #accessing }
+EP2RemoteContext >> sender [
+	^ self instanceVariableAtIndex: self contextSenderIndex
 ]
 
 { #category : #accessing }
@@ -132,8 +166,18 @@ EP2RemoteContext >> sender: aRemoteObject [
 ]
 
 { #category : #accesssing }
+EP2RemoteContext >> stackPointer [ 
+	^ self instanceVariableAtIndex: self contextStackpIndex 
+]
+
+{ #category : #accesssing }
 EP2RemoteContext >> stackPointer: anInteger [ 
 	self instanceVariableAtIndex: self contextStackpIndex put: anInteger
+]
+
+{ #category : #accessing }
+EP2RemoteContext >> startpc [
+	^ self instanceVariableAtIndex: self contextPcIndex 
 ]
 
 { #category : #accessing }
