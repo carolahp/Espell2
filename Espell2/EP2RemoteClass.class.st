@@ -247,6 +247,15 @@ EP2RemoteClass >> indexInClassTable [
 	^ self classTableIndex
 ]
 
+{ #category : #'high-level messages' }
+EP2RemoteClass >> inheritsFrom: anEP2RemoteClass [
+	| superclass | 
+	superclass := self superclass.
+	superclass = anEP2RemoteClass ifTrue: [ ^ true ].
+	(superclass isNilObject or: [ superclass = self ]) ifTrue: [ ^ false ].
+	^ superclass inheritsFrom: anEP2RemoteClass
+]
+
 { #category : #initialize }
 EP2RemoteClass >> initialize [ 
 	super initialize

@@ -155,7 +155,6 @@ EP2Mirror >> asRemoteObjectCasted [
 	| basicClass layoutClass |
 	
 	
-	basicClass := self basicRemoteClass.
 	
 	self isNilObject
 		ifTrue: [ ^ self asRemoteNil ].
@@ -163,6 +162,10 @@ EP2Mirror >> asRemoteObjectCasted [
 		ifTrue: [ ^ self asRemoteTrue ].
 	self isFalseObject
 		ifTrue: [ ^ self asRemoteFalse ].
+		
+	basicClass := self basicRemoteClass.
+	(basicClass inheritsFrom: (self backend systemDefinition classWithRole: #Metaclass) remote) 
+		ifTrue: [ ^ EP2RemoteMetaclass on: self ].
 	
 	basicClass isNilObject
 		ifFalse: [ 

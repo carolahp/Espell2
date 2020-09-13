@@ -153,7 +153,7 @@ EP2SpurImage >> gtInspector: composite [
 		title: 'Remote Image';
 		display: [ { self } ];
 		children: 
-			[ :each | self haltOnce. each allVariables collect: #asRemoteObjectCasted ]
+			[ :each | each allVariables collect: #asRemoteObjectCasted ]
 ]
 
 { #category : #'gt-inspector' }
