@@ -44,10 +44,21 @@ EP2RemoteProcess >> asRemoteProcess [
 ]
 
 { #category : #accessing }
+EP2RemoteProcess >> context [
+	^ self instanceVariableAtIndex: self processContextIndex
+]
+
+{ #category : #accessing }
 EP2RemoteProcess >> context: anEP2RemoteContext [ 
 	self 
 		instanceVariableAtIndex: self processContextIndex
 		put: anEP2RemoteContext 
+]
+
+{ #category : #printing }
+EP2RemoteProcess >> printOn: aStream [
+	aStream 
+		nextPutAll: '*a Process*'
 ]
 
 { #category : #accessing }

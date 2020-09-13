@@ -34,6 +34,11 @@ EP2RemoteProcessorScheduler >> activeProcess: aRemoteProcess [
 	self instanceVariableAtIndex: self processSchedulerActiveProcessIndex put: aRemoteProcess
 ]
 
+{ #category : #converting }
+EP2RemoteProcessorScheduler >> asRemoteScheduler [
+	^ self
+]
+
 { #category : #'inst-var mapping' }
 EP2RemoteProcessorScheduler >> printOn: aStream [
 	aStream 

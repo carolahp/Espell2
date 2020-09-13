@@ -197,6 +197,17 @@ EP2SpurImage >> gtInspectorLoadedClasses: composite [
 		send: [ :array | array ifNotNil: [ array at: 3 ] ]
 ]
 
+{ #category : #'gt-inspector' }
+EP2SpurImage >> gtInspectorSuspendedContext: composite [
+	<gtInspectorPresentationOrder: 0>
+	^ composite tree
+		rootsExpanded;
+		title: 'Suspended context';
+		display: [ (self specialObjectsArray at: 4) asRemoteAssociation value
+				asRemoteScheduler activeProcess asRemoteProcess ];
+		children: [ :each | (each allInstVars collect: #value) collect: #asRemoteObjectCasted ]
+]
+
 { #category : #initialization }
 EP2SpurImage >> initialize [
 	super initialize.
