@@ -428,7 +428,7 @@ EP2MClass >> installMetacircularStub [
 		newClassIndex: metaclassIndex.
 	self assert: theNewMetaclass basicClass = theNewMetaclass.
 	self assert: theNewMetaclass classTableIndex = metaclassIndex.
-	
+	self remote: theNewMetaclass.
 	^ theNewMetaclass
 ]
 

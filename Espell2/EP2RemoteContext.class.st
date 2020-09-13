@@ -113,6 +113,14 @@ EP2RemoteContext >> primitiveInitializeTempsInStack [
 	self backend initializeTempsInStackOfContext: self
 ]
 
+{ #category : #'initializing temps' }
+EP2RemoteContext >> printOn: aStream [
+	aStream 
+		nextPutAll: '*a Context (';
+		print: self method;
+		nextPutAll: ')*'
+]
+
 { #category : #accessing }
 EP2RemoteContext >> receiver: aRemoteObject [
 	self instanceVariableAtIndex: self contextReceiverIndex put: aRemoteObject

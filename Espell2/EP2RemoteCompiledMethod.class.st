@@ -184,8 +184,9 @@ EP2RemoteCompiledMethod >> primitive [
 { #category : #printing }
 EP2RemoteCompiledMethod >> printOn: aStream [
 	aStream 
-		nextPutAll: '* >> ';
-		nextPutAll: (self selector ifNil: ['--no selector--']);
+		print: self methodClass; 
+		nextPutAll: '>>*'; 
+		print: (self selector ifNil: ['--no selector--']);
 		nextPutAll: '*'
 ]
 

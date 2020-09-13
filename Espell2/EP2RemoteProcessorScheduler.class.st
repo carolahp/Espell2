@@ -35,6 +35,12 @@ EP2RemoteProcessorScheduler >> activeProcess: aRemoteProcess [
 ]
 
 { #category : #'inst-var mapping' }
+EP2RemoteProcessorScheduler >> printOn: aStream [
+	aStream 
+		nextPutAll: '*a ProcessorScheduler*'
+]
+
+{ #category : #'inst-var mapping' }
 EP2RemoteProcessorScheduler >> processSchedulerActiveProcessIndex [
 	^ (self systemDefinition instanceVariableMapping processSchedulerActiveProcessIndex) ifNil: [ self class unmappedInstVarIndex ]
 ]

@@ -153,7 +153,7 @@ EP2SpurImage >> gtInspector: composite [
 		title: 'Remote Image';
 		display: [ { self } ];
 		children: 
-			[ :each | each allVariables collect: #asRemoteObjectCasted ]
+			[ :each | self haltOnce. each allVariables collect: #asRemoteObjectCasted ]
 ]
 
 { #category : #'gt-inspector' }
@@ -257,7 +257,7 @@ EP2SpurImage >> setRemoteForClassDefinitions [
 		addressDict at: remoteClass indexInClassTable put: remoteClass.
 	].
 	self languageDefinition allClasses do: [ :classDef | | remoteClass | 
-		remoteClass := addressDict at: classDef indexInClassTable ifAbsent: [ EP2RemoteDeleted new ].
+		remoteClass := addressDict at: classDef indexInClassTable ifAbsent: [ nil ].
 		classDef remote:  remoteClass.
 		"self assert: (classDef remote isNotNil and: [classDef remote isNotNilObject])"
 	]

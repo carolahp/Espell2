@@ -58,13 +58,13 @@ MCandleExplicitMetaclassesClass >> instVarNames: aCollection [
 
 { #category : #accessing }
 MCandleExplicitMetaclassesClass >> testRemote [
-	| remote remoteName remoteInstVars |
+	| remoteObject remoteName remoteInstVars |
 	super testRemote.
-	remote := self remote.
-	remoteName := (remote instanceVariableNamed: #name).
+	remoteObject := self remote.
+	remoteName := (remoteObject instanceVariableNamed: #name).
 	self assert: remoteName isNotNilObject.
 	self assert: remoteName basicClass = (self parent remote classNamed: #ByteSymbol).
-	remoteInstVars := (remote instanceVariableNamed: #instVarNames).
+	remoteInstVars := (remoteObject instanceVariableNamed: #instVarNames).
 	self assert: remoteInstVars isNotNilObject.
 	self assert: remoteInstVars basicClass = (self parent remote classNamed: #Array)
 ]
