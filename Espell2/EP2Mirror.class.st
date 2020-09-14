@@ -213,6 +213,12 @@ EP2Mirror >> asRemoteStub [
 ]
 
 { #category : #converting }
+EP2Mirror >> asRemoteSystemDictionary [
+	self isNilObject ifTrue: [^ backend nilObject ].
+	^ EP2RemoteSystemDictionary on: self
+]
+
+{ #category : #converting }
 EP2Mirror >> asRemoteTrue [
 	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteTrue on: self

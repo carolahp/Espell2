@@ -52,7 +52,7 @@ EP2TonelWriter >> typeDefinitionOf: aClassDefinition [
 	excluded := excluded , #(tagsForMethods objectName remote properties parent layout template methodDict format).
 	
 	"We get the name of fields specified in the class metamodel defined by the user (subclass of EP2MClass)"
-	required := metamodel class classMetaclass allInstVarNames.
+	required := model basicClass allInstVarNames.
 	missing := required reject: [:key | excluded includes: key ].
 	missing do: [ : key | | value |
 		value := model instVarNamed: key.

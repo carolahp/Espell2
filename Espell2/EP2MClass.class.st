@@ -16,6 +16,7 @@ Class {
 	#name : #EP2MClass,
 	#superclass : #EP2MObject,
 	#instVars : [
+		'role',
 		'remote',
 		'indexInClassTable',
 		'tagsForMethods',
@@ -241,18 +242,17 @@ EP2MClass >> extendWithMonticello: aMCClassDefinition [
 	"role"
 	mcDef role
 		ifNotNil: [ self role ~= mcDef role
-				ifTrue: [ self halt ] ].
+				ifTrue: [ self role ifNil: [ self role: mcDef role ] ifNotNil: [ self halt ] ] ].
 	"package"
 	packageDef := mcDef category.
-	(self package isNotNil and: [self package name ~= packageDef]) 
+	(self package isNotNil and: [ self package name ~= packageDef ])
 		ifTrue: [ self package definedBehaviors remove: self ].
-	
 	self package isNil
 		ifTrue: [ | newPkg |
 			newPkg := self parent ensurePackageNamed: packageDef.
 			self package: newPkg ].
 	"index in class table"
-	self indexInClassTable: mcDef indexInClassTable.		
+	self indexInClassTable: mcDef indexInClassTable.
 	" we can't test yet since not all classes have been loaded "
 	self extendWithMonticelloCustom: mcDef.
 	^ self
@@ -458,7 +458,7 @@ EP2MClass >> installStub [
 		registerClass: newClass
 		definition: self
 		fullyLoaded: false.
-	self remote: newClass.
+	self assert: self remote isNotNil.
 	newClass testStub.
 	^ newClass
 ]
@@ -784,7 +784,12 @@ EP2MClass >> removeSlot: aString [
 
 { #category : #accessing }
 EP2MClass >> role [
-	^ template ifNil: [ nil ] ifNotNil: [ template role ]
+	^ role ifNil: [ role := template ifNil: [ nil ] ifNotNil: [ template role ] ] 
+]
+
+{ #category : #accessing }
+EP2MClass >> role: aString [ 
+	role := aString
 ]
 
 { #category : #accessing }

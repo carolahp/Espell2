@@ -42,7 +42,8 @@ MExplicitMetaclassesClass >> installStubCustom [
 	"first install the stub of my metaclass"
 	self metaclass installStub.
 	"instantiate my metaclass to create a stub of me"
-	^ self metaclass newStubWithFormat: self format
+	self remote: (self metaclass newStubWithFormat: self format).
+	^ self remote
 ]
 
 { #category : #accessing }

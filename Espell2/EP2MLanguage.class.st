@@ -613,7 +613,7 @@ EP2MLanguage >> hookGlobalNotFound: aString [
 
 { #category : #hooks }
 EP2MLanguage >> hookInitalizeGlobals [
-	^ self newDummyInstruction
+	^ self newDummyInstruction evaluate
 ]
 
 { #category : #hooks }
@@ -666,7 +666,8 @@ EP2MLanguage >> hookInstallStubs [
 
 { #category : #hooks }
 EP2MLanguage >> hookNewSystemDictionary [
-	^ self newDummyInstruction 
+	self deprecated: 'return the system dictionary fom the hookInitializeGlobals'.
+	^ self newDummyInstruction evaluate
 ]
 
 { #category : #hooks }

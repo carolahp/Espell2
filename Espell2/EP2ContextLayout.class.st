@@ -31,5 +31,5 @@ EP2ContextLayout >> gtInspectorIn: composite [
 
 { #category : #'gt-extension' }
 EP2ContextLayout >> instanceVariableNamed: aString [ 
-	^ (self object mirror target basicRemoteClass slotNamed: aString) read: self 
+	^ (self object mirror basicRemoteClass slotNamed: aString) read: self 
 ]

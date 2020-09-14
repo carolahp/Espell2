@@ -223,6 +223,11 @@ EP2Remote >> asRemoteSmallInteger [
 ]
 
 { #category : #converting }
+EP2Remote >> asRemoteSystemDictionary [
+	^ self mirror asRemoteSystemDictionary 
+]
+
+{ #category : #converting }
 EP2Remote >> asRemoteTrue [
 	^ self mirror asRemoteTrue
 ]

@@ -250,7 +250,7 @@ EP2RemoteClass >> indexInClassTable [
 	^ self classTableIndex
 ]
 
-{ #category : #'high-level messages' }
+{ #category : #testing }
 EP2RemoteClass >> inheritsFrom: anEP2RemoteClass [
 	| superclass | 
 	superclass := self superclass.
@@ -452,5 +452,5 @@ EP2RemoteClass >> testStub [
 	self assert: self asClassDefinition format equals: self format asLocalSmallInteger.
 	existentIndexes := ((self backend builder bootstrapEnvironment allClasses) collect: [ :remoteClasss | remoteClasss classTableIndex ]) values.
 	existentIndexes := existentIndexes select: [ :index | index = myIndex ].
-	self assert: existentIndexes size = 1 description: 'Index ', myIndex asString, ' appears twice in the class table' 
+	self assert: existentIndexes size = 1 description: 'Index should appear only once in the class table. Maybe you forgot to register the class ', self className asString, '?'.
 ]
