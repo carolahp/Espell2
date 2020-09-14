@@ -70,9 +70,11 @@ EP2MClass >> allSlots [
 
 { #category : #querying }
 EP2MClass >> allSubclasses [
-	^ (self parent allClasses
-		reject: [ :class | class = self ]) 
-		select: [ :class | class superclass = self ]
+	| subclasses |
+	"getting all classes that include self as a superclass in their inheritance hierarchy"
+	subclasses := self subclasses.
+	subclasses addAll: (subclasses flatCollect: [ :class | class allSubclasses ]).
+	^ subclasses
 ]
 
 { #category : #exporting }
@@ -838,6 +840,18 @@ EP2MClass >> sourceCodeTemplate [
 	statements'
 ]
 
+{ #category : #calypso }
+EP2MClass >> subclasses [
+	^ ((self parent allClasses
+		reject: [ :class | class = self ])
+		select: [ :class | class superclass = self ]) asOrderedCollection.
+]
+
+{ #category : #calypso }
+EP2MClass >> subclassesDo: aBlockClosure [ 
+	self subclasses do: aBlockClosure
+]
+
 { #category : #accessing }
 EP2MClass >> superclass [
 	^ superclass
@@ -846,6 +860,11 @@ EP2MClass >> superclass [
 { #category : #accessing }
 EP2MClass >> superclass: anEP2MBehavior [
 	^ superclass := anEP2MBehavior 
+]
+
+{ #category : #calypso }
+EP2MClass >> tags [
+	^ #()
 ]
 
 { #category : #calypso }
@@ -940,6 +959,11 @@ EP2MClass >> testVMInstanceVariables [
 EP2MClass >> theNonMetaClass [
 	"compiler compatibility"
 	^ self
+]
+
+{ #category : #calypso }
+EP2MClass >> visibleMethods [
+	^ self localMethods
 ]
 
 { #category : #'accessing slots' }

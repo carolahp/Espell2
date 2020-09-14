@@ -139,10 +139,13 @@ EP2RemoteClass >> classMethodDictionaryIndex [
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> className [
-	| remoteName |
+	^ self asClassDefinition
+		ifNil: [ nil ]
+		ifNotNil: [ :classDef | classDef name ]
+	"| remoteName |
 	remoteName := [self instanceVariableAtIndex: self classNameIndex] on: SubscriptOutOfBounds, Error do: [ ^ nil ].
 	remoteName isNilObject ifTrue: [^nil].
-	^ self backend fromRemoteByteSymbol: remoteName
+	^ self backend fromRemoteByteSymbol: remoteName"
 ]
 
 { #category : #accessing }

@@ -229,7 +229,7 @@ EP2Remote >> asRemoteTrue [
 
 { #category : #'converting-local' }
 EP2Remote >> asSmallInteger [
-	^ self asRemoteSmallInteger asSmallInteger 
+	^ self asRemoteSmallInteger asSmallInteger
 ]
 
 { #category : #accessing }

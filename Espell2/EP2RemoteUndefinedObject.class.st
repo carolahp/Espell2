@@ -32,7 +32,17 @@ EP2RemoteUndefinedObject class >> role [
 ]
 
 { #category : #'converting local' }
+EP2RemoteUndefinedObject >> asLocalByteString [
+	^ nil
+]
+
+{ #category : #'converting local' }
 EP2RemoteUndefinedObject >> asLocalLiteral [
+	^ nil
+]
+
+{ #category : #'converting local' }
+EP2RemoteUndefinedObject >> asSmallInteger [
 	^ nil
 ]
 

@@ -21,13 +21,6 @@ EP2RemoteMetaclass >> asRemoteMetaclass [
 ]
 
 { #category : #accessing }
-EP2RemoteMetaclass >> className [
-	^ self asClassDefinition
-		ifNil: [ nil ]
-		ifNotNil: [ :classDef | classDef name ]
-]
-
-{ #category : #accessing }
 EP2RemoteMetaclass >> classPool [ 
 	^ self backend nilObject
 ]
