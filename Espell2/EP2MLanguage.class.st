@@ -579,7 +579,7 @@ EP2MLanguage >> globalVariables [
 
 { #category : #'accessing roles' }
 EP2MLanguage >> globalWithRole: aString [ 
-	globalVariables select: [ :global | global role = aString ]
+	^(globalVariables select: [ :global | global role = aString ]) anyOne
 ]
 
 { #category : #hooks }
