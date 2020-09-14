@@ -910,7 +910,7 @@ EP2MClass >> testRemote [
 
 { #category : #testing }
 EP2MClass >> testRemoteStub [
-	self remote testStub
+	self remote asRemoteClass testStub
 ]
 
 { #category : #testing }
