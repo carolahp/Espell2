@@ -45,7 +45,7 @@ EP2MObject >> evaluateCode: aString [
 
 { #category : #'evaluating ast' }
 EP2MObject >> evaluateCode: aString temps: aCollection [ 
-	^ (self newInstruction code: aString; temps: aCollection) evaluate
+	^ (self newInstruction code: aString; temps: aCollection) evaluate asRemoteObjectCasted
 ]
 
 { #category : #'evaluating ast' }
