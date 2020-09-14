@@ -145,17 +145,14 @@ EP2Mirror >> asRemoteNil [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteObject [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2Remote on: self
 ]
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteObjectCasted [
 	"gets the corresponding layout according to my instSpec and then uses it to create a remoteObject with the correct type"
-
 	| basicClass layoutClass |
-	
-	
-	
 	self isNilObject
 		ifTrue: [ ^ self asRemoteNil ].
 	self isTrueObject
@@ -189,8 +186,21 @@ EP2Mirror >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 	^ self asRemoteObject
 ]
 
+{ #category : #'converting-high-level' }
+EP2Mirror >> asRemoteProcess [
+	self isNilObject ifTrue: [^ backend nilObject ].
+	^ EP2RemoteProcess on: self
+]
+
+{ #category : #'converting-local' }
+EP2Mirror >> asRemoteScheduler [ 
+	self isNilObject ifTrue: [^ backend nilObject ].
+	^ EP2RemoteProcessorScheduler on: self 
+]
+
 { #category : #converting }
 EP2Mirror >> asRemoteSmallInteger [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteSmallInteger on: self
 ]
 
@@ -204,6 +214,7 @@ EP2Mirror >> asRemoteStub [
 
 { #category : #converting }
 EP2Mirror >> asRemoteTrue [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteTrue on: self
 ]
 

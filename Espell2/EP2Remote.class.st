@@ -139,7 +139,7 @@ EP2Remote >> asRemoteByteArray [
 
 { #category : #converting }
 EP2Remote >> asRemoteByteString [
-	^ EP2RemoteByteString on: self mirror 
+	^ self mirror asRemoteByteString
 ]
 
 { #category : #converting }
@@ -189,7 +189,7 @@ EP2Remote >> asRemoteMethodDictionary [
 
 { #category : #converting }
 EP2Remote >> asRemoteNil [
-	^ EP2RemoteUndefinedObject on: self mirror
+	^ self mirror asRemoteNil
 ]
 
 { #category : #converting }
@@ -209,17 +209,17 @@ EP2Remote >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 
 { #category : #converting }
 EP2Remote >> asRemoteProcess [
-	^ EP2RemoteProcess on: self mirror
+	^ self mirror asRemoteProcess
 ]
 
 { #category : #converting }
 EP2Remote >> asRemoteScheduler [
-	^ EP2RemoteProcessorScheduler on: self mirror
+	^ self mirror asRemoteScheduler 
 ]
 
 { #category : #converting }
 EP2Remote >> asRemoteSmallInteger [
-	^ EP2RemoteSmallInteger on: self mirror
+	^ self mirror asRemoteSmallInteger
 ]
 
 { #category : #converting }
