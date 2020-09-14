@@ -361,7 +361,7 @@ EP2RemoteClass >> methodDictionary: aRemoteDictionary [
 
 { #category : #accessing }
 EP2RemoteClass >> name [
-	^ self className
+	^ self instanceVariableAtIndex: self classNameIndex 
 ]
 
 { #category : #'high-level-messages' }

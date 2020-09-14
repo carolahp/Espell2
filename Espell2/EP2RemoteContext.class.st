@@ -147,7 +147,7 @@ EP2RemoteContext >> printOn: aStream [
 
 { #category : #accessing }
 EP2RemoteContext >> receiver [
-	^ self instanceVariableAtIndex: self contextReceiverIndex
+	^ (self instanceVariableAtIndex: self contextReceiverIndex) asRemoteObjectCasted
 ]
 
 { #category : #accessing }
@@ -157,7 +157,7 @@ EP2RemoteContext >> receiver: aRemoteObject [
 
 { #category : #accessing }
 EP2RemoteContext >> sender [
-	^ self instanceVariableAtIndex: self contextSenderIndex
+	^ (self instanceVariableAtIndex: self contextSenderIndex) asRemoteContext
 ]
 
 { #category : #accessing }
@@ -167,7 +167,7 @@ EP2RemoteContext >> sender: aRemoteObject [
 
 { #category : #accesssing }
 EP2RemoteContext >> stackPointer [ 
-	^ self instanceVariableAtIndex: self contextStackpIndex 
+	^ (self instanceVariableAtIndex: self contextStackpIndex) asRemoteSmallInteger
 ]
 
 { #category : #accesssing }
@@ -177,7 +177,7 @@ EP2RemoteContext >> stackPointer: anInteger [
 
 { #category : #accessing }
 EP2RemoteContext >> startpc [
-	^ self instanceVariableAtIndex: self contextPcIndex 
+	^ (self instanceVariableAtIndex: self contextPcIndex) asRemoteSmallInteger
 ]
 
 { #category : #accessing }

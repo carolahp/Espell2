@@ -56,7 +56,7 @@ EP2Remote class >> modelInstVarNames [
 
 { #category : #'instance creation' }
 EP2Remote class >> on: anEPMirror [ 
-	
+	anEPMirror isNilObject ifTrue: [ ^ EP2RemoteUndefinedObject on: anEPMirror ].
 	^ self new
 		mirror: anEPMirror;
 		yourself

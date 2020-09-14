@@ -44,7 +44,8 @@ EP2CompiledMethodLayout >> gtInspectorRawIn: composite [
 		column: 'Variable'
 			evaluated: [:assoc |	assoc key ];
 		column: 'Value'
-			evaluated: [:assoc | assoc value ].
+			evaluated: [:assoc | assoc value asRemoteObjectCasted ];
+		send: [ :assoc | assoc value asRemoteObjectCasted ].
 ]
 
 { #category : #'testing-types' }

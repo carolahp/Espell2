@@ -13,3 +13,12 @@ EP2RemoteNumber class >> modelInstVarNames [
 EP2RemoteNumber class >> role [ 
 	^ 'Number'
 ]
+
+{ #category : #'gt-inspector' }
+EP2RemoteNumber >> gtInspectorIn: composite [
+	"self object isRoleMetaclass ifTrue: [ self haltOnce. ]."
+
+	^ composite text
+		title: self asString;
+		display: [ self asString ]
+]
