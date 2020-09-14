@@ -472,8 +472,8 @@ EP2MLanguage >> defaultBehaviors [
 EP2MLanguage >> defaultGlobalVariables [
 	
 	^ (IdentitySet new)
-		add: (EP2MGlobalVariable named: #Processor parent: self);
-		add: (EP2MGlobalVariable named: #Undeclared parent: self);
+		add: ((EP2MGlobalVariable named: #Processor parent: self) role: #Processor);
+		add: ((EP2MGlobalVariable named: #Undeclared parent: self) role: #Undeclared);
 		yourself
 ]
 
@@ -575,6 +575,11 @@ EP2MLanguage >> globalVariableNamed: aString [
 { #category : #'accessing globals' }
 EP2MLanguage >> globalVariables [
 	^ globalVariables
+]
+
+{ #category : #'accessing roles' }
+EP2MLanguage >> globalWithRole: aString [ 
+	globalVariables select: [ :global | global role = aString ]
 ]
 
 { #category : #hooks }
@@ -693,7 +698,12 @@ EP2MLanguage >> hookRegisterClass: anEP2RemoteClass named: aString [
 
 { #category : #hooks }
 EP2MLanguage >> hookSetSpecialObjectsArray: anEP2RemoteArray [
-	^ self newDummyInstruction 
+		
+	^ (self newInstruction 
+		code: 'Smalltalk specialObjectsArray: anArray';
+		temps: { 'anArray' -> anEP2RemoteArray };
+		yourself)
+	
 ]
 
 { #category : #'accessing remote backend' }

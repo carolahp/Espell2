@@ -1160,6 +1160,14 @@ EP2Backend >> smalltalkInstance [
 	^ self specialObjectsArray at: 9.
 ]
 
+{ #category : #'accessing special classes' }
+EP2Backend >> smalltalkInstance: anObject [
+
+	"The Smalltalk instance in most special objects arrays.
+	Smalltalk specialObjectsArray indexOf: Smalltalk"
+	^ self specialObjectsArray at: 9 put: anObject
+]
+
 { #category : #'accessing-special objects' }
 EP2Backend >> specialObjectsArray [
 	"Careful. This is an external object. Do not send messages to it."
