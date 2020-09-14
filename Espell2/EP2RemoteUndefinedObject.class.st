@@ -19,6 +19,13 @@ EP2RemoteUndefinedObject class >> modelInstVarNames [
 	^ #()
 ]
 
+{ #category : #'instance creation' }
+EP2RemoteUndefinedObject class >> on: anEPMirror [ 
+	^ self new
+		mirror: anEPMirror;
+		yourself
+]
+
 { #category : #constants }
 EP2RemoteUndefinedObject class >> role [ 
 	^ 'UndefinedObject'

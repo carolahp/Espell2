@@ -457,6 +457,11 @@ EP2MLanguage >> cleanPackages [
 	toRemove do: [ :pkg | self packages remove: pkg ]
 ]
 
+{ #category : #'evaluation debugging' }
+EP2MLanguage >> debugEntryPoint [
+	^ self debugCode: self hookEntryPoint code
+]
+
 { #category : #'default model values' }
 EP2MLanguage >> defaultBehaviors [
 	
