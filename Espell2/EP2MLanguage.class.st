@@ -645,6 +645,11 @@ EP2MLanguage >> hookInitializeProcessScheduler [
 ]
 
 { #category : #hooks }
+EP2MLanguage >> hookInitializeSpecialObjectsArray [
+	self subclassResponsibility 
+]
+
+{ #category : #hooks }
 EP2MLanguage >> hookInstallClass: aClassDefinition [
 	
 	aClassDefinition hookInstall.
