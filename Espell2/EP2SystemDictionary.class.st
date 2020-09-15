@@ -169,5 +169,5 @@ EP2SystemDictionary >> size [
 { #category : #initialization }
 EP2SystemDictionary >> withSystemDictionary: aSystemDictionary [
 
-	systemDictionary := aSystemDictionary asRemoteDictionary
+	systemDictionary := aSystemDictionary asRemoteSystemDictionary
 ]

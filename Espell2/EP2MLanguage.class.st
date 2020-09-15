@@ -698,12 +698,7 @@ EP2MLanguage >> hookRegisterClass: anEP2RemoteClass named: aString [
 
 { #category : #hooks }
 EP2MLanguage >> hookSetSpecialObjectsArray: anEP2RemoteArray [
-		
-	^ (self newInstruction 
-		code: 'Smalltalk specialObjectsArray: anArray';
-		temps: { 'anArray' -> anEP2RemoteArray };
-		yourself)
-	
+	self subclassResponsibility 
 ]
 
 { #category : #'accessing remote backend' }
