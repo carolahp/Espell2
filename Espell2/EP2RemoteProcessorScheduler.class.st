@@ -49,3 +49,18 @@ EP2RemoteProcessorScheduler >> printOn: aStream [
 EP2RemoteProcessorScheduler >> processSchedulerActiveProcessIndex [
 	^ (self systemDefinition instanceVariableMapping processSchedulerActiveProcessIndex) ifNil: [ self class unmappedInstVarIndex ]
 ]
+
+{ #category : #'as yet unclassified' }
+EP2RemoteProcessorScheduler >> suspendedProcessList [
+	^ self instanceVariableAtIndex: self suspendedProcessListIndex
+]
+
+{ #category : #'as yet unclassified' }
+EP2RemoteProcessorScheduler >> suspendedProcessList: aRemoteArray [
+	self instanceVariableAtIndex: self suspendedProcessListIndex put: aRemoteArray 
+]
+
+{ #category : #'as yet unclassified' }
+EP2RemoteProcessorScheduler >> suspendedProcessListIndex [
+	^ 1
+]

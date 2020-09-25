@@ -112,7 +112,7 @@ EP2RemoteClass >> bindingOf: aSymbol [
 	(self sharedPool isNilObject) ifFalse: [ self halt ].
 	
 	self flag: 'superclass is nil for all stubs, check this later'.
-	(self superclass isNilObject) ifFalse:  [
+	(self superclass isNilObject or: self superclass = self) ifFalse:  [
 		(self superclass bindingOf: aSymbol) ifNotNil: [ :bind | ^ bind ]].
 	
 	(self backend builder systemDefinition globalVariableNamed: aSymbol)
@@ -279,7 +279,7 @@ EP2RemoteClass >> innerBindingOf: aSymbol [
 	(self sharedPool isNilObject) ifFalse: [ self halt ].
 	
 	self flag: 'superclass is nil for all stubs, check this later'.
-	(self superclass isNilObject) ifFalse:  [^ self superclass innerBindingOf: aSymbol].
+	(self superclass isNilObject or: self superclass = self) ifFalse:  [^ self superclass innerBindingOf: aSymbol].
 	
 	^ nil
 ]

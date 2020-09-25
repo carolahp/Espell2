@@ -6,7 +6,8 @@ Class {
 		'selector',
 		'author',
 		'time',
-		'tags'
+		'tags',
+		'remote'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -97,6 +98,29 @@ EP2MMethod >> initializeWithLocal: aCompiledMethod [
 		yourself
 ]
 
+{ #category : #installing }
+EP2MMethod >> install [
+	| remoteMethod compiledMethod |
+	
+	remoteMethod := self parent remote backend builder objectSpace
+		crossCompiler
+		compile: self sourceCode
+		forClass: self methodClass
+		inEnvironment: self parent remote backend builder.
+	remoteMethod test.
+	self remote: remoteMethod.
+	^ remoteMethod
+	"installMethods
+	| methods |
+	methods := (self methodBuilder methodsFromDefinition: self)
+		sorted: [ :a :b | a selector < b selector ].
+	methods do:
+			[ :method | 
+			method test.
+			 ].
+	self remote methodDictionary test."
+]
+
 { #category : #calypso }
 EP2MMethod >> isExtension [
 	^ false
@@ -157,6 +181,11 @@ EP2MMethod >> protocol [
 { #category : #calypso }
 EP2MMethod >> pvtTagWith: aSymbol [ 
 	tags add: aSymbol
+]
+
+{ #category : #accessing }
+EP2MMethod >> remote: anEP2RemoteCompiledMethod [ 
+	remote := anEP2RemoteCompiledMethod 
 ]
 
 { #category : #accessing }

@@ -17,3 +17,13 @@ MCandleExplicitMetaclasses >> hookEntryPoint [
 	^ self newInstruction 
 		code: code
 ]
+
+{ #category : #hooks }
+MCandleExplicitMetaclasses >> hookInitializeSpecialObjectsArray [
+	^ nil
+]
+
+{ #category : #hooks }
+MCandleExplicitMetaclasses >> hookSetSpecialObjectsArray: anEP2RemoteArray [ 
+	^nil
+]

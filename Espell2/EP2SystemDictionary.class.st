@@ -166,6 +166,11 @@ EP2SystemDictionary >> size [
 			withTemps: { 'systemDictionary' -> systemDictionary }) asSmallInteger
 ]
 
+{ #category : #accessing }
+EP2SystemDictionary >> systemDictionary [
+	^ systemDictionary
+]
+
 { #category : #initialization }
 EP2SystemDictionary >> withSystemDictionary: aSystemDictionary [
 

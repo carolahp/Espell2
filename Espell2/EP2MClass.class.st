@@ -436,14 +436,10 @@ EP2MClass >> installMetacircularStub [
 
 { #category : #hooks }
 EP2MClass >> installMethods [
-	| methods |
-	methods := (self methodBuilder methodsFromDefinition: self)
-		sorted: [ :a :b | a selector < b selector ].
-	methods do:
-			[ :method | 
-			method test.
-			self remote methodDictionary at: method selector put: method ].
-	self remote methodDictionary test.
+	(self localMethods select: #isInstallable)
+		do: [ :method | | remoteMethod | 
+			remoteMethod := method install.
+			self remote methodDictionary at: remoteMethod selector put: remoteMethod ]
 ]
 
 { #category : #'stubs creation' }
@@ -674,6 +670,11 @@ EP2MClass >> mcType [
 ]
 
 { #category : #'accessing backend' }
+EP2MClass >> metaclass [ 
+	self subclassResponsibility 
+]
+
+{ #category : #'accessing backend' }
 EP2MClass >> methodBuilder [
 	^ self parent methodBuilder
 ]
@@ -732,6 +733,12 @@ EP2MClass >> package [
 { #category : #accessing }
 EP2MClass >> package: anEP2MPackage [ 
 	anEP2MPackage addDefinedBehavior: self
+]
+
+{ #category : #'hooks-dynamic method loading' }
+EP2MClass >> parserClass [ 
+self haltOnce.
+	^ RBParser
 ]
 
 { #category : #printing }

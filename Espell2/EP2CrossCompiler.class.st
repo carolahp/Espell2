@@ -23,19 +23,25 @@ EP2CrossCompiler >> basicCompileDoItFromSourceCode: sourceCode [
 { #category : #compiling }
 EP2CrossCompiler >> basicCompileSourceCode: sourceCode forClass: anEP2CrossCompilerBinding [ 
 
-	| options contextClass |
+	| options contextClass compiler ast vars accessor |
 	options := #().
 	contextClass := objectSpace backend interpreter codeProvider systemDefinition classContext.
 	anEP2CrossCompilerBinding className == contextClass name ifTrue: [ options := #(+ optionLongIvarAccessBytecodes) ].
 	
-	^ (OpalCompiler new
+	compiler := OpalCompiler new
 		options: options;
-		source: sourceCode;
 		class: anEP2CrossCompilerBinding;
 		environment: anEP2CrossCompilerBinding environment;
 		requestor: nil;
-		failBlock: [ self error ];
-		parse) generate
+		failBlock: [ self error ].
+	"compiler compilationContext parserClass: ".
+	ast := compiler source: sourceCode; parse.
+	"vars := (ast allVariables select: [:node | node name = #grades and: node isRead ]) .
+	accessor := compiler source: 'self grades'; parseExpression.
+	vars parent replaceNode: vars withNode: accessor.
+	ast."
+	
+	^ ast generate
 ]
 
 { #category : #compiling }

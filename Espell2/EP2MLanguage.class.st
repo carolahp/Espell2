@@ -410,7 +410,8 @@ EP2MLanguage >> classRoles [
 		#SystemDictionary -> #SystemDictionary.
 		#Magnitude -> #Magnitude.
 		#Number -> #Number.
-		#Integer -> #Integer
+		#Integer -> #Integer.
+		#ProcessList -> #ProcessList
 		} asDictionary ] 
 ]
 
@@ -579,7 +580,9 @@ EP2MLanguage >> globalVariables [
 
 { #category : #'accessing roles' }
 EP2MLanguage >> globalWithRole: aString [ 
-	^(globalVariables select: [ :global | global role = aString ]) anyOne
+	| result |
+	result := (globalVariables select: [ :global | global role = aString ]) .
+	^ result isEmpty ifTrue: [ nil ] ifFalse: [ result anyOne ]
 ]
 
 { #category : #hooks }
@@ -591,6 +594,11 @@ EP2MLanguage >> hookCreateInitialObjects [
 EP2MLanguage >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
 	self deprecated: 'use hooks in EP2MClass instead'.
 	self subclassResponsibility 
+]
+
+{ #category : #hooks }
+EP2MLanguage >> hookCreateSmalltalkInstance [
+	^ nil
 ]
 
 { #category : #hooks }
@@ -633,15 +641,25 @@ EP2MLanguage >> hookInitializeMethodDictionaryFor: anEP2RemoteClass [
 
 { #category : #hooks }
 EP2MLanguage >> hookInitializeProcessScheduler [ 
-	|code|
+	| processor processList |
+
+	processor := (self classWithRole: #ProcessorScheduler) remote basicNew asRemoteScheduler.
+	processList := (self classWithRole: #Array) remote basicNew: 5.
+	1 to: 5 do: [ :index | 
+		| process |
+		process := (self classWithRole: #ProcessList) remote basicNew.
+		processList at: index put: process ].
+	processor suspendedProcessList: processList.
+	
+	^ processor
+	"|code|
 	code := 'Processor := ProcessorScheduler basicNew.
 				Processor initProcessLists.'.
-	
 	^ (self newInstruction
 		code: code;
 		temps: #();
 		yourself ) evaluate
-
+"
 ]
 
 { #category : #hooks }
@@ -757,6 +775,7 @@ EP2MLanguage >> loadRequiredBehaviors [
 	Object is the root and class is instance of itself"
 
 	objModel := self newBehaviorFromTemplate: EP2Remote.
+	objModel superclass: nil.
 	self addBehavior: objModel.
 	classModel := self newBehaviorFromTemplate: EP2RemoteClass.
 	self addBehavior: classModel.
@@ -776,6 +795,8 @@ EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 	template := aClassEP2Remote.
 	template role ifNotNil: [ 
 		model := self newBehaviorFromTemplate: template.
+		"self haltIf: (model name = #Object)."
+		
 		model initializeWithTemplate: aClassEP2Remote.
 		self addBehavior: model ].
 	" Recursive call to load subclasses "

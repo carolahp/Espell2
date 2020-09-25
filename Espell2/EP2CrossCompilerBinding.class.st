@@ -62,6 +62,11 @@ EP2CrossCompilerBinding >> class: aRGClass [
 ]
 
 { #category : #accessing }
+EP2CrossCompilerBinding >> classModel [
+	^ class
+]
+
+{ #category : #accessing }
 EP2CrossCompilerBinding >> className [
 	
 	^ class name
