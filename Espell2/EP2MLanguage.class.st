@@ -460,7 +460,7 @@ EP2MLanguage >> cleanPackages [
 
 { #category : #'evaluation debugging' }
 EP2MLanguage >> debugEntryPoint [
-	^ self debugCode: self hookEntryPoint code
+	^ self debugCode: self entryPointCode
 ]
 
 { #category : #'default model values' }
@@ -524,6 +524,11 @@ EP2MLanguage >> ensurePackageNamed: aString [
 				yourself.
 			self packages at: package name put: package.
 			package ]
+]
+
+{ #category : #hooks }
+EP2MLanguage >> entryPointCode [
+	self subclassResponsibility 
 ]
 
 { #category : #'tonel repository' }
@@ -599,11 +604,6 @@ EP2MLanguage >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [
 { #category : #hooks }
 EP2MLanguage >> hookCreateSmalltalkInstance [
 	^ nil
-]
-
-{ #category : #hooks }
-EP2MLanguage >> hookEntryPoint [
-	self subclassResponsibility 
 ]
 
 { #category : #hooks }
@@ -721,7 +721,7 @@ EP2MLanguage >> hookRegisterClass: anEP2RemoteClass named: aString [
 
 { #category : #hooks }
 EP2MLanguage >> hookSetSpecialObjectsArray: anEP2RemoteArray [
-	self subclassResponsibility 
+	^ nil
 ]
 
 { #category : #'accessing remote backend' }
@@ -765,6 +765,14 @@ EP2MLanguage >> layoutForInstSpec: anInteger on: anEP2Class [
 
 { #category : #hooks }
 EP2MLanguage >> loadCustomClasses [
+	| methodStart |
+	
+	methodStart := (self class methodMetaclass named: #entryPoint parent: self classMetaclass)
+		sourceCode: 
+'entryPoint ', self entryPointCode;
+		selector: #entryPoint;
+		yourself.
+	self classMetaclass addLocalMethod: methodStart.
 	^ self 
 ]
 

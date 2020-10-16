@@ -39,6 +39,21 @@ EP2RemoteCompiledMethod >> byteAt: anInteger put: anEP2RemoteSmallInteger [
 	^ self at: anInteger put: anEP2RemoteSmallInteger 
 ]
 
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> bytecode [
+	"Answer an ByteArray of the btyecode of the method."
+
+	| start stop bytecode |
+
+	start := self initialPC.
+	stop := self endPC.
+	
+	bytecode := ByteArray new: (stop - start + 1).
+	start to: stop do: [:index |
+		bytecode byteAt: index - start + 1 put: (self byteAt: index)].
+	^bytecode
+]
+
 { #category : #'as yet unclassified' }
 EP2RemoteCompiledMethod >> bytecodes [
 	| bytecodes |
@@ -56,6 +71,13 @@ EP2RemoteCompiledMethod >> bytecodes: someBytecodes [
 	someBytecodes withIndexDo: [ :bytecode :index |
 		self byteAt: start + index put: (bytecode asLiteralInObjectSpace: self backend).
 	]
+]
+
+{ #category : #'accessing-encoder' }
+EP2RemoteCompiledMethod >> encoderClass [
+	^ self signFlag 
+		ifTrue: [ EncoderForSistaV1 ]
+		ifFalse: [ EncoderForV3PlusClosures ]
 ]
 
 { #category : #accessing }
@@ -76,6 +98,12 @@ EP2RemoteCompiledMethod >> gtInspectorRaw2In: composite [
 	^ self layout gtInspectorRawIn: composite
 ]
 
+{ #category : #testing }
+EP2RemoteCompiledMethod >> hasProperty: aKey [
+	self propertyAt: aKey ifAbsent: [ ^false ].
+	^true.
+]
+
 { #category : #accessing }
 EP2RemoteCompiledMethod >> header [
 	^ (self objectAt: 1) target asSmallInteger
@@ -90,6 +118,11 @@ EP2RemoteCompiledMethod >> headerOfCompiledMethod [
 EP2RemoteCompiledMethod >> initialPC [
 	"Answer the program counter for the receiver's first bytecode."
 	^ (self numberOfLiterals + 1) * self backend wordSize + 1
+]
+
+{ #category : #testing }
+EP2RemoteCompiledMethod >> isPrimitive [
+	^self primitive > 0
 ]
 
 { #category : #accessing }
@@ -173,6 +206,14 @@ EP2RemoteCompiledMethod >> penultimateLiteral [
 ]
 
 { #category : #accessing }
+EP2RemoteCompiledMethod >> pragmas [
+	| selectorOrProperties |
+	^(selectorOrProperties := self penultimateLiteral) isMethodProperties
+		ifTrue: [selectorOrProperties pragmas]
+		ifFalse: [#()]
+]
+
+{ #category : #accessing }
 EP2RemoteCompiledMethod >> primitive [
 	| primBits |
 	primBits := self header bitAnd: 16r100001FF.
@@ -188,6 +229,14 @@ EP2RemoteCompiledMethod >> printOn: aStream [
 		nextPutAll: '>>*'; 
 		print: (self selector ifNil: ['--no selector--']);
 		nextPutAll: '*'
+]
+
+{ #category : #accessing }
+EP2RemoteCompiledMethod >> propertyAt: propName ifAbsent: aBlock [
+	| propertiesOrSelector |
+	^(propertiesOrSelector := self penultimateLiteral) isMethodProperties
+		ifTrue: [propertiesOrSelector propertyAt: propName ifAbsent: aBlock]
+		ifFalse: [aBlock value]
 ]
 
 { #category : #accessing }
@@ -213,12 +262,19 @@ EP2RemoteCompiledMethod >> selector [
 	^ self backend fromRemoteByteSymbol: self remoteSelector
 ]
 
+{ #category : #'accessing-header' }
+EP2RemoteCompiledMethod >> signFlag [
+	"Answer the sign flag bit.  The sign flag bit may be
+	 used by the VM to select an alternate bytecode set."
+
+	^ self header < 0
+]
+
 { #category : #accessing }
 EP2RemoteCompiledMethod >> sourceCode [
 	"^ backend objectSpace sourceCodeManager
 		sourceCodeOfMethod: self
 		ifAbsent: [ self decompile decompileString ]"
-
 	(self methodClass asRGClass localMethods
 		select: [ :rgmethod | rgmethod selector = self selector ]) 
 		ifNotEmpty: [ :found | ^ found anyOne sourceCode ].

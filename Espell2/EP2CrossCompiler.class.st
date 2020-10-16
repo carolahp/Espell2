@@ -98,6 +98,21 @@ EP2CrossCompiler >> transformLiteral: aLiteral asLiteralInObjectSpace: anObjectS
 ]
 
 { #category : #'translating to remote' }
+EP2CrossCompiler >> translateToLocalCompiledMethod: remoteCompiledMethod [ 
+
+	| localMethod methodSize |
+	methodSize := remoteCompiledMethod bytecode size + CompiledMethodTrailer empty size.
+	localMethod := self
+						createCompiledMethodWithSize: methodSize
+						andHeader: remoteCompiledMethod header.
+	localMethod bytecodes: remoteCompiledMethod bytecode.
+	remoteCompiledMethod allLiterals withIndexDo: [ :literal :index |
+		localMethod literalAt: index put: (self transformLiteral: literal asLiteralInObjectSpace: objectSpace).
+	].
+	^localMethod
+]
+
+{ #category : #'translating to remote' }
 EP2CrossCompiler >> translateToRemoteCompiledMethod: localCompiledMethod [ 
 
 	| methodMirror methodSize |

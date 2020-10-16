@@ -7,7 +7,7 @@ Class {
 		'falseObject',
 		'specialObjectsArray',
 		'classTable',
-		'fromFile'
+		'file'
 	],
 	#category : #'Espell2-Image'
 }
@@ -66,19 +66,19 @@ EP2SpurImage class >> onFile: aFileRefernce [
 			(espellBackend
 				mirrorOnAddress: simulator objectMemory specialObjectsOop)
 				asRemoteArray.
-	^ self onFirstObject: objectSpace nilObject fromFile: true
+	^ self onFirstObject: objectSpace nilObject file: image
 ]
 
 { #category : #instantiation }
 EP2SpurImage class >> onFirstObject: anEP2Mirror [ 
-	^ self onFirstObject: anEP2Mirror fromFile: false
+	^ self onFirstObject: anEP2Mirror file: nil
 ]
 
 { #category : #instantiation }
-EP2SpurImage class >> onFirstObject: anEP2Mirror fromFile: aBoolean [
+EP2SpurImage class >> onFirstObject: anEP2Mirror file: aFileReferenceOrNil [
 	^ self basicNew 
 		nilObject: anEP2Mirror asRemoteNil;
-		fromFile: aBoolean;
+		file: aFileReferenceOrNil;
 		initialize;
 		yourself
 ]
@@ -135,13 +135,18 @@ EP2SpurImage >> falseObject [
 ]
 
 { #category : #accessing }
-EP2SpurImage >> fromFile [
-	^ fromFile ifNil: [ fromFile := false ]
+EP2SpurImage >> file [
+	^ file
 ]
 
 { #category : #accessing }
-EP2SpurImage >> fromFile: aBoolean [ 
-	fromFile := aBoolean
+EP2SpurImage >> file: anObject [
+	file := anObject
+]
+
+{ #category : #accessing }
+EP2SpurImage >> fromFile [
+	^ file isNotNil
 ]
 
 { #category : #'gt-inspector' }
@@ -257,6 +262,20 @@ EP2SpurImage >> nilObject: anEP2Mirror [
 { #category : #accessing }
 EP2SpurImage >> objectSpace [
 	^ self backend interpreter objectSpace
+]
+
+{ #category : #running }
+EP2SpurImage >> run [ 
+	| sis |
+	self file ifNil: [ self error: 'Image not loaded from file can not run' ].
+	sis := StackInterpreterSimulator newWithOptions: #(
+    ObjectMemory Spur32BitMemoryManager
+    MULTIPLEBYTECODESETS true).
+	sis desiredNumStackPages: 8. "Speeds up scavenging when simulating.  Set to e.g. 64 for something like the real VM."
+	sis assertValidExecutionPointersAtEachStep: false. 
+
+	sis openOn: self file.
+	sis run.
 ]
 
 { #category : #'initializing disk image' }

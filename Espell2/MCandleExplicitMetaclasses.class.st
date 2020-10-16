@@ -11,11 +11,8 @@ MCandleExplicitMetaclasses class >> classMetaclass [
 ]
 
 { #category : #hooks }
-MCandleExplicitMetaclasses >> hookEntryPoint [
-	| code |
-	code := 'System start'.
-	^ self newInstruction 
-		code: code
+MCandleExplicitMetaclasses >> entryPointCode [
+	^ 'System start'
 ]
 
 { #category : #hooks }
