@@ -1,6 +1,6 @@
 Class {
 	#name : #KernelQuitClass,
-	#superclass : #EP2MClass,
+	#superclass : #ClassModel,
 	#category : #'Espell2-Metamodel'
 }
 

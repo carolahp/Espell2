@@ -1,6 +1,6 @@
 Class {
-	#name : #EP2MPackage,
-	#superclass : #EP2MObject,
+	#name : #PackageModel,
+	#superclass : #ObjectModel,
 	#instVars : [
 		'definedBehaviors'
 	],
@@ -8,12 +8,12 @@ Class {
 }
 
 { #category : #calypso }
-EP2MPackage class >> convertToCalypsoBrowserItem: anEP2MPackage [ 
+PackageModel class >> convertToCalypsoBrowserItem: anEP2MPackage [ 
 	^ClyBrowserItem named: anEP2MPackage name with: anEP2MPackage
 ]
 
 { #category : #calypso }
-EP2MPackage class >> prepareClassQueriesFrom: packages in: aNavigationEnvironment [ 
+PackageModel class >> prepareClassQueriesFrom: packages in: aNavigationEnvironment [ 
 	^{
 		ClyAllClassesQuery from: ClyPackageScope ofAll: packages in: aNavigationEnvironment.
 		ClyAllClassesQuery from: ClyPackageExtensionScope ofAll: packages in: aNavigationEnvironment 
@@ -21,24 +21,24 @@ EP2MPackage class >> prepareClassQueriesFrom: packages in: aNavigationEnvironmen
 ]
 
 { #category : #'accessing-backend' }
-EP2MPackage >> addDefinedBehavior: aClass [ 
+PackageModel >> addDefinedBehavior: aClass [ 
 	(self definesBehavior: aClass)
 		ifFalse: [ self definedBehaviors add: aClass ].
 	^ aClass
 ]
 
 { #category : #'accessing backend' }
-EP2MPackage >> allDefinedBehaviors [
+PackageModel >> allDefinedBehaviors [
 	^ self definedBehaviors 
 ]
 
 { #category : #tonel }
-EP2MPackage >> asMCDefinition [
+PackageModel >> asMCDefinition [
 	^ MCOrganizationDefinition categories: self categories asOrderedCollection 
 ]
 
 { #category : #exporting }
-EP2MPackage >> asMCSnapshot [
+PackageModel >> asMCSnapshot [
 	| definitions |
 	definitions := #() asOrderedCollection.
 	"adding the package"
@@ -60,75 +60,75 @@ EP2MPackage >> asMCSnapshot [
 ]
 
 { #category : #calypso }
-EP2MPackage >> calypsoEnvironmentType [
+PackageModel >> calypsoEnvironmentType [
 	^RPackage
 ]
 
 { #category : #tonel }
-EP2MPackage >> categories [
+PackageModel >> categories [
 	
 	^ self definedBehaviors collect: #category as: Set
 
 ]
 
 { #category : #calypso }
-EP2MPackage >> classes [
+PackageModel >> classes [
 	^ self allDefinedBehaviors 
 ]
 
 { #category : #initialize }
-EP2MPackage >> defaultDefinedBehaviors [
+PackageModel >> defaultDefinedBehaviors [
 	^ Set new
 ]
 
 { #category : #accessing }
-EP2MPackage >> definedBehaviors [
+PackageModel >> definedBehaviors [
 	^ definedBehaviors
 ]
 
 { #category : #calypso }
-EP2MPackage >> definedClasses [
+PackageModel >> definedClasses [
 	^ self definedBehaviors 
 ]
 
 { #category : #testing }
-EP2MPackage >> definesBehavior: anOLClass [ 
+PackageModel >> definesBehavior: anOLClass [ 
 	^ self definedBehaviors anySatisfy: [:beh | beh = anOLClass ].
 ]
 
 { #category : #'abstract instructions' }
-EP2MPackage >> extendedClasses [
+PackageModel >> extendedClasses [
 	^ #()
 ]
 
 { #category : #initialize }
-EP2MPackage >> initialize [ 
+PackageModel >> initialize [ 
 	super initialize.
 	definedBehaviors := self defaultDefinedBehaviors
 ]
 
 { #category : #calypso }
-EP2MPackage >> isAboutPackage: anEP2MPackage [ 
+PackageModel >> isAboutPackage: anEP2MPackage [ 
 	^ self == anEP2MPackage 
 ]
 
 { #category : #testing }
-EP2MPackage >> isEmpty [
+PackageModel >> isEmpty [
 	^ self definedBehaviors isEmpty
 ]
 
 { #category : #testing }
-EP2MPackage >> isNotEmpty [
+PackageModel >> isNotEmpty [
 	^ self definedBehaviors size > 0
 ]
 
 { #category : #calypso }
-EP2MPackage >> packageManifestOrNil [
+PackageModel >> packageManifestOrNil [
 	^ nil
 ]
 
 { #category : #printing }
-EP2MPackage >> printOn: aStream [
+PackageModel >> printOn: aStream [
 	aStream 
 		nextPutAll: 'a Package "';
 		nextPutAll: self name asString;
@@ -136,6 +136,6 @@ EP2MPackage >> printOn: aStream [
 ]
 
 { #category : #calypso }
-EP2MPackage >> tagsForClasses [
+PackageModel >> tagsForClasses [
 	^ IdentitySet new
 ]

@@ -32,8 +32,8 @@ Requirements:
 
 "
 Class {
-	#name : #EP2MLanguage,
-	#superclass : #EP2MObject,
+	#name : #LanguageModel,
+	#superclass : #ObjectModel,
 	#instVars : [
 		'bindings',
 		'pbRepository',
@@ -52,33 +52,34 @@ Class {
 }
 
 { #category : #'hooks-api' }
-EP2MLanguage class >> classMetaclass [
+LanguageModel class >> classMetaclass [
 	" Return the subclass of EP2MClass that defines the metamodel for classes of the language "
 	self subclassResponsibility 
 ]
 
 { #category : #'accessing-packages' }
-EP2MLanguage class >> defaultPackagesListFull [
+LanguageModel class >> defaultPackagesListFull [
 	^ nil
 ]
 
 { #category : #'hooks-api' }
-EP2MLanguage class >> indexedSlotMetaclass [
-	^ EP2MIndexedSlot
+LanguageModel class >> indexedSlotMetaclass [
+	^ IndexedSlotModel
 ]
 
 { #category : #'hooks-api' }
-EP2MLanguage class >> instanceVariableSlotMetaclass [
-	^ EP2MInstanceVariableSlot 
+LanguageModel class >> instanceVariableSlotMetaclass [
+	^ InstanceVariableSlotModel 
 ]
 
 { #category : #'hooks-api' }
-EP2MLanguage class >> methodMetaclass [ 
-	^ EP2MMethod
+LanguageModel class >> methodMetaclass [ 
+	self deprecated: 'use ClassModel >> methodMetaclass'
+	
 ]
 
 { #category : #'hooks-dynamic method loading' }
-EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject [
+LanguageModel >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject [
 	"loading the not understood message into the metamodel"
 
 	| selector classModel systemClass traversedClasses |
@@ -108,19 +109,24 @@ EP2MLanguage >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject 
 							self
 								classNamed: travClass
 								ifPresent: [ :class | 
-									classModel := class.
+									"classModel := class.
 									newMethodModel := self class methodMetaclass
 										named: method selector
 										parent: classModel.
 									newMethodModel initializeWithLocal: method.
-									^ classModel addLocalMethod: newMethodModel ] ].
+									^ classModel addLocalMethod: newMethodModel"
+									newMethodModel := class ensureLocalMethodNamed: method selector.
+									newMethodModel initializeWithLocal: method.
+									^ newMethodModel
+									
+									 ] ].
 					self error: 'class not found' ].
 			systemClass := systemClass superclass ].
 		self error: 'Method #', aRBMessageNode selector ,' not found in host system!'
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> addBehavior: aMClass [
+LanguageModel >> addBehavior: aMClass [
 	self
 		classNamed: aMClass name
 		ifAbsent: [ 
@@ -132,7 +138,7 @@ EP2MLanguage >> addBehavior: aMClass [
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
+LanguageModel >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
 	| newClass mcDef |
 	mcDef := aMCClassDefinition.
 	newClass := self ensureClassNamed: aMCClassDefinition className.
@@ -142,34 +148,33 @@ EP2MLanguage >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
 ]
 
 { #category : #'accessing globals' }
-EP2MLanguage >> addGlobalVariable: anEP2MGlobalVariable [
+LanguageModel >> addGlobalVariable: anEP2MGlobalVariable [
 	self globalVariables add: anEP2MGlobalVariable
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> addMethodFromMonticelloDefinition: aMCMethodDefinition [ 
+LanguageModel >> addMethodFromMonticelloDefinition: aMCMethodDefinition [ 
 	| methodDef classDef mcDef |
 	mcDef := aMCMethodDefinition.
 	classDef := self ensureClassNamed: mcDef className.
-	methodDef := self class methodMetaclass named: mcDef selector parent: classDef.
+	methodDef := classDef ensureLocalMethodNamed: mcDef selector.
 	methodDef extendWithMonticello: mcDef.
-	classDef addLocalMethod: methodDef.
 	^ methodDef
 ]
 
 { #category : #'accessing classes' }
-EP2MLanguage >> allClasses [
+LanguageModel >> allClasses [
 	^ behaviors
 ]
 
 { #category : #'accessing classes' }
-EP2MLanguage >> allClassesAndTraits [
+LanguageModel >> allClassesAndTraits [
 	"added for compatibility"
 	^ self allClasses
 ]
 
 { #category : #'accessing classes' }
-EP2MLanguage >> allClassesWithRole [
+LanguageModel >> allClassesWithRole [
 	" classes with role are installed as Stubs at the beginning of bootstrap, they can be extended by loading classes from host system or from tonel repository"
 
 	^ self allClasses
@@ -177,29 +182,29 @@ EP2MLanguage >> allClassesWithRole [
 ]
 
 { #category : #announcer }
-EP2MLanguage >> announcer [
+LanguageModel >> announcer [
 
 	^ announcer ifNil: [ announcer := Announcer new ]
 ]
 
 { #category : #calypso }
-EP2MLanguage >> at: aSymbol [
+LanguageModel >> at: aSymbol [
 
 	^ self classNamed: aSymbol
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> backend [
-	^ backend ifNil: [ backend := EP2MLanguageBackend for: self ]
+LanguageModel >> backend [
+	^ backend ifNil: [ backend := LanguageModelBackend for: self ]
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> behaviors [ 
+LanguageModel >> behaviors [ 
 	^ behaviors
 ]
 
 { #category : #bootstrap }
-EP2MLanguage >> bootstrap [
+LanguageModel >> bootstrap [
 	self prepareBuilder.
 	builder
 		installClasses;
@@ -209,12 +214,12 @@ EP2MLanguage >> bootstrap [
 ]
 
 { #category : #'browse-code' }
-EP2MLanguage >> browse [
+LanguageModel >> browse [
 	self browseAs: self name
 ]
 
 { #category : #browser }
-EP2MLanguage >> browseAs: browserTitleString [ 
+LanguageModel >> browseAs: browserTitleString [ 
 	| clyEnv clyNavEnv browser |
 	clyEnv := ClyEspell2Environment new.
 	clyEnv environment: self.
@@ -232,22 +237,22 @@ EP2MLanguage >> browseAs: browserTitleString [
 ]
 
 { #category : #accessing }
-EP2MLanguage >> builder [
+LanguageModel >> builder [
 	^ builder
 ]
 
 { #category : #'accessing special classes' }
-EP2MLanguage >> classAssociation [
+LanguageModel >> classAssociation [
 	^ self classWithRole: #Association
 ]
 
 { #category : #'accessing special classes' }
-EP2MLanguage >> classBlockClosure [
+LanguageModel >> classBlockClosure [
 	^ self classWithRole: #BlockClosure
 ]
 
 { #category : #'accessing classes' }
-EP2MLanguage >> classByRole: aString [ 
+LanguageModel >> classByRole: aString [ 
 	"We try to return the class using the accessors because accessors know how to handle situations in which a role has not been defined in the dictionary, but another role can replace it (for example the role classClassVariable can be replaces by the class with the role Association. The method classWithRole: should remain private"
 	| role |
 	role := [ self roleOfClassNamed: aString ]
@@ -258,12 +263,12 @@ EP2MLanguage >> classByRole: aString [
 ]
 
 { #category : #'accessing classes' }
-EP2MLanguage >> classByRoleOrName: aString [
+LanguageModel >> classByRoleOrName: aString [
 	^ self classByRoleOrName: aString ifAbsent: [ PBClassDefinitionNotFound signal ]
 ]
 
 { #category : #'accessing classes' }
-EP2MLanguage >> classByRoleOrName: aString ifAbsent: aBlock [
+LanguageModel >> classByRoleOrName: aString ifAbsent: aBlock [
 		"extending the original classByRoleOrName:ifAbsent: method to consider searching classes by system mapping"
 	|class|
 	class := (self classNamed: aString ifAbsent: [ nil ]).
@@ -280,12 +285,12 @@ EP2MLanguage >> classByRoleOrName: aString ifAbsent: aBlock [
 ]
 
 { #category : #'accessing classes' }
-EP2MLanguage >> classBySystemMapping: aString [ 
+LanguageModel >> classBySystemMapping: aString [ 
 	^ self classBySystemMapping: aString ifAbsent: [  PBClassDefinitionNotFound signal ]
 ]
 
 { #category : #hooks }
-EP2MLanguage >> classBySystemMapping: aString ifAbsent: aBlockClosure [ 
+LanguageModel >> classBySystemMapping: aString ifAbsent: aBlockClosure [ 
 	"Classes in metamodel map classes in the system according to systemClassMapping definition"
 	| className |
 	className := self systemClassMapping at: aString ifAbsent: nil.
@@ -294,50 +299,50 @@ EP2MLanguage >> classBySystemMapping: aString ifAbsent: aBlockClosure [
 ]
 
 { #category : #'accessing special classes' }
-EP2MLanguage >> classClass [
+LanguageModel >> classClass [
 	^ self classMetaclass 
 ]
 
 { #category : #'accessing special classes' }
-EP2MLanguage >> classClassVariable [
+LanguageModel >> classClassVariable [
 	^ [ self classWithRole: #ClassVariable ] on: KeyNotFound 
 			do: [ self classWithRole: #Association ]
 ]
 
 { #category : #'accessing special classes' }
-EP2MLanguage >> classContext [
+LanguageModel >> classContext [
 	^ self classWithRole: #Context
 ]
 
 { #category : #'accessing special classes' }
-EP2MLanguage >> classDictionary [
+LanguageModel >> classDictionary [
 	^ self classWithRole: #Dictionary
 ]
 
 { #category : #'accessing remote backend' }
-EP2MLanguage >> classLoader [
+LanguageModel >> classLoader [
 	^ self pbBootstrapper builder classLoader
 ]
 
 { #category : #'accessing special classes' }
-EP2MLanguage >> classMetaclass [
+LanguageModel >> classMetaclass [
 	^ self classWithRole: #Metaclass
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> classNamed: aString [ 
+LanguageModel >> classNamed: aString [ 
 	^ self classNamed: aString ifAbsent: [ PBClassDefinitionNotFound new key: aString; signal ]
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> classNamed: aString ifAbsent: aBlockClosure [
+LanguageModel >> classNamed: aString ifAbsent: aBlockClosure [
 	^ [ self classNamedExactly: aString ]
 		on: KeyNotFound
 		do: [[self classWithRole: aString] on: Error do: aBlockClosure]
 ]
 
 { #category : #'accessing classes' }
-EP2MLanguage >> classNamed: aString ifAbsent: absentBlock ifPresent: presentBlock [ 
+LanguageModel >> classNamed: aString ifAbsent: absentBlock ifPresent: presentBlock [ 
 	|result|
 	result := self classNamed: aString ifAbsent: [nil].
 	result
@@ -346,37 +351,37 @@ EP2MLanguage >> classNamed: aString ifAbsent: absentBlock ifPresent: presentBloc
 ]
 
 { #category : #'accessing classes' }
-EP2MLanguage >> classNamed: aString ifPresent: aBlockClosure [ 
+LanguageModel >> classNamed: aString ifPresent: aBlockClosure [ 
 	|result|
 	result := self classNamed: aString ifAbsent: [ nil ].
 	result ifNotNil: [ ^ aBlockClosure cull: result ]
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> classNamedExactly: aString [ 
+LanguageModel >> classNamedExactly: aString [ 
 	| aSymbol |
 	aSymbol := aString ifNotNil: [ aString asSymbol ].
 	^ self behaviors at: aSymbol
 ]
 
 { #category : #'accessing special classes' }
-EP2MLanguage >> classProcess [
+LanguageModel >> classProcess [
 	^ self classWithRole: #Process
 ]
 
 { #category : #'accessing special classes' }
-EP2MLanguage >> classProcessorScheduler [
+LanguageModel >> classProcessorScheduler [
 	^ self classWithRole: #ProcessorScheduler
 ]
 
 { #category : #'accessing special classes' }
-EP2MLanguage >> classProtoObject [
+LanguageModel >> classProtoObject [
 	
 	^ self classWithRole: #ProtoObject
 ]
 
 { #category : #hooks }
-EP2MLanguage >> classRoles [
+LanguageModel >> classRoles [
 	^ classRoles ifNil: [ classRoles := {
 		#ProtoObject -> #Object.
 		#ProcessorScheduler -> #ProcessorScheduler.
@@ -416,17 +421,17 @@ EP2MLanguage >> classRoles [
 ]
 
 { #category : #'accessing special classes' }
-EP2MLanguage >> classSmalltalkImage [
+LanguageModel >> classSmalltalkImage [
 	^ self classWithRole: #SmalltalkImage
 ]
 
 { #category : #'accessing classes' }
-EP2MLanguage >> classWithRole: aString [ 
+LanguageModel >> classWithRole: aString [ 
 	^ self classNamedExactly: (self classRoles at: aString ifAbsent: [ aString ])
 ]
 
 { #category : #cleaning }
-EP2MLanguage >> cleanInstVars [
+LanguageModel >> cleanInstVars [
 	| toRemove |
 	toRemove := #() asOrderedCollection.
 	" we remove duplicated inst vars due to missmatch between the basic espell classes definitions and the definitions found in Tonel repository"			
@@ -451,7 +456,7 @@ EP2MLanguage >> cleanInstVars [
 ]
 
 { #category : #cleaning }
-EP2MLanguage >> cleanPackages [
+LanguageModel >> cleanPackages [
 	"removing empty packages"
 	| toRemove |
 	toRemove := self packages select: [ :pkg | pkg definedBehaviors isEmpty ].
@@ -459,29 +464,29 @@ EP2MLanguage >> cleanPackages [
 ]
 
 { #category : #'evaluation debugging' }
-EP2MLanguage >> debugEntryPoint [
+LanguageModel >> debugEntryPoint [
 	^ self debugCode: self entryPointCode
 ]
 
 { #category : #'default model values' }
-EP2MLanguage >> defaultBehaviors [
+LanguageModel >> defaultBehaviors [
 	
 	^ IdentityDictionary new
 ]
 
 { #category : #'default model values' }
-EP2MLanguage >> defaultGlobalVariables [
+LanguageModel >> defaultGlobalVariables [
 	
 	^ (IdentitySet new)
-		add: ((EP2MGlobalVariable named: #Processor parent: self) role: #Processor);
-		add: ((EP2MGlobalVariable named: #Undeclared parent: self) role: #Undeclared);
+		add: ((GlobalModel named: #Processor parent: self) role: #Processor);
+		add: ((GlobalModel named: #Undeclared parent: self) role: #Undeclared);
 		yourself
 ]
 
 { #category : #'default model values' }
-EP2MLanguage >> defaultPackages [
+LanguageModel >> defaultPackages [
 	| package |
-	package := EP2MPackage new
+	package := PackageModel new
 		name: #'Kernel-VM';
 		parent: self;
 		yourself.
@@ -491,7 +496,7 @@ EP2MLanguage >> defaultPackages [
 ]
 
 { #category : #'initialize-destroy' }
-EP2MLanguage >> destroy [
+LanguageModel >> destroy [
 	backend ifNotNil: [ 
 		backend environment: nil ].
 	backend := nil.
@@ -503,7 +508,7 @@ EP2MLanguage >> destroy [
 ]
 
 { #category : #'creating classes' }
-EP2MLanguage >> ensureClassNamed: aString [
+LanguageModel >> ensureClassNamed: aString [
 	^ self
 		classNamed: aString
 		ifAbsent: [ | newBeh |
@@ -513,12 +518,12 @@ EP2MLanguage >> ensureClassNamed: aString [
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> ensurePackageNamed: aString [
+LanguageModel >> ensurePackageNamed: aString [
 
 	^ self packages
 		at: aString
 		ifAbsent: [ | package |
-			package := EP2MPackage new
+			package := PackageModel new
 				name: aString asSymbol;
 				parent: self;
 				yourself.
@@ -527,12 +532,12 @@ EP2MLanguage >> ensurePackageNamed: aString [
 ]
 
 { #category : #hooks }
-EP2MLanguage >> entryPointCode [
+LanguageModel >> entryPointCode [
 	self subclassResponsibility 
 ]
 
 { #category : #'tonel repository' }
-EP2MLanguage >> exportAsTonelRepository: aFileReference [ 
+LanguageModel >> exportAsTonelRepository: aFileReference [ 
 	
 	(self packages select: [:pkg | pkg isNotEmpty]) do: [ :aPackage |
 		| aSnapshot info aVersion |
@@ -549,28 +554,28 @@ EP2MLanguage >> exportAsTonelRepository: aFileReference [
 ]
 
 { #category : #refactor }
-EP2MLanguage >> fixCircularInheritance [
+LanguageModel >> fixCircularInheritance [
 	self allClasses do: [ :class | class superclass = self ifTrue: [ class superclass: nil ] ]
 ]
 
 { #category : #'vm-constants' }
-EP2MLanguage >> formatOfImmediate [
+LanguageModel >> formatOfImmediate [
 	^7
 ]
 
 { #category : #marking }
-EP2MLanguage >> getAccessedBehaviorsBySimulatedExecution [ 
+LanguageModel >> getAccessedBehaviorsBySimulatedExecution [ 
 	^ self allClasses select: [ :beh | beh isMarkedAsAccessed ]
 ]
 
 { #category : #marking }
-EP2MLanguage >> getAccessedMethodsBySimulatedExecution [
+LanguageModel >> getAccessedMethodsBySimulatedExecution [
 		^ (self allClasses flatCollect: #localMethods)
 		select: [ :meth | meth isMarkedAsAccessed ]
 ]
 
 { #category : #binding }
-EP2MLanguage >> globalVariableNamed: aString [
+LanguageModel >> globalVariableNamed: aString [
 	self globalVariables
 		do: [ :global | 
 			global name = aString
@@ -579,35 +584,35 @@ EP2MLanguage >> globalVariableNamed: aString [
 ]
 
 { #category : #'accessing globals' }
-EP2MLanguage >> globalVariables [
+LanguageModel >> globalVariables [
 	^ globalVariables
 ]
 
 { #category : #'accessing roles' }
-EP2MLanguage >> globalWithRole: aString [ 
+LanguageModel >> globalWithRole: aString [ 
 	| result |
 	result := (globalVariables select: [ :global | global role = aString ]) .
 	^ result isEmpty ifTrue: [ nil ] ifFalse: [ result anyOne ]
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookCreateInitialObjects [
+LanguageModel >> hookCreateInitialObjects [
 	^ self newDummyInstruction 
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
+LanguageModel >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
 	self deprecated: 'use hooks in EP2MClass instead'.
 	self subclassResponsibility 
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookCreateSmalltalkInstance [
+LanguageModel >> hookCreateSmalltalkInstance [
 	^ nil
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookGlobalNotFound: aString [
+LanguageModel >> hookGlobalNotFound: aString [
 	| localClass |
 	"load missing class from the system"
 	localClass := Smalltalk classNamed: aString.
@@ -625,22 +630,22 @@ EP2MLanguage >> hookGlobalNotFound: aString [
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInitalizeGlobals [
+LanguageModel >> hookInitalizeGlobals [
 	^ self newDummyInstruction evaluate
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInitializeClassStubs [
+LanguageModel >> hookInitializeClassStubs [
 	^ self newDummyInstruction 
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInitializeMethodDictionaryFor: anEP2RemoteClass [ 
+LanguageModel >> hookInitializeMethodDictionaryFor: anEP2RemoteClass [ 
 	^ self newDummyInstruction   
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInitializeProcessScheduler [ 
+LanguageModel >> hookInitializeProcessScheduler [ 
 	| processor processList |
 
 	processor := (self classWithRole: #ProcessorScheduler) remote basicNew asRemoteScheduler.
@@ -663,12 +668,12 @@ EP2MLanguage >> hookInitializeProcessScheduler [
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInitializeSpecialObjectsArray [
+LanguageModel >> hookInitializeSpecialObjectsArray [
 	self subclassResponsibility 
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInstallClass: aClassDefinition [
+LanguageModel >> hookInstallClass: aClassDefinition [
 	
 	aClassDefinition hookInstall.
 	aClassDefinition testRemote.
@@ -676,30 +681,30 @@ EP2MLanguage >> hookInstallClass: aClassDefinition [
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInstallClasses [
+LanguageModel >> hookInstallClasses [
 	self allClasses do: [ :class | 
 		class hookInstall ]
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInstallMethods [
+LanguageModel >> hookInstallMethods [
 	self allClasses do: [ :class | class installMethods ]
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookInstallStubs [
+LanguageModel >> hookInstallStubs [
 	^ self allClassesWithRole do: [ :each |
 		each installStub ]
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookNewSystemDictionary [
+LanguageModel >> hookNewSystemDictionary [
 	self deprecated: 'return the system dictionary fom the hookInitializeGlobals'.
 	^ self newDummyInstruction evaluate
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookRegisterClass: remoteClass fromDefinition: anOLClass [ 
+LanguageModel >> hookRegisterClass: remoteClass fromDefinition: anOLClass [ 
 	
 	self classLoader
 		registerClass: remoteClass asRemoteClass
@@ -708,34 +713,34 @@ EP2MLanguage >> hookRegisterClass: remoteClass fromDefinition: anOLClass [
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookRegisterClass: anEP2RemoteClass fromDefinition: anOLClass withLoader: aPBClassLoaderGeneric [ 
+LanguageModel >> hookRegisterClass: anEP2RemoteClass fromDefinition: anOLClass withLoader: aPBClassLoaderGeneric [ 
 	self halt.
 	^ self newDummyInstruction
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookRegisterClass: anEP2RemoteClass named: aString [ 
+LanguageModel >> hookRegisterClass: anEP2RemoteClass named: aString [ 
 	
 	^ self newDummyInstruction 
 ]
 
 { #category : #hooks }
-EP2MLanguage >> hookSetSpecialObjectsArray: anEP2RemoteArray [
+LanguageModel >> hookSetSpecialObjectsArray: anEP2RemoteArray [
 	^ nil
 ]
 
 { #category : #'accessing remote backend' }
-EP2MLanguage >> imageBuilder [
+LanguageModel >> imageBuilder [
 	^ self pbBootstrapper builder
 ]
 
 { #category : #'class roles' }
-EP2MLanguage >> immediateClassRoles [
+LanguageModel >> immediateClassRoles [
 	^ #(Character SmallInteger)
 ]
 
 { #category : #initialization }
-EP2MLanguage >> initialize [ 
+LanguageModel >> initialize [ 
 	behaviors :=  self defaultBehaviors.
 	packages := self defaultPackages.
 	globalVariables := self defaultGlobalVariables.
@@ -743,41 +748,48 @@ EP2MLanguage >> initialize [
 ]
 
 { #category : #'vm-constants' }
-EP2MLanguage >> instanceVariableMapping [
+LanguageModel >> instanceVariableMapping [
 	
 	^ instanceVariableMapping ifNil: [ instanceVariableMapping := PBInstanceVariableMappingGeneric on: self ]
 ]
 
 { #category : #retrocompatibility }
-EP2MLanguage >> isClassDefinition: aString [ 
+LanguageModel >> isClassDefinition: aString [ 
 	^ false
 ]
 
 { #category : #'vm-constants' }
-EP2MLanguage >> layoutClassForInstSpec: anInteger [
+LanguageModel >> layoutClassForInstSpec: anInteger [
  ^ EP2Layout layoutClassForInstSpec: anInteger
 ]
 
 { #category : #'vm-constants' }
-EP2MLanguage >> layoutForInstSpec: anInteger on: anEP2Class [
+LanguageModel >> layoutForInstSpec: anInteger on: anEP2Class [
  ^ (self layoutClassForInstSpec: anInteger) on: anEP2Class 
 ]
 
 { #category : #hooks }
-EP2MLanguage >> loadCustomClasses [
-	| methodStart |
-	
-	methodStart := (self class methodMetaclass named: #entryPoint parent: self classMetaclass)
-		sourceCode: 
-'entryPoint ', self entryPointCode;
-		selector: #entryPoint;
-		yourself.
-	self classMetaclass addLocalMethod: methodStart.
-	^ self 
+LanguageModel >> loadCustomClasses [
+	| metaclass methodDoIt methodStart |
+	metaclass := self classMetaclass.
+
+	methodDoIt := metaclass
+		addLocalMethodFromSource:
+			'entryPoint 
+	' , metaclass name , ' start'
+		selector: 'entryPoint'.
+
+	methodStart := metaclass
+		addLocalMethodFromSource:
+			'start 
+	' , self entryPointCode
+		selector: 'start'.
+
+	^ self
 ]
 
 { #category : #initialization }
-EP2MLanguage >> loadRequiredBehaviors [
+LanguageModel >> loadRequiredBehaviors [
 	| objModel classModel |
 	"we load object and class first because they are special in the inheritance chain. 
 	Object is the root and class is instance of itself"
@@ -798,7 +810,7 @@ EP2MLanguage >> loadRequiredBehaviors [
 ]
 
 { #category : #initialization }
-EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
+LanguageModel >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 	| template model |
 	template := aClassEP2Remote.
 	template role ifNotNil: [ 
@@ -813,7 +825,7 @@ EP2MLanguage >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 ]
 
 { #category : #'tonel repository' }
-EP2MLanguage >> loadTonelRepository: aFileReference [
+LanguageModel >> loadTonelRepository: aFileReference [
 	| tonel packagesNames  | 
 	tonel := EP2TonelRepository new
 		directory: aFileReference asFileReference;
@@ -836,13 +848,13 @@ EP2MLanguage >> loadTonelRepository: aFileReference [
 ]
 
 { #category : #'tonel repository' }
-EP2MLanguage >> loadTonelRepository: aTonelRepository packagesNames: aCollection classesNames: anUndefinedObject [
+LanguageModel >> loadTonelRepository: aTonelRepository packagesNames: aCollection classesNames: anUndefinedObject [
 	"I exist for compatibility reasons"
 	self loadTonelRepository: aTonelRepository directory
 ]
 
 { #category : #marking }
-EP2MLanguage >> markMaybeAccessedBehaviorsAsAccessed [
+LanguageModel >> markMaybeAccessedBehaviorsAsAccessed [
 	"We mark as accessed all behaviors that were previously marked as maybe accessed"
 	(self allClasses
 		select: [ :beh | beh propertyNamed: self maybeAccessedPropertyName ifAbsent: [ false ] ])
@@ -851,17 +863,17 @@ EP2MLanguage >> markMaybeAccessedBehaviorsAsAccessed [
 ]
 
 { #category : #marking }
-EP2MLanguage >> maybeAccessedPropertyName [
+LanguageModel >> maybeAccessedPropertyName [
 	^ #maybeAccessed
 ]
 
 { #category : #'accessing remote backend' }
-EP2MLanguage >> methodBuilder [
+LanguageModel >> methodBuilder [
 	^ self pbBootstrapper builder methodBuilder
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> newBehaviorFromMonticelloDefinition: aMCClassDefinition [.
+LanguageModel >> newBehaviorFromMonticelloDefinition: aMCClassDefinition [.
 	self deprecated: 'use extendWithMonticello: instead'.
 	^ (self class classMetaclass
 				named: aMCClassDefinition className
@@ -871,7 +883,7 @@ EP2MLanguage >> newBehaviorFromMonticelloDefinition: aMCClassDefinition [.
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> newBehaviorFromTemplate: aClassEP2Remote [
+LanguageModel >> newBehaviorFromTemplate: aClassEP2Remote [
 	| template model modelName |
 	template := aClassEP2Remote.
 	modelName := self classRoles at: template role.
@@ -884,17 +896,17 @@ EP2MLanguage >> newBehaviorFromTemplate: aClassEP2Remote [
 ]
 
 { #category : #marking }
-EP2MLanguage >> objectAccessedPropertyName [ 
+LanguageModel >> objectAccessedPropertyName [ 
 	^ markAccessed
 ]
 
 { #category : #marking }
-EP2MLanguage >> objectAccessedPropertyName: aString [ 
+LanguageModel >> objectAccessedPropertyName: aString [ 
 	markAccessed := aString
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> packageFor: anEP2MBehavior [
+LanguageModel >> packageFor: anEP2MBehavior [
 	^ (self packages
 		select: [ :package | package definesBehavior: anEP2MBehavior ])
 		ifEmpty: [ nil ]
@@ -908,32 +920,32 @@ EP2MLanguage >> packageFor: anEP2MBehavior [
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> packageNamed: aString [ 
+LanguageModel >> packageNamed: aString [ 
 	^ self packages at: aString
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> packages [
+LanguageModel >> packages [
 	^ packages
 ]
 
 { #category : #accessing }
-EP2MLanguage >> pbBootstrapper [
+LanguageModel >> pbBootstrapper [
 	^ pbBootstrapper
 ]
 
 { #category : #accessing }
-EP2MLanguage >> pbBootstrapper: aPBBootstrapGeneric [ 
+LanguageModel >> pbBootstrapper: aPBBootstrapGeneric [ 
 	pbBootstrapper := aPBBootstrapGeneric
 ]
 
 { #category : #accessing }
-EP2MLanguage >> pbRepository: aPBRepository [ 
+LanguageModel >> pbRepository: aPBRepository [ 
 	pbRepository := aPBRepository 
 ]
 
 { #category : #bootstrap }
-EP2MLanguage >> prepareBuilder [
+LanguageModel >> prepareBuilder [
 	| repo |
 	builder ifNotNil: [ builder destroy ].
 	self assert: self name isNotNil.
@@ -953,7 +965,7 @@ EP2MLanguage >> prepareBuilder [
 ]
 
 { #category : #printing }
-EP2MLanguage >> printOn: aStream [
+LanguageModel >> printOn: aStream [
 	aStream 
 		nextPutAll: 'a Language "';
 		nextPutAll: self name asString;
@@ -961,18 +973,18 @@ EP2MLanguage >> printOn: aStream [
 ]
 
 { #category : #'accessing remote objects' }
-EP2MLanguage >> remote [
+LanguageModel >> remote [
 	"we use the imageBuilder to interact with the kernel"
 	^ self pbBootstrapper builder
 ]
 
 { #category : #'accessing backend' }
-EP2MLanguage >> removeBehavior: aMClass [
+LanguageModel >> removeBehavior: aMClass [
 	self classNamed: aMClass name ifPresent: [ self halt ]
 ]
 
 { #category : #marking }
-EP2MLanguage >> removeFromAllElementsPropertyNamed: aString [ 
+LanguageModel >> removeFromAllElementsPropertyNamed: aString [ 
 	self allClasses do: [ :beh | 
 			beh removePropertyNamed: aString.
 			beh localMethods do: [ :meth | meth removePropertyNamed: aString ].
@@ -980,19 +992,19 @@ EP2MLanguage >> removeFromAllElementsPropertyNamed: aString [
 ]
 
 { #category : #marking }
-EP2MLanguage >> removeMaybeAccessedPropertyFromAllBehaviors [
+LanguageModel >> removeMaybeAccessedPropertyFromAllBehaviors [
 	"We remove the property maybeAccessed from all behaviors"
 	(self allClasses do: [ :beh | beh removePropertyNamed: self maybeAccessedPropertyName ])
 		
 ]
 
 { #category : #'class roles' }
-EP2MLanguage >> roleOfClass: anOLClass [ 
+LanguageModel >> roleOfClass: anOLClass [ 
 	^ [ self classRoles keyAtValue: anOLClass name ] on: ValueNotFound do: [ nil ]
 ]
 
 { #category : #'class roles' }
-EP2MLanguage >> roleOfClassNamed: aString [ 
+LanguageModel >> roleOfClassNamed: aString [ 
 	^ [self classRoles keyAtValue: aString]
 		on: ValueNotFound 
 		do: [(self classRoles includesKey: aString)
@@ -1001,12 +1013,12 @@ EP2MLanguage >> roleOfClassNamed: aString [
 ]
 
 { #category : #accessing }
-EP2MLanguage >> spurImage [
+LanguageModel >> spurImage [
 	^ builder spurImage
 ]
 
 { #category : #hooks }
-EP2MLanguage >> systemClassMapping [
+LanguageModel >> systemClassMapping [
 	^ {
 		"#ProtoObject -> #ProtoObject.
 		#Object -> #ProtoObject.
@@ -1016,27 +1028,27 @@ EP2MLanguage >> systemClassMapping [
 ]
 
 { #category : #testing }
-EP2MLanguage >> test [
+LanguageModel >> test [
 	self behaviors do: [ :beh | beh test ]
 ]
 
 { #category : #testing }
-EP2MLanguage >> testCompletitude [
+LanguageModel >> testCompletitude [
 	self allClasses do: [ :class | self assert: class layout isNotNil description: 'Class #', class name, ' referenced in the properties of another class (like superclass) but not defined' ].
 ]
 
 { #category : #testing }
-EP2MLanguage >> testRemote [
+LanguageModel >> testRemote [
 	self allClasses do: [ :class | class testRemote ]
 ]
 
 { #category : #testing }
-EP2MLanguage >> testRemoteStub [
+LanguageModel >> testRemoteStub [
 	self allClasses do: [ :class | 
 		class remoteIsInstalled ifTrue: [ class testRemoteStub ] ]
 ]
 
 { #category : #bootstrap }
-EP2MLanguage >> writeImage [
+LanguageModel >> writeImage [
 	^ [builder writeImage] ensure: [ builder destroy ]
 ]

@@ -1,6 +1,6 @@
 Class {
-	#name : #EP2MMethod,
-	#superclass : #EP2MObject,
+	#name : #MethodModel,
+	#superclass : #ObjectModel,
 	#instVars : [
 		'sourceCode',
 		'selector',
@@ -13,18 +13,18 @@ Class {
 }
 
 { #category : #calypso }
-EP2MMethod class >> asYetUnclassifiedProtocolName [
+MethodModel class >> asYetUnclassifiedProtocolName [
 
 	^ 'as yet unclassified' asSymbol
 ]
 
 { #category : #calypso }
-EP2MMethod >> argumentNames [
+MethodModel >> argumentNames [
 	^ self ast argumentNames
 ]
 
 { #category : #exporting }
-EP2MMethod >> asMCDefinition [
+MethodModel >> asMCDefinition [
 	
 	^ MCMethodDefinition 
 		className: self parent name
@@ -36,7 +36,7 @@ EP2MMethod >> asMCDefinition [
 ]
 
 { #category : #accessing }
-EP2MMethod >> ast [
+MethodModel >> ast [
 	"Answer my AST with semantic analysis. See #parseTree."
 	
 	^ self propertyNamed: #ast ifAbsentPut: [ self parseTree doSemanticAnalysisIn: self methodClass ]
@@ -45,27 +45,27 @@ EP2MMethod >> ast [
 ]
 
 { #category : #calypso }
-EP2MMethod >> astForStylingInCalypso [
+MethodModel >> astForStylingInCalypso [
 	^ self ast
 ]
 
 { #category : #accessing }
-EP2MMethod >> author: aString [ 
+MethodModel >> author: aString [ 
 	author := aString
 ]
 
 { #category : #accessing }
-EP2MMethod >> backend [ 
+MethodModel >> backend [ 
 	^ self parent backend
 ]
 
 { #category : #calypso }
-EP2MMethod >> calypsoEnvironmentType [
+MethodModel >> calypsoEnvironmentType [
 	^ClyMethod
 ]
 
 { #category : #initialization }
-EP2MMethod >> extendWithMonticello: aMCMethodDefinition [
+MethodModel >> extendWithMonticello: aMCMethodDefinition [
 	| mcDef |
 	mcDef := aMCMethodDefinition.
 	self
@@ -79,19 +79,19 @@ EP2MMethod >> extendWithMonticello: aMCMethodDefinition [
 ]
 
 { #category : #calypso }
-EP2MMethod >> hasSelector: aString specialSelectorIndex: anUndefinedObject [ 
+MethodModel >> hasSelector: aString specialSelectorIndex: anUndefinedObject [ 
 	self halt.
 	^ self ast sentMessages includes: selector
 ]
 
 { #category : #initialization }
-EP2MMethod >> initialize [ 
+MethodModel >> initialize [ 
 	super initialize.
 	tags := Set new
 ]
 
 { #category : #initialization }
-EP2MMethod >> initializeWithLocal: aCompiledMethod [ 
+MethodModel >> initializeWithLocal: aCompiledMethod [ 
 	^ self 
 		sourceCode: aCompiledMethod sourceCode;
 		selector: aCompiledMethod selector;
@@ -99,7 +99,7 @@ EP2MMethod >> initializeWithLocal: aCompiledMethod [
 ]
 
 { #category : #installing }
-EP2MMethod >> install [
+MethodModel >> install [
 	| remoteMethod compiledMethod |
 	
 	remoteMethod := self parent remote backend builder objectSpace
@@ -122,32 +122,32 @@ EP2MMethod >> install [
 ]
 
 { #category : #calypso }
-EP2MMethod >> isExtension [
+MethodModel >> isExtension [
 	^ false
 ]
 
 { #category : #marking }
-EP2MMethod >> markAsAccessed [
+MethodModel >> markAsAccessed [
 	self propertyNamed: self parent parent objectAccessedPropertyName put: true
 ]
 
 { #category : #accessing }
-EP2MMethod >> methodClass [
+MethodModel >> methodClass [
 	^ self parent
 ]
 
 { #category : #calypso }
-EP2MMethod >> origin [
+MethodModel >> origin [
 	^ self parent
 ]
 
 { #category : #accessing }
-EP2MMethod >> package [
+MethodModel >> package [
 	^ self parent package
 ]
 
 { #category : #ast }
-EP2MMethod >> parseTree [
+MethodModel >> parseTree [
 
 	^(RBParser 
 		parseMethod: self sourceCode 
@@ -156,7 +156,7 @@ EP2MMethod >> parseTree [
 ]
 
 { #category : #printing }
-EP2MMethod >> printOn: aStream [
+MethodModel >> printOn: aStream [
 	self parent name
 		ifNotNil: [ aStream
 				nextPutAll: '"';
@@ -167,7 +167,7 @@ EP2MMethod >> printOn: aStream [
 ]
 
 { #category : #calypso }
-EP2MMethod >> protocol [
+MethodModel >> protocol [
 
 	| methodTags |
 	
@@ -179,33 +179,33 @@ EP2MMethod >> protocol [
 ]
 
 { #category : #calypso }
-EP2MMethod >> pvtTagWith: aSymbol [ 
+MethodModel >> pvtTagWith: aSymbol [ 
 	tags add: aSymbol
 ]
 
 { #category : #accessing }
-EP2MMethod >> remote: anEP2RemoteCompiledMethod [ 
+MethodModel >> remote: anEP2RemoteCompiledMethod [ 
 	remote := anEP2RemoteCompiledMethod 
 ]
 
 { #category : #accessing }
-EP2MMethod >> selector [
+MethodModel >> selector [
 	^ selector asSymbol
 ]
 
 { #category : #accessing }
-EP2MMethod >> selector: aString [ 
+MethodModel >> selector: aString [ 
 	selector := aString
 ]
 
 { #category : #accessing }
-EP2MMethod >> sourceCode [
+MethodModel >> sourceCode [
 
 	^sourceCode
 ]
 
 { #category : #accessing }
-EP2MMethod >> sourceCode: anObject [
+MethodModel >> sourceCode: anObject [
 
 	"ATTENTION: There is no check here if the selector is changed!"
 	sourceCode := anObject asString
@@ -213,24 +213,24 @@ EP2MMethod >> sourceCode: anObject [
 ]
 
 { #category : #calypso }
-EP2MMethod >> tagWith: aSymbol [
+MethodModel >> tagWith: aSymbol [
 	self backend tagMethod: self with: aSymbol.
 	self parent addMethodTag: aSymbol.
 ]
 
 { #category : #calypso }
-EP2MMethod >> tags [
+MethodModel >> tags [
 	"ToDo"
 	^ #()
 ]
 
 { #category : #accessing }
-EP2MMethod >> time: aDateAndTime [ 
+MethodModel >> time: aDateAndTime [ 
 	time := aDateAndTime 
 ]
 
 { #category : #'tonel repository' }
-EP2MMethod >> writeIntoTonel [
+MethodModel >> writeIntoTonel [
 	| snapshot |
 	snapshot := self parent package  asMCSnapshot.
 	

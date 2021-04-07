@@ -1,6 +1,6 @@
 Class {
-	#name : #EP2MSlot,
-	#superclass : #EP2MObject,
+	#name : #SlotModel,
+	#superclass : #ObjectModel,
 	#instVars : [
 		'owningClass',
 		'definingClass'
@@ -9,7 +9,7 @@ Class {
 }
 
 { #category : #testing }
-EP2MSlot >> = other [
+SlotModel >> = other [
 	"Every subclass that adds state must redefine this method"
 	self == other
 		ifTrue: [ ^ true ].
@@ -18,63 +18,63 @@ EP2MSlot >> = other [
 ]
 
 { #category : #writing }
-EP2MSlot >> accept: anInterpreter assign: aValue inNode: aVariableNode [
+SlotModel >> accept: anInterpreter assign: aValue inNode: aVariableNode [
 	^ anInterpreter write: aValue at: self index named: self name
 ]
 
 { #category : #converting }
-EP2MSlot >> asEP2Slot [
+SlotModel >> asEP2Slot [
 	^ self
 ]
 
 { #category : #accessing }
-EP2MSlot >> backend [
+SlotModel >> backend [
 	^ definingClass backend
 ]
 
 { #category : #accessing }
-EP2MSlot >> definingClass: anEP2RemoteClass [ 
+SlotModel >> definingClass: anEP2RemoteClass [ 
 
 	definingClass := anEP2RemoteClass
 ]
 
 { #category : #testing }
-EP2MSlot >> isIndexedSlot [
+SlotModel >> isIndexedSlot [
 	^ false
 ]
 
 { #category : #testing }
-EP2MSlot >> isInstanceVariableSlot [
+SlotModel >> isInstanceVariableSlot [
 	^ false
 ]
 
 { #category : #testing }
-EP2MSlot >> isSlot [
+SlotModel >> isSlot [
 
 	^ true
 ]
 
 { #category : #testing }
-EP2MSlot >> printOn: aStream [
+SlotModel >> printOn: aStream [
 	self subclassResponsibility 
 ]
 
 { #category : #'read-write' }
-EP2MSlot >> read: anEP2RemoteAssociation [ 
+SlotModel >> read: anEP2RemoteAssociation [ 
 	self subclassResponsibility 
 ]
 
 { #category : #reading }
-EP2MSlot >> readWith: anEPASTInterpreter inNode: aRBInstanceVariableNode [ 
+SlotModel >> readWith: anEPASTInterpreter inNode: aRBInstanceVariableNode [ 
 	self error: 'only for InstanceVariableSlots'
 ]
 
 { #category : #testing }
-EP2MSlot >> slotName [ 
+SlotModel >> slotName [ 
 	self subclassResponsibility 
 ]
 
 { #category : #testing }
-EP2MSlot >> write: aValue to: anObject [
+SlotModel >> write: aValue to: anObject [
 	^self subclassResponsibility
 ]

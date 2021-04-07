@@ -13,8 +13,8 @@ Usage:
 
 "
 Class {
-	#name : #EP2MClass,
-	#superclass : #EP2MObject,
+	#name : #ClassModel,
+	#superclass : #ObjectModel,
 	#instVars : [
 		'role',
 		'remote',
@@ -29,40 +29,54 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #'hooks-api' }
+ClassModel class >> methodMetaclass [
+	^ MethodModel
+]
+
 { #category : #calypso }
-EP2MClass >> >> aString [ 
+ClassModel >> >> aString [ 
 	^ self methodDict at: aString
 ]
 
 { #category : #'accessing methods' }
-EP2MClass >> addLocalMethod: anEP2MMethod [
-	anEP2MMethod parent: self.
-	self methodDict at: anEP2MMethod selector put: anEP2MMethod
+ClassModel >> addLocalMethod: anEP2MMethod [
+	self deprecated: 'use addLocalMethodFromsource:selector:'.
+	
+]
+
+{ #category : #'accessing methods' }
+ClassModel >> addLocalMethodFromSource: source selector: selector [
+	
+	^ (self ensureLocalMethodNamed: selector)
+		sourceCode: source;
+		selector: selector;
+		yourself
 ]
 
 { #category : #calypso }
-EP2MClass >> addMethodTag: aSymbol [ 
+ClassModel >> addMethodTag: aSymbol [ 
 	self backend addMethodTag: aSymbol to: self
 ]
 
 { #category : #'accessing slots' }
-EP2MClass >> addSlot: aString [ 
+ClassModel >> addSlot: aString [ 
 	^ self layout addSlot: aString
 		
 ]
 
 { #category : #slots }
-EP2MClass >> addSlot: aString index: anInteger [  
+ClassModel >> addSlot: aString index: anInteger [  
 	self layout addSlot: aString index: anInteger
 ]
 
 { #category : #'accessing inst vars' }
-EP2MClass >> allInstVarNames [
+ClassModel >> allInstVarNames [
 	^ (self allSlots select: #isInstanceVariableSlot) collect: #name
 ]
 
 { #category : #'accessing slots' }
-EP2MClass >> allSlots [
+ClassModel >> allSlots [
 	^ self layout ifNil: [ #() ] ifNotNil: [:layo | layo allSlots ]
 	"^ self superclass
 		ifNil: [ self slots ]
@@ -70,7 +84,7 @@ EP2MClass >> allSlots [
 ]
 
 { #category : #querying }
-EP2MClass >> allSubclasses [
+ClassModel >> allSubclasses [
 	| subclasses |
 	"getting all classes that include self as a superclass in their inheritance hierarchy"
 	subclasses := self subclasses.
@@ -79,7 +93,7 @@ EP2MClass >> allSubclasses [
 ]
 
 { #category : #exporting }
-EP2MClass >> asMCDefinition [
+ClassModel >> asMCDefinition [
 
 	^ MCClassDefinition 
 		name: self name
@@ -97,48 +111,48 @@ EP2MClass >> asMCDefinition [
 ]
 
 { #category : #'accessing backend' }
-EP2MClass >> backend [
+ClassModel >> backend [
 	^ self parent backend 
 ]
 
 { #category : #accessing }
-EP2MClass >> basicClass [
+ClassModel >> basicClass [
 	^ self metaclass
 ]
 
 { #category : #calypso }
-EP2MClass >> calypsoEnvironmentType [
+ClassModel >> calypsoEnvironmentType [
 	^ClyClass
 ]
 
 { #category : #calypso }
-EP2MClass >> category [
+ClassModel >> category [
 	^ self package name
 ]
 
 { #category : #'accessing backend' }
-EP2MClass >> classLoader [
+ClassModel >> classLoader [
 	^ self parent classLoader
 ]
 
 { #category : #calypso }
-EP2MClass >> classSide [
+ClassModel >> classSide [
 	^ self metaclass
 ]
 
 { #category : #'accessing compiler' }
-EP2MClass >> classVarNames [
+ClassModel >> classVarNames [
 	"compiler compatibility"
 	^ #()
 ]
 
 { #category : #calypso }
-EP2MClass >> comment [
+ClassModel >> comment [
 	^ ''
 ]
 
 { #category : #calypso }
-EP2MClass >> compile: aString classified: aCategory notifying: aRubScrolledTextMorph [ 
+ClassModel >> compile: aString classified: aCategory notifying: aRubScrolledTextMorph [ 
 
 	| parseTree ast selector newMethod | 
 	
@@ -159,18 +173,18 @@ EP2MClass >> compile: aString classified: aCategory notifying: aRubScrolledTextM
 ]
 
 { #category : #'accessing compiler' }
-EP2MClass >> compiler [
+ClassModel >> compiler [
 
 	^ self class compiler
 ]
 
 { #category : #'default model values' }
-EP2MClass >> defaultMethodDictionary [
+ClassModel >> defaultMethodDictionary [
 	^ IdentityDictionary new 
 ]
 
 { #category : #calypso }
-EP2MClass >> definition [
+ClassModel >> definition [
 
 	| aStream |
 	
@@ -209,17 +223,18 @@ EP2MClass >> definition [
 ]
 
 { #category : #calypso }
-EP2MClass >> ensureLocalMethodNamed: aSymbol [
+ClassModel >> ensureLocalMethodNamed: aSymbol [
 	
 	^ self localMethodNamed: aSymbol ifAbsent: [ 
 		| newMethod |
-		newMethod := EP2MMethod named: aSymbol asSymbol parent: self.
-		self addLocalMethod: newMethod.
+		newMethod := self methodMetaclass named: aSymbol asSymbol parent: self.
+		newMethod parent: self.
+		self methodDict at: aSymbol put: newMethod.
 		newMethod].
 ]
 
 { #category : #initialization }
-EP2MClass >> extendWithMonticello: aMCClassDefinition [
+ClassModel >> extendWithMonticello: aMCClassDefinition [
 	"An existent class is extended with a definition read from Monticello.
 	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we test the class at the end"
 
@@ -259,12 +274,12 @@ EP2MClass >> extendWithMonticello: aMCClassDefinition [
 ]
 
 { #category : #hooks }
-EP2MClass >> extendWithMonticelloCustom: aMCClassDefinition [
+ClassModel >> extendWithMonticelloCustom: aMCClassDefinition [
 	self subclassResponsibility 
 ]
 
 { #category : #accessing }
-EP2MClass >> format [
+ClassModel >> format [
 	
 	"A class format is composed by"
 	"<5 bits inst spec><16 bits inst size>"
@@ -276,12 +291,12 @@ EP2MClass >> format [
 ]
 
 { #category : #calypso }
-EP2MClass >> hasComment [
+ClassModel >> hasComment [
 	^ false
 ]
 
 { #category : #hooks }
-EP2MClass >> hookInstall [
+ClassModel >> hookInstall [
 	| remoteMethodDict remoteSuperclass |
 	self remoteIsInstalled ifFalse: [ self installStub ].
 	self remote isStub ifFalse: [
@@ -302,29 +317,29 @@ EP2MClass >> hookInstall [
 ]
 
 { #category : #'accessing methods' }
-EP2MClass >> includesSelector: aString [ 
+ClassModel >> includesSelector: aString [ 
 	^ self methodDict anySatisfy: [ :method | method selector = aString ]
 ]
 
 { #category : #accessing }
-EP2MClass >> indexInClassTable [
+ClassModel >> indexInClassTable [
 	^ indexInClassTable
 ]
 
 { #category : #accessing }
-EP2MClass >> indexInClassTable: anInteger [ 
+ClassModel >> indexInClassTable: anInteger [ 
 	indexInClassTable := anInteger
 ]
 
 { #category : #initialization }
-EP2MClass >> initialize [ 
+ClassModel >> initialize [ 
 	super initialize.
 	methodDict := IdentityDictionary new.
 	tagsForMethods := Set new
 ]
 
 { #category : #initialization }
-EP2MClass >> initializeWithLocal: localClass [
+ClassModel >> initializeWithLocal: localClass [
 	
 	self
 		layout: (self parent layoutForInstSpec: localClass instSpec on: self);
@@ -336,7 +351,7 @@ EP2MClass >> initializeWithLocal: localClass [
 ]
 
 { #category : #initialization }
-EP2MClass >> initializeWithMonticello: aMCClassDefinition [
+ClassModel >> initializeWithMonticello: aMCClassDefinition [
 	"A class is instantiated following the monticello definition"
 	| mcDef |
 	mcDef := aMCClassDefinition.
@@ -369,7 +384,7 @@ EP2MClass >> initializeWithMonticello: aMCClassDefinition [
 ]
 
 { #category : #initialization }
-EP2MClass >> initializeWithTemplate: aTemplateClass [
+ClassModel >> initializeWithTemplate: aTemplateClass [
 	| superclassName superclassModel |
 	
 	superclassName := [aTemplateClass superclass role] on: Error do: [nil].
@@ -383,37 +398,37 @@ EP2MClass >> initializeWithTemplate: aTemplateClass [
 ]
 
 { #category : #initialization }
-EP2MClass >> initializeWithTemplateCustom: aTemplateClass [.
+ClassModel >> initializeWithTemplateCustom: aTemplateClass [.
 	self subclassResponsibility 
 ]
 
 { #category : #hooks }
-EP2MClass >> innerBindingOf: aSymbol [ 
+ClassModel >> innerBindingOf: aSymbol [ 
 	self subclassResponsibility 
 ]
 
 { #category : #accessing }
-EP2MClass >> instSize [
+ClassModel >> instSize [
 	^ (self layout allSlots select: #isInstanceVariableSlot) size
 ]
 
 { #category : #accessing }
-EP2MClass >> instSpec [
+ClassModel >> instSpec [
 	^ self layout instSpec
 ]
 
 { #category : #'accessing instance variables' }
-EP2MClass >> instVarIndexFor: aString ifAbsent: aBlockClosure [ 
+ClassModel >> instVarIndexFor: aString ifAbsent: aBlockClosure [ 
 	^ self allInstVarNames indexOf: aString ifAbsent: aBlockClosure 
 ]
 
 { #category : #accessing }
-EP2MClass >> instVarNames [
+ClassModel >> instVarNames [
 	^ self slots collect: #name
 ]
 
 { #category : #'api - stubs creation' }
-EP2MClass >> installMetacircularStub [
+ClassModel >> installMetacircularStub [
 	"I install a class stub that is instance of itself"
 	| theNewMetaclass metaclassIndex |
 	" If the metaclass was already created, it will be found in the bootstrapEnvironment dictionary "
@@ -435,7 +450,7 @@ EP2MClass >> installMetacircularStub [
 ]
 
 { #category : #hooks }
-EP2MClass >> installMethods [
+ClassModel >> installMethods [
 	(self localMethods select: #isInstallable)
 		do: [ :method | | remoteMethod | 
 			remoteMethod := method install.
@@ -443,7 +458,7 @@ EP2MClass >> installMethods [
 ]
 
 { #category : #'stubs creation' }
-EP2MClass >> installStub [
+ClassModel >> installStub [
 	" I install the stub of my corresponding class in the kernel.
 	I depend on the implementation of installStubCustom "
 	| newClass |
@@ -461,19 +476,19 @@ EP2MClass >> installStub [
 ]
 
 { #category : #'stubs creation' }
-EP2MClass >> installStubCustom [
+ClassModel >> installStubCustom [
 	"Using method from protocol 'api-stubs creation' create your own stub and return it"
 	self subclassResponsibility
 ]
 
 { #category : #'accessing compiler' }
-EP2MClass >> instanceSide [
+ClassModel >> instanceSide [
 	"compiler compatibility"
 	^ self
 ]
 
 { #category : #calypso }
-EP2MClass >> instanceVariablesString [
+ClassModel >> instanceVariablesString [
 	"Answer a string of my instance variable names separated by spaces."
 
 	^String streamContents: [ :stream |
@@ -483,104 +498,104 @@ EP2MClass >> instanceVariablesString [
 ]
 
 { #category : #'testing layout' }
-EP2MClass >> isBehavior [ 
+ClassModel >> isBehavior [ 
 	^ true
 ]
 
 { #category : #testing }
-EP2MClass >> isBits [
+ClassModel >> isBits [
 	^ self layout isBitsLayout 
 ]
 
 { #category : #'testing layout' }
-EP2MClass >> isBytes [
+ClassModel >> isBytes [
 	^ self layout isByteLayout
 ]
 
 { #category : #'testing layout' }
-EP2MClass >> isClassMetamodel [
+ClassModel >> isClassMetamodel [
 	^ true
 ]
 
 { #category : #calypso }
-EP2MClass >> isClassSide [
+ClassModel >> isClassSide [
 	^ false
 ]
 
 { #category : #'testing layout' }
-EP2MClass >> isCompiledMethod [
+ClassModel >> isCompiledMethod [
 	^ self layout isCompiledMethodLayout
 ]
 
 { #category : #'testing layout' }
-EP2MClass >> isEphemeron [
+ClassModel >> isEphemeron [
 	^ self layout isEphemeronLayout
 ]
 
 { #category : #testing }
-EP2MClass >> isEphemeronClass [
+ClassModel >> isEphemeronClass [
 	^ self layout isEphemeronLayout 
 ]
 
 { #category : #'testing layout' }
-EP2MClass >> isImmediate [
+ClassModel >> isImmediate [
 	^ self parent immediateClassRoles contains: [:rol | rol = self role ]
 ]
 
 { #category : #testing }
-EP2MClass >> isImmediateClass [
+ClassModel >> isImmediateClass [
 	^ self layout isImmediateLayout
 ]
 
 { #category : #calypso }
-EP2MClass >> isInstanceSide [
+ClassModel >> isInstanceSide [
 	^ true
 ]
 
 { #category : #'accessing compiler' }
-EP2MClass >> isMeta [
+ClassModel >> isMeta [
 	"compiler compatibility"
 	^ false
 ]
 
 { #category : #'testing layout' }
-EP2MClass >> isMetaclass [
+ClassModel >> isMetaclass [
 	"languages don't have metaclasses by default"
 	^ false
 ]
 
 { #category : #testing }
-EP2MClass >> isNilObject [
+ClassModel >> isNilObject [
 	^ false
 ]
 
 { #category : #calypso }
-EP2MClass >> isObsolete [
+ClassModel >> isObsolete [
 	^ false
 ]
 
 { #category : #calypso }
-EP2MClass >> isRootInEnvironment [
+ClassModel >> isRootInEnvironment [
 	^ self superclass == nil
 ]
 
 { #category : #'testing layout' }
-EP2MClass >> isVariable [
+ClassModel >> isVariable [
 	^ self layout isVariableLayout
 ]
 
 { #category : #testing }
-EP2MClass >> isWeak [
+ClassModel >> isWeak [
 	^ self layout isWeakLayout
 ]
 
 { #category : #'testing layout' }
-EP2MClass >> isWords [
+ClassModel >> isWords [
 	^ self layout isWordLayout
 ]
 
 { #category : #calypso }
-EP2MClass >> kindOfSubclass [
+ClassModel >> kindOfSubclass [
 	"Answer a String that is the keyword that describes the receiver's kind of subclass,
 	 either a regular subclass, a variableSubclass, a variableByteSubclass,
 	 a variableWordSubclass, a weakSubclass, an ephemeronSubclass or an immediateSubclass.
@@ -606,17 +621,17 @@ EP2MClass >> kindOfSubclass [
 ]
 
 { #category : #accessing }
-EP2MClass >> layout [
+ClassModel >> layout [
 	^ layout
 ]
 
 { #category : #accessing }
-EP2MClass >> layout: anEP2LayoutClass [ 
+ClassModel >> layout: anEP2LayoutClass [ 
 	layout := anEP2LayoutClass
 ]
 
 { #category : #calypso }
-EP2MClass >> localMethodNamed: aSymbol ifAbsent: aBlock [
+ClassModel >> localMethodNamed: aSymbol ifAbsent: aBlock [
 
 	self localMethods do: [ :each | (each name = aSymbol) ifTrue: [^ each]].
 	
@@ -624,17 +639,17 @@ EP2MClass >> localMethodNamed: aSymbol ifAbsent: aBlock [
 ]
 
 { #category : #accessing }
-EP2MClass >> localMethods [
+ClassModel >> localMethods [
 	^ methodDict
 ]
 
 { #category : #calypso }
-EP2MClass >> localSelectors [
+ClassModel >> localSelectors [
 	^ self localMethods collect: #name
 ]
 
 { #category : #marking }
-EP2MClass >> lookupSelectorAndMarkTraversedClasses: selector [ 
+ClassModel >> lookupSelectorAndMarkTraversedClasses: selector [ 
 	"Reimplementation of method RGBehavior >> lookupSelector:
 	In here mark the traversed classes"
 	| lookupClass |
@@ -658,7 +673,7 @@ EP2MClass >> lookupSelectorAndMarkTraversedClasses: selector [
 ]
 
 { #category : #marking }
-EP2MClass >> markMethodAsAccessed: aMethod [ 
+ClassModel >> markMethodAsAccessed: aMethod [ 
 	"We ask the class to mark the method instead of asking the method itself to do it, for handling the case in which aMethod is a compiled method coming from DASTBlock or BlockClosure" 
 	(self methodNamed: aMethod selector)
 		ifNil: [ Transcript show: 'selector ', aMethod selector, 'not found';cr. ]
@@ -666,32 +681,37 @@ EP2MClass >> markMethodAsAccessed: aMethod [
 ]
 
 { #category : #exporting }
-EP2MClass >> mcType [
+ClassModel >> mcType [
 	^ self layout mcType
 ]
 
 { #category : #'accessing backend' }
-EP2MClass >> metaclass [ 
+ClassModel >> metaclass [ 
 	self subclassResponsibility 
 ]
 
 { #category : #'accessing backend' }
-EP2MClass >> methodBuilder [
+ClassModel >> methodBuilder [
 	^ self parent methodBuilder
 ]
 
 { #category : #accessing }
-EP2MClass >> methodDict [
+ClassModel >> methodDict [
 	^ methodDict
 ]
 
 { #category : #accessing }
-EP2MClass >> methodDict: aDictionary [
+ClassModel >> methodDict: aDictionary [
 	^ self writeSlotNamed: #methodDict value: aDictionary 
 ]
 
+{ #category : #'metamodel-accessing' }
+ClassModel >> methodMetaclass [
+	^ self class methodMetaclass
+]
+
 { #category : #'accessing methods' }
-EP2MClass >> methodNamed: aString [
+ClassModel >> methodNamed: aString [
 	^ self
 		methodNamed: aString
 		ifAbsent: [ PBMethodDefinitionNotFound
@@ -699,18 +719,18 @@ EP2MClass >> methodNamed: aString [
 ]
 
 { #category : #'accessing methods' }
-EP2MClass >> methodNamed: aString ifAbsent: aBlock [
+ClassModel >> methodNamed: aString ifAbsent: aBlock [
 	
 	^ [self methodDict at: aString asSymbol] on: KeyNotFound do: aBlock
 ]
 
 { #category : #accessing }
-EP2MClass >> methods [
+ClassModel >> methods [
 	^ self methodDict values asArray
 ]
 
 { #category : #'api - stubs creation' }
-EP2MClass >> newStubWithFormat: anInteger [
+ClassModel >> newStubWithFormat: anInteger [
 	" Only valid for metaclasses. 
 	I create a new class stub in the kernel by instantiating myself "
 	| newClass |
@@ -722,28 +742,28 @@ EP2MClass >> newStubWithFormat: anInteger [
 ]
 
 { #category : #marking }
-EP2MClass >> objectAccessedPropertyName [
+ClassModel >> objectAccessedPropertyName [
 	^ parent objectAccessedPropertyName
 ]
 
 { #category : #accessing }
-EP2MClass >> package [
+ClassModel >> package [
 	^ self parent packageFor: self
 ]
 
 { #category : #accessing }
-EP2MClass >> package: anEP2MPackage [ 
+ClassModel >> package: anEP2MPackage [ 
 	anEP2MPackage addDefinedBehavior: self
 ]
 
 { #category : #'hooks-dynamic method loading' }
-EP2MClass >> parserClass [ 
+ClassModel >> parserClass [ 
 self haltOnce.
 	^ RBParser
 ]
 
 { #category : #printing }
-EP2MClass >> printOn: aStream [
+ClassModel >> printOn: aStream [
 	aStream 
 		nextPutAll: '"';
 		nextPutAll: self name asString;
@@ -751,18 +771,18 @@ EP2MClass >> printOn: aStream [
 ]
 
 { #category : #calypso }
-EP2MClass >> pvtAddMethodTag: aSymbol [ 
+ClassModel >> pvtAddMethodTag: aSymbol [ 
 	self tagsForMethods add: aSymbol
 ]
 
 { #category : #'accessing slots' }
-EP2MClass >> readSlotNamed: aString [
+ClassModel >> readSlotNamed: aString [
 	self deprecated: 'use Slot>>read: instead'.
 	^ (self basicClass slotNamed: aString) read: self
 ]
 
 { #category : #accessing }
-EP2MClass >> remote [
+ClassModel >> remote [
 	^ remote
 		"ifNil: [ (self parent remote bootstrapEnvironmentAt: self name)
 				ifNil: [ self remoteBackend nilObject ]
@@ -770,38 +790,38 @@ EP2MClass >> remote [
 ]
 
 { #category : #accessing }
-EP2MClass >> remote: anEP2RemoteClass [ 
+ClassModel >> remote: anEP2RemoteClass [ 
 	remote := anEP2RemoteClass
 ]
 
 { #category : #testing }
-EP2MClass >> remoteIsInstalled [
+ClassModel >> remoteIsInstalled [
 	^ self remote isNotNil and: [ self remote isNotNilObject ]
 ]
 
 { #category : #'accessing remote backend' }
-EP2MClass >> remoteSystemDictionary [
+ClassModel >> remoteSystemDictionary [
 	^ self parent remote espellBackend objectSpace systemDictionary
 ]
 
 { #category : #'accessing slots' }
-EP2MClass >> removeSlot: aString [ 
+ClassModel >> removeSlot: aString [ 
 	^ self layout removeSlot: aString
 		
 ]
 
 { #category : #accessing }
-EP2MClass >> role [
+ClassModel >> role [
 	^ role ifNil: [ role := template ifNil: [ nil ] ifNotNil: [ template role ] ] 
 ]
 
 { #category : #accessing }
-EP2MClass >> role: aString [ 
+ClassModel >> role: aString [ 
 	role := aString
 ]
 
 { #category : #accessing }
-EP2MClass >> setLayoutKeepingSlots: anEP2Layout [
+ClassModel >> setLayoutKeepingSlots: anEP2Layout [
 	| oldSlots |
 	oldSlots := self layout ifNil: [#()] ifNotNil: [self slots].
 	self layout: anEP2Layout.
@@ -809,13 +829,13 @@ EP2MClass >> setLayoutKeepingSlots: anEP2Layout [
 ]
 
 { #category : #'accessing compiler' }
-EP2MClass >> sharedPools [
+ClassModel >> sharedPools [
 	"compiler compatibility"
 	^#()
 ]
 
 { #category : #'accessing slots' }
-EP2MClass >> slotNamed: aString [
+ClassModel >> slotNamed: aString [
 	^ (self slots select: [ :slot | slot name = aString ])
 		ifEmpty: [ PBSlotDefinitionNotFound new
 				key: aString;
@@ -824,12 +844,12 @@ EP2MClass >> slotNamed: aString [
 ]
 
 { #category : #'accessing slots' }
-EP2MClass >> slotNamed: aString ifNone: aBlockClosure [ 
+ClassModel >> slotNamed: aString ifNone: aBlockClosure [ 
 	^ [ self slotNamed: aString ] on: KeyNotFound do: aBlockClosure
 ]
 
 { #category : #'accessing slots' }
-EP2MClass >> slots [
+ClassModel >> slots [
 	| allSlots |
 	allSlots := OrderedCollection new.
 	self slotsDo: [ :each | allSlots add: each].
@@ -837,12 +857,12 @@ EP2MClass >> slots [
 ]
 
 { #category : #'accessing slots' }
-EP2MClass >> slotsDo: aBlockClosure [ 
+ClassModel >> slotsDo: aBlockClosure [ 
 	self layout slotsDo: aBlockClosure
 ]
 
 { #category : #calypso }
-EP2MClass >> sourceCodeTemplate [
+ClassModel >> sourceCodeTemplate [
 	"Answer an expression to be edited and evaluated in order to define 
 	methods in this class or trait."
 
@@ -854,68 +874,68 @@ EP2MClass >> sourceCodeTemplate [
 ]
 
 { #category : #calypso }
-EP2MClass >> subclasses [
+ClassModel >> subclasses [
 	^ ((self parent allClasses
 		reject: [ :class | class = self ])
 		select: [ :class | class superclass = self ]) asOrderedCollection.
 ]
 
 { #category : #calypso }
-EP2MClass >> subclassesDo: aBlockClosure [ 
+ClassModel >> subclassesDo: aBlockClosure [ 
 	self subclasses do: aBlockClosure
 ]
 
 { #category : #accessing }
-EP2MClass >> superclass [
+ClassModel >> superclass [
 	^ superclass
 ]
 
 { #category : #accessing }
-EP2MClass >> superclass: anEP2MBehavior [
+ClassModel >> superclass: anEP2MBehavior [
 	^ superclass := anEP2MBehavior 
 ]
 
 { #category : #calypso }
-EP2MClass >> tags [
+ClassModel >> tags [
 	^ #()
 ]
 
 { #category : #calypso }
-EP2MClass >> tagsForAllMethods [
+ClassModel >> tagsForAllMethods [
 	"I act as #tagsForMethods but I also takes into account methods comming from traits"
 
 	^ self methods flatCollect: [ :each  | each tags ] as: Set
 ]
 
 { #category : #calypso }
-EP2MClass >> tagsForMethods [
+ClassModel >> tagsForMethods [
 	^ tagsForMethods
 ]
 
 { #category : #accessing }
-EP2MClass >> template [
+ClassModel >> template [
 	^ template 
 ]
 
 { #category : #accessing }
-EP2MClass >> template: aClass [ 
+ClassModel >> template: aClass [ 
 	template := aClass
 ]
 
 { #category : #hooks }
-EP2MClass >> test [
+ClassModel >> test [
 	self template ifNotNil: [ self testVMInstanceVariables. self testFormat ].
 	self assert: self layout isNotNil
 ]
 
 { #category : #hooks }
-EP2MClass >> testForWriting [
+ClassModel >> testForWriting [
 	self test.
 	self assert: self indexInClassTable isNotNil.
 ]
 
 { #category : #testing }
-EP2MClass >> testFormat [
+ClassModel >> testFormat [
 	self template
 		ifNotNil: [ :temp | 
 			| myInstSpec correctInstSpec |
@@ -936,17 +956,17 @@ EP2MClass >> testFormat [
 ]
 
 { #category : #testing }
-EP2MClass >> testRemote [
+ClassModel >> testRemote [
 	self remote test
 ]
 
 { #category : #testing }
-EP2MClass >> testRemoteStub [
+ClassModel >> testRemoteStub [
 	self remote asRemoteClass testStub
 ]
 
 { #category : #testing }
-EP2MClass >> testVMInstanceVariables [
+ClassModel >> testVMInstanceVariables [
 	self template modelAllInstVarNames
 		doWithIndex: [ :ivName :index | 
 			self
@@ -969,18 +989,18 @@ EP2MClass >> testVMInstanceVariables [
 ]
 
 { #category : #'accessing compiler' }
-EP2MClass >> theNonMetaClass [
+ClassModel >> theNonMetaClass [
 	"compiler compatibility"
 	^ self
 ]
 
 { #category : #calypso }
-EP2MClass >> visibleMethods [
+ClassModel >> visibleMethods [
 	^ self localMethods
 ]
 
 { #category : #'accessing slots' }
-EP2MClass >> writeSlotNamed: aString value: anObject [
+ClassModel >> writeSlotNamed: aString value: anObject [
 	
 	(self basicClass slotNamed: aString) write: anObject to: self
 ]

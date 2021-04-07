@@ -3,8 +3,8 @@ I am the metamodel of a class in Candle with explicit metaclasses
 
 "
 Class {
-	#name : #MExplicitMetaclassesClass,
-	#superclass : #EP2MClass,
+	#name : #ExplicitMetaclassesClass,
+	#superclass : #ClassModel,
 	#instVars : [
 		'metaclass'
 	],
@@ -12,7 +12,7 @@ Class {
 }
 
 { #category : #accessing }
-MExplicitMetaclassesClass >> extendWithMonticelloCustom: aMCClassDefinition [ 
+ExplicitMetaclassesClass >> extendWithMonticelloCustom: aMCClassDefinition [ 
 	"metaclass"
 	| mcDef metaclassDef |
 	
@@ -26,17 +26,17 @@ MExplicitMetaclassesClass >> extendWithMonticelloCustom: aMCClassDefinition [
 ]
 
 { #category : #accessing }
-MExplicitMetaclassesClass >> initializeWithTemplateCustom: aTemplate [
+ExplicitMetaclassesClass >> initializeWithTemplateCustom: aTemplate [
 	self metaclass: self parent classMetaclass.
 ]
 
 { #category : #hooks }
-MExplicitMetaclassesClass >> innerBindingOf: aString [ 
+ExplicitMetaclassesClass >> innerBindingOf: aString [ 
 	^ nil
 ]
 
 { #category : #'stubs creation' }
-MExplicitMetaclassesClass >> installStubCustom [
+ExplicitMetaclassesClass >> installStubCustom [
 	self metaclass = self
 		ifTrue: [ ^ self installMetacircularStub ].
 	"first install the stub of my metaclass"
@@ -47,17 +47,17 @@ MExplicitMetaclassesClass >> installStubCustom [
 ]
 
 { #category : #accessing }
-MExplicitMetaclassesClass >> metaclass [
+ExplicitMetaclassesClass >> metaclass [
 	^ metaclass
 ]
 
 { #category : #accessing }
-MExplicitMetaclassesClass >> metaclass: anObject [
+ExplicitMetaclassesClass >> metaclass: anObject [
 	metaclass := anObject
 ]
 
 { #category : #accessing }
-MExplicitMetaclassesClass >> test [ 
+ExplicitMetaclassesClass >> test [ 
 	super test.
 	self assert: self metaclass isNotNil.
 	self assert: self metaclass layout isFixedLayout

@@ -58,7 +58,7 @@ EP2TonelWriter >> typeDefinitionOf: aClassDefinition [
 		value := model instVarNamed: key.
 		value ifNotNil: [ | printedValue | 
 			"remove quotes in the name of classes"
-			printedValue := (value isKindOf: EP2MClass) 
+			printedValue := (value isKindOf: ClassModel) 
 				ifTrue: [ (value asString trimBoth: [ :char | char = $" ]) asSymbol ]
 				ifFalse: [ value asString ].
 			definition at: key asSymbol put: printedValue ] ].

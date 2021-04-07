@@ -1,5 +1,5 @@
 Class {
-	#name : #EP2MObject,
+	#name : #ObjectModel,
 	#superclass : #Object,
 	#instVars : [
 		'properties',
@@ -10,7 +10,7 @@ Class {
 }
 
 { #category : #instanciation }
-EP2MObject class >> named: aString parent: anEP2MLanguage [ 
+ObjectModel class >> named: aString parent: anEP2MLanguage [ 
 	^ self basicNew
 		name: aString asSymbol;
 		parent: anEP2MLanguage;
@@ -19,53 +19,53 @@ EP2MObject class >> named: aString parent: anEP2MLanguage [
 ]
 
 { #category : #compatibility }
-EP2MObject >> asRemoteObject [
+ObjectModel >> asRemoteObject [
 	^ self 
 ]
 
 { #category : #'evaluate ast' }
-EP2MObject >> debugCode: aString [ 
+ObjectModel >> debugCode: aString [ 
 	^ self debugCode: aString temps: #()
 ]
 
 { #category : #'evaluate ast' }
-EP2MObject >> debugCode: aString temps: aCollection [ 
+ObjectModel >> debugCode: aString temps: aCollection [ 
 	^ (self newInstruction code: aString; temps: aCollection) debug
 ]
 
 { #category : #accessing }
-EP2MObject >> environment [
+ObjectModel >> environment [
 	^ parent
 ]
 
 { #category : #'ast-evaluation' }
-EP2MObject >> evaluateCode: aString [ 
+ObjectModel >> evaluateCode: aString [ 
 	^ self evaluateCode: aString temps: #()
 ]
 
 { #category : #'evaluating ast' }
-EP2MObject >> evaluateCode: aString temps: aCollection [ 
+ObjectModel >> evaluateCode: aString temps: aCollection [ 
 	^ (self newInstruction code: aString; temps: aCollection) evaluate asRemoteObjectCasted
 ]
 
 { #category : #'evaluating ast' }
-EP2MObject >> evaluateLoadingMissingDefinitionsFromPharo: aString [ 
+ObjectModel >> evaluateLoadingMissingDefinitionsFromPharo: aString [ 
 	^ self evaluateLoadingMissingDefinitionsFromPharo: aString temps: #()
 ]
 
 { #category : #'evaluating ast' }
-EP2MObject >> evaluateLoadingMissingDefinitionsFromPharo: aString temps: aCollection [ 
+ObjectModel >> evaluateLoadingMissingDefinitionsFromPharo: aString temps: aCollection [ 
 	^ (self newInstruction code: aString; temps: aCollection) evaluateLoadingMissingDefinitionsFromPharo
 ]
 
 { #category : #testing }
-EP2MObject >> hasProperties [
+ObjectModel >> hasProperties [
 
 	^ properties isEmptyOrNil not
 ]
 
 { #category : #testing }
-EP2MObject >> hasPropertyNamed: propertyName [
+ObjectModel >> hasPropertyNamed: propertyName [
 	
 	^ self hasProperties
 		ifTrue: [ properties includesKey: propertyName ]	
@@ -74,29 +74,29 @@ EP2MObject >> hasPropertyNamed: propertyName [
 ]
 
 { #category : #accessing }
-EP2MObject >> imageBuilder [
+ObjectModel >> imageBuilder [
 	^ self remote backend builder
 ]
 
 { #category : #marking }
-EP2MObject >> isInstallable [
+ObjectModel >> isInstallable [
 	^ true
 ]
 
 { #category : #marking }
-EP2MObject >> isMarkedAsAccessed [
+ObjectModel >> isMarkedAsAccessed [
 	^ self 
 		propertyNamed: self environment objectAccessedPropertyName 
 		ifAbsent: [ false ]
 ]
 
 { #category : #marking }
-EP2MObject >> markAsAccessed [
+ObjectModel >> markAsAccessed [
 	self propertyNamed: self parent objectAccessedPropertyName put: true
 ]
 
 { #category : #marking }
-EP2MObject >> markAsMaybeAccessed [
+ObjectModel >> markAsMaybeAccessed [
 	
 	self 
 		propertyNamed: self environment maybeAccessedPropertyName
@@ -104,22 +104,22 @@ EP2MObject >> markAsMaybeAccessed [
 ]
 
 { #category : #'accessing-api' }
-EP2MObject >> name [ 
+ObjectModel >> name [ 
 	^ objectName
 ]
 
 { #category : #'accessing-api' }
-EP2MObject >> name: aString [ 
+ObjectModel >> name: aString [ 
 	objectName := aString
 ]
 
 { #category : #'instruction hooks' }
-EP2MObject >> newDummyInstruction [
+ObjectModel >> newDummyInstruction [
 	^ PBInstructionDummy new
 ]
 
 { #category : #'hook instructions' }
-EP2MObject >> newInstruction [
+ObjectModel >> newInstruction [
 	^ PBInstructionGenericRemote new 
 		languageDefinition: self;
 		imageBuilder: self imageBuilder;
@@ -127,23 +127,23 @@ EP2MObject >> newInstruction [
 ]
 
 { #category : #accessing }
-EP2MObject >> parent [
+ObjectModel >> parent [
 	^ parent
 ]
 
 { #category : #accessing }
-EP2MObject >> parent: anEP2MLanguage [ 
+ObjectModel >> parent: anEP2MLanguage [ 
 	parent := anEP2MLanguage
 ]
 
 { #category : #'accessing properties' }
-EP2MObject >> properties [
+ObjectModel >> properties [
 
 	^ properties ifNil: [ properties := IdentityDictionary new ]
 ]
 
 { #category : #'accessing properties' }
-EP2MObject >> propertyNamed: annotationName ifAbsent: exceptionBlock [ 
+ObjectModel >> propertyNamed: annotationName ifAbsent: exceptionBlock [ 
 
 	^ self properties
 			at: annotationName
@@ -151,7 +151,7 @@ EP2MObject >> propertyNamed: annotationName ifAbsent: exceptionBlock [
 ]
 
 { #category : #'accessing properties' }
-EP2MObject >> propertyNamed: annotationName ifAbsentPut: blockValue [ 
+ObjectModel >> propertyNamed: annotationName ifAbsentPut: blockValue [ 
 
 	^ self properties
 		at: annotationName
@@ -159,7 +159,7 @@ EP2MObject >> propertyNamed: annotationName ifAbsentPut: blockValue [
 ]
 
 { #category : #'accessing properties' }
-EP2MObject >> propertyNamed: annotationName put: value [ 
+ObjectModel >> propertyNamed: annotationName put: value [ 
 
 	self properties
 		at: annotationName
@@ -167,7 +167,7 @@ EP2MObject >> propertyNamed: annotationName put: value [
 ]
 
 { #category : #'accessing properties' }
-EP2MObject >> propertyNames [
+ObjectModel >> propertyNames [
 	
 	self hasProperties
 		ifFalse:[ ^ OrderedCollection new ].
@@ -175,24 +175,24 @@ EP2MObject >> propertyNames [
 ]
 
 { #category : #'accessing remote backend' }
-EP2MObject >> remoteBackend [
+ObjectModel >> remoteBackend [
 	^ self parent remote espellBackend 
 ]
 
 { #category : #marking }
-EP2MObject >> removePropertyNamed: propertyName [ 
+ObjectModel >> removePropertyNamed: propertyName [ 
 	
 	(self hasPropertyNamed: propertyName)
 		ifTrue: [ properties removeKey: propertyName ]
 ]
 
 { #category : #'transforming objects' }
-EP2MObject >> toRemoteObject: aLocalObject [ 
+ObjectModel >> toRemoteObject: aLocalObject [ 
 	^ aLocalObject asRemoteObjectInObjectSpace: self remoteBackend objectSpace
 ]
 
 { #category : #'unresolved objects' }
-EP2MObject >> unresolvedValue: aDefaultValue [
+ObjectModel >> unresolvedValue: aDefaultValue [
 self halt:'do I need this?'.
 	^ EP2MUnresolvedValue new
 		default: aDefaultValue;

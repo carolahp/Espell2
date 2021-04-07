@@ -1,6 +1,6 @@
 Class {
-	#name : #EP2MGlobalVariable,
-	#superclass : #EP2MObject,
+	#name : #GlobalModel,
+	#superclass : #ObjectModel,
 	#instVars : [
 		'role'
 	],
@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #printing }
-EP2MGlobalVariable >> printOn: aStream [
+GlobalModel >> printOn: aStream [
 	aStream 
 		nextPutAll: 'aMGlobal("';
 		nextPutAll: self name;
@@ -16,11 +16,11 @@ EP2MGlobalVariable >> printOn: aStream [
 ]
 
 { #category : #accessing }
-EP2MGlobalVariable >> role [
+GlobalModel >> role [
 	^ role
 ]
 
 { #category : #accessing }
-EP2MGlobalVariable >> role: aString [ 
+GlobalModel >> role: aString [ 
 	role := aString
 ]

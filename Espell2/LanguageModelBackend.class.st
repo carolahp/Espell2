@@ -1,6 +1,6 @@
 Class {
-	#name : #EP2MLanguageBackend,
-	#superclass : #EP2MObject,
+	#name : #LanguageModelBackend,
+	#superclass : #ObjectModel,
 	#instVars : [
 		'environment'
 	],
@@ -8,19 +8,19 @@ Class {
 }
 
 { #category : #'instance creation' }
-EP2MLanguageBackend class >> for: anOLObjVLisp [ 
+LanguageModelBackend class >> for: anOLObjVLisp [ 
 	^ self new 
 		environment: anOLObjVLisp;
 		yourself.
 ]
 
 { #category : #calypso }
-EP2MLanguageBackend >> addMethodTag: aSymbol to: anEP2MClass [ 
+LanguageModelBackend >> addMethodTag: aSymbol to: anEP2MClass [ 
 	anEP2MClass pvtAddMethodTag: aSymbol
 ]
 
 { #category : #slots }
-EP2MLanguageBackend >> addSlot: aString index: anInteger to: anEP2MClass [
+LanguageModelBackend >> addSlot: aString index: anInteger to: anEP2MClass [
 	| newSlot |
 	newSlot := anEP2MClass isClassMetamodel
 		ifTrue: [ 
@@ -37,17 +37,17 @@ EP2MLanguageBackend >> addSlot: aString index: anInteger to: anEP2MClass [
 ]
 
 { #category : #'class slots' }
-EP2MLanguageBackend >> addSlot: aString to: aLayout [
+LanguageModelBackend >> addSlot: aString to: aLayout [
 	self addSlot: aString index: aLayout allSlots size + 1 to: aLayout
 ]
 
 { #category : #accessing }
-EP2MLanguageBackend >> environment: anOLObjVLisp [ 
+LanguageModelBackend >> environment: anOLObjVLisp [ 
 	environment := anOLObjVLisp
 ]
 
 { #category : #'accessing instance variables' }
-EP2MLanguageBackend >> object: anEP2MClass instVarAt: anInteger [ 
+LanguageModelBackend >> object: anEP2MClass instVarAt: anInteger [ 
 	| key dict |
 	
 	self deprecated: 'usage of slots in the metamodel is not supported'.
@@ -57,7 +57,7 @@ EP2MLanguageBackend >> object: anEP2MClass instVarAt: anInteger [
 ]
 
 { #category : #slots }
-EP2MLanguageBackend >> object: anEP2MClass instVarAt: anInteger put: anObject [ 
+LanguageModelBackend >> object: anEP2MClass instVarAt: anInteger put: anObject [ 
 	| key dict |
 	
 	self deprecated: 'usage of slots in the metamodel is not supported'.
@@ -67,7 +67,7 @@ EP2MLanguageBackend >> object: anEP2MClass instVarAt: anInteger put: anObject [
 ]
 
 { #category : #'accessing slots' }
-EP2MLanguageBackend >> slotsFor: aClassOrVariableSizedObject do: aBlockClosure [
+LanguageModelBackend >> slotsFor: aClassOrVariableSizedObject do: aBlockClosure [
 	
 	aClassOrVariableSizedObject isBehavior
 		ifTrue: [ (aClassOrVariableSizedObject layout pvtSlots)
@@ -79,6 +79,6 @@ EP2MLanguageBackend >> slotsFor: aClassOrVariableSizedObject do: aBlockClosure [
 ]
 
 { #category : #calypso }
-EP2MLanguageBackend >> tagMethod: anEP2MMethod with: aSymbol [ 
+LanguageModelBackend >> tagMethod: anEP2MMethod with: aSymbol [ 
 	anEP2MMethod pvtTagWith: aSymbol
 ]

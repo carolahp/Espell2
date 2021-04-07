@@ -1,6 +1,6 @@
 Class {
-	#name : #EP2MIndexedSlot,
-	#superclass : #EP2MSlot,
+	#name : #IndexedSlotModel,
+	#superclass : #SlotModel,
 	#instVars : [
 		'index'
 	],
@@ -8,38 +8,38 @@ Class {
 }
 
 { #category : #accessing }
-EP2MIndexedSlot >> index [
+IndexedSlotModel >> index [
 	^ index
 ]
 
 { #category : #accessing }
-EP2MIndexedSlot >> index: anInteger [ 
+IndexedSlotModel >> index: anInteger [ 
 	index := anInteger
 ]
 
 { #category : #testing }
-EP2MIndexedSlot >> isIndexedSlot [
+IndexedSlotModel >> isIndexedSlot [
 	^ false
 ]
 
 { #category : #testing }
-EP2MIndexedSlot >> printOn: aStream [
+IndexedSlotModel >> printOn: aStream [
 	aStream nextPutAll: objectName ,' => ', self slotName
 ]
 
 { #category : #accessing }
-EP2MIndexedSlot >> read: aRemoteObject [
+IndexedSlotModel >> read: aRemoteObject [
 	
 	^ self backend object: aRemoteObject at: index
 ]
 
 { #category : #testing }
-EP2MIndexedSlot >> slotName [ 
+IndexedSlotModel >> slotName [ 
 	^ 'IndexedSlot'
 ]
 
 { #category : #testing }
-EP2MIndexedSlot >> write: aRemoteValue to: aRemoteObject [
+IndexedSlotModel >> write: aRemoteValue to: aRemoteObject [
 	self backend 
 		object: aRemoteObject
 		at: index 
