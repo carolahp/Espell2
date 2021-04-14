@@ -25,7 +25,7 @@ EP2SpurImage class >> onFile: aFileRefernce [
 		, self metadataFileExtension.
 	metadata contents.
 	"I need to remove the hardcoded access to the languageMetaclass and to tonel repository, by getting this values from the metadata file"
-	languageMetaclass := MCandleExplicitMetaclasses.
+	languageMetaclass := LanguageExplicitMetaclasses.
 	repository := image parent / image basenameWithoutExtension.
 	self
 		assert: repository exists
