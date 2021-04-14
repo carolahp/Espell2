@@ -38,7 +38,7 @@ Class {
 { #category : #'hooks-api' }
 LanguageModel class >> classMetaclass [
 	" Return the subclass of EP2MClass that defines the metamodel for classes of the language "
-	self subclassResponsibility 
+	^ ExplicitMetaclassesClass 
 ]
 
 { #category : #'accessing-packages' }
