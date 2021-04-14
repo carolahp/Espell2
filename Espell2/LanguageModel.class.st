@@ -1,35 +1,17 @@
 "
-I am an abstract class that defines the metamodel of a bootstrapped language.
-Subclass me to define the metamodel of your own language.
-
-=====================================================================
-Example of usage:
-
-"" Create your language model ""
-myLanguage := OLObjVLisp new name: 'MyLanguage'.
-
-"" Clone or download the basic definition of classes and methods required by the bootstrapper ""
-$ git clone https://github.com/carolahp/KernelBasic.git
-
-"" Load these definitions into your language model ""
-myLanguage loadTonelRepository: './location/of/KernelBasic'.
-
-"" Generate the image in memory ""
-imageInMemory := myLanguage bootstrap.		
-
-"" You can inspect the image at any moment during or after the bootstrap ""
-imageInMemory inspect.
-
-"" Write the image to disk ""
-imageInDisk := myLanguage writeImage.
-
-"" Run the image standalone using the Pharo VM ""
-imageInDisk runBashScript
-
-=====================================================================
-Requirements:
-- PharoBootstrapGeneric and its dependencies (including Espell2).
-
+Use as follows:
+	|language|
+	""instantiates the model""
+	language := (LanguageModel 
+		named: 'MyLanguage' 
+		withEntryPoint: 'System log: ''hola!''. System quit.').
+	
+	""generates the kernel and executes it using an external VM""
+	language generateAndRun.
+	
+	""loads the generated kernel file into the host (current image) and executes it using the VM simulator""
+	language runImageLoadedFromFile.
+	
 "
 Class {
 	#name : #LanguageModel,
@@ -46,7 +28,9 @@ Class {
 		'classRoles',
 		'markAccessed',
 		'announcer',
-		'builder'
+		'builder',
+		'entryPointCode',
+		'image'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -76,6 +60,17 @@ LanguageModel class >> instanceVariableSlotMetaclass [
 LanguageModel class >> methodMetaclass [ 
 	self deprecated: 'use ClassModel >> methodMetaclass'
 	
+]
+
+{ #category : #'hooks-api' }
+LanguageModel class >> named: aName withEntryPoint: someCode [
+	^ self new 
+		name: aName; 
+			loadTonelRepository: './bootstrap/language-definitions-new-repo/KernelExplicitGit/KernelExplicitMetaclasses';
+			entryPointCode: someCode;
+			loadCustomClasses;
+			yourself.
+
 ]
 
 { #category : #'hooks-dynamic method loading' }
@@ -533,7 +528,12 @@ LanguageModel >> ensurePackageNamed: aString [
 
 { #category : #hooks }
 LanguageModel >> entryPointCode [
-	self subclassResponsibility 
+	^ entryPointCode ifNil: [ Error signal: 'Undefined Entry Point. Define it using entryPointCode:' ]
+]
+
+{ #category : #hooks }
+LanguageModel >> entryPointCode: aString [
+	entryPointCode := aString 
 ]
 
 { #category : #'tonel repository' }
@@ -561,6 +561,24 @@ LanguageModel >> fixCircularInheritance [
 { #category : #'vm-constants' }
 LanguageModel >> formatOfImmediate [
 	^7
+]
+
+{ #category : #api }
+LanguageModel >> generate [
+	self test.
+	self prepareBuilder.
+	self testRemoteStub.
+	self builder installClasses.
+	self builder installMethods.
+	self builder installProcess.
+	self testRemote.
+	^ self spurImage
+]
+
+{ #category : #api }
+LanguageModel >> generateAndRun [
+	self generate.
+	self writeImage runBashScript.
 ]
 
 { #category : #marking }
@@ -729,9 +747,19 @@ LanguageModel >> hookSetSpecialObjectsArray: anEP2RemoteArray [
 	^ nil
 ]
 
+{ #category : #api }
+LanguageModel >> image [ 
+	^ image
+]
+
 { #category : #'accessing remote backend' }
 LanguageModel >> imageBuilder [
 	^ self pbBootstrapper builder
+]
+
+{ #category : #api }
+LanguageModel >> imageLoadedFromFile [
+	^ EP2SpurImage onFile: self image imageFileReference.
 ]
 
 { #category : #'class roles' }
@@ -1012,6 +1040,16 @@ LanguageModel >> roleOfClassNamed: aString [
 				ifFalse: [ PBClassDefinitionNotFound signal: 'class "', aString, '" not found' ]]
 ]
 
+{ #category : #api }
+LanguageModel >> runImage [ 
+	^ self image runBashScript 
+]
+
+{ #category : #api }
+LanguageModel >> runImageLoadedFromFile [
+	^ self imageLoadedFromFile run
+]
+
 { #category : #accessing }
 LanguageModel >> spurImage [
 	^ builder spurImage
@@ -1048,7 +1086,7 @@ LanguageModel >> testRemoteStub [
 		class remoteIsInstalled ifTrue: [ class testRemoteStub ] ]
 ]
 
-{ #category : #bootstrap }
+{ #category : #api }
 LanguageModel >> writeImage [
-	^ [builder writeImage] ensure: [ builder destroy ]
+	^ image := [builder writeImage] ensure: [ builder destroy ]
 ]
