@@ -5,9 +5,6 @@ I am the metamodel of a class in Candle with explicit metaclasses
 Class {
 	#name : #ExplicitMetaclassesClass,
 	#superclass : #ClassModel,
-	#instVars : [
-		'metaclass'
-	],
 	#category : #'Espell2-Metamodel'
 }
 

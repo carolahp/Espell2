@@ -22,12 +22,22 @@ Class {
 		'tagsForMethods',
 		'layout',
 		'template',
+		'metaclass',
 		'superclass',
 		'methodDict',
 		'format'
 	],
 	#category : #'Espell2-Metamodel'
 }
+
+{ #category : #'hooks-api' }
+ClassModel class >> allClassModelInstVarNames [
+	| allInstVars firstIndex |
+	"returns all inst vars of class-models according to the metamodel, starting from superclass"
+	allInstVars := self allInstVarNames.
+	firstIndex := allInstVars indexOf: 'superclass'.
+	^ allInstVars copyFrom: firstIndex to: allInstVars size
+]
 
 { #category : #'hooks-api' }
 ClassModel class >> methodMetaclass [

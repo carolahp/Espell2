@@ -1067,6 +1067,11 @@ LanguageModel >> systemClassMapping [
 
 { #category : #testing }
 LanguageModel >> test [
+	| metaclassInstVars classModelsInstVars |
+	metaclassInstVars := (self classWithRole: 'Metaclass') allInstVarNames.
+	classModelsInstVars := self class classMetaclass allClassModelInstVarNames.
+	self assert: (metaclassInstVars literalEqual: classModelsInstVars) description: 'The class ', self class classMetaclass asString , ' must define the same instance variables than the class-model with role Metaclass' .
+	
 	self behaviors do: [ :beh | beh test ]
 ]
 
