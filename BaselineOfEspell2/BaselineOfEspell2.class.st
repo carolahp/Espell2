@@ -13,10 +13,6 @@ BaselineOfEspell2 >> baseline: spec [
 			spec
 				baseline: 'Espell'
 				with: [ spec repository: 'github://carolahp/espell:simpleAPI' ].
-			spec
-				baseline: 'DebuggableASTInterpreter'
-				with: [ spec repository: 'github://carolahp/DebuggableASTInterpreter:compatibility-espell2' ].
-			
 			spec package: 'Espell2' ].
 		
 
