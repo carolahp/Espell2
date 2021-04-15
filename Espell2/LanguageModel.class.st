@@ -796,6 +796,11 @@ LanguageModel >> layoutForInstSpec: anInteger on: anEP2Class [
  ^ (self layoutClassForInstSpec: anInteger) on: anEP2Class 
 ]
 
+{ #category : #'as yet unclassified' }
+LanguageModel >> loadBaseLanguageModelDefinitions [
+	self loadTonelRepository: PBBootstrapGeneric baseLanguageModelRepository location.
+]
+
 { #category : #hooks }
 LanguageModel >> loadCustomClasses [
 	| metaclass methodDoIt methodStart |
