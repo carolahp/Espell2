@@ -64,13 +64,12 @@ LanguageModel class >> methodMetaclass [
 
 { #category : #'hooks-api' }
 LanguageModel class >> named: aName withEntryPoint: someCode [
-	^ self new 
-		name: aName; 
-			loadTonelRepository: './bootstrap/language-definitions-new-repo/KernelExplicitGit/KernelExplicitMetaclasses';
-			entryPointCode: someCode;
-			loadCustomClasses;
-			yourself.
-
+	^ self new
+		name: aName;
+		loadBaseLanguageModelDefinitions;
+		entryPointCode: someCode;
+		loadCustomClasses;
+		yourself
 ]
 
 { #category : #'hooks-dynamic method loading' }
