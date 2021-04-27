@@ -729,7 +729,7 @@ EP2Backend >> installClass: aClassMirror inClassTableIndex: anInteger [
 	mirror setHashBitsTo: anInteger.
 	"we register the class in the class table in the position of its new index"
 	self objectMemory classAtIndex: anInteger put: mirror target address.
-	self assert: (self mirrorOnAddress: (self classAtIndex: anInteger)) asRemoteClass classTableIndex equals: anInteger.
+	self assert: (self mirrorOnAddress: (self classAtIndex: anInteger)) asRemoteClass classTableIndex = anInteger.
 	aClassMirror target: mirror target asClassIndexHandle.
 ]
 
