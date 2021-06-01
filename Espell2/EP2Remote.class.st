@@ -237,6 +237,19 @@ EP2Remote >> asSmallInteger [
 	^ self asRemoteSmallInteger asSmallInteger
 ]
 
+{ #category : #testing }
+EP2Remote >> assert: actual equals: expected [
+	self
+		assert: actual = expected
+		description: [ String streamContents: [:stream |
+			stream
+				nextPutAll: 'Assertion failed. Got ';
+				nextPutAll: actual fullPrintString;
+				nextPutAll: ' instead of ';
+				nextPutAll: expected fullPrintString;
+				nextPutAll: '.'] ]
+]
+
 { #category : #accessing }
 EP2Remote >> at: index [
 	^ (self layout at: index) asRemoteObject
