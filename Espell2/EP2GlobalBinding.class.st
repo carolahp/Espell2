@@ -50,6 +50,11 @@ EP2GlobalBinding >> isGlobalVariableBinding [
 	^ true
 ]
 
+{ #category : #accessing }
+EP2GlobalBinding >> key [
+	^ self name
+]
+
 { #category : #visiting }
 EP2GlobalBinding >> readWith: anEPASTInterpreter inNode: aRBVariableNode [ 
 	

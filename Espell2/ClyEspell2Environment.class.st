@@ -26,6 +26,18 @@ ClyEspell2Environment >> classes [
 	^ self environment allClasses
 ]
 
+{ #category : #compiling }
+ClyEspell2Environment >> compileANewClassFrom: aString notifying: aController startingFrom: aClass [
+	
+	| importer |
+	
+	importer := RGChunkImporter new.
+	importer environment: self environment.
+	importer fileInFrom: (aString, '!') readStream.
+	
+	^ aClass
+]
+
 { #category : #accessing }
 ClyEspell2Environment >> environment [
 	^ environment

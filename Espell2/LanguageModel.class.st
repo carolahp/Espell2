@@ -7,7 +7,7 @@ Use as follows:
 		withEntryPoint: 'System log: ''hola!''. System quit.').
 	
 	""generates the kernel and executes it using an external VM""
-	language generateAndRun.
+	language generateWriteAndRun.
 	
 	""loads the generated kernel file into the host (current image) and executes it using the VM simulator""
 	language runImageLoadedFromFile.
@@ -575,7 +575,7 @@ LanguageModel >> generate [
 ]
 
 { #category : #api }
-LanguageModel >> generateAndRun [
+LanguageModel >> generateWriteAndRun [
 	self generate.
 	self writeImage runBashScript.
 ]

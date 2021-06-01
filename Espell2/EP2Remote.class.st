@@ -403,10 +403,11 @@ EP2Remote >> printOn: aStream [
 	|selfcasted|
 	selfcasted := self asRemoteObjectCasted.
 	(selfcasted class = self class) 
-	ifTrue: [ aStream 
-		nextPutAll: 'aRemote [ ';
-		nextPutAll: self target asString;
-		nextPutAll: ' ]' ]
+	ifTrue: [ 
+		aStream 
+			nextPutAll: 'aRemote [ ';
+			nextPutAll: self target asString;
+			nextPutAll: ' ]' ]
 	ifFalse: [ selfcasted printOn: aStream ]
 	
 ]

@@ -23,10 +23,10 @@ EP2CrossCompiler >> basicCompileDoItFromSourceCode: sourceCode [
 { #category : #compiling }
 EP2CrossCompiler >> basicCompileSourceCode: sourceCode forClass: anEP2CrossCompilerBinding [ 
 
-	| options contextClass compiler ast vars accessor |
+	| options contextClass compiler ast |
 	options := #().
 	contextClass := objectSpace backend interpreter codeProvider systemDefinition classContext.
-	anEP2CrossCompilerBinding className == contextClass name ifTrue: [ options := #(+ optionLongIvarAccessBytecodes) ].
+	anEP2CrossCompilerBinding className == contextClass name ifTrue: [ options := #(+ optionLongIvarAccessBytecodes)].
 	
 	compiler := OpalCompiler new
 		options: options;

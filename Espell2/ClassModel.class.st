@@ -584,6 +584,12 @@ ClassModel >> isObsolete [
 	^ false
 ]
 
+{ #category : #'testing types' }
+ClassModel >> isPointers [
+	
+	^ self isBits not
+]
+
 { #category : #calypso }
 ClassModel >> isRootInEnvironment [
 	^ self superclass == nil
