@@ -448,8 +448,8 @@ EP2RemoteClass >> testStub [
 	self assert: self methodDictionary isNilObject.
 	self assert: self format isNilObject not.
 	myIndex := self classTableIndex.
-	self assert: self target address equals: (self backend objectMemory classAtIndex: myIndex).	
-	self assert: self asClassDefinition format equals: self format asLocalSmallInteger.
+	self assert: self target address = (self backend objectMemory classAtIndex: myIndex).	
+	self assert: self asClassDefinition format = self format asLocalSmallInteger.
 	existentIndexes := ((self backend builder bootstrapEnvironment allClasses) collect: [ :remoteClasss | remoteClasss classTableIndex ]) values.
 	existentIndexes := existentIndexes select: [ :index | index = myIndex ].
 	self assert: existentIndexes size = 1 description: 'Index should appear only once in the class table. Maybe you forgot to register the class ', self className asString, '?'.
