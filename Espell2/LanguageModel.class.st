@@ -811,7 +811,7 @@ LanguageModel >> layoutForInstSpec: anInteger on: anEP2Class [
  ^ (self layoutClassForInstSpec: anInteger) on: anEP2Class 
 ]
 
-{ #category : #'load definitions' }
+{ #category : #'load definitions - from tonel' }
 LanguageModel >> loadBaseLanguageModelDefinitions [
 	self loadLanguageModelDefinitions: PBBootstrapGeneric baseLanguageModelRepository location
 ]
@@ -836,12 +836,12 @@ LanguageModel >> loadCustomClasses [
 	^ self
 ]
 
-{ #category : #'load definitions' }
+{ #category : #'load definitions - from tonel' }
 LanguageModel >> loadLanguageModelDefinitions: aFileReference [
 	self loadTonelRepository: aFileReference
 ]
 
-{ #category : #initialization }
+{ #category : #'load definitions - required' }
 LanguageModel >> loadRequiredBehaviors [
 	| objModel classModel |
 	"we load object and class first because they are special in the inheritance chain. 
@@ -862,7 +862,7 @@ LanguageModel >> loadRequiredBehaviors [
 	
 ]
 
-{ #category : #initialization }
+{ #category : #'load definitions - required' }
 LanguageModel >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 	| template model |
 	template := aClassEP2Remote.
