@@ -22,7 +22,7 @@ Class {
 	#name : #LanguageModel,
 	#superclass : #ObjectModel,
 	#instVars : [
-		'bindings',
+		'tonelPath',
 		'pbRepository',
 		'packages',
 		'globalVariables',
@@ -181,7 +181,7 @@ LanguageModel >> allClassesWithRole [
 { #category : #announcer }
 LanguageModel >> announcer [
 
-	^ announcer ifNil: [ announcer := Announcer new ]
+	^ announcer ifNil: [ announcer := LanguageModelAnnouncer new ]
 ]
 
 { #category : #calypso }
@@ -811,7 +811,7 @@ LanguageModel >> layoutForInstSpec: anInteger on: anEP2Class [
  ^ (self layoutClassForInstSpec: anInteger) on: anEP2Class 
 ]
 
-{ #category : #'load definitions' }
+{ #category : #'load definitions - from tonel' }
 LanguageModel >> loadBaseLanguageModelDefinitions [
 	self loadLanguageModelDefinitions: PBBootstrapGeneric baseLanguageModelRepository location
 ]
@@ -836,12 +836,13 @@ LanguageModel >> loadCustomClasses [
 	^ self
 ]
 
-{ #category : #'load definitions' }
+{ #category : #'load definitions - from tonel' }
 LanguageModel >> loadLanguageModelDefinitions: aFileReference [
+	tonelPath := aFileReference.
 	self loadTonelRepository: aFileReference
 ]
 
-{ #category : #initialization }
+{ #category : #'load definitions - required' }
 LanguageModel >> loadRequiredBehaviors [
 	| objModel classModel |
 	"we load object and class first because they are special in the inheritance chain. 
@@ -862,7 +863,7 @@ LanguageModel >> loadRequiredBehaviors [
 	
 ]
 
-{ #category : #initialization }
+{ #category : #'load definitions - required' }
 LanguageModel >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 	| template model |
 	template := aClassEP2Remote.
@@ -1111,6 +1112,11 @@ LanguageModel >> testRemote [
 LanguageModel >> testRemoteStub [
 	self allClasses do: [ :class | 
 		class remoteIsInstalled ifTrue: [ class testRemoteStub ] ]
+]
+
+{ #category : #accessing }
+LanguageModel >> tonelPath [ 
+	^ tonelPath
 ]
 
 { #category : #api }

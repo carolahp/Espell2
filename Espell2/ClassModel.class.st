@@ -249,6 +249,11 @@ ClassModel >> ensureLocalMethodNamed: aSymbol [
 		newMethod].
 ]
 
+{ #category : #accessing }
+ClassModel >> environment [ 
+	^ self parent 
+]
+
 { #category : #initialization }
 ClassModel >> extendWithMonticello: aMCClassDefinition [
 	"An existent class is extended with a definition read from Monticello.
@@ -330,6 +335,12 @@ ClassModel >> hookInstall [
 	self basicClass hookInstall.
 	self indexInClassTable: self remote indexInClassTable.
 	^ self remote
+]
+
+{ #category : #calypso }
+ClassModel >> includesMethodsAffectedBy: aMethodRemoved [ 
+
+	^aMethodRemoved affectsMethodsDefinedInPackage: self
 ]
 
 { #category : #'accessing methods' }
@@ -826,6 +837,19 @@ ClassModel >> remoteSystemDictionary [
 	^ self parent remote espellBackend objectSpace systemDictionary
 ]
 
+{ #category : #calypso }
+ClassModel >> removeLocalMethod: aMethodModel [ 
+
+	(aMethodModel package = self package)
+		ifFalse: [ 
+			self error: 'extension methods are not supported'
+			"aMethodModel package removeExtensionMethod:  aMethodModel" ].
+		
+	self methodDict removeKey: aMethodModel selector.
+	self announcer methodRemoved: aMethodModel
+
+]
+
 { #category : #'accessing slots' }
 ClassModel >> removeSlot: aString [ 
 	^ self layout removeSlot: aString
@@ -1014,6 +1038,11 @@ ClassModel >> testVMInstanceVariables [
 ClassModel >> theNonMetaClass [
 	"compiler compatibility"
 	^ self
+]
+
+{ #category : #calypso }
+ClassModel >> users [
+	^ #() 
 ]
 
 { #category : #calypso }

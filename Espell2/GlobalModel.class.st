@@ -7,6 +7,11 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #accessing }
+GlobalModel >> environment [ 
+	self halt
+]
+
 { #category : #printing }
 GlobalModel >> printOn: aStream [
 	aStream 

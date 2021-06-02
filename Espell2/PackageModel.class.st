@@ -96,6 +96,11 @@ PackageModel >> definesBehavior: anOLClass [
 	^ self definedBehaviors anySatisfy: [:beh | beh = anOLClass ].
 ]
 
+{ #category : #accessing }
+PackageModel >> environment [ 
+	^ self parent
+]
+
 { #category : #'abstract instructions' }
 PackageModel >> extendedClasses [
 	^ #()
