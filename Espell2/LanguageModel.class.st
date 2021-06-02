@@ -7,10 +7,15 @@ Use as follows:
 		withEntryPoint: 'System log: ''hola!''. System quit.').
 	
 	""generates the kernel and executes it using an external VM""
-	language generateWriteAndRun.
+	language generateWriteAndExecute.
 	
-	""loads the generated kernel file into the host (current image) and executes it using the VM simulator""
-	language runImageLoadedFromFile.
+	""executes the generated kernel file using the target VM""
+	language imageInDisk executeInVM.
+
+	""loads the generated kernel file into the host (current image) 
+	and executes it using the VM simulator""
+	language imageInDisk executeInVMSimulator.
+	
 	
 "
 Class {
@@ -575,7 +580,7 @@ LanguageModel >> generate [
 ]
 
 { #category : #api }
-LanguageModel >> generateWriteAndRun [
+LanguageModel >> generateWriteAndExecute [
 	self generate.
 	self writeImage.
 	self imageInDisk executeInVM
