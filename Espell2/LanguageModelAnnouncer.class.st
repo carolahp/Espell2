@@ -6,5 +6,5 @@ Class {
 
 { #category : #triggering }
 LanguageModelAnnouncer >> methodRemoved: aMethodModel [ 
-	self announce: (MethodRemoved methodRemoved: aMethodModel protocol: nil origin: nil)
+	self announce: (MethodRemoved methodRemoved: aMethodModel protocol: nil origin: aMethodModel parent)
 ]
