@@ -30,7 +30,7 @@ Class {
 		'announcer',
 		'builder',
 		'entryPointCode',
-		'image'
+		'imageInDisk'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -577,7 +577,8 @@ LanguageModel >> generate [
 { #category : #api }
 LanguageModel >> generateWriteAndRun [
 	self generate.
-	self writeImage runBashScript.
+	self writeImage.
+	self imageInDisk executeInVM
 ]
 
 { #category : #marking }
@@ -746,19 +747,14 @@ LanguageModel >> hookSetSpecialObjectsArray: anEP2RemoteArray [
 	^ nil
 ]
 
-{ #category : #api }
-LanguageModel >> image [ 
-	^ image
-]
-
 { #category : #'accessing remote backend' }
 LanguageModel >> imageBuilder [
 	^ self pbBootstrapper builder
 ]
 
 { #category : #api }
-LanguageModel >> imageLoadedFromFile [
-	^ EP2SpurImage onFile: self image imageFileReference.
+LanguageModel >> imageInDisk [
+	^ imageInDisk
 ]
 
 { #category : #'class roles' }
@@ -1044,16 +1040,6 @@ LanguageModel >> roleOfClassNamed: aString [
 				ifFalse: [ PBClassDefinitionNotFound signal: 'class "', aString, '" not found' ]]
 ]
 
-{ #category : #api }
-LanguageModel >> runImage [ 
-	^ self image runBashScript 
-]
-
-{ #category : #api }
-LanguageModel >> runImageLoadedFromFile [
-	^ self imageLoadedFromFile run
-]
-
 { #category : #accessing }
 LanguageModel >> spurImage [
 	^ builder spurImage
@@ -1097,5 +1083,5 @@ LanguageModel >> testRemoteStub [
 
 { #category : #api }
 LanguageModel >> writeImage [
-	^ image := [builder writeImage] ensure: [ builder destroy ]
+	^ imageInDisk := [builder writeImage] ensure: [ builder destroy ]
 ]
