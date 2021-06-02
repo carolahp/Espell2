@@ -79,6 +79,13 @@ MethodModel >> extendWithMonticello: aMCMethodDefinition [
 ]
 
 { #category : #calypso }
+MethodModel >> hasSelector: aSelector [ 
+	"Answers true if the method refers to the selector"
+	(self selector = aSelector) ifTrue: [ ^ true ].
+	^ self sendsSelector: aSelector 
+]
+
+{ #category : #calypso }
 MethodModel >> hasSelector: aString specialSelectorIndex: anUndefinedObject [ 
 	self halt.
 	^ self ast sentMessages includes: selector
@@ -129,6 +136,12 @@ MethodModel >> isExtension [
 { #category : #marking }
 MethodModel >> markAsAccessed [
 	self propertyNamed: self parent parent objectAccessedPropertyName put: true
+]
+
+{ #category : #calypso }
+MethodModel >> messages [
+
+	^ self ast sentMessages
 ]
 
 { #category : #accessing }
@@ -183,6 +196,14 @@ MethodModel >> pvtTagWith: aSymbol [
 	tags add: aSymbol
 ]
 
+{ #category : #calypso }
+MethodModel >> readsRef: literalAssociation [ 
+	"Answer whether the receiver loads the argument."
+	^ self ast allChildren anySatisfy: [:each | 
+		each isVariable and: [ each name = literalAssociation key ]]
+	
+]
+
 { #category : #accessing }
 MethodModel >> remote: anEP2RemoteCompiledMethod [ 
 	remote := anEP2RemoteCompiledMethod 
@@ -196,6 +217,12 @@ MethodModel >> selector [
 { #category : #accessing }
 MethodModel >> selector: aString [ 
 	selector := aString
+]
+
+{ #category : #calypso }
+MethodModel >> sendsSelector: aSymbol [ 	
+	"Answer whether the method sends a particular selector"
+	^ self messages includes: aSymbol
 ]
 
 { #category : #accessing }
@@ -229,9 +256,26 @@ MethodModel >> time: aDateAndTime [
 	time := aDateAndTime 
 ]
 
+{ #category : #calypso }
+MethodModel >> variableNodes [
+	^self ast variableNodes
+]
+
 { #category : #'tonel repository' }
 MethodModel >> writeIntoTonel [
 	| snapshot |
 	snapshot := self parent package  asMCSnapshot.
 	
+]
+
+{ #category : #calypso }
+MethodModel >> writesRef: literalAssociation [ 
+	"Answer whether the receiver stores into the argument."
+	self ast nodesDo: [ :node | 
+		node isVariable and: [
+			node parent isAssignment and: [  
+				(node parent variable = node) and: [  
+					(node binding =  literalAssociation)
+					 		ifTrue: [^true]]]]]. 
+	^false
 ]

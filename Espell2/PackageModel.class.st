@@ -101,6 +101,13 @@ PackageModel >> extendedClasses [
 	^ #()
 ]
 
+{ #category : #calypso }
+PackageModel >> includesClassesAffectedBy: aSystemAnnouncement [
+
+	^(aSystemAnnouncement affectsClassesDefinedInPackage: self)
+		or: [ aSystemAnnouncement affectsClassesExtendedInPackage: self ]
+]
+
 { #category : #initialize }
 PackageModel >> initialize [ 
 	super initialize.

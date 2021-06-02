@@ -130,6 +130,12 @@ ClassModel >> basicClass [
 	^ self metaclass
 ]
 
+{ #category : #binfing }
+ClassModel >> binding [
+
+	^ self environment bindingOf: self name
+]
+
 { #category : #calypso }
 ClassModel >> calypsoEnvironmentType [
 	^ClyClass

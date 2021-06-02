@@ -71,9 +71,7 @@ LanguageModel class >> methodMetaclass [
 LanguageModel class >> named: aName withEntryPoint: someCode [
 	^ self new
 		name: aName;
-		loadBaseLanguageModelDefinitions;
 		entryPointCode: someCode;
-		loadCustomClasses;
 		yourself
 ]
 
@@ -200,6 +198,23 @@ LanguageModel >> backend [
 { #category : #'accessing backend' }
 LanguageModel >> behaviors [ 
 	^ behaviors
+]
+
+{ #category : #binding }
+LanguageModel >> bindingOf: aSymbol [
+	
+	| behavior result |
+	
+"	self globalVariablesBindings at: aSymbol ifPresent: [ :val | ^ val ].
+	
+	self ask globalVariables detect: [ :each | each name = aSymbol  ] ifFound: [ :found | 
+		self globalVariablesBindings at: aSymbol put: found.
+		^ found ].
+"
+	behavior := self classNamed: aSymbol.
+	result := behavior ifNotNil: [ GlobalVariable key: aSymbol value: behavior].
+	"self globalVariablesBindings at: aSymbol put: result."
+	^ result
 ]
 
 { #category : #bootstrap }
@@ -796,9 +811,9 @@ LanguageModel >> layoutForInstSpec: anInteger on: anEP2Class [
  ^ (self layoutClassForInstSpec: anInteger) on: anEP2Class 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'load definitions' }
 LanguageModel >> loadBaseLanguageModelDefinitions [
-	self loadTonelRepository: PBBootstrapGeneric baseLanguageModelRepository location.
+	self loadLanguageModelDefinitions: PBBootstrapGeneric baseLanguageModelRepository location
 ]
 
 { #category : #hooks }
@@ -819,6 +834,11 @@ LanguageModel >> loadCustomClasses [
 		selector: 'start'.
 
 	^ self
+]
+
+{ #category : #'load definitions' }
+LanguageModel >> loadLanguageModelDefinitions: aFileReference [
+	self loadTonelRepository: aFileReference
 ]
 
 { #category : #initialization }
@@ -1072,7 +1092,14 @@ LanguageModel >> test [
 
 { #category : #testing }
 LanguageModel >> testCompletitude [
-	self allClasses do: [ :class | self assert: class layout isNotNil description: 'Class #', class name, ' referenced in the properties of another class (like superclass) but not defined' ].
+	self allClasses
+		do: [ :class | 
+			self
+				assert: class layout isNotNil
+				description:
+					'Class #' , class name
+						,
+							' referenced in the properties of another class (such as superclass or metaclass) but not defined' ]
 ]
 
 { #category : #testing }
