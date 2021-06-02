@@ -64,6 +64,11 @@ MethodModel >> calypsoEnvironmentType [
 	^ClyMethod
 ]
 
+{ #category : #accessing }
+MethodModel >> environment [ 
+	^ self parent parent
+]
+
 { #category : #initialization }
 MethodModel >> extendWithMonticello: aMCMethodDefinition [
 	| mcDef |
@@ -87,7 +92,7 @@ MethodModel >> hasSelector: aSelector [
 
 { #category : #calypso }
 MethodModel >> hasSelector: aString specialSelectorIndex: anUndefinedObject [ 
-	self halt.
+	
 	^ self ast sentMessages includes: selector
 ]
 
@@ -131,6 +136,12 @@ MethodModel >> install [
 { #category : #calypso }
 MethodModel >> isExtension [
 	^ false
+]
+
+{ #category : #calypso }
+MethodModel >> isInstalled [
+	"calypso compatibility"
+	^ true
 ]
 
 { #category : #marking }
@@ -207,6 +218,11 @@ MethodModel >> readsRef: literalAssociation [
 { #category : #accessing }
 MethodModel >> remote: anEP2RemoteCompiledMethod [ 
 	remote := anEP2RemoteCompiledMethod 
+]
+
+{ #category : #calypso }
+MethodModel >> removeFromSystem [
+	^ self parent removeLocalMethod: self
 ]
 
 { #category : #accessing }

@@ -38,6 +38,11 @@ SlotModel >> definingClass: anEP2RemoteClass [
 	definingClass := anEP2RemoteClass
 ]
 
+{ #category : #accessing }
+SlotModel >> environment [ 
+	self halt
+]
+
 { #category : #testing }
 SlotModel >> isIndexedSlot [
 	^ false

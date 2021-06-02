@@ -18,6 +18,11 @@ ObjectModel class >> named: aString parent: anEP2MLanguage [
 		yourself
 ]
 
+{ #category : #accessing }
+ObjectModel >> announcer [ 
+	^ self environment announcer
+]
+
 { #category : #compatibility }
 ObjectModel >> asRemoteObject [
 	^ self 

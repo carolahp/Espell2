@@ -22,7 +22,7 @@ Class {
 	#name : #LanguageModel,
 	#superclass : #ObjectModel,
 	#instVars : [
-		'bindings',
+		'tonelPath',
 		'pbRepository',
 		'packages',
 		'globalVariables',
@@ -181,7 +181,7 @@ LanguageModel >> allClassesWithRole [
 { #category : #announcer }
 LanguageModel >> announcer [
 
-	^ announcer ifNil: [ announcer := Announcer new ]
+	^ announcer ifNil: [ announcer := LanguageModelAnnouncer new ]
 ]
 
 { #category : #calypso }
@@ -838,6 +838,7 @@ LanguageModel >> loadCustomClasses [
 
 { #category : #'load definitions - from tonel' }
 LanguageModel >> loadLanguageModelDefinitions: aFileReference [
+	tonelPath := aFileReference.
 	self loadTonelRepository: aFileReference
 ]
 
@@ -1111,6 +1112,11 @@ LanguageModel >> testRemote [
 LanguageModel >> testRemoteStub [
 	self allClasses do: [ :class | 
 		class remoteIsInstalled ifTrue: [ class testRemoteStub ] ]
+]
+
+{ #category : #accessing }
+LanguageModel >> tonelPath [ 
+	^ tonelPath
 ]
 
 { #category : #api }
