@@ -556,20 +556,19 @@ LanguageModel >> entryPointCode: aString [
 ]
 
 { #category : #'tonel repository' }
-LanguageModel >> exportAsTonelRepository: aFileReference [ 
-	
-	(self packages select: [:pkg | pkg isNotEmpty]) do: [ :aPackage |
-		| aSnapshot info aVersion |
-		aSnapshot := aPackage asMCSnapshot.
-
-		info := MCVersionInfo new.
-		info instVarNamed: #name put: aPackage name, '-author'.
-		aVersion := MCVersion package: (MCPackage new name: aPackage name) info: info snapshot: aSnapshot dependencies: #().
-		
-		EP2TonelWriter 
-			fileOut: (aVersion)
-			on: aFileReference
-			metamodel: self ]
+LanguageModel >> exportAsTonelRepository: aFileReference [
+	(self packages select: [ :pkg | pkg isNotEmpty ])
+		do: [ :aPackage | 
+			| aSnapshot info aVersion |
+			aSnapshot := aPackage asMCSnapshot.
+			info := MCVersionInfo new.
+			info instVarNamed: #name put: aPackage name , '-author'.
+			aVersion := MCVersion
+				package: (MCPackage new name: aPackage name)
+				info: info
+				snapshot: aSnapshot
+				dependencies: #().
+			EP2TonelWriter fileOut: aVersion on: aFileReference metamodel: self ]
 ]
 
 { #category : #refactor }

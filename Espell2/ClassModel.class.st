@@ -110,13 +110,13 @@ ClassModel >> asMCDefinition [
 		superclassName: (self superclass ifNil: [ 'nil' ] ifNotNil: [ :aSuperclass | aSuperclass name ])
 		traitComposition: ''
 		classTraitComposition: ''
-		category: 'as yet unclassified'
+		category: self package name
 		instVarNames: self instVarNames
 		classVarNames: ''
 		poolDictionaryNames: ''
 		classInstVarNames: ''
 		type: self mcType
-		comment: ''
+		comment: self comment
 		commentStamp: ''
 ]
 
