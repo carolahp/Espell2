@@ -857,7 +857,7 @@ LanguageModel >> loadRequiredBehaviors [
 	" recursive call to load subclasses"
 	EP2Remote
 		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ].	
-	self class classMetaclass slots do: [ :slot | classModel addSlot: slot name ].
+	self class classMetaclass allSlotsForEP2 do: [ :slot | classModel addSlot: slot name ].
 	
 	
 ]

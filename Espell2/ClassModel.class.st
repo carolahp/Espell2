@@ -22,7 +22,7 @@ Class {
 		'tagsForMethods',
 		'layout',
 		'template',
-		'metaclass',
+		'pvtMetaclass',
 		'superclass',
 		'methodDict',
 		'format'
@@ -80,11 +80,6 @@ ClassModel >> addSlot: aString index: anInteger [
 	self layout addSlot: aString index: anInteger
 ]
 
-{ #category : #'accessing inst vars' }
-ClassModel >> allInstVarNames [
-	^ (self allSlots select: #isInstanceVariableSlot) collect: #name
-]
-
 { #category : #'accessing slots' }
 ClassModel >> allSlots [
 	^ self layout ifNil: [ #() ] ifNotNil: [:layo | layo allSlots ]
@@ -104,8 +99,7 @@ ClassModel >> allSubclasses [
 
 { #category : #exporting }
 ClassModel >> asMCDefinition [
-
-	^ MCClassDefinition 
+	^ (MCClassDefinitionEspell
 		name: self name
 		superclassName: (self superclass ifNil: [ 'nil' ] ifNotNil: [ :aSuperclass | aSuperclass name ])
 		traitComposition: ''
@@ -117,7 +111,9 @@ ClassModel >> asMCDefinition [
 		classInstVarNames: ''
 		type: self mcType
 		comment: self comment
-		commentStamp: ''
+		commentStamp: '')
+		metaclass: self metaclass name;
+		yourself
 ]
 
 { #category : #'accessing backend' }

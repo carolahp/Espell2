@@ -17,6 +17,11 @@ EP2TonelWriter class >> fileOut: aVersion on: aStream metamodel: anEP2MLanguage 
 ]
 
 { #category : #accessing }
+EP2TonelWriter >> isClass: aClassDefinition [
+	^ aClassDefinition class = MCClassDefinitionEspell
+]
+
+{ #category : #accessing }
 EP2TonelWriter >> metamodel [
 	^ metamodel
 ]
@@ -49,7 +54,7 @@ EP2TonelWriter >> typeDefinitionOf: aClassDefinition [
 	excluded := #(name superclass type category role instVarNames) asSet. 
 	
 	"We also exclude fields defined by the base class metamodel (EP2MClass)"
-	excluded := excluded , #(tagsForMethods objectName remote properties parent layout template methodDict format).
+	excluded := excluded , #(tagsForMethods objectName remote properties parent layout template methodDict format pvtMetaclass).
 	
 	"We get the name of fields specified in the class metamodel defined by the user (subclass of EP2MClass)"
 	required := model basicClass allInstVarNames.

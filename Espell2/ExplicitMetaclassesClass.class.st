@@ -45,12 +45,12 @@ ExplicitMetaclassesClass >> installStubCustom [
 
 { #category : #accessing }
 ExplicitMetaclassesClass >> metaclass [
-	^ metaclass
+	^ pvtMetaclass
 ]
 
 { #category : #accessing }
 ExplicitMetaclassesClass >> metaclass: anObject [
-	metaclass := anObject
+	pvtMetaclass := anObject
 ]
 
 { #category : #accessing }
