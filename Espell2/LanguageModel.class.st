@@ -6,6 +6,11 @@ Use as follows:
 		named: 'MyLanguage' 
 		withEntryPoint: 'System log: ''hola!''. System quit.').
 	
+	""load the base language definition, or load one created by yourself (tonel format)""
+	language loadBaseLanguageModelDefinitions.
+	OR
+	language 	loadLanguageModelDefinitions: '/path/to/repo' asFileReference.
+	
 	""browse the language model using calypso""
 	language browse.
 	
