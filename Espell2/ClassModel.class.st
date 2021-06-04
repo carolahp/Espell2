@@ -241,6 +241,7 @@ ClassModel >> ensureLocalMethodNamed: aSymbol [
 		| newMethod |
 		newMethod := self methodMetaclass named: aSymbol asSymbol parent: self.
 		newMethod parent: self.
+		newMethod selector: aSymbol.
 		self methodDict at: aSymbol put: newMethod.
 		newMethod].
 ]
@@ -712,6 +713,11 @@ ClassModel >> markMethodAsAccessed: aMethod [
 { #category : #exporting }
 ClassModel >> mcType [
 	^ self layout mcType
+]
+
+{ #category : #calypso }
+ClassModel >> metaLevelScope [
+	^self isInstanceSide ifTrue: [ ClyInstanceSideScope ] ifFalse: [ self halt."ClyClassSideScope" ]
 ]
 
 { #category : #'accessing backend' }
