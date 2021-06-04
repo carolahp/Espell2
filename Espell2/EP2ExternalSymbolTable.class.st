@@ -14,6 +14,13 @@ EP2ExternalSymbolTable >> at: aLocalSymbol [
 ]
 
 { #category : #public }
+EP2ExternalSymbolTable >> at: aLocalSymbol ifAbsent: aBlock [
+
+	^ symbols at: aLocalSymbol ifAbsent: aBlock
+	
+]
+
+{ #category : #public }
 EP2ExternalSymbolTable >> includesKey: aLocalSymbol [
 
 	^ symbols includesKey: aLocalSymbol

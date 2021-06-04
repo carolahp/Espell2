@@ -87,6 +87,19 @@ EP2Layout >> allVariables [
 	^ self object basicClass allSlots collect: [ :slot | slot read: self object ]
 ]
 
+{ #category : #testing }
+EP2Layout >> assert: actual equals: expected [
+	self
+		assert: actual = expected
+		description: [ String streamContents: [:stream |
+			stream
+				nextPutAll: 'Assertion failed. Got ';
+				nextPutAll: actual fullPrintString;
+				nextPutAll: ' instead of ';
+				nextPutAll: expected fullPrintString;
+				nextPutAll: '.'] ]
+]
+
 { #category : #accessing }
 EP2Layout >> at: index [
 	^ self backend object: self at: index
