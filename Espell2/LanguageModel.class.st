@@ -830,26 +830,6 @@ LanguageModel >> loadBaseLanguageModelDefinitions [
 	self loadLanguageModelDefinitions: PBBootstrapGeneric baseLanguageModelRepository location
 ]
 
-{ #category : #hooks }
-LanguageModel >> loadCustomClasses [
-	| metaclass methodDoIt methodStart |
-	metaclass := self classMetaclass.
-
-	methodDoIt := metaclass
-		addLocalMethodFromSource:
-			'entryPoint 
-	' , metaclass name , ' start'
-		selector: 'entryPoint'.
-
-	methodStart := metaclass
-		addLocalMethodFromSource:
-			'start 
-	' , self entryPointCode
-		selector: 'start'.
-
-	^ self
-]
-
 { #category : #'load definitions - from tonel' }
 LanguageModel >> loadLanguageModelDefinitions: aFileReference [
 	tonelPath := aFileReference.
@@ -1131,6 +1111,26 @@ LanguageModel >> testRemoteStub [
 { #category : #accessing }
 LanguageModel >> tonelPath [ 
 	^ tonelPath
+]
+
+{ #category : #hooks }
+LanguageModel >> transform [
+	| metaclass methodDoIt methodStart |
+	metaclass := self classMetaclass.
+
+	methodDoIt := metaclass
+		addLocalMethodFromSource:
+			'entryPoint 
+	' , metaclass name , ' start'
+		selector: 'entryPoint'.
+
+	methodStart := metaclass
+		addLocalMethodFromSource:
+			'start 
+	' , self entryPointCode
+		selector: 'start'.
+
+	^ self
 ]
 
 { #category : #api }
