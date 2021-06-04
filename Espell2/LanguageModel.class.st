@@ -1,18 +1,28 @@
 "
 Use as follows:
 	|language|
-	""instantiates the model""
+	""instantiate the model""
 	language := (LanguageModel 
 		named: 'MyLanguage' 
 		withEntryPoint: 'System log: ''hola!''. System quit.').
 	
-	""generates the kernel and executes it using an external VM""
-	language generateWriteAndExecute.
+	""browse the language model using calypso""
+	language browse.
 	
-	""executes the generated kernel file using the target VM""
+	""generate the kernel and execute it using an external VM""
+	language generate.
+	
+	""evaluate and debug code using the simulated execution environment and guest language debugger""
+	language evaluateCode: 'Character cr asString'.
+	language debugCode: '|array| array at: 1 put: #a'.
+	
+	""write the kernel to disk""
+	language writeImage.
+	
+	""execute the generated kernel file using the target VM""
 	language imageInDisk executeInVM.
 
-	""loads the generated kernel file into the host (current image) 
+	""load the generated kernel file into the host (current image) 
 	and executes it using the VM simulator""
 	language imageInDisk executeInVMSimulator.
 	
