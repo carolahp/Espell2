@@ -852,7 +852,7 @@ LanguageModel >> loadRequiredBehaviors [
 	" recursive call to load subclasses"
 	EP2Remote
 		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ].	
-	self class classMetaclass allSlotsForEP2 do: [ :slot | classModel addSlot: slot name ].
+	self class classMetaclass allClassModelInstVarNames do: [ :ivName | classModel addSlot: ivName ].
 	
 	
 ]
@@ -1077,11 +1077,25 @@ LanguageModel >> systemClassMapping [
 
 { #category : #testing }
 LanguageModel >> test [
-	| metaclassInstVars classModelsInstVars |
-	metaclassInstVars := (self classWithRole: 'Metaclass') allInstVarNames.
-	classModelsInstVars := self class classMetaclass allClassModelInstVarNames.
-	self assert: (metaclassInstVars literalEqual: classModelsInstVars) description: 'The class ', self class classMetaclass asString , ' must define the same instance variables than the class-model with role Metaclass' .
-	
+	| metaclassModel metaclassInstVars classModelsInstVars metaclassInstVarsEnd classModelInstVarsEnd classModelInstVarsFirst |
+	metaclassModel := self classWithRole: 'Metaclass'.
+	metaclassInstVars := metaclassModel allInstVarNames.
+	classModelsInstVars := self class classMetaclass
+		allClassModelInstVarNames.
+	metaclassInstVarsEnd := (metaclassInstVars	copyFrom: 4	to: metaclassInstVars size) asIdentitySet.
+	classModelInstVarsEnd := (classModelsInstVars	copyFrom: 4	to: classModelsInstVars size) asIdentitySet.
+	classModelInstVarsFirst := classModelsInstVars copyFrom: 1 to: 3.
+	self
+		assert: (metaclassInstVars beginsWith: classModelInstVarsFirst)
+		description:
+			'The first 3 instance variables of "' , metaclassModel name
+				, '" must be ' , classModelInstVarsFirst asString.
+	self
+		assert: metaclassInstVarsEnd = classModelInstVarsEnd
+		description:
+			'The class ' , self class classMetaclass asString
+				, ' must define the same instance variables than'
+				, metaclassModel asString.
 	self behaviors do: [ :beh | beh test ]
 ]
 
