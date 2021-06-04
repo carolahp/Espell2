@@ -75,9 +75,14 @@ ClassModel >> addSlot: aString [
 		
 ]
 
-{ #category : #slots }
+{ #category : #'accessing slots' }
 ClassModel >> addSlot: aString index: anInteger [  
 	self layout addSlot: aString index: anInteger
+]
+
+{ #category : #'accessing instance variables' }
+ClassModel >> allInstVarNames [
+	^ (self allSlots select: #isInstanceVariableSlot) collect: #name
 ]
 
 { #category : #'accessing slots' }
@@ -97,7 +102,7 @@ ClassModel >> allSubclasses [
 	^ subclasses
 ]
 
-{ #category : #exporting }
+{ #category : #monticello }
 ClassModel >> asMCDefinition [
 	^ (MCClassDefinitionEspell
 		name: self name
@@ -126,7 +131,7 @@ ClassModel >> basicClass [
 	^ self metaclass
 ]
 
-{ #category : #binfing }
+{ #category : #binding }
 ClassModel >> binding [
 
 	^ self environment bindingOf: self name
@@ -152,7 +157,7 @@ ClassModel >> classSide [
 	^ self metaclass
 ]
 
-{ #category : #'accessing compiler' }
+{ #category : #accessing }
 ClassModel >> classVarNames [
 	"compiler compatibility"
 	^ #()
@@ -184,13 +189,13 @@ ClassModel >> compile: aString classified: aCategory notifying: aRubScrolledText
 
 ]
 
-{ #category : #'accessing compiler' }
+{ #category : #'accessing backend' }
 ClassModel >> compiler [
 
 	^ self class compiler
 ]
 
-{ #category : #'default model values' }
+{ #category : #'accessing format' }
 ClassModel >> defaultMethodDictionary [
 	^ IdentityDictionary new 
 ]
@@ -251,7 +256,7 @@ ClassModel >> environment [
 	^ self parent 
 ]
 
-{ #category : #initialization }
+{ #category : #transforming }
 ClassModel >> extendWithMonticello: aMCClassDefinition [
 	"An existent class is extended with a definition read from Monticello.
 	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we test the class at the end"
@@ -296,7 +301,7 @@ ClassModel >> extendWithMonticelloCustom: aMCClassDefinition [
 	self subclassResponsibility 
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing format' }
 ClassModel >> format [
 	
 	"A class format is composed by"
@@ -345,12 +350,12 @@ ClassModel >> includesSelector: aString [
 	^ self methodDict anySatisfy: [ :method | method selector = aString ]
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing format' }
 ClassModel >> indexInClassTable [
 	^ indexInClassTable
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing format' }
 ClassModel >> indexInClassTable: anInteger [ 
 	indexInClassTable := anInteger
 ]
@@ -431,12 +436,12 @@ ClassModel >> innerBindingOf: aSymbol [
 	self subclassResponsibility 
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing format' }
 ClassModel >> instSize [
 	^ (self layout allSlots select: #isInstanceVariableSlot) size
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing format' }
 ClassModel >> instSpec [
 	^ self layout instSpec
 ]
@@ -481,7 +486,7 @@ ClassModel >> installMethods [
 			self remote methodDictionary at: remoteMethod selector put: remoteMethod ]
 ]
 
-{ #category : #'stubs creation' }
+{ #category : #'api - stubs creation' }
 ClassModel >> installStub [
 	" I install the stub of my corresponding class in the kernel.
 	I depend on the implementation of installStubCustom "
@@ -499,13 +504,13 @@ ClassModel >> installStub [
 	^ newClass
 ]
 
-{ #category : #'stubs creation' }
+{ #category : #hooks }
 ClassModel >> installStubCustom [
 	"Using method from protocol 'api-stubs creation' create your own stub and return it"
 	self subclassResponsibility
 ]
 
-{ #category : #'accessing compiler' }
+{ #category : #accessing }
 ClassModel >> instanceSide [
 	"compiler compatibility"
 	^ self
@@ -526,7 +531,7 @@ ClassModel >> isBehavior [
 	^ true
 ]
 
-{ #category : #testing }
+{ #category : #'testing layout' }
 ClassModel >> isBits [
 	^ self layout isBitsLayout 
 ]
@@ -556,7 +561,7 @@ ClassModel >> isEphemeron [
 	^ self layout isEphemeronLayout
 ]
 
-{ #category : #testing }
+{ #category : #'testing layout' }
 ClassModel >> isEphemeronClass [
 	^ self layout isEphemeronLayout 
 ]
@@ -566,7 +571,7 @@ ClassModel >> isImmediate [
 	^ self parent immediateClassRoles contains: [:rol | rol = self role ]
 ]
 
-{ #category : #testing }
+{ #category : #'testing layout' }
 ClassModel >> isImmediateClass [
 	^ self layout isImmediateLayout
 ]
@@ -576,7 +581,7 @@ ClassModel >> isInstanceSide [
 	^ true
 ]
 
-{ #category : #'accessing compiler' }
+{ #category : #accessing }
 ClassModel >> isMeta [
 	"compiler compatibility"
 	^ false
@@ -588,7 +593,7 @@ ClassModel >> isMetaclass [
 	^ false
 ]
 
-{ #category : #testing }
+{ #category : #'testing layout' }
 ClassModel >> isNilObject [
 	^ false
 ]
@@ -598,7 +603,7 @@ ClassModel >> isObsolete [
 	^ false
 ]
 
-{ #category : #'testing types' }
+{ #category : #'testing layout' }
 ClassModel >> isPointers [
 	
 	^ self isBits not
@@ -614,7 +619,7 @@ ClassModel >> isVariable [
 	^ self layout isVariableLayout
 ]
 
-{ #category : #testing }
+{ #category : #'testing layout' }
 ClassModel >> isWeak [
 	^ self layout isWeakLayout
 ]
@@ -650,12 +655,12 @@ ClassModel >> kindOfSubclass [
 						ifFalse: [' subclass: ']]]
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing format' }
 ClassModel >> layout [
 	^ layout
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing format' }
 ClassModel >> layout: anEP2LayoutClass [ 
 	layout := anEP2LayoutClass
 ]
@@ -710,7 +715,7 @@ ClassModel >> markMethodAsAccessed: aMethod [
 		ifNotNil: [ :method | method markAsAccessed ] 
 ]
 
-{ #category : #exporting }
+{ #category : #monticello }
 ClassModel >> mcType [
 	^ self layout mcType
 ]
@@ -720,7 +725,7 @@ ClassModel >> metaLevelScope [
 	^self isInstanceSide ifTrue: [ ClyInstanceSideScope ] ifFalse: [ self halt."ClyClassSideScope" ]
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #accessing }
 ClassModel >> metaclass [ 
 	self subclassResponsibility 
 ]
@@ -793,7 +798,6 @@ ClassModel >> package: anEP2MPackage [
 
 { #category : #'hooks-dynamic method loading' }
 ClassModel >> parserClass [ 
-self haltOnce.
 	^ RBParser
 ]
 
@@ -816,7 +820,7 @@ ClassModel >> readSlotNamed: aString [
 	^ (self basicClass slotNamed: aString) read: self
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing remote backend' }
 ClassModel >> remote [
 	^ remote
 		"ifNil: [ (self parent remote bootstrapEnvironmentAt: self name)
@@ -824,7 +828,7 @@ ClassModel >> remote [
 				ifNotNil: [ :found | found asRemoteClass ] ]"
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing remote backend' }
 ClassModel >> remote: anEP2RemoteClass [ 
 	remote := anEP2RemoteClass
 ]
@@ -868,7 +872,7 @@ ClassModel >> role: aString [
 	role := aString
 ]
 
-{ #category : #accessing }
+{ #category : #transforming }
 ClassModel >> setLayoutKeepingSlots: anEP2Layout [
 	| oldSlots |
 	oldSlots := self layout ifNil: [#()] ifNotNil: [self slots].
@@ -876,7 +880,7 @@ ClassModel >> setLayoutKeepingSlots: anEP2Layout [
 	oldSlots do: [ :slot | self addSlot: slot name index: slot index ]
 ]
 
-{ #category : #'accessing compiler' }
+{ #category : #accessing }
 ClassModel >> sharedPools [
 	"compiler compatibility"
 	^#()
@@ -960,12 +964,12 @@ ClassModel >> tagsForMethods [
 	^ tagsForMethods
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing format' }
 ClassModel >> template [
 	^ template 
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing format' }
 ClassModel >> template: aClass [ 
 	template := aClass
 ]
@@ -1036,7 +1040,7 @@ ClassModel >> testVMInstanceVariables [
 						, expectedInstVarsNames asString ]
 ]
 
-{ #category : #'accessing compiler' }
+{ #category : #accessing }
 ClassModel >> theNonMetaClass [
 	"compiler compatibility"
 	^ self

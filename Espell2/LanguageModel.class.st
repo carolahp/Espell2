@@ -58,10 +58,10 @@ Class {
 { #category : #'hooks-api' }
 LanguageModel class >> classMetaclass [
 	" Return the subclass of EP2MClass that defines the metamodel for classes of the language "
-	^ ExplicitMetaclassesClass 
+	self subclassResponsibility  
 ]
 
-{ #category : #'accessing-packages' }
+{ #category : #'accessing - defaults' }
 LanguageModel class >> defaultPackagesListFull [
 	^ nil
 ]
@@ -82,7 +82,7 @@ LanguageModel class >> methodMetaclass [
 	
 ]
 
-{ #category : #'hooks-api' }
+{ #category : #instantiation }
 LanguageModel class >> named: aName withEntryPoint: someCode [
 	^ self new
 		name: aName;
