@@ -84,10 +84,16 @@ LanguageModel class >> methodMetaclass [
 
 { #category : #instantiation }
 LanguageModel class >> named: aName withEntryPoint: someCode [
-	^ self new
+	^ self basicNew
 		name: aName;
 		entryPointCode: someCode;
+		initialize;
 		yourself
+]
+
+{ #category : #instantiation }
+LanguageModel class >> new [ 
+	self error: 'use method #named:withEntryPoint: instead'
 ]
 
 { #category : #'hooks-dynamic method loading' }
@@ -598,7 +604,6 @@ LanguageModel >> formatOfImmediate [
 
 { #category : #api }
 LanguageModel >> generate [
-	self pvtAddEntryPoint.
 	self transform.
 	self test.
 	self prepareBuilder.
@@ -803,7 +808,8 @@ LanguageModel >> initialize [
 	behaviors :=  self defaultBehaviors.
 	packages := self defaultPackages.
 	globalVariables := self defaultGlobalVariables.
-	self loadRequiredBehaviors
+	self loadRequiredBehaviors.
+	self pvtAddEntryPoint.
 ]
 
 { #category : #'vm-constants' }
@@ -1024,16 +1030,16 @@ LanguageModel >> printOn: aStream [
 
 { #category : #hooks }
 LanguageModel >> pvtAddEntryPoint [
-	| metaclass methodDoIt methodStart |
+	| metaclass |
 	metaclass := self classMetaclass.
 
-	methodDoIt := metaclass
+	metaclass
 		addLocalMethodFromSource:
 			'entryPoint 
 	' , metaclass name , ' start'
 		selector: 'entryPoint'.
 
-	methodStart := metaclass
+	metaclass
 		addLocalMethodFromSource:
 			'start 
 	' , self entryPointCode
