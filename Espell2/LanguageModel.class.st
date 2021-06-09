@@ -598,6 +598,8 @@ LanguageModel >> formatOfImmediate [
 
 { #category : #api }
 LanguageModel >> generate [
+	self pvtAddEntryPoint.
+	self transform.
 	self test.
 	self prepareBuilder.
 	self testRemoteStub.
@@ -1020,6 +1022,26 @@ LanguageModel >> printOn: aStream [
 		nextPutAll: '"'
 ]
 
+{ #category : #hooks }
+LanguageModel >> pvtAddEntryPoint [
+	| metaclass methodDoIt methodStart |
+	metaclass := self classMetaclass.
+
+	methodDoIt := metaclass
+		addLocalMethodFromSource:
+			'entryPoint 
+	' , metaclass name , ' start'
+		selector: 'entryPoint'.
+
+	methodStart := metaclass
+		addLocalMethodFromSource:
+			'start 
+	' , self entryPointCode
+		selector: 'start'.
+
+	^ self
+]
+
 { #category : #'accessing remote objects' }
 LanguageModel >> remote [
 	"we use the imageBuilder to interact with the kernel"
@@ -1129,22 +1151,7 @@ LanguageModel >> tonelPath [
 
 { #category : #hooks }
 LanguageModel >> transform [
-	| metaclass methodDoIt methodStart |
-	metaclass := self classMetaclass.
-
-	methodDoIt := metaclass
-		addLocalMethodFromSource:
-			'entryPoint 
-	' , metaclass name , ' start'
-		selector: 'entryPoint'.
-
-	methodStart := metaclass
-		addLocalMethodFromSource:
-			'start 
-	' , self entryPointCode
-		selector: 'start'.
-
-	^ self
+	"for the user to define custom transformations on the language model post default roles creation"
 ]
 
 { #category : #api }
