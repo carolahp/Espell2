@@ -19,13 +19,14 @@ EP2SpurImage class >> metadataFileExtension [
 
 { #category : #'instance creation' }
 EP2SpurImage class >> onFile: aFileRefernce [
-	| espellBackend model image repository metadata languageMetaclass simulator objectSpace interpreter |
+	| espellBackend model image repository metadata languageMetaclass simulator objectSpace interpreter metadataDictionary |
 	image := aFileRefernce asFileReference.
 	metadata := image parent / image basenameWithoutExtension
 		, self metadataFileExtension.
-	metadata contents.
+	metadataDictionary := STONJSON fromString:	metadata contents.
 	"I need to remove the hardcoded access to the languageMetaclass and to tonel repository, by getting this values from the metadata file"
-	languageMetaclass := LanguageModel.
+	
+	languageMetaclass := Smalltalk classNamed: (metadataDictionary at: #metamodel).
 	repository := image parent / image basenameWithoutExtension.
 	self
 		assert: repository exists
