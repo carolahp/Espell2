@@ -814,7 +814,8 @@ LanguageModel >> initialize [
 	globalVariables := self defaultGlobalVariables.
 	self loadRequiredBehaviors.
 	self loadEntryPoint.
-	self loadGlobalVariables
+	self loadGlobalVariables.
+	self loadClasses.
 ]
 
 { #category : #'vm-constants' }
@@ -841,6 +842,17 @@ LanguageModel >> layoutForInstSpec: anInteger on: anEP2Class [
 { #category : #'load definitions - from tonel' }
 LanguageModel >> loadBaseLanguageModelDefinitions [
 	self loadLanguageModelDefinitions: PBBootstrapGeneric baseLanguageModelRepository location
+]
+
+{ #category : #hooks }
+LanguageModel >> loadClasses [
+	" 3 options: 
+		- self loadBaseLanguageModelDefinitions 
+			to load the base language model definition
+		- self loadLanguageModelDefinitions: aFileReferenceToTonelRepository
+			to load definitions from a tonel repository
+		- create class-models, method-models and package-models by hand instantiating classes in the language-metamodel"
+	self subclassResponsibility 
 ]
 
 { #category : #hooks }
