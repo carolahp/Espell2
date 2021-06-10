@@ -5,6 +5,9 @@ I am the metamodel of a class in Candle with explicit metaclasses
 Class {
 	#name : #ExplicitMetaclassesClass,
 	#superclass : #ClassModel,
+	#instVars : [
+		'metaclass'
+	],
 	#category : #'Espell2-Metamodel'
 }
 
@@ -45,12 +48,12 @@ ExplicitMetaclassesClass >> installStubCustom [
 
 { #category : #accessing }
 ExplicitMetaclassesClass >> metaclass [
-	^ pvtMetaclass
+	^ metaclass
 ]
 
 { #category : #accessing }
 ExplicitMetaclassesClass >> metaclass: anObject [
-	pvtMetaclass := anObject
+	metaclass := anObject
 ]
 
 { #category : #accessing }

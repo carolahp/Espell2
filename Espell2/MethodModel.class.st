@@ -6,8 +6,7 @@ Class {
 		'selector',
 		'author',
 		'time',
-		'tags',
-		'remote'
+		'tags'
 	],
 	#category : #'Espell2-Metamodel'
 }

@@ -276,6 +276,11 @@ LanguageModel >> builder [
 	^ builder
 ]
 
+{ #category : #testing }
+LanguageModel >> canGenerate [
+	^ self behaviors isNotNil and: [ self behaviors isNotEmpty ]
+]
+
 { #category : #'accessing special classes' }
 LanguageModel >> classAssociation [
 	^ self classWithRole: #Association
@@ -512,10 +517,7 @@ LanguageModel >> defaultBehaviors [
 { #category : #'default model values' }
 LanguageModel >> defaultGlobalVariables [
 	
-	^ (IdentitySet new)
-		add: ((GlobalModel named: #Processor parent: self) role: #Processor);
-		add: ((GlobalModel named: #Undeclared parent: self) role: #Undeclared);
-		yourself
+	^ IdentitySet new
 ]
 
 { #category : #'default model values' }
@@ -535,7 +537,7 @@ LanguageModel >> destroy [
 	backend ifNotNil: [ 
 		backend environment: nil ].
 	backend := nil.
-	behaviors do: [ :beh | beh parent: nil ].
+	behaviors ifNotNil: [ :behvs | behvs do: [ :beh | beh parent: nil ]].
 	behaviors := nil.
 	packages := nil.
 	globalVariables := nil.
@@ -604,10 +606,12 @@ LanguageModel >> formatOfImmediate [
 
 { #category : #api }
 LanguageModel >> generate [
+	self canGenerate ifFalse: [ self error: 'Failure, please instantiate the language model' ].
 	self transform.
 	self test.
 	self prepareBuilder.
 	self testRemoteStub.
+	self halt.
 	self builder installClasses.
 	self builder installMethods.
 	self builder installProcess.
@@ -809,7 +813,8 @@ LanguageModel >> initialize [
 	packages := self defaultPackages.
 	globalVariables := self defaultGlobalVariables.
 	self loadRequiredBehaviors.
-	self pvtAddEntryPoint.
+	self loadEntryPoint.
+	self loadGlobalVariables
 ]
 
 { #category : #'vm-constants' }
@@ -836,6 +841,33 @@ LanguageModel >> layoutForInstSpec: anInteger on: anEP2Class [
 { #category : #'load definitions - from tonel' }
 LanguageModel >> loadBaseLanguageModelDefinitions [
 	self loadLanguageModelDefinitions: PBBootstrapGeneric baseLanguageModelRepository location
+]
+
+{ #category : #hooks }
+LanguageModel >> loadEntryPoint [
+	| metaclass |
+	"do not modify unless you know what you are doing"
+	metaclass := self classMetaclass.
+
+	metaclass
+		addLocalMethodFromSource:
+			'entryPoint 
+	' , metaclass name , ' start'
+		selector: 'entryPoint'.
+
+	metaclass
+		addLocalMethodFromSource:
+			'start 
+	' , self entryPointCode
+		selector: 'start'.
+
+	^ self
+]
+
+{ #category : #hooks }
+LanguageModel >> loadGlobalVariables [
+	" create and instances of GlobalModel to this model, representing globals in the bootstrapped system"
+	self subclassResponsibility 
 ]
 
 { #category : #'load definitions - from tonel' }
@@ -1026,26 +1058,6 @@ LanguageModel >> printOn: aStream [
 		nextPutAll: 'a Language "';
 		nextPutAll: self name asString;
 		nextPutAll: '"'
-]
-
-{ #category : #hooks }
-LanguageModel >> pvtAddEntryPoint [
-	| metaclass |
-	metaclass := self classMetaclass.
-
-	metaclass
-		addLocalMethodFromSource:
-			'entryPoint 
-	' , metaclass name , ' start'
-		selector: 'entryPoint'.
-
-	metaclass
-		addLocalMethodFromSource:
-			'start 
-	' , self entryPointCode
-		selector: 'start'.
-
-	^ self
 ]
 
 { #category : #'accessing remote objects' }

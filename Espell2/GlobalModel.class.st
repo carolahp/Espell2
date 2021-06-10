@@ -1,9 +1,6 @@
 Class {
 	#name : #GlobalModel,
 	#superclass : #ObjectModel,
-	#instVars : [
-		'role'
-	],
 	#category : #'Espell2-Metamodel'
 }
 

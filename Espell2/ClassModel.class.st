@@ -16,13 +16,10 @@ Class {
 	#name : #ClassModel,
 	#superclass : #ObjectModel,
 	#instVars : [
-		'role',
-		'remote',
 		'indexInClassTable',
 		'tagsForMethods',
 		'layout',
 		'template',
-		'pvtMetaclass',
 		'superclass',
 		'methodDict',
 		'format'
@@ -297,7 +294,17 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 ]
 
 { #category : #hooks }
-ClassModel >> extendWithMonticelloCustom: aMCClassDefinition [
+ClassModel >> extendWithMonticelloCustom: aEP2MCClassDefinition [
+	"Specify how Class attributes read from Tonel files are loaded into this class model. 
+	Access attributes by sending a message whose selector is the attribute name.
+	e.g. in Tonel: 
+		Point { 
+			#name: #Point,
+			#myAttribute: #hello
+		 } 
+		access myAttribute sending:
+			aMCClassDefinition myAttribute
+	No need to implement custom getters and setters in EP2MCClassDefinition"
 	self subclassResponsibility 
 ]
 
@@ -433,6 +440,10 @@ ClassModel >> initializeWithTemplateCustom: aTemplateClass [.
 
 { #category : #hooks }
 ClassModel >> innerBindingOf: aSymbol [ 
+	"Answer the binding of some variable resolved in the scope of the receiver, or one of its superclass
+	but do not look up binding in receiver's environment.
+	Use #bindingOf: for looking up the variable binding in a full scope, including receiver's environment"
+	
 	self subclassResponsibility 
 ]
 

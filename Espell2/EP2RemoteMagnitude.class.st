@@ -20,8 +20,9 @@ EP2RemoteMagnitude class >> modelInstVarNames [
 ]
 
 { #category : #constants }
-EP2RemoteMagnitude class >> role [ 
-	^ 'Magnitude'
+EP2RemoteMagnitude class >> role [
+	^ nil 
+	"^ 'Magnitude'"
 ]
 
 { #category : #converting }

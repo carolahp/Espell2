@@ -17,7 +17,8 @@ EP2RemoteSystemDictionary class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteSystemDictionary class >> role [
-	^ 'SystemDictionary'
+	^ nil
+	"^ 'SystemDictionary'"
 ]
 
 { #category : #'high-level-messages' }

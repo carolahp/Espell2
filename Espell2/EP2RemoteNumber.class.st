@@ -10,8 +10,9 @@ EP2RemoteNumber class >> modelInstVarNames [
 ]
 
 { #category : #constants }
-EP2RemoteNumber class >> role [ 
-	^ 'Number'
+EP2RemoteNumber class >> role [
+	^ nil 
+	"^ 'Number'"
 ]
 
 { #category : #'gt-inspector' }

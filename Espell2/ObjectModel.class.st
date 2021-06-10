@@ -4,7 +4,9 @@ Class {
 	#instVars : [
 		'properties',
 		'parent',
-		'objectName'
+		'objectName',
+		'role',
+		'remote'
 	],
 	#category : #'Espell2-Metamodel'
 }

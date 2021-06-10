@@ -20,6 +20,7 @@ EP2RemoteInteger class >> modelInstVarNames [
 ]
 
 { #category : #constants }
-EP2RemoteInteger class >> role [ 
-	^ 'Integer'
+EP2RemoteInteger class >> role [
+	^ nil 
+	"^ 'Integer'"
 ]
