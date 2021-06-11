@@ -111,7 +111,7 @@ MethodModel >> initializeWithLocal: aCompiledMethod [
 
 { #category : #installing }
 MethodModel >> install [
-	| remoteMethod compiledMethod |
+	| remoteMethod |
 	
 	remoteMethod := self parent remote backend builder objectSpace
 		crossCompiler

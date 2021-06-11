@@ -5,28 +5,42 @@ Class {
 }
 
 { #category : #visiting }
-EP2GlobalBinding >> accept: anEPASTInterpreter assign: anEPMirror inNode: aRBVariableNode [ 
-	
-	anEPASTInterpreter environment globalNamed: name put: anEPMirror
+EP2GlobalBinding >> accept: anEPASTInterpreter assign: anEPMirror inNode: aRBVariableNode [
+	self value: anEPMirror
+]
+
+{ #category : #visiting }
+EP2GlobalBinding >> asGlobalOrClassModel [
+	| languageModel |
+	languageModel := objectSpace backend systemDefinition.
+	^ (languageModel globalVariableNamed: name)
+		ifNil: [ languageModel classNamed: name ]
 ]
 
 { #category : #'from local to remote' }
-EP2GlobalBinding >> asRemoteObjectInObjectSpace: anObjectSpace [ 
-	 | binding |
-	 binding := anObjectSpace systemDictionary associationAt: name asSymbol.
-       "If we did not find a binding for the given global, it means that the global is not declared in the bootstrap.
+EP2GlobalBinding >> asRemoteObjectInObjectSpace: anObjectSpace [
+	| binding |
+	binding := self value
+		ifNotNil: [ :val | self name -> val ]
+		ifNil: [ nil ].
+
+	"If we did not find a binding for the given global, it means that the global is not declared in the bootstrap.
        1) We then create an undeclared in the undeclared dictionary
        2) We return the new binding"
-    ^ binding ifNil: [ 
-  		self halt.             
-		self haltIf: [ name ~= #Display ].
-               objectSpace bootstrapInterpreter
-                       evaluateCode: 'Undeclared at: undeclaredName put: nil.
-                                                               Undeclared associationAt: undeclaredName'
-                       withTemps: { 
-                               'undeclaredName' -> (name asSymbol asLiteralInObjectSpace: anObjectSpace)
-                       }.
-               ]
+	^ binding
+		ifNil: [ self
+				assert: binding isNotNil
+				description:
+					'A global named ' , name
+						,
+							' is referenced from a method, but it is not declared in the bootstrap'.
+			objectSpace interpreter
+				evaluateCode:
+					'Undeclared at: undeclaredName put: nil.
+                Undeclared associationAt: undeclaredName'
+				withTemps:
+					{('undeclaredName'
+						-> (name asSymbol asLiteralInObjectSpace: anObjectSpace))} ]
 ]
 
 { #category : #visiting }
@@ -57,21 +71,17 @@ EP2GlobalBinding >> key [
 
 { #category : #visiting }
 EP2GlobalBinding >> readWith: anEPASTInterpreter inNode: aRBVariableNode [ 
-	
-	^ anEPASTInterpreter environment globalNamed: name
+	^ self value
 ]
 
 { #category : #visiting }
 EP2GlobalBinding >> value [ 
-	^ objectSpace backend builder bootstrapEnvironmentAt: self name
+	^ self asGlobalOrClassModel remote
 ]
 
 { #category : #visiting }
 EP2GlobalBinding >> value: anObject [
 	"we keep track in the local representation of the environment of the object space"
-	self halt.
-	"environment at: self name put: anObject.
-	objectSpace environment addGlobal: self name pointingTo: anObject.
 
-	^super value: anObject.	"
+	self asGlobalOrClassModel setValue: anObject
 ]

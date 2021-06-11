@@ -1,20 +1,117 @@
 Class {
 	#name : #GlobalModel,
 	#superclass : #ObjectModel,
+	#instVars : [
+		'initializationCode',
+		'pbInstruction',
+		'remoteIsStub'
+	],
 	#category : #'Espell2-Metamodel'
 }
 
 { #category : #accessing }
 GlobalModel >> environment [ 
-	self halt
+	^ self parent
+]
+
+{ #category : #registering }
+GlobalModel >> hookRegister [
+	self subclassResponsibility 
+]
+
+{ #category : #accessing }
+GlobalModel >> imageBuilder [ 
+	^ self parent imageBuilder
+]
+
+{ #category : #accessing }
+GlobalModel >> initialValue [ 
+	^ pbInstruction evaluate
+]
+
+{ #category : #accessing }
+GlobalModel >> initializationCode: aBlockOraString [
+	| languageModel |
+	languageModel := self environment.
+	
+	pbInstruction := aBlockOraString
+		asPBInstructionFor: languageModel
+]
+
+{ #category : #installing }
+GlobalModel >> install [
+	| newValue |
+	self remoteIsInstalled ifFalse: [ self installStub ] .
+	self assert: self remote isNotNil.
+
+	newValue := self initialValue.
+	remoteIsStub := false.
+	self setValue: newValue.
+
+	^ self remote
+]
+
+{ #category : #installing }
+GlobalModel >> installStub [
+	| remoteNil |
+	self remoteIsInstalled
+		ifTrue: [ ^ self remote ].
+	remoteNil := self imageBuilder espellBackend nilObject.
+	remoteIsStub := true.
+	self remote: remoteNil.
+	self register.
+	^ self remote
+]
+
+{ #category : #order }
+GlobalModel >> order [
+	^ #(Undeclared Smalltalk Processor)
+		indexOf: self role
+		ifAbsent: [ 100 ]
 ]
 
 { #category : #printing }
 GlobalModel >> printOn: aStream [
 	aStream 
-		nextPutAll: 'aMGlobal("';
+		nextPutAll: 'a GlobalModel("';
 		nextPutAll: self name;
 		nextPutAll: '")'
+]
+
+{ #category : #registering }
+GlobalModel >> register [
+	self registerStub.
+	remoteIsStub ifFalse: [ 
+		self hookRegister
+		 ]
+]
+
+{ #category : #register }
+GlobalModel >> registerStub [
+	self imageBuilder 
+		registerGlobal: self remote 
+		definition: self
+		fullyLoaded: false
+]
+
+{ #category : #accessing }
+GlobalModel >> remote [
+	^ remote
+]
+
+{ #category : #accessing }
+GlobalModel >> remote: anEP2Mirror [
+	remote := anEP2Mirror
+]
+
+{ #category : #testing }
+GlobalModel >> remoteIsInstalled [
+	^ self remote isNotNil
+]
+
+{ #category : #accessing }
+GlobalModel >> remoteIsStub: aBoolean [ 
+	remoteIsStub := aBoolean
 ]
 
 { #category : #accessing }
@@ -25,4 +122,17 @@ GlobalModel >> role [
 { #category : #accessing }
 GlobalModel >> role: aString [ 
 	role := aString
+]
+
+{ #category : #updating }
+GlobalModel >> setValue: anEP2Remote [
+	self remote: (anEP2Remote asRemoteObjectInObjectSpace: self environment imageBuilder objectSpace).
+	self register
+
+]
+
+{ #category : #testing }
+GlobalModel >> test [
+	self assert: self name isNotNil.
+	self assert: pbInstruction isNotNil
 ]

@@ -57,13 +57,19 @@ Class {
 
 { #category : #'hooks-api' }
 LanguageModel class >> classMetaclass [
-	" Return the subclass of EP2MClass that defines the metamodel for classes of the language "
+	" Return the subclass of ClassModel that defines the metamodel for classes of the language "
 	self subclassResponsibility  
 ]
 
 { #category : #'accessing - defaults' }
 LanguageModel class >> defaultPackagesListFull [
 	^ nil
+]
+
+{ #category : #'hooks-api' }
+LanguageModel class >> globalVariableMetaclass [
+	" return the subclass of GlobalModel used to represent globals in your language "
+	self subclassResponsibility 
 ]
 
 { #category : #'hooks-api' }
@@ -503,6 +509,12 @@ LanguageModel >> cleanPackages [
 	toRemove do: [ :pkg | self packages remove: pkg ]
 ]
 
+{ #category : #hooks }
+LanguageModel >> createRemoteSystemDictionary [
+	" return a new SystemDictionary instance, or nil if your language does not define a system dictionary"
+	self subclassResponsibility 
+]
+
 { #category : #'evaluation debugging' }
 LanguageModel >> debugEntryPoint [
 	^ self debugCode: self entryPointCode
@@ -651,6 +663,11 @@ LanguageModel >> globalVariables [
 	^ globalVariables
 ]
 
+{ #category : #'accessing global variables' }
+LanguageModel >> globalVariablesSorted [
+	^ self globalVariables asOrderedCollection sort: [ :g1 :g2 | g1 order < g2 order ]
+]
+
 { #category : #'accessing roles' }
 LanguageModel >> globalWithRole: aString [ 
 	| result |
@@ -660,18 +677,14 @@ LanguageModel >> globalWithRole: aString [
 
 { #category : #hooks }
 LanguageModel >> hookCreateInitialObjects [
-	^ self newDummyInstruction 
+	"perform operations to initialize Classes classPools, or instructinos such as String initialize"
+	^ self subclassResponsibility 
 ]
 
 { #category : #hooks }
 LanguageModel >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
 	self deprecated: 'use hooks in EP2MClass instead'.
 	self subclassResponsibility 
-]
-
-{ #category : #hooks }
-LanguageModel >> hookCreateSmalltalkInstance [
-	^ nil
 ]
 
 { #category : #hooks }
@@ -693,11 +706,6 @@ LanguageModel >> hookGlobalNotFound: aString [
 ]
 
 { #category : #hooks }
-LanguageModel >> hookInitalizeGlobals [
-	^ self newDummyInstruction evaluate
-]
-
-{ #category : #hooks }
 LanguageModel >> hookInitializeClassStubs [
 	^ self newDummyInstruction 
 ]
@@ -709,17 +717,7 @@ LanguageModel >> hookInitializeMethodDictionaryFor: anEP2RemoteClass [
 
 { #category : #hooks }
 LanguageModel >> hookInitializeProcessScheduler [ 
-	| processor processList |
-
-	processor := (self classWithRole: #ProcessorScheduler) remote basicNew asRemoteScheduler.
-	processList := (self classWithRole: #Array) remote basicNew: 5.
-	1 to: 5 do: [ :index | 
-		| process |
-		process := (self classWithRole: #ProcessList) remote basicNew.
-		processList at: index put: process ].
-	processor suspendedProcessList: processList.
-	
-	^ processor
+	self deprecated: 'Use the GlobalModel with role #Processor instead'
 	"|code|
 	code := 'Processor := ProcessorScheduler basicNew.
 				Processor initProcessLists.'.
@@ -794,7 +792,9 @@ LanguageModel >> hookSetSpecialObjectsArray: anEP2RemoteArray [
 
 { #category : #'accessing remote backend' }
 LanguageModel >> imageBuilder [
+	self pbBootstrapper ifNil: [ ^ nil ].
 	^ self pbBootstrapper builder
+	
 ]
 
 { #category : #api }
@@ -813,9 +813,15 @@ LanguageModel >> initialize [
 	packages := self defaultPackages.
 	globalVariables := self defaultGlobalVariables.
 	self loadRequiredBehaviors.
+	self loadRequiredGlobalVariables.
 	self loadEntryPoint.
 	self loadGlobalVariables.
 	self loadClasses.
+]
+
+{ #category : #hooks }
+LanguageModel >> initializeRemoteGlobals [
+	^ nil
 ]
 
 { #category : #'vm-constants' }
@@ -922,6 +928,17 @@ LanguageModel >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 	" Recursive call to load subclasses "
 	template
 		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ]
+]
+
+{ #category : #requirements }
+LanguageModel >> loadRequiredGlobalVariables [
+	self globalVariables
+		add:
+			((self class globalVariableMetaclass named: #Undeclared parent: self)
+				role: 'Undeclared';
+				initializationCode: [ :remoteBackend | 
+						EP2RemoteDictionary newWithBackend: remoteBackend ];
+				yourself)
 ]
 
 { #category : #'tonel repository' }
@@ -1148,7 +1165,8 @@ LanguageModel >> test [
 			'The class ' , self class classMetaclass asString
 				, ' must define the same instance variables than'
 				, metaclassModel asString.
-	self behaviors do: [ :beh | beh test ]
+	self behaviors do: [ :beh | beh test ].
+	self globalVariables do: [ :glob | glob test ]
 ]
 
 { #category : #testing }

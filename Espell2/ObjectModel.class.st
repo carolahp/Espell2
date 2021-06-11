@@ -127,9 +127,8 @@ ObjectModel >> newDummyInstruction [
 
 { #category : #'hook instructions' }
 ObjectModel >> newInstruction [
-	^ PBInstructionGenericRemote new 
+	^ PBReflectiveInstruction new 
 		languageDefinition: self;
-		imageBuilder: self imageBuilder;
 		yourself
 ]
 

@@ -503,7 +503,7 @@ ClassModel >> installStub [
 	I depend on the implementation of installStubCustom "
 	| newClass |
 	self remoteIsInstalled
-		ifTrue: [ ^ self ].
+		ifTrue: [ ^ self remote ].
 	newClass := self installStubCustom.
 	self remote: newClass.
 	self classLoader
