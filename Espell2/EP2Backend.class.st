@@ -85,7 +85,7 @@ EP2Backend >> arrayClass: aRemoteClass [
 
 { #category : #'accessing special classes' }
 EP2Backend >> associationClass [
-	^ (associationClass) asRemoteClass
+	^ associationClass asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -358,7 +358,7 @@ EP2Backend >> createObjectWithFormat: classFormat withSize: aSize classIndex: cl
 
 { #category : #'accessing special classes' }
 EP2Backend >> dictionaryClass [
-	^ (self builder classNamed: #Dictionary) asRemoteClass
+	^ self builder remoteClass: #Dictionary
 ]
 
 { #category : #'executing primitives' }
@@ -854,7 +854,7 @@ EP2Backend >> methodClass: anEP2RemoteClass [
 
 { #category : #'accessing special classes' }
 EP2Backend >> methodDictionaryClass [
-	^ (self builder classNamed: #MethodDictionary) asRemoteClass
+	^ self builder remoteClass: #MethodDictionary
 ]
 
 { #category : #'creating-mirrors' }

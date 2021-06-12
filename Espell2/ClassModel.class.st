@@ -328,15 +328,17 @@ ClassModel >> hasComment [
 { #category : #hooks }
 ClassModel >> hookInstall [
 	| remoteMethodDict remoteSuperclass |
-	self remoteIsInstalled ifFalse: [ self installStub ].
-	self remote isStub ifFalse: [
-		"class is fully loaded"
-		^ self remote ].
+	self remoteIsInstalled
+		ifFalse: [ self installStub ].
+	self remote isStub
+		ifFalse: [ "class is fully loaded" ^ self remote ].
 	"we install an empty methodDict, it will be filled later"
-	remoteMethodDict := EP2RemoteMethodDictionary newWithBackend: self parent remote espellBackend.
+	remoteMethodDict := EP2RemoteMethodDictionary	newWithBackend: self parent remote espellBackend.
 	remoteMethodDict test.
-	remoteSuperclass := self superclass ifNil: [nil] ifNotNil:[self parent remote classNamed: self superclass name].
-	self remote 
+	remoteSuperclass := self superclass
+		ifNil: [ nil ]
+		ifNotNil: [ self superclass ensureRemote ].
+	self remote
 		methodDictionary: remoteMethodDict;
 		superclass: remoteSuperclass;
 		format: self format.

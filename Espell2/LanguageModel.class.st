@@ -229,19 +229,19 @@ LanguageModel >> behaviors [
 
 { #category : #binding }
 LanguageModel >> bindingOf: aSymbol [
-	
-	| behavior result |
-	
-"	self globalVariablesBindings at: aSymbol ifPresent: [ :val | ^ val ].
-	
-	self ask globalVariables detect: [ :each | each name = aSymbol  ] ifFound: [ :found | 
-		self globalVariablesBindings at: aSymbol put: found.
-		^ found ].
-"
-	behavior := self classNamed: aSymbol.
-	result := behavior ifNotNil: [ GlobalVariable key: aSymbol value: behavior].
-	"self globalVariablesBindings at: aSymbol put: result."
-	^ result
+	| result |
+	result := self
+		classNamed: aSymbol
+		ifAbsent: [ nil ]
+		ifPresent: [ :class | 
+			class ensureRemote.
+			class ].
+	result := result ifNil: [ self globalVariableNamed: aSymbol ].
+	result ifNil: [ ^ nil ].
+	^ EP2GlobalBinding new
+		name: result name;
+		objectSpace: self objectSpace;
+		yourself
 ]
 
 { #category : #bootstrap }
@@ -428,6 +428,7 @@ LanguageModel >> classProtoObject [
 
 { #category : #hooks }
 LanguageModel >> classRoles [
+	self haltOnce": 'get from tonel repo!'".
 	^ classRoles ifNil: [ classRoles := {
 		#ProtoObject -> #Object.
 		#ProcessorScheduler -> #ProcessorScheduler.
@@ -462,7 +463,8 @@ LanguageModel >> classRoles [
 		#Magnitude -> #Magnitude.
 		#Number -> #Number.
 		#Integer -> #Integer.
-		#ProcessList -> #ProcessList
+		#ProcessList -> #ProcessList.
+		#Semaphore -> #Semaphore
 		} asDictionary ] 
 ]
 
@@ -507,6 +509,12 @@ LanguageModel >> cleanPackages [
 	| toRemove |
 	toRemove := self packages select: [ :pkg | pkg definedBehaviors isEmpty ].
 	toRemove do: [ :pkg | self packages remove: pkg ]
+]
+
+{ #category : #hooks }
+LanguageModel >> createInitialObjects [
+	"perform operations to initialize Classes classPools, or instructinos such as String initialize"
+	^ self subclassResponsibility 
 ]
 
 { #category : #hooks }
@@ -676,12 +684,6 @@ LanguageModel >> globalWithRole: aString [
 ]
 
 { #category : #hooks }
-LanguageModel >> hookCreateInitialObjects [
-	"perform operations to initialize Classes classPools, or instructinos such as String initialize"
-	^ self subclassResponsibility 
-]
-
-{ #category : #hooks }
 LanguageModel >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
 	self deprecated: 'use hooks in EP2MClass instead'.
 	self subclassResponsibility 
@@ -726,51 +728,6 @@ LanguageModel >> hookInitializeProcessScheduler [
 		temps: #();
 		yourself ) evaluate
 "
-]
-
-{ #category : #hooks }
-LanguageModel >> hookInitializeSpecialObjectsArray [
-	self subclassResponsibility 
-]
-
-{ #category : #hooks }
-LanguageModel >> hookInstallClass: aClassDefinition [
-	
-	aClassDefinition hookInstall.
-	aClassDefinition testRemote.
-	^ aClassDefinition remote
-]
-
-{ #category : #hooks }
-LanguageModel >> hookInstallClasses [
-	self allClasses do: [ :class | 
-		class hookInstall ]
-]
-
-{ #category : #hooks }
-LanguageModel >> hookInstallMethods [
-	self allClasses do: [ :class | class installMethods ]
-]
-
-{ #category : #hooks }
-LanguageModel >> hookInstallStubs [
-	^ self allClassesWithRole do: [ :each |
-		each installStub ]
-]
-
-{ #category : #hooks }
-LanguageModel >> hookNewSystemDictionary [
-	self deprecated: 'return the system dictionary fom the hookInitializeGlobals'.
-	^ self newDummyInstruction evaluate
-]
-
-{ #category : #hooks }
-LanguageModel >> hookRegisterClass: remoteClass fromDefinition: anOLClass [ 
-	
-	self classLoader
-		registerClass: remoteClass asRemoteClass
-		definition: anOLClass
-		fullyLoaded: true.
 ]
 
 { #category : #hooks }
@@ -822,6 +779,36 @@ LanguageModel >> initialize [
 { #category : #hooks }
 LanguageModel >> initializeRemoteGlobals [
 	^ nil
+]
+
+{ #category : #hooks }
+LanguageModel >> initializeSpecialObjectsArray [
+	self subclassResponsibility 
+]
+
+{ #category : #hooks }
+LanguageModel >> installClass: aClassDefinition [
+	
+	aClassDefinition hookInstall.
+	aClassDefinition testRemote.
+	^ aClassDefinition remote
+]
+
+{ #category : #hooks }
+LanguageModel >> installClasses [
+	self allClasses do: [ :class | 
+		class hookInstall ]
+]
+
+{ #category : #hooks }
+LanguageModel >> installMethods [
+	self allClasses do: [ :class | class installMethods ]
+]
+
+{ #category : #hooks }
+LanguageModel >> installStubs [
+	^ self allClassesWithRole do: [ :each |
+		each installStub ]
 ]
 
 { #category : #'vm-constants' }
@@ -1022,6 +1009,11 @@ LanguageModel >> objectAccessedPropertyName: aString [
 	markAccessed := aString
 ]
 
+{ #category : #'accessing remote backend' }
+LanguageModel >> objectSpace [
+	^pbBootstrapper builder objectSpace
+]
+
 { #category : #'accessing backend' }
 LanguageModel >> packageFor: anEP2MBehavior [
 	^ (self packages
@@ -1087,6 +1079,16 @@ LanguageModel >> printOn: aStream [
 		nextPutAll: 'a Language "';
 		nextPutAll: self name asString;
 		nextPutAll: '"'
+]
+
+{ #category : #hooks }
+LanguageModel >> registerClass: remoteClass fromDefinition: aClassModel [ 
+	
+	self classLoader
+		registerClass: remoteClass asRemoteClass
+		definition: aClassModel
+		fullyLoaded: true.
+	aClassModel register
 ]
 
 { #category : #'accessing remote objects' }

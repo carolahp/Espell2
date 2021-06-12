@@ -14,26 +14,13 @@ EP2Environment >> allClasses [
 
 { #category : #accessing }
 EP2Environment >> bindingOf: aSymbol [
-	| result |
-	self flag: 'need to add globals'.
-	result := (super bindingOf: aSymbol).
-	"maybe aSymbol is the name of class that has not been installed" 
-	result ifNil: [ | found |
-			["the name of the found class may be different from aSymbol because of mapping with system classes"
-			found := self classNamed: aSymbol.
-			"we try loading the class in the system and retrieving its binding"
-			result := super bindingOf: found classNameFromAnyOrigin ] 
-				on: PBClassDefinitionNotFound 
-				do: [ ^ nil]].
-	^ EP2GlobalBinding new
-			name: result name; 
-			objectSpace: builder objectSpace;
-			yourself 
+	^ builder languageDefinition bindingOf: aSymbol
 ]
 
 { #category : #accessing }
 EP2Environment >> bootstrapEnvironmentAt: aString [ 
-self halt.
+
+	self deprecated: 'use EP2GlobalBinding instead?'.
 	^ self bindingOf: aString
 ]
 
@@ -55,16 +42,20 @@ EP2Environment >> classLoader [
 
 { #category : #public }
 EP2Environment >> classNamed: aSymbol [
+	self deprecated: 'use (LanguageDefinition >> classNamed) and then ensure the remote is installed'.
+	
 	^ self builder classNamed: aSymbol
 ]
 
 { #category : #public }
 EP2Environment >> globalNamed: aString put: aRemoteObject [ 
-	
+	self deprecated: 'Use (LanguageModel>>gobalVariableNamed:) setValue:'.
 	builder bootstrapEnvironment at: aString put: aRemoteObject
 ]
 
 { #category : #globals }
 EP2Environment >> setGlobal: aString value: anEP2Remote [ 
+
+	self deprecated: 'Use (LanguageModel>>gobalVariableNamed:) setValue:'.
 	self at: aString asSymbol put: anEP2Remote
 ]
