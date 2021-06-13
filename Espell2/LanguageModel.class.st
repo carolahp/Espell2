@@ -519,6 +519,18 @@ LanguageModel >> createRemoteSystemDictionary [
 	self subclassResponsibility 
 ]
 
+{ #category : #roles }
+LanguageModel >> customClassRoles [
+	"return an Array of Associations indicating role as key, and class name as value.
+	Do not implement if:
+	- you are loading your language model from a Tonel repo in which the role is indicated.
+	- your classes have the same name as their role
+	
+	The returned value overrides roles read from your Tonel repo
+	"
+	self subclassResponsibility 
+]
+
 { #category : #'evaluation debugging' }
 LanguageModel >> debugEntryPoint [
 	^ self debugCode: self entryPointCode
@@ -848,8 +860,16 @@ LanguageModel >> loadBaseLanguageModelDefinitions [
 { #category : #roles }
 LanguageModel >> loadClassRoles [
 	classRoles := self defaultClassRoles.
-	self tonelPath 
-		ifNotNil: [ :path | self loadClassRolesFromTonel: path ]
+	self tonelPath
+		ifNotNil: [ :path | self loadClassRolesFromTonel: path ].
+	self customClassRoles
+		ifNotNil: [ :customRoles | 
+			"update class roles according to custom roles. 
+			Custom roles override roles read from Tonel repo"		
+			customRoles
+				associationsDo: 	[ :assoc | 
+					classRoles at: assoc key put: assoc value ] ].
+		^ classRoles
 ]
 
 { #category : #roles }
