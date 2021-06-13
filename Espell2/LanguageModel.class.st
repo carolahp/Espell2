@@ -191,7 +191,7 @@ LanguageModel >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
 	
 ]
 
-{ #category : #'accessing globals' }
+{ #category : #'accessing global variables' }
 LanguageModel >> addGlobalVariable: anEP2MGlobalVariable [
 	self globalVariables add: anEP2MGlobalVariable
 ]
@@ -365,12 +365,19 @@ LanguageModel >> classBySystemMapping: aString ifAbsent: aBlockClosure [
 ]
 
 { #category : #'accessing special classes' }
+LanguageModel >> classCharacter [
+	
+	^ self classWithRole: #Character
+]
+
+{ #category : #'accessing special classes' }
 LanguageModel >> classClass [
 	^ self classMetaclass 
 ]
 
 { #category : #'accessing special classes' }
 LanguageModel >> classClassVariable [
+	self deprecated: 'install in your subclass of LanguageModel'.
 	^ [ self classWithRole: #ClassVariable ] on: KeyNotFound 
 			do: [ self classWithRole: #Association ]
 ]
@@ -436,6 +443,11 @@ LanguageModel >> classProcess [
 ]
 
 { #category : #'accessing special classes' }
+LanguageModel >> classProcessList [
+	^ self classWithRole: #ProcessList
+]
+
+{ #category : #'accessing special classes' }
 LanguageModel >> classProcessorScheduler [
 	^ self classWithRole: #ProcessorScheduler
 ]
@@ -452,8 +464,9 @@ LanguageModel >> classRoles [
 ]
 
 { #category : #'accessing special classes' }
-LanguageModel >> classSmalltalkImage [
-	^ self classWithRole: #SmalltalkImage
+LanguageModel >> classSmallInteger [
+	
+	^ self classWithRole: #SmallInteger
 ]
 
 { #category : #'accessing classes' }
@@ -519,42 +532,12 @@ LanguageModel >> defaultBehaviors [
 
 { #category : #'default model values' }
 LanguageModel >> defaultClassRoles [
-	^ { 
-		#ProtoObject -> #Object.
-		#ProcessorScheduler -> #ProcessorScheduler.
-		#Context -> #Context.
-		#Metaclass -> #Class.
-		#Array -> #Array.
-		#MethodDictionary -> #MethodDictionary . 
-		#CompiledMethod -> #CompiledMethod.
-		#Character -> #Character. 
-		#ByteArray -> #ByteArray.
-		#Association -> #Association.
-		#BlockClosure -> #BlockClosure.
-		#Point -> #Point.
-		#Process -> #Process.
-		#ByteString -> #ByteString.
-		#ByteSymbol -> #ByteSymbol.
-		#True -> #True.
-		#False -> #False.
-		#UndefinedObject -> #UndefinedObject.
-		#Float -> #Float.
-		#SmallInteger -> #SmallInteger.
-		#LargePositiveInteger -> #LargePositiveInteger.
-		#LargeNegativeInteger -> #LargeNegativeInteger.
-		#Dictionary -> #Dictionary.
-		#Message -> #Message.
-		#SmalltalkImage -> #SmalltalkImage.
-		#ArrayedCollection -> #ArrayedCollection.
-		#String -> #String.
-		#Symbol -> #Symbol.
-		#SystemDictionary -> #SystemDictionary.
-		#Magnitude -> #Magnitude.
-		#Number -> #Number.
-		#Integer -> #Integer.
-		#ProcessList -> #ProcessList.
-		#Semaphore -> #Semaphore
-		} asDictionary 
+	" get roles from EP2Remote subclasses"
+	| templates |
+	templates := (EP2Remote allSubclasses add: EP2Remote; yourself).
+	^ ((templates select: [ :each | each role isNotNil ])
+		collect: [ :each | each role asSymbol -> each role asSymbol ])
+		asDictionary
 ]
 
 { #category : #'default model values' }
@@ -689,7 +672,7 @@ LanguageModel >> globalVariableNamed: aString [
 	^ nil
 ]
 
-{ #category : #'accessing globals' }
+{ #category : #'accessing global variables' }
 LanguageModel >> globalVariables [
 	^ globalVariables
 ]
@@ -699,7 +682,7 @@ LanguageModel >> globalVariablesSorted [
 	^ self globalVariables asOrderedCollection sort: [ :g1 :g2 | g1 order < g2 order ]
 ]
 
-{ #category : #'accessing roles' }
+{ #category : #'accessing global variables' }
 LanguageModel >> globalWithRole: aString [ 
 	| result |
 	result := (globalVariables select: [ :global | global role = aString ]) .
@@ -896,8 +879,7 @@ LanguageModel >> loadClassRolesFromTonel: aFileReference [
 					((each isKindOf: EP2MCClassDefinition)
 						and: [ each role isNotNil ])
 						ifTrue:
-							[ self classRoles at: each role asSymbol put: each name ] ] ].
-		self halt.
+							[ self classRoles at: each role asSymbol put: each name ] ] ]
 ]
 
 { #category : #hooks }
@@ -984,7 +966,21 @@ LanguageModel >> loadRequiredGlobalVariables [
 				role: 'Undeclared';
 				initializationCode: [ :remoteBackend | 
 						EP2RemoteDictionary newWithBackend: remoteBackend ];
-				yourself)
+				yourself);
+		add:
+			((self class globalVariableMetaclass named: #Processor parent: self)
+				role: #Processor;
+				initializationCode: [ :anEspellBackend | 
+					| processor processList |
+					processor := (self classWithRole: #ProcessorScheduler) remote
+						basicNew asRemoteScheduler.
+					processList := (self classWithRole: #Array) remote basicNew: 5.
+					1 to: 5 do: [ :index | 
+						| process |
+						process := (self classWithRole: #ProcessList) remote basicNew.
+						processList at: index put: process ].
+					processor suspendedProcessList: processList.
+					processor ])
 ]
 
 { #category : #'tonel repository' }

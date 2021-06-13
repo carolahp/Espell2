@@ -760,8 +760,8 @@ EP2Backend >> isBitsClass: anEP2RemoteClass [
 EP2Backend >> isImmediate: mirror [ 
 	| mirrorClass |
 	 mirrorClass := mirror basicClass classNameFromAnyOrigin.
-	^ (mirrorClass = (self systemDefinition classWithRole: #SmallInteger) name) 
-		or: [ (mirrorClass = (self systemDefinition classWithRole: #Character) name) ]
+	^ (mirrorClass = self systemDefinition classSmallInteger name) 
+		or: [ mirrorClass = self systemDefinition classCharacter name ]
 ]
 
 { #category : #'testing-classes' }

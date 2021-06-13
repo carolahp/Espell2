@@ -423,12 +423,22 @@ ClassModel >> initializeWithMonticello: aMCClassDefinition [
 
 { #category : #initialization }
 ClassModel >> initializeWithTemplate: aTemplateClass [
-	| superclassName superclassModel |
-	
-	superclassName := [aTemplateClass superclass role] on: Error do: [nil].
-	superclassModel := self parent classNamed: superclassName ifAbsent: [nil].
+	| superclassModel superTemplates superTemplate templates |
+
+	templates := EP2Remote allSubclasses
+		add: EP2Remote;
+		yourself.
+
+	superTemplates := aTemplateClass allSuperclasses
+		select: [ :each | (templates includes: each) and: [ each role isNotNil ] ].
+	superTemplate := superTemplates at: 1 ifAbsent: [ nil ].
+
+	superclassModel := superTemplate
+		ifNil: [ nil ]
+		ifNotNil: [ self parent classNamed: superTemplate role ].
+		
 	"this happens when a class has more than one role"
-	self haltIf:[superclassName = self name].
+	self haltIf: [ superclassModel isNotNil and: [ superclassModel name = self name ] ].
 	self superclass: superclassModel.
 	self initializeWithTemplateCustom: aTemplateClass.
 	self test.
