@@ -438,7 +438,7 @@ ClassModel >> initializeWithTemplate: aTemplateClass [
 		ifNotNil: [ self parent classNamed: superTemplate role ].
 		
 	"this happens when a class has more than one role"
-	self haltIf: [ superclassModel isNotNil and: [ superclassModel name = self name ] ].
+	(superclassModel isNotNil and: [ superclassModel name = self name ]) ifTrue: [ self error: 'The language model contains a clas with multiple roles'  ].
 	self superclass: superclassModel.
 	self initializeWithTemplateCustom: aTemplateClass.
 	self test.
