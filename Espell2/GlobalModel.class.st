@@ -14,11 +14,6 @@ GlobalModel >> environment [
 	^ self parent
 ]
 
-{ #category : #registering }
-GlobalModel >> hookRegister [
-	self subclassResponsibility 
-]
-
 { #category : #accessing }
 GlobalModel >> imageBuilder [ 
 	^ self parent imageBuilder
@@ -41,20 +36,19 @@ GlobalModel >> initializationCode: aBlockOraString [
 { #category : #installing }
 GlobalModel >> install [
 	| newValue |
-	self remoteIsInstalled ifFalse: [ self installStub ] .
+	self remote ifNil: [ self installStub ].
 	self assert: self remote isNotNil.
-
 	newValue := self initialValue.
 	remoteIsStub := false.
 	self setValue: newValue.
-
+	self testRemote.
 	^ self remote
 ]
 
 { #category : #installing }
 GlobalModel >> installStub [
 	| remoteNil |
-	self remoteIsInstalled
+	self remote isNotNil
 		ifTrue: [ ^ self remote ].
 	remoteNil := self imageBuilder espellBackend nilObject.
 	remoteIsStub := true.
@@ -82,11 +76,17 @@ GlobalModel >> printOn: aStream [
 GlobalModel >> register [
 	self registerStub.
 	remoteIsStub ifFalse: [ 
-		self hookRegister
+		self registerCustom
 		 ]
 ]
 
-{ #category : #register }
+{ #category : #registering }
+GlobalModel >> registerCustom [
+	"Register this global in your system dictionary or anywhere you like"
+	self subclassResponsibility 
+]
+
+{ #category : #registering }
 GlobalModel >> registerStub [
 	self imageBuilder 
 		registerGlobal: self remote 
@@ -106,7 +106,7 @@ GlobalModel >> remote: anEP2Mirror [
 
 { #category : #testing }
 GlobalModel >> remoteIsInstalled [
-	^ self remote isNotNil
+	^ self remote isNotNil and: [ remoteIsStub not ]
 ]
 
 { #category : #accessing }
@@ -135,4 +135,10 @@ GlobalModel >> setValue: anEP2Remote [
 GlobalModel >> test [
 	self assert: self name isNotNil.
 	self assert: pbInstruction isNotNil
+]
+
+{ #category : #testing }
+GlobalModel >> testRemote [
+	self assert: self remote isNotNil.
+	self assert: remoteIsStub not
 ]

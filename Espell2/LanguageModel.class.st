@@ -89,17 +89,37 @@ LanguageModel class >> methodMetaclass [
 ]
 
 { #category : #instantiation }
-LanguageModel class >> named: aName withEntryPoint: someCode [
+LanguageModel class >> new [
+	self error: 'use methods in protocol instantiation'
+]
+
+{ #category : #instantiation }
+LanguageModel class >> newFromDefaultModelWithName: aString1 withEntryPoint: aString2 [
+	^ self
+		newFromModel: PBBootstrapGeneric baseLanguageModelRepository location
+		withName: aString1
+		withEntryPoint: aString2
+]
+
+{ #category : #instantiation }
+LanguageModel class >> newFromModel: aFileReferenceToTonelRepo withName: aString1 withEntryPoint: aString2 [
+	| langName code |
+	langName := aString1.
+	code := aString2.
 	^ self basicNew
-		name: aName;
-		entryPointCode: someCode;
+		name: langName;
+		tonelPath: aFileReferenceToTonelRepo; 
+		entryPointCode: code;
 		initialize;
 		yourself
 ]
 
 { #category : #instantiation }
-LanguageModel class >> new [ 
-	self error: 'use method #named:withEntryPoint: instead'
+LanguageModel class >> newWithName: aString1 withEntryPoint: aString2 [
+	self
+		newFromModel: nil
+		withName: aString1
+		withEntryPoint: aString2
 ]
 
 { #category : #'hooks-dynamic method loading' }
@@ -428,44 +448,7 @@ LanguageModel >> classProtoObject [
 
 { #category : #hooks }
 LanguageModel >> classRoles [
-	self haltOnce": 'get from tonel repo!'".
-	^ classRoles ifNil: [ classRoles := {
-		#ProtoObject -> #Object.
-		#ProcessorScheduler -> #ProcessorScheduler.
-		#Context -> #Context.
-		#Metaclass -> #Class.
-		#Array -> #Array.
-		#MethodDictionary -> #MethodDictionary . 
-		#CompiledMethod -> #CompiledMethod.
-		#Character -> #Character. 
-		#ByteArray -> #ByteArray.
-		#Association -> #Association.
-		#BlockClosure -> #BlockClosure.
-		#Point -> #Point.
-		#Process -> #Process.
-		#ByteString -> #ByteString.
-		#ByteSymbol -> #ByteSymbol.
-		#True -> #True.
-		#False -> #False.
-		#UndefinedObject -> #UndefinedObject.
-		#Float -> #Float.
-		#SmallInteger -> #SmallInteger.
-		#LargePositiveInteger -> #LargePositiveInteger.
-		#LargeNegativeInteger -> #LargeNegativeInteger.
-		#Dictionary -> #Dictionary.
-		#Message -> #Message.
-		#SmalltalkImage -> #SmalltalkImage.
-		"unnecessary"
-		#ArrayedCollection -> #ArrayedCollection.
-		#String -> #String.
-		#Symbol -> #Symbol.
-		#SystemDictionary -> #SystemDictionary.
-		#Magnitude -> #Magnitude.
-		#Number -> #Number.
-		#Integer -> #Integer.
-		#ProcessList -> #ProcessList.
-		#Semaphore -> #Semaphore
-		} asDictionary ] 
+	^ classRoles
 ]
 
 { #category : #'accessing special classes' }
@@ -508,7 +491,7 @@ LanguageModel >> cleanPackages [
 	"removing empty packages"
 	| toRemove |
 	toRemove := self packages select: [ :pkg | pkg definedBehaviors isEmpty ].
-	toRemove do: [ :pkg | self packages remove: pkg ]
+	toRemove do: [ :pkg | self packages removeKey: pkg name ]
 ]
 
 { #category : #hooks }
@@ -532,6 +515,46 @@ LanguageModel >> debugEntryPoint [
 LanguageModel >> defaultBehaviors [
 	
 	^ IdentityDictionary new
+]
+
+{ #category : #'default model values' }
+LanguageModel >> defaultClassRoles [
+	^ { 
+		#ProtoObject -> #Object.
+		#ProcessorScheduler -> #ProcessorScheduler.
+		#Context -> #Context.
+		#Metaclass -> #Class.
+		#Array -> #Array.
+		#MethodDictionary -> #MethodDictionary . 
+		#CompiledMethod -> #CompiledMethod.
+		#Character -> #Character. 
+		#ByteArray -> #ByteArray.
+		#Association -> #Association.
+		#BlockClosure -> #BlockClosure.
+		#Point -> #Point.
+		#Process -> #Process.
+		#ByteString -> #ByteString.
+		#ByteSymbol -> #ByteSymbol.
+		#True -> #True.
+		#False -> #False.
+		#UndefinedObject -> #UndefinedObject.
+		#Float -> #Float.
+		#SmallInteger -> #SmallInteger.
+		#LargePositiveInteger -> #LargePositiveInteger.
+		#LargeNegativeInteger -> #LargeNegativeInteger.
+		#Dictionary -> #Dictionary.
+		#Message -> #Message.
+		#SmalltalkImage -> #SmalltalkImage.
+		#ArrayedCollection -> #ArrayedCollection.
+		#String -> #String.
+		#Symbol -> #Symbol.
+		#SystemDictionary -> #SystemDictionary.
+		#Magnitude -> #Magnitude.
+		#Number -> #Number.
+		#Integer -> #Integer.
+		#ProcessList -> #ProcessList.
+		#Semaphore -> #Semaphore
+		} asDictionary 
 ]
 
 { #category : #'default model values' }
@@ -769,11 +792,12 @@ LanguageModel >> initialize [
 	behaviors :=  self defaultBehaviors.
 	packages := self defaultPackages.
 	globalVariables := self defaultGlobalVariables.
+	self loadClassRoles.
 	self loadRequiredBehaviors.
 	self loadRequiredGlobalVariables.
 	self loadEntryPoint.
 	self loadGlobalVariables.
-	self loadClasses.
+	self loadClasses
 ]
 
 { #category : #hooks }
@@ -834,18 +858,52 @@ LanguageModel >> layoutForInstSpec: anInteger on: anEP2Class [
 
 { #category : #'load definitions - from tonel' }
 LanguageModel >> loadBaseLanguageModelDefinitions [
+	self deprecated: 'Use loadClasses leaving the variable tonelPath as default'.
 	self loadLanguageModelDefinitions: PBBootstrapGeneric baseLanguageModelRepository location
+]
+
+{ #category : #roles }
+LanguageModel >> loadClassRoles [
+	classRoles := self defaultClassRoles.
+	self tonelPath 
+		ifNotNil: [ :path | self loadClassRolesFromTonel: path ]
+]
+
+{ #category : #roles }
+LanguageModel >> loadClassRolesFromTonel: aFileReference [
+	| tonel packagesNames |
+	self
+		flag:
+			'I am reading the tonel repo twice, now and when I load the definitions. 
+	Refactor me!'.
+	tonel := EP2TonelRepository new
+		directory: aFileReference asFileReference;
+		metamodel: self.
+	packagesNames := tonel packageDescriptionsFromReadableFileNames
+		collect: [ :each | each at: 1 ].
+	self
+		assert: packagesNames isNotEmpty
+		description: 'The repository is empty'.
+	packagesNames
+		do: [ :pn | 
+			| package snap version |
+			package := self ensurePackageNamed: pn.
+			version := tonel
+				versionWithInfo: (tonel versionInfoFromVersionNamed: pn).
+			snap := version snapshot.
+			snap definitions
+				do: [ :each | 
+					((each isKindOf: EP2MCClassDefinition)
+						and: [ each role isNotNil ])
+						ifTrue:
+							[ self classRoles at: each role asSymbol put: each name ] ] ].
+		self halt.
 ]
 
 { #category : #hooks }
 LanguageModel >> loadClasses [
-	" 3 options: 
-		- self loadBaseLanguageModelDefinitions 
-			to load the base language model definition
-		- self loadLanguageModelDefinitions: aFileReferenceToTonelRepository
-			to load definitions from a tonel repository
-		- create class-models, method-models and package-models by hand instantiating classes in the language-metamodel"
-	self subclassResponsibility 
+	self tonelPath
+		ifNotNil: [ :path | self loadTonelRepository: path ]
 ]
 
 { #category : #hooks }
@@ -877,6 +935,7 @@ LanguageModel >> loadGlobalVariables [
 
 { #category : #'load definitions - from tonel' }
 LanguageModel >> loadLanguageModelDefinitions: aFileReference [
+	self deprecated: 'Use loadTonelRepository: self tonelPath'.
 	tonelPath := aFileReference.
 	self loadTonelRepository: aFileReference
 ]
@@ -936,8 +995,8 @@ LanguageModel >> loadTonelRepository: aFileReference [
 		metamodel: self. 
 	packagesNames := tonel packageDescriptionsFromReadableFileNames collect: [:each | each at: 1].
 	self assert: packagesNames isNotEmpty description: 'The repository is empty'.
+
 	packagesNames	do: [ :pn | | package snap version |
-			
 			package := self ensurePackageNamed: pn.
 			version := tonel versionWithInfo: (tonel versionInfoFromVersionNamed: pn).
 			snap := version snapshot.
@@ -1196,7 +1255,12 @@ LanguageModel >> testRemoteStub [
 
 { #category : #accessing }
 LanguageModel >> tonelPath [ 
-	^ tonelPath
+	^ tonelPath 
+]
+
+{ #category : #accessing }
+LanguageModel >> tonelPath: aFileReference [
+	tonelPath := aFileReference
 ]
 
 { #category : #hooks }

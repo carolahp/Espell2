@@ -23,25 +23,24 @@ EP2SpurImage class >> onFile: aFileRefernce [
 	image := aFileRefernce asFileReference.
 	metadata := image parent / image basenameWithoutExtension
 		, self metadataFileExtension.
-	metadataDictionary := STONJSON fromString:	metadata contents.
+	metadataDictionary := STONJSON fromString: metadata contents.
 	"I need to remove the hardcoded access to the languageMetaclass and to tonel repository, by getting this values from the metadata file"
-	
-	languageMetaclass := Smalltalk classNamed: (metadataDictionary at: #metamodel).
+	languageMetaclass := Smalltalk
+		classNamed: (metadataDictionary at: #metamodel).
 	repository := image parent / image basenameWithoutExtension.
 	self
 		assert: repository exists
 		description: 'Model saved as tonel repository not found in ' , repository asString.
 
+	self flag: 'save the entry point in metadata file and load it here'.
 	"initializing language model"
-	model := languageMetaclass new
-		name: image basename , ' (from disk)';
-		yourself.
-	model loadTonelRepository: repository.
-
+	model := languageMetaclass
+		newFromModel: repository
+		withName: image basename , ' (from disk)'
+		withEntryPoint: 'self'.
 	"initializing VM simulator"
 	simulator := StackInterpreterSimulator
-		newWithOptions:
-			#(ObjectMemory Spur32BitMemoryManager MULTIPLEBYTECODESETS true).
+		newWithOptions: #(ObjectMemory Spur32BitMemoryManager MULTIPLEBYTECODESETS true).
 	simulator desiredNumStackPages: 8.	"Speeds up scavenging when simulating.  Set to e.g. 64 for something like the real VM."
 	simulator assertValidExecutionPointersAtEachStep: false.
 	simulator openOn: image.

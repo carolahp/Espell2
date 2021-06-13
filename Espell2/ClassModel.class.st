@@ -711,8 +711,9 @@ ClassModel >> lookupSelectorAndMarkTraversedClasses: selector [
 				ifPresent: [ :method | 
 						"We mark as accessed all the behaviors that we traversed"
 						self environment markMaybeAccessedBehaviorsAsAccessed. 
-						"We load the class in the environment so it is available for inspection during the simulated execution of code"
-						self environment pbBootstrapper builder classNamed: self name.
+						"We load the class in the environment so it is available for inspection 
+						during the simulated execution of code"
+						self ensureRemote.
 						^ method ].
 			lookupClass := lookupClass superclass].
 	"The method was not found, so we remove the maybeAccessed property from all behaviors"

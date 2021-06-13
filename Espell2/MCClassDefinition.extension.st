@@ -1,9 +1,9 @@
 Extension { #name : #MCClassDefinition }
 
 { #category : #'*Espell2' }
-MCClassDefinition >> ensureEspellDefinitionIn: anOLObjVLisp [ 
+MCClassDefinition >> ensureEspellDefinitionIn: aLanguageModel [ 
 	
-	^ anOLObjVLisp addBehaviorFromMonticelloDefinition: self
+	^ aLanguageModel addBehaviorFromMonticelloDefinition: self
 ]
 
 { #category : #'*Espell2' }
