@@ -184,9 +184,11 @@ LanguageModel >> addBehavior: aMClass [
 { #category : #'accessing backend' }
 LanguageModel >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
 	| newClass mcDef |
-	mcDef := aMCClassDefinition.
+	mcDef := aMCClassDefinition.				
 	newClass := self ensureClassNamed: aMCClassDefinition className.
 	newClass extendWithMonticello: mcDef.
+	newClass extendWithMonticelloCustom: mcDef.
+	" we can't test yet since not all classes have been loaded "
 	^ newClass
 	
 ]
@@ -954,7 +956,9 @@ LanguageModel >> loadRequiredBehaviors [
 	classModel := self newBehaviorFromTemplate: EP2RemoteClass.
 	self addBehavior: classModel.
 	objModel initializeWithTemplate: EP2Remote.
+	
 	classModel initializeWithTemplate: EP2RemoteClass.
+	
 	" recursive call to load subclasses"
 	EP2Remote
 		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ].	

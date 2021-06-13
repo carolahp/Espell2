@@ -269,7 +269,7 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 
 	| mcDef instVarsDefs packageDef |
 	mcDef := aMCClassDefinition.
-
+	
 	"superclass"
 	self
 		superclass:
@@ -297,8 +297,7 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 			self package: newPkg ].
 	"index in class table"
 	self indexInClassTable: mcDef indexInClassTable.
-	" we can't test yet since not all classes have been loaded "
-	self extendWithMonticelloCustom: mcDef.
+	
 	^ self
 ]
 
@@ -432,6 +431,20 @@ ClassModel >> initializeWithMonticello: aMCClassDefinition [
 
 { #category : #initialization }
 ClassModel >> initializeWithTemplate: aTemplateClass [
+	self initializeWithTemplateGeneric: aTemplateClass.
+	self initializeWithTemplateCustom: aTemplateClass.
+	self test.
+	^ self
+		
+]
+
+{ #category : #initialization }
+ClassModel >> initializeWithTemplateCustom: aTemplateClass [.
+	self subclassResponsibility 
+]
+
+{ #category : #initialization }
+ClassModel >> initializeWithTemplateGeneric: aTemplateClass [
 	| superclassModel superTemplates superTemplate templates |
 
 	templates := EP2Remote allSubclasses
@@ -449,14 +462,7 @@ ClassModel >> initializeWithTemplate: aTemplateClass [
 	"this happens when a class has more than one role"
 	(superclassModel isNotNil and: [ superclassModel name = self name ]) ifTrue: [ self error: 'The language model contains a clas with multiple roles'  ].
 	self superclass: superclassModel.
-	self initializeWithTemplateCustom: aTemplateClass.
-	self test.
 	^ self
-]
-
-{ #category : #initialization }
-ClassModel >> initializeWithTemplateCustom: aTemplateClass [.
-	self subclassResponsibility 
 ]
 
 { #category : #hooks }
