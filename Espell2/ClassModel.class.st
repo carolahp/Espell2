@@ -248,6 +248,15 @@ ClassModel >> ensureLocalMethodNamed: aSymbol [
 		newMethod].
 ]
 
+{ #category : #'accessing remote backend' }
+ClassModel >> ensureRemote [
+	^ self remote
+		ifNil:
+			[ " I have not been installed yet."
+			self installStub.
+			self remote ]
+]
+
 { #category : #accessing }
 ClassModel >> environment [ 
 	^ self parent 
