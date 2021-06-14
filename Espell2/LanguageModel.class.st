@@ -845,9 +845,8 @@ LanguageModel >> installMethods [
 LanguageModel >> installMulticlassStubs: aCollection [
 	| names classes |
 	" ensure the metaclass of each class-model in the collection is present  "
-
 	names := aCollection collect: #name.
-	classes := #() asOrderedCollection .
+	classes := #() asOrderedCollection.
 	aCollection
 		do: [ :class | 
 			(names anySatisfy: [ :c | c = class metaclass name ])
@@ -855,23 +854,15 @@ LanguageModel >> installMulticlassStubs: aCollection [
 	classes addAll: aCollection.
 	"calculate index in class table"
 	classes
-		do: [ :class | class indexInClassTable: self classLoader newClassIndex ].
+		do: [ :class | 
+			class indexInClassTable
+				ifNil: [ class indexInClassTable: self classLoader newClassIndex ] ].
 	"create stubs for each class and register"
 	classes
 		do: [ :class | 
 			class remoteIsInstalled
-				ifFalse: [ class
-						remote:
-							(self classLoader
-								createStubForClassNamed: class name
-								metaclassIndex: class metaclass indexInClassTable
-								newClassIndex: class indexInClassTable).
-					self classLoader
-						registerClass: class remote
-						named: class name
-						fullyLoaded: false ] ].
-	classes
-		do: [ :class | class testStub ]
+				ifFalse: [ class installStubBasic ] ].
+	classes do: [ :class | class testStub ]
 ]
 
 { #category : #hooks }

@@ -530,24 +530,39 @@ ClassModel >> installMethods [
 ClassModel >> installStub [
 	" I install the stub of my corresponding class in the kernel.
 	I depend on the implementation of installStubCustom "
-	| newClass |
-	self deprecated: 'Use LanguageModel >> installMulticlassStubs:'.
+
 	self remoteIsInstalled
 		ifTrue: [ ^ self remote ].
-	newClass := self installStubCustom.
-	self remote: newClass.
+	(self = (self parent classWithRole: #Metaclass))
+		ifTrue: [ self
+				error:
+					'Use LanguageModel >> installMulticlassStubs to install required classes' ].
+	self indexInClassTable
+		ifNil: [ self indexInClassTable: self classLoader newClassIndex ].
+	self metaclass installStub.
+	self installStubBasic.
+	self testStub.
+	^ self remote
+]
+
+{ #category : #'api - stubs creation' }
+ClassModel >> installStubBasic [
+	" I install the stub of my corresponding class in the kernel "
+	self remote: (self classLoader
+								createStubForClassNamed: self name
+								metaclassIndex: self metaclass indexInClassTable
+								newClassIndex: self indexInClassTable).
 	self classLoader
-		registerClass: newClass
-		definition: self
-		fullyLoaded: false.
-	self assert: self remote isNotNil.
-	newClass testStub.
-	^ newClass
+						registerClass: self remote
+						named: self name
+						fullyLoaded: false .
+	^ self remote
 ]
 
 { #category : #hooks }
 ClassModel >> installStubCustom [
 	"Using method from protocol 'api-stubs creation' create your own stub and return it"
+	self deprecated: 'Use first Language >> installMulticlassStubs: to create the first stubs. Use >>installStub to load classes after stub creation'
 	self subclassResponsibility
 ]
 
