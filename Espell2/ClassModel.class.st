@@ -498,6 +498,8 @@ ClassModel >> instVarNames [
 ClassModel >> installMetacircularStub [
 	"I install a class stub that is instance of itself"
 	| theNewMetaclass metaclassIndex |
+	
+	self deprecated: 'Use LanguageModel >> installMulticlassStubs:'.
 	" If the metaclass was already created, it will be found in the bootstrapEnvironment dictionary "
 	self remoteIsInstalled
 		ifTrue: [ ^ self remote ].
@@ -529,6 +531,7 @@ ClassModel >> installStub [
 	" I install the stub of my corresponding class in the kernel.
 	I depend on the implementation of installStubCustom "
 	| newClass |
+	self deprecated: 'Use LanguageModel >> installMulticlassStubs:'.
 	self remoteIsInstalled
 		ifTrue: [ ^ self remote ].
 	newClass := self installStubCustom.
@@ -813,6 +816,7 @@ ClassModel >> newStubWithFormat: anInteger [
 	" Only valid for metaclasses. 
 	I create a new class stub in the kernel by instantiating myself "
 	| newClass |
+	self deprecated: 'Use LanguageModel >> installMulticlassStubs:'.
 	self assert: self remoteIsInstalled.
 	newClass := self remote basicNew asRemoteMetaclass initialize.
 	newClass format: anInteger.
@@ -1054,6 +1058,14 @@ ClassModel >> testRemote [
 { #category : #testing }
 ClassModel >> testRemoteStub [
 	self remote asRemoteClass testStub
+]
+
+{ #category : #testing }
+ClassModel >> testStub [
+	self assert: self remote isNotNil.
+	self assert: self remote basicClass = self metaclass remote.
+	self assert: self remote indexInClassTable = self indexInClassTable.
+	self remote testStub
 ]
 
 { #category : #testing }

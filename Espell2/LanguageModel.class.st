@@ -657,7 +657,6 @@ LanguageModel >> generate [
 	self test.
 	self prepareBuilder.
 	self testRemoteStub.
-	self halt.
 	self builder installClasses.
 	self builder installMethods.
 	self builder installProcess.
@@ -842,10 +841,44 @@ LanguageModel >> installMethods [
 		do: [ :class | class installMethods ]
 ]
 
+{ #category : #'installing stubs' }
+LanguageModel >> installMulticlassStubs: aCollection [
+	| names classes |
+	" ensure the metaclass of each class-model in the collection is present  "
+
+	names := aCollection collect: #name.
+	classes := #() asOrderedCollection .
+	aCollection
+		do: [ :class | 
+			(names anySatisfy: [ :c | c = class metaclass name ])
+				ifFalse: [ classes add: class metaclass ] ].
+	classes addAll: aCollection.
+	"calculate index in class table"
+	classes
+		do: [ :class | class indexInClassTable: self classLoader newClassIndex ].
+	"create stubs for each class and register"
+	classes
+		do: [ :class | 
+			class remoteIsInstalled
+				ifFalse: [ class
+						remote:
+							(self classLoader
+								createStubForClassNamed: class name
+								metaclassIndex: class metaclass indexInClassTable
+								newClassIndex: class indexInClassTable).
+					self classLoader
+						registerClass: class remote
+						named: class name
+						fullyLoaded: false ] ].
+	classes
+		do: [ :class | class testStub ]
+]
+
 { #category : #hooks }
 LanguageModel >> installStubs [
-	^ self allClassesWithRole do: [ :each |
-		each installStub ]
+	self installMulticlassStubs: self allClassesWithRole
+	"^ self allClassesWithRole do: [ :each |
+		each installStub ]"
 ]
 
 { #category : #'vm-constants' }

@@ -37,6 +37,8 @@ ExplicitMetaclassesClass >> innerBindingOf: aString [
 
 { #category : #'stubs creation' }
 ExplicitMetaclassesClass >> installStubCustom [
+
+	self deprecated: 'Use LanguageModel >> installMulticlassStubs:'.
 	self metaclass = self
 		ifTrue: [ ^ self installMetacircularStub ].
 	"first install the stub of my metaclass"
