@@ -50,7 +50,8 @@ Class {
 		'announcer',
 		'builder',
 		'entryPointCode',
-		'imageInDisk'
+		'imageInDisk',
+		'installAccessedObjectsOnly'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -618,6 +619,11 @@ LanguageModel >> entryPointCode: aString [
 	entryPointCode := aString 
 ]
 
+{ #category : #accessing }
+LanguageModel >> environment [ 
+	^ self
+]
+
 { #category : #'tonel repository' }
 LanguageModel >> exportAsTonelRepository: aFileReference [
 	(self packages select: [ :pkg | pkg isNotEmpty ])
@@ -807,6 +813,16 @@ LanguageModel >> initializeSpecialObjectsArray [
 	self subclassResponsibility 
 ]
 
+{ #category : #accessing }
+LanguageModel >> installAccessedObjectsOnly [
+	^ installAccessedObjectsOnly ifNil: [ installAccessedObjectsOnly := false ]
+]
+
+{ #category : #accessing }
+LanguageModel >> installAccessedObjectsOnly: anObject [
+	installAccessedObjectsOnly := anObject
+]
+
 { #category : #hooks }
 LanguageModel >> installClass: aClassDefinition [
 	
@@ -817,13 +833,13 @@ LanguageModel >> installClass: aClassDefinition [
 
 { #category : #hooks }
 LanguageModel >> installClasses [
-	self allClasses do: [ :class | 
-		class hookInstall ]
+	(self allClasses select: #isInstallable) do: #hookInstall
 ]
 
 { #category : #hooks }
 LanguageModel >> installMethods [
-	self allClasses do: [ :class | class installMethods ]
+	(self allClasses select: #isInstallable)
+		do: [ :class | class installMethods ]
 ]
 
 { #category : #hooks }
@@ -920,13 +936,13 @@ LanguageModel >> loadEntryPoint [
 		addLocalMethodFromSource:
 			'entryPoint 
 	' , metaclass name , ' start'
-		selector: 'entryPoint'.
+		selector: #entryPoint.
 
 	metaclass
 		addLocalMethodFromSource:
 			'start 
 	' , self entryPointCode
-		selector: 'start'.
+		selector: #start.
 
 	^ self
 ]
@@ -1080,7 +1096,7 @@ LanguageModel >> newBehaviorFromTemplate: aClassEP2Remote [
 
 { #category : #marking }
 LanguageModel >> objectAccessedPropertyName [ 
-	^ markAccessed
+	^ markAccessed ifNil: [ markAccessed := #accessed ]
 ]
 
 { #category : #marking }

@@ -42,8 +42,8 @@ LanguageModelBackend >> addSlot: aString to: aLayout [
 ]
 
 { #category : #accessing }
-LanguageModelBackend >> environment: anOLObjVLisp [ 
-	environment := anOLObjVLisp
+LanguageModelBackend >> environment: aLanguageModel [
+	environment := aLanguageModel
 ]
 
 { #category : #'accessing instance variables' }

@@ -56,13 +56,18 @@ ObjectModel >> evaluateCode: aString temps: aCollection [
 ]
 
 { #category : #'evaluating ast' }
-ObjectModel >> evaluateLoadingMissingDefinitionsFromPharo: aString [ 
-	^ self evaluateLoadingMissingDefinitionsFromPharo: aString temps: #()
+ObjectModel >> evaluateToSpecialize: aString [ 
+	^ self evaluateToSpecialize: aString temps: #()
 ]
 
 { #category : #'evaluating ast' }
-ObjectModel >> evaluateLoadingMissingDefinitionsFromPharo: aString temps: aCollection [ 
-	^ (self newInstruction code: aString; temps: aCollection) evaluateLoadingMissingDefinitionsFromPharo
+ObjectModel >> evaluateToSpecialize: aString temps: aCollection [
+	self installAccessedObjectsOnly: true.
+	self environment
+		removeFromAllElementsPropertyNamed: self environment objectAccessedPropertyName.
+	^ (self newInstruction
+		code: aString;
+		temps: aCollection) evaluateToSpecialize
 ]
 
 { #category : #testing }
@@ -86,8 +91,15 @@ ObjectModel >> imageBuilder [
 ]
 
 { #category : #marking }
+ObjectModel >> installAccessedObjectsOnly: aBoolean [
+	self environment installAccessedObjectsOnly: aBoolean
+]
+
+{ #category : #marking }
 ObjectModel >> isInstallable [
-	^ true
+	^ self environment installAccessedObjectsOnly
+		ifTrue: [ self isMarkedAsAccessed ]
+		ifFalse: [ true ]
 ]
 
 { #category : #marking }
