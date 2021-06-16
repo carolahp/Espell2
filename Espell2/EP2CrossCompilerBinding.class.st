@@ -17,7 +17,7 @@ EP2CrossCompilerBinding >> allSlots [
 
 { #category : #bindings }
 EP2CrossCompilerBinding >> binding [
-	
+self halt: 'I should get the bindings from ObjectModels'.
 	^ class isMeta ifTrue: [
 		EP2MetaclassBinding  new
 			name: class theNonMetaClass name; 
@@ -57,8 +57,8 @@ self halt: 'I should get the bindings from ObjectModels'.
 ]
 
 { #category : #accessing }
-EP2CrossCompilerBinding >> class: aRGClass [ 
-	class := aRGClass
+EP2CrossCompilerBinding >> class: aClassModel [ 
+	class := aClassModel
 ]
 
 { #category : #accessing }

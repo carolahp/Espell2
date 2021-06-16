@@ -714,7 +714,7 @@ LanguageModel >> globalWithRole: aString [
 { #category : #hooks }
 LanguageModel >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
 	self deprecated: 'use hooks in EP2MClass instead'.
-	self subclassResponsibility 
+	
 ]
 
 { #category : #hooks }
