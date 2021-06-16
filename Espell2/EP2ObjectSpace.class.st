@@ -160,6 +160,13 @@ EP2ObjectSpace >> newRemoteArrayWithAll: elements [
 	^ array
 ]
 
+{ #category : #'remote-objects-instantiation' }
+EP2ObjectSpace >> newRemoteDictionaryFrom: aDictionary [
+	| remoteArray |
+	remoteArray := aDictionary associations asRemoteObjectInObjectSpace: self.
+	^ EP2RemoteDictionary newFrom: remoteArray
+]
+
 { #category : #'accessing-specialObjects' }
 EP2ObjectSpace >> nilObject [
 	^ self backend nilObject
