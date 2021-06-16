@@ -1017,7 +1017,7 @@ LanguageModel >> loadRequiredBehaviors [
 	" recursive call to load subclasses"
 	EP2Remote
 		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ].	
-	self class classMetaclass allClassModelInstVarNames do: [ :ivName | classModel addSlot: ivName ].
+	"self class classMetaclass allClassModelInstVarNames do: [ :ivName | classModel addSlot: ivName ]."
 	
 	
 ]
