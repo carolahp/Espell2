@@ -787,6 +787,11 @@ LanguageModel >> imageInDisk [
 	^ imageInDisk
 ]
 
+{ #category : #api }
+LanguageModel >> imageInMemory [
+	^ self builder spurImage
+]
+
 { #category : #'class roles' }
 LanguageModel >> immediateClassRoles [
 	^ #(Character SmallInteger)
@@ -960,7 +965,7 @@ LanguageModel >> loadClasses [
 LanguageModel >> loadEntryPoint [
 	| metaclass |
 	"do not modify unless you know what you are doing"
-	metaclass := self classMetaclass.
+	metaclass := self classMetaclass metaclass.
 
 	metaclass
 		addLocalMethodFromSource:
