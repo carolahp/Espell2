@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteByteString class >> indexInClassTable [
+	^ 52
+]
+
+{ #category : #constants }
+EP2RemoteByteString class >> indexInSpecialObjectsArray [
+	^ 7
+]
+
+{ #category : #constants }
 EP2RemoteByteString class >> layoutClass [ 
 	^ EP2ByteLayout 
 ]

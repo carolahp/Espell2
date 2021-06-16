@@ -14,6 +14,11 @@ EP2RemoteProcess class >> createProcessForContext: aRemoteContext andPriority: a
 ]
 
 { #category : #constants }
+EP2RemoteProcess class >> indexInSpecialObjectsArray [
+	^ 28
+]
+
+{ #category : #constants }
 EP2RemoteProcess class >> layoutClass [ 
 	^ EP2FixedLayout 
 ]

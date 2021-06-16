@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteLargePositiveInteger class >> indexInClassTable [
+	^ 33
+]
+
+{ #category : #constants }
+EP2RemoteLargePositiveInteger class >> indexInSpecialObjectsArray [
+	^ 14
+]
+
+{ #category : #constants }
 EP2RemoteLargePositiveInteger class >> layoutClass [ 
 	^ EP2ByteLayout 
 ]

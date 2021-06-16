@@ -250,11 +250,11 @@ ClassModel >> ensureLocalMethodNamed: aSymbol [
 
 { #category : #'accessing remote backend' }
 ClassModel >> ensureRemote [
-	^ self remote
+	^ (self remote
 		ifNil:
 			[ " I have not been installed yet."
 			self installStub.
-			self remote ]
+			self remote ]) asRemoteClass
 ]
 
 { #category : #accessing }
@@ -462,6 +462,7 @@ ClassModel >> initializeWithTemplateGeneric: aTemplateClass [
 	"this happens when a class has more than one role"
 	(superclassModel isNotNil and: [ superclassModel name = self name ]) ifTrue: [ self error: 'The language model contains a clas with multiple roles'  ].
 	self superclass: superclassModel.
+	self halt.
 	^ self
 ]
 
@@ -562,7 +563,7 @@ ClassModel >> installStubBasic [
 { #category : #hooks }
 ClassModel >> installStubCustom [
 	"Using method from protocol 'api-stubs creation' create your own stub and return it"
-	self deprecated: 'Use first Language >> installMulticlassStubs: to create the first stubs. Use >>installStub to load classes after stub creation'
+	self deprecated: 'Use first Language >> installMulticlassStubs: to create the first stubs. Use >>installStub to load classes after stub creation'.
 	self subclassResponsibility
 ]
 
@@ -844,6 +845,11 @@ ClassModel >> objectAccessedPropertyName [
 	^ parent objectAccessedPropertyName
 ]
 
+{ #category : #'accessing backend' }
+ClassModel >> objectSpace [
+	^ self parent objectSpace
+]
+
 { #category : #accessing }
 ClassModel >> package [
 	^ self parent packageFor: self
@@ -880,10 +886,10 @@ ClassModel >> readSlotNamed: aString [
 
 { #category : #'accessing remote backend' }
 ClassModel >> remote [
-	^ remote
-		"ifNil: [ (self parent remote bootstrapEnvironmentAt: self name)
-				ifNil: [ self remoteBackend nilObject ]
-				ifNotNil: [ :found | found asRemoteClass ] ]"
+	remote ifNil: [ ^nil ].
+	^ remote isNilObject 
+		ifTrue: [ remote asRemoteNil ]
+		ifFalse: [ remote asRemoteClass ]
 ]
 
 { #category : #'accessing remote backend' }

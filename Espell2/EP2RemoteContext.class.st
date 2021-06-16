@@ -20,6 +20,16 @@ EP2RemoteContext class >> createContextForMethod: aRemoteCompiledMethod inObject
 ]
 
 { #category : #constants }
+EP2RemoteContext class >> indexInClassTable [
+	^ 36
+]
+
+{ #category : #constants }
+EP2RemoteContext class >> indexInSpecialObjectsArray [
+	^ 11
+]
+
+{ #category : #constants }
 EP2RemoteContext class >> layoutClass [
 	^ EP2ContextLayout
 ]

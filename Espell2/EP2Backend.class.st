@@ -1192,6 +1192,7 @@ EP2Backend >> stackIsEmpty [
 
 { #category : #accessing }
 EP2Backend >> symbolTableClass: anEP2RemoteClass [ 
+self deprecated: 'not sure why this is here'.
 	self flag: 'Implement later'
 ]
 

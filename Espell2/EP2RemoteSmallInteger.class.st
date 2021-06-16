@@ -5,6 +5,21 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteSmallInteger class >> index2InClassTable [
+	^ 3
+]
+
+{ #category : #constants }
+EP2RemoteSmallInteger class >> indexInClassTable [
+	^ 1
+]
+
+{ #category : #constants }
+EP2RemoteSmallInteger class >> indexInSpecialObjectsArray [
+	^ 6
+]
+
+{ #category : #constants }
 EP2RemoteSmallInteger class >> layoutClass [ 
 	^ EP2ImmediateLayout 
 ]

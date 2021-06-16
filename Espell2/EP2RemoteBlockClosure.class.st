@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteBlockClosure class >> indexInClassTable [
+	^ 37
+]
+
+{ #category : #constants }
+EP2RemoteBlockClosure class >> indexInSpecialObjectsArray [
+	^ 37
+]
+
+{ #category : #constants }
 EP2RemoteBlockClosure class >> layoutClass [ 
 	^ EP2BlockLayout 
 ]

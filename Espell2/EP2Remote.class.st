@@ -9,6 +9,21 @@ Class {
 }
 
 { #category : #constants }
+EP2Remote class >> index2InClassTable [
+	^ nil
+]
+
+{ #category : #constants }
+EP2Remote class >> indexInClassTable [
+	^ nil
+]
+
+{ #category : #constants }
+EP2Remote class >> indexInSpecialObjectsArray [
+	^ nil
+]
+
+{ #category : #constants }
 EP2Remote class >> layoutClass [
 	" generic layout "
 	^ EP2ObjectLayout
@@ -312,6 +327,20 @@ EP2Remote >> executePrimitiveMethod: aCompiledMethod withArguments: arguments [
 EP2Remote >> gtInspectorIn: composite [
 	<gtInspectorPresentationOrder: 1>
 	^ self layout gtInspectorIn: composite
+]
+
+{ #category : #testing }
+EP2Remote >> ifNilObject: ifNilBlock [
+	^ self isNilObject
+		ifTrue: [ ifNilBlock cull: self ]
+		ifFalse: [ self ]
+]
+
+{ #category : #testing }
+EP2Remote >> ifNotNilObject: ifNotNilBlock [
+	^ self isNilObject
+		ifTrue: [ self ]
+		ifFalse: [ ifNotNilBlock cull: self ]
 ]
 
 { #category : #'accessing-instVars' }

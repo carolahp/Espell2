@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteCompiledMethod class >> indexInSpecialObjectsArray [
+	^ 17
+]
+
+{ #category : #constants }
 EP2RemoteCompiledMethod class >> layoutClass [
 	^ EP2CompiledMethodLayout 
 ]

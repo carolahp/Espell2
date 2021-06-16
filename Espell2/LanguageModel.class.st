@@ -259,12 +259,9 @@ LanguageModel >> bindingOf: aSymbol [
 		ifPresent: [ :class | 
 			class ensureRemote.
 			class ].
-	result := result ifNil: [ self globalVariableNamed: aSymbol ].
-	result ifNil: [ ^ nil ].
-	^ EP2GlobalBinding new
-		name: result name;
-		objectSpace: self objectSpace;
-		yourself
+	result := result
+		ifNil: [ (self globalVariableNamed: aSymbol) ifNil: [ ^ nil ] ].
+	^ self newGlobalBindingFor: aSymbol
 ]
 
 { #category : #bootstrap }
@@ -653,7 +650,7 @@ LanguageModel >> formatOfImmediate [
 { #category : #api }
 LanguageModel >> generate [
 	self canGenerate ifFalse: [ self error: 'Failure, please instantiate the language model' ].
-	self transform.
+
 	self test.
 	self prepareBuilder.
 	self testRemoteStub.
@@ -799,7 +796,10 @@ LanguageModel >> initialize [
 	self loadRequiredGlobalVariables.
 	self loadEntryPoint.
 	self loadGlobalVariables.
-	self loadClasses
+	"load definitions from Tonel if corresponds"
+	self loadClasses.
+	"apply custom transformations implemented using MOP"
+	self transform
 ]
 
 { #category : #hooks }
@@ -1118,6 +1118,14 @@ LanguageModel >> newBehaviorFromTemplate: aClassEP2Remote [
 	^ model
 ]
 
+{ #category : #binding }
+LanguageModel >> newGlobalBindingFor: aSymbol [
+	^ EP2GlobalBinding new
+		name: aSymbol;
+		objectSpace: self objectSpace;
+		yourself
+]
+
 { #category : #marking }
 LanguageModel >> objectAccessedPropertyName [ 
 	^ markAccessed ifNil: [ markAccessed := #accessed ]
@@ -1176,7 +1184,6 @@ LanguageModel >> pbRepository: aPBRepository [
 LanguageModel >> prepareBuilder [
 	| repo |
 	builder ifNotNil: [ builder destroy ].
-	self assert: self name isNotNil.
 		 
 	repo := PBRepository new 
 		systemDefinition: self;
@@ -1268,6 +1275,8 @@ LanguageModel >> systemClassMapping [
 { #category : #testing }
 LanguageModel >> test [
 	| metaclassModel metaclassInstVars classModelsInstVars metaclassInstVarsEnd classModelInstVarsEnd classModelInstVarsFirst |
+	self assert: self name isNotNil.
+	
 	metaclassModel := self classWithRole: 'Metaclass'.
 	metaclassInstVars := metaclassModel allInstVarNames.
 	classModelsInstVars := self class classMetaclass
@@ -1313,6 +1322,12 @@ LanguageModel >> testRemoteStub [
 		class remoteIsInstalled ifTrue: [ class testRemoteStub ] ]
 ]
 
+{ #category : #testing }
+LanguageModel >> testStub [
+	(self allClasses
+		select: [ :class | class remote isNotNil ]) do: #testStub
+]
+
 { #category : #accessing }
 LanguageModel >> tonelPath [ 
 	^ tonelPath 
@@ -1326,6 +1341,7 @@ LanguageModel >> tonelPath: aFileReference [
 { #category : #hooks }
 LanguageModel >> transform [
 	"for the user to define custom transformations on the language model post default roles creation"
+	self subclassResponsibility 
 ]
 
 { #category : #api }

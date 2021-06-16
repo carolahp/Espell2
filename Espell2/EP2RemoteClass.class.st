@@ -445,6 +445,7 @@ EP2RemoteClass >> test [
 EP2RemoteClass >> testStub [
 	| existentIndexes myIndex |
 	self assert: self superclass isNilObject.
+	self assert: self basicClass isNotNilObject.
 	self assert: self methodDictionary isNilObject.
 	self assert: self format isNilObject not.
 	myIndex := self classTableIndex.

@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteSemaphore class >> indexInSpecialObjectsArray [
+	^ 19
+]
+
+{ #category : #constants }
 EP2RemoteSemaphore class >> layoutClass [
 	^ EP2FixedLayout
 ]

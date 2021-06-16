@@ -4,6 +4,21 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #'instance creation' }
+EP2RemoteArray class >> index2InClassTable [
+	^ 16
+]
+
+{ #category : #'instance creation' }
+EP2RemoteArray class >> indexInClassTable [
+	^ 51
+]
+
+{ #category : #'instance creation' }
+EP2RemoteArray class >> indexInSpecialObjectsArray [ 
+	^ 8
+]
+
 { #category : #constants }
 EP2RemoteArray class >> layoutClass [
 	^ EP2VariableLayout

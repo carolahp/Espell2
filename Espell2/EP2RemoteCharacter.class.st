@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteCharacter class >> indexInClassTable [
+	^ 2
+]
+
+{ #category : #constants }
+EP2RemoteCharacter class >> indexInSpecialObjectsArray [
+	^ 20
+]
+
+{ #category : #constants }
 EP2RemoteCharacter class >> layoutClass [
 	^ EP2ImmediateLayout
 ]

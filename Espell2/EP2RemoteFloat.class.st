@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteFloat class >> indexInClassTable [
+	^ 34
+]
+
+{ #category : #constants }
+EP2RemoteFloat class >> indexInSpecialObjectsArray [
+	^ 10
+]
+
+{ #category : #constants }
 EP2RemoteFloat class >> layoutClass [ 
 	^ EP2WordLayout 
 ]

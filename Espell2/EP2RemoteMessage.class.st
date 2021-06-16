@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteMessage class >> indexInClassTable [
+	^ 35
+]
+
+{ #category : #constants }
+EP2RemoteMessage class >> indexInSpecialObjectsArray [
+	^ 16
+]
+
+{ #category : #constants }
 EP2RemoteMessage class >> layoutClass [ 
 	^ EP2FixedLayout 
 ]
