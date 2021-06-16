@@ -8,6 +8,11 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #hooks }
+LiteralVariableModel >> accept: anEPASTInterpreter assign: anEP2Mirror inNode: aRBGlobalNode [ 
+	self subclassResponsibility 
+]
+
 { #category : #'accessing-api' }
 LiteralVariableModel >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
 	self subclassResponsibility 
@@ -36,6 +41,11 @@ LiteralVariableModel >> isVariableBinding [
 { #category : #'accessing-api' }
 LiteralVariableModel >> key [ 
 	^ self name asSymbol
+]
+
+{ #category : #accessing }
+LiteralVariableModel >> remote: anEP2Mirror [ 
+	remote := anEP2Mirror 
 ]
 
 { #category : #'accessing-api' }
