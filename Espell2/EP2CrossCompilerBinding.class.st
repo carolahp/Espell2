@@ -17,8 +17,8 @@ EP2CrossCompilerBinding >> allSlots [
 
 { #category : #bindings }
 EP2CrossCompilerBinding >> binding [
-self halt: 'I should get the bindings from ObjectModels'.
-	^ class isMeta ifTrue: [
+	^ class binding
+	"^ class isMeta ifTrue: [
 		EP2MetaclassBinding  new
 			name: class theNonMetaClass name; 
 			objectSpace: environment objectSpace;
@@ -26,7 +26,7 @@ self halt: 'I should get the bindings from ObjectModels'.
 		EP2GlobalBinding new
 			name: class theNonMetaClass name; 
 			objectSpace: environment objectSpace;
-			yourself ]
+			yourself ]"
 ]
 
 { #category : #binding }

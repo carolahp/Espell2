@@ -1,9 +1,7 @@
 Class {
 	#name : #GlobalModel,
-	#superclass : #ObjectModel,
+	#superclass : #LiteralVariableModel,
 	#instVars : [
-		'initializationCode',
-		'pbInstruction',
 		'remoteIsStub'
 	],
 	#category : #'Espell2-Metamodel'
