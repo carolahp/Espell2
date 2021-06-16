@@ -46,29 +46,32 @@ EP2TonelWriter >> typeDefinitionOf: aClassDefinition [
 	aClassDefinition type = #normal ifFalse: [ 
 		definition at: #type put: aClassDefinition type ].
 	
+	
 	(aClassDefinition variables select: #isInstanceVariable thenCollect: #name)
 		ifNotEmpty: [ :vars | definition at: #instVars put: vars asArray ].
 
 	
 	"We exclude fields we already added"
-	excluded := #(name superclass type category role instVarNames) asSet. 
-	
-	"We also exclude fields defined by the base class metamodel (EP2MClass)"
-	excluded := excluded , #(tagsForMethods objectName remote properties parent layout template methodDict format pvtMetaclass).
+	excluded := #(name superclass type category role instVarNames methodDict) asSet. 
 	
 	"We get the name of fields specified in the class metamodel defined by the user (subclass of EP2MClass)"
-	required := (model environment classWithRole: 'Metaclass') allInstVarNames.
+	required := model class allClassModelInstVarNames.
 	missing := required reject: [:key | excluded includes: key ].
+	
 	missing do: [ : key | | value |
 		value := model instVarNamed: key.
 		value ifNotNil: [ | printedValue | 
 			"remove quotes in the name of classes"
 			printedValue := (value isKindOf: ClassModel) 
 				ifTrue: [ (value asString trimBoth: [ :char | char = $" ]) asSymbol ]
-				ifFalse: [ value asString ].
+				ifFalse: [ 
+					(value isKindOf: Dictionary) 
+						ifTrue: [ value keys asArray ]
+						ifFalse: [ value asString ]
+					 ].
 			definition at: key asSymbol put: printedValue ] ].
+	
 	definition 
-		at: #indexInClassTable put: model indexInClassTable;
 		at: #category put: aClassDefinition category.
 	
 	^ self toSTON: definition
