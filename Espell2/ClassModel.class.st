@@ -17,14 +17,14 @@ Class {
 	#superclass : #ObjectModel,
 	#instVars : [
 		'indexInClassTable',
+		'index2InClassTable',
+		'indexInSpecialObjectsArray',
 		'tagsForMethods',
 		'layout',
 		'template',
 		'superclass',
 		'methodDict',
-		'format',
-		'index2InClassTable',
-		'indexInSpecialObjectsArray'
+		'format'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -134,6 +134,12 @@ ClassModel >> basicClass [
 ClassModel >> binding [
 
 	^ self environment bindingOf: self name
+]
+
+{ #category : #binding }
+ClassModel >> bindingOf: aSymbol [
+
+	self subclassResponsibility 
 ]
 
 { #category : #calypso }

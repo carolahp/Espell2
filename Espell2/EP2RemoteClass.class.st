@@ -104,7 +104,8 @@ EP2RemoteClass >> binding [
 
 { #category : #binding }
 EP2RemoteClass >> bindingOf: aSymbol [ 
-	| binding |
+	^ self asClassDefinition bindingOf: aSymbol
+	"| binding |
 	(self classPool isNilObject not 
 	and: [ self asRGClass classPool includes: aSymbol ]) 
 		ifTrue: [ binding := self classPool at: aSymbol ].
@@ -116,15 +117,15 @@ EP2RemoteClass >> bindingOf: aSymbol [
 		(self superclass bindingOf: aSymbol) ifNotNil: [ :bind | ^ bind ]].
 	
 	(self backend builder systemDefinition globalVariableNamed: aSymbol)
-	ifNotNil: [ 
+	ifNotNil: [ "
 		"checking that the remote class exists"
-		(self backend objectSpace systemDictionary at: aSymbol) ifNil: [ self halt: 'asking for a class that has not yet been installed' ].
+		"(self backend objectSpace systemDictionary at: aSymbol) ifNil: [ self halt: 'asking for a class that has not yet been installed' ].
 		^ EP2GlobalBinding new
 			name: aSymbol;
 			objectSpace: self backend objectSpace;
 			yourself ].
 	
-	^ nil
+	^ nil"
 ]
 
 { #category : #'instVars-mapping' }
@@ -266,6 +267,9 @@ EP2RemoteClass >> initialize [
 
 { #category : #binding }
 EP2RemoteClass >> innerBindingOf: aSymbol [ 
+	
+	^ self asClassDefinition innerBindingOf: aSymbol
+	"
 	| result |
 	self classPool isNilObject not 
 		ifTrue: [ result := self classPool at: aSymbol ifAbsent: [ nil ] ].
@@ -281,7 +285,7 @@ EP2RemoteClass >> innerBindingOf: aSymbol [
 	self flag: 'superclass is nil for all stubs, check this later'.
 	(self superclass isNilObject or: self superclass = self) ifFalse:  [^ self superclass innerBindingOf: aSymbol].
 	
-	^ nil
+	^ nil"
 ]
 
 { #category : #'accessing header' }

@@ -84,8 +84,8 @@ EP2CrossCompilerBinding >> environment: aPBImageBuilderGeneric [
 
 { #category : #binding }
 EP2CrossCompilerBinding >> innerBindingOf: aString [ 
-
-	(class classVarNames includes: aString asSymbol)
+	^ class innerBindingOf: aString asSymbol.
+	"(class classVarNames includes: aString asSymbol)
 		ifTrue: [ self assert: environment notNil.
 			^ EP2ClassVariableBinding new
 					name: aString asSymbol
@@ -99,9 +99,9 @@ EP2CrossCompilerBinding >> innerBindingOf: aString [
 	class superclass
 		ifNotNil: [ (self superclassBinding innerBindingOf: aString)
 				ifNotNil: [ :binding | ^ binding ] ].
-
+	"
 	"If it is a temp or an instance variable"
-	^ nil
+	"^ nil"
 ]
 
 { #category : #accessing }
