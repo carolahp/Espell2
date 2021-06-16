@@ -22,7 +22,9 @@ Class {
 		'template',
 		'superclass',
 		'methodDict',
-		'format'
+		'format',
+		'index2InClassTable',
+		'indexInSpecialObjectsArray'
 	],
 	#category : #'Espell2-Metamodel'
 }
@@ -295,9 +297,7 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 		ifTrue: [ | newPkg |
 			newPkg := self parent ensurePackageNamed: packageDef.
 			self package: newPkg ].
-	"index in class table"
-	self indexInClassTable: mcDef indexInClassTable.
-	
+		
 	^ self
 ]
 
@@ -462,7 +462,11 @@ ClassModel >> initializeWithTemplateGeneric: aTemplateClass [
 	"this happens when a class has more than one role"
 	(superclassModel isNotNil and: [ superclassModel name = self name ]) ifTrue: [ self error: 'The language model contains a clas with multiple roles'  ].
 	self superclass: superclassModel.
-	self halt.
+	
+	indexInClassTable := template indexInClassTable.
+	index2InClassTable := template index2InClassTable.
+	indexInSpecialObjectsArray := template indexInSpecialObjectsArray.
+	
 	^ self
 ]
 
@@ -538,8 +542,8 @@ ClassModel >> installStub [
 		ifTrue: [ self
 				error:
 					'Use LanguageModel >> installMulticlassStubs to install required classes' ].
-	self indexInClassTable
-		ifNil: [ self indexInClassTable: self classLoader newClassIndex ].
+	indexInClassTable
+		ifNil: [ indexInClassTable := self classLoader newClassIndex ].
 	self metaclass installStub.
 	self installStubBasic.
 	self testStub.
