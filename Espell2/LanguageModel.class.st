@@ -67,6 +67,11 @@ LanguageModel class >> defaultPackagesListFull [
 	^ nil
 ]
 
+{ #category : #'accessing - defaults' }
+LanguageModel class >> entryPointSelector [
+	^ #entryPoint
+]
+
 { #category : #'hooks-api' }
 LanguageModel class >> globalVariableMetaclass [
 	" return the subclass of GlobalModel used to represent globals in your language "
@@ -622,6 +627,11 @@ LanguageModel >> entryPointCode: aString [
 	entryPointCode := aString 
 ]
 
+{ #category : #hooks }
+LanguageModel >> entryPointSelector [
+	^ self class entryPointSelector
+]
+
 { #category : #accessing }
 LanguageModel >> environment [ 
 	^ self
@@ -963,21 +973,15 @@ LanguageModel >> loadClasses [
 
 { #category : #hooks }
 LanguageModel >> loadEntryPoint [
-	| metaclass |
+	| classUndefinedObject selector |
 	"do not modify unless you know what you are doing"
-	metaclass := self classMetaclass metaclass.
-
-	metaclass
+	classUndefinedObject := self classWithRole: #UndefinedObject.
+	selector := self entryPointSelector.
+	classUndefinedObject
 		addLocalMethodFromSource:
-			'entryPoint 
-	' , metaclass name , ' start'
-		selector: #entryPoint.
-
-	metaclass
-		addLocalMethodFromSource:
-			'start 
-	' , self entryPointCode
-		selector: #start.
+			selector, '
+' , self entryPointCode asString
+		selector: selector.
 
 	^ self
 ]
