@@ -158,7 +158,9 @@ EP2RemoteDictionary >> atNewIndex: index put: anEP2RemoteAssociation [
 
 { #category : #binding }
 EP2RemoteDictionary >> bindingOf: aSymbol [
-	^self associationAt: aSymbol ifAbsent:[nil]
+	| binding |
+	binding := self associationAt: aSymbol ifAbsent: [ nil ].
+	^ binding ifNotNil: [ :assoc | assoc asRemoteAssociation ]
 ]
 
 { #category : #'instVars-mapping' }
