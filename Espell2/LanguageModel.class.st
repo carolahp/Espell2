@@ -201,9 +201,10 @@ LanguageModel >> addGlobalVariable: anEP2MGlobalVariable [
 
 { #category : #'accessing backend' }
 LanguageModel >> addMethodFromMonticelloDefinition: aMCMethodDefinition [ 
-	| methodDef classDef mcDef |
+	| methodDef classDef mcDef className |
 	mcDef := aMCMethodDefinition.
-	classDef := self ensureClassNamed: mcDef className.
+	className := mcDef classIsMeta ifTrue: [mcDef className, self metaclassSuffix] ifFalse: [mcDef className]. 
+	classDef := self ensureClassNamed: className.
 	methodDef := classDef ensureLocalMethodNamed: mcDef selector.
 	methodDef extendWithMonticello: mcDef.
 	^ methodDef
@@ -575,6 +576,11 @@ LanguageModel >> destroy [
 	backend ifNotNil: [ 
 		backend environment: nil ].
 	backend := nil.
+	pbRepository ifNotNil: [ pbRepository destroy ].
+	pbRepository := nil.
+	pbBootstrapper :=nil.
+	builder ifNotNil: [ builder destroy ].
+	builder := nil.
 	behaviors ifNotNil: [ :behvs | behvs do: [ :beh | beh parent: nil ]].
 	behaviors := nil.
 	packages := nil.
