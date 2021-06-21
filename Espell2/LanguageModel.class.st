@@ -1309,15 +1309,7 @@ LanguageModel >> systemClassMapping [
 LanguageModel >> test [
 	| metaclassModel metaclassInstVars classModelsInstVars metaclassInstVarsEnd classModelInstVarsEnd classModelInstVarsFirst |
 	self assert: self name isNotNil.
-
-	"ensure every custom role has a class associated"
-	self customClassRoles
-		ifNotNil: [ :customRoles | 
-			customRoles
-				associationsDo: [ :assoc | 
-					self haltIf: [assoc key = #ByteSymbol].
-					self assert: (self classNamed: assoc value ifAbsent: [ false ] ifPresent: [true]) ] ].
-			
+		
 	metaclassModel := self classWithRole: 'Metaclass'.
 	metaclassInstVars := metaclassModel allInstVarNames.
 	classModelsInstVars := self class classMetaclass
