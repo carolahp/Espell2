@@ -471,13 +471,13 @@ LanguageModel >> classRoles [
 
 { #category : #roles }
 LanguageModel >> classRolesFromTonel: aFileReference [
-	| tonel packagesNames rolesRead |
-
+	| tonel packagesNames result definedClasses |
 	self
 		flag:
 			'I am reading the tonel repo twice, now and when I load the definitions. 
 	Refactor me!'.
-	rolesRead := #() asDictionary.
+	result := #() asDictionary.
+	definedClasses := #() asOrderedCollection.
 	tonel := EP2TonelRepository new
 		directory: aFileReference asFileReference;
 		metamodel: self.
@@ -495,11 +495,18 @@ LanguageModel >> classRolesFromTonel: aFileReference [
 			snap := version snapshot.
 			snap definitions
 				do: [ :each | 
-					((each isKindOf: EP2MCClassDefinition)
-						and: [ each role isNotNil ])
-						ifTrue:
-							[ rolesRead at: each role asSymbol put: each name ] ] ].
-		^ rolesRead
+					(each isKindOf: EP2MCClassDefinition)
+						ifTrue: [ definedClasses add: each name.
+							each role
+								ifNotNil: [ result at: each role asSymbol put: each name ] ] ] ].
+	"I am putting the next code here just to prevent reading the tonel repo twice, but this screams for a refactor"
+	self customClassRoles
+		do: [ :assoc | 
+			self
+				assert: (definedClasses anySatisfy: [ :defclass | defclass = assoc value ])
+				description: [ 'Class "' , assoc value
+						, '" mentioned in >>customClassRoles is not defined in Tonel' ] ].
+	^ result
 ]
 
 { #category : #'accessing special classes' }
