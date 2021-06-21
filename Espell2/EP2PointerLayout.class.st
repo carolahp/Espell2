@@ -27,10 +27,3 @@ EP2PointerLayout >> layoutName [
 
 	^ #PointerLayout
 ]
-
-{ #category : #'accessing slots' }
-EP2PointerLayout >> removeSlot: aString [ 
-	super removeSlot: aString.
-	self halt.
-	self slots remove: (self slotNamed: aString)
-]

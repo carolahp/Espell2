@@ -84,6 +84,15 @@ ClassModel >> addSlot: aString index: anInteger [
 	self layout addSlot: aString index: anInteger
 ]
 
+{ #category : #slots }
+ClassModel >> addSlotRefactoringSubclasses: slotName [
+	self allSubclasses
+		do: [ :c | 
+			(c slots anySatisfy: [ :s | s name = slotName ])
+				ifTrue: [ c removeSlot: slotName ] ].
+	self addSlot: slotName
+]
+
 { #category : #'accessing instance variables' }
 ClassModel >> allInstVarNames [
 	^ (self allSlots select: #isInstanceVariableSlot) collect: #name
@@ -306,7 +315,7 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 	instVarsDefs := (mcDef variables
 		select: [ :var | var class type = #instance ])
 		reject: [ :var | (self allInstVarNames indexOf: var name) > 0 ].
-	instVarsDefs do: [ :each | self addSlot: each name ].
+	instVarsDefs do: [ :each | self addSlotRefactoringSubclasses: each name ].
 	"role"
 	mcDef role
 		ifNotNil: [ self role ~= mcDef role
@@ -976,6 +985,13 @@ ClassModel >> readSlotNamed: aString [
 	^ (self basicClass slotNamed: aString) read: self
 ]
 
+{ #category : #'recursive descent' }
+ClassModel >> recursivellyDo: doBlock to: nextClassesBlock [ 
+	
+	doBlock value: self.
+	(nextClassesBlock value: self) do: [ :c | c recursivellyDo: doBlock to: nextClassesBlock  ]
+]
+
 { #category : #'accessing remote backend' }
 ClassModel >> remote [
 	remote ifNil: [ ^nil ].
@@ -1054,6 +1070,12 @@ ClassModel >> slotNamed: aString [
 { #category : #'accessing slots' }
 ClassModel >> slotNamed: aString ifNone: aBlockClosure [ 
 	^ [ self slotNamed: aString ] on: KeyNotFound do: aBlockClosure
+]
+
+{ #category : #slots }
+ClassModel >> slotNamed: aString ifPresent: aBlockClosure [ 
+	^ self layout slotNamed: aString ifPresent: aBlockClosure 
+
 ]
 
 { #category : #'accessing slots' }

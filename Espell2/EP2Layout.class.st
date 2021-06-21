@@ -73,14 +73,16 @@ EP2Layout >> acceptsNewSlots [
 ]
 
 { #category : #'accessing - slots' }
-EP2Layout >> addSlot: aSlot [ 
-	self acceptsNewSlots ifFalse: [ AddSlotException signal ].
+EP2Layout >> addSlot: aSlot [
+	self acceptsNewSlots
+		ifFalse: [ AddSlotException signal ].
+	self slotNamed: aSlot ifPresent: [ ^ SlotDuplicated signal ].
+	self object allSubclasses do: [ :c | c slotNamed: aSlot ifPresent: [ ^ SlotDuplicatedInSubclass signal ] ].
 	self backend addSlot: aSlot to: self object
 ]
 
 { #category : #slots }
 EP2Layout >> addSlot: aName index: anInteger [ 
-	self acceptsNewSlots ifFalse: [ AddSlotException signal ].
 	self backend addSlot: aName index: anInteger to: self object
 ]
 
@@ -349,9 +351,27 @@ EP2Layout >> pvtSlots [
 	^ slots
 ]
 
+{ #category : #'accessing slots' }
+EP2Layout >> removeSlot: aString [
+	slots
+		remove: (self slotNamed: aString)
+		ifAbsent: [ self error: 'Slot not defined in class' ]
+]
+
 { #category : #accessing }
 EP2Layout >> slotNamed: aString [
-	^ (self allSlots select: [ :slot | slot name = aString ]) anyOne
+	^ (self allSlots select: [ :slot | slot name = aString ]) 
+		ifEmpty: [ ^ NotFoundSlot signal ]
+		ifNotEmpty: [:results | results anyOne].
+	
+		
+]
+
+{ #category : #slots }
+EP2Layout >> slotNamed: aString ifPresent: aBlockClosure [ 
+	| slot |
+	slot := [self slotNamed: aString] on: NotFoundSlot do: [ ^ nil ].
+	^ aBlockClosure cull: slot
 ]
 
 { #category : #'accessing - slots' }
