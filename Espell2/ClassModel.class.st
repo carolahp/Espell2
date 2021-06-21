@@ -48,6 +48,11 @@ ClassModel >> >> aString [
 	^ self methodDict at: aString
 ]
 
+{ #category : #testing }
+ClassModel >> acceptsNewSlots [
+	^ self layout acceptsNewSlots 
+]
+
 { #category : #'accessing methods' }
 ClassModel >> addLocalMethod: anEP2MMethod [
 	self deprecated: 'use addLocalMethodFromsource:selector:'.
@@ -275,9 +280,9 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 	"An existent class is extended with a definition read from Monticello.
 	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we test the class at the end"
 
-	| mcDef instVarsDefs packageDef |
+	| mcDef instVarsDefs packageDef newLayoutClass newLayout |
 	mcDef := aMCClassDefinition.
-	
+
 	"superclass"
 	self
 		superclass:
@@ -285,7 +290,18 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 				ifTrue: [ nil ]
 				ifFalse: [ self parent ensureClassNamed: mcDef superclassName ]).
 	"layout"
-	self setLayoutKeepingSlots: (mcDef espell2LayoutType on: self).
+	newLayoutClass := mcDef espell2LayoutType.
+	newLayout := self role
+		ifNotNil: [ self assert: self template layoutClass = self layout class.
+			"fail if tonel sets a wrong type"
+			self
+				assert:
+					(self layout class = newLayoutClass
+						or: [ self layout class inheritsFrom: newLayoutClass ]).
+			"keep my old layout since it is more specialized"
+			self layout ]
+		ifNil: [ newLayoutClass on: self ].
+	self setLayoutKeepingSlots: newLayout.
 	"instance variables"
 	instVarsDefs := (mcDef variables
 		select: [ :var | var class type = #instance ])
@@ -303,7 +319,6 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 		ifTrue: [ | newPkg |
 			newPkg := self parent ensurePackageNamed: packageDef.
 			self package: newPkg ].
-		
 	^ self
 ]
 
@@ -994,7 +1009,7 @@ ClassModel >> role: aString [
 { #category : #transforming }
 ClassModel >> setLayoutKeepingSlots: anEP2Layout [
 	| oldSlots |
-	oldSlots := self layout ifNil: [#()] ifNotNil: [self slots].
+	oldSlots := self layout ifNil: [ #() ] ifNotNil: [ self slots ].
 	self layout: anEP2Layout.
 	oldSlots do: [ :slot | self addSlot: slot name index: slot index ]
 ]

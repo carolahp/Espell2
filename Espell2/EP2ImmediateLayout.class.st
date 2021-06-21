@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #'remote-objects-relationship' }
+EP2ImmediateLayout class >> acceptsNewSlots [
+	^ false
+]
+
+{ #category : #'remote-objects-relationship' }
 EP2ImmediateLayout class >> defaultRemoteObjectClass [
 	^ EP2RemoteSmallInteger 
 ]

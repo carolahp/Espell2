@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
+{ #category : #'testing slots' }
+EP2WeakLayout class >> acceptsNewSlots [
+	^ false
+]
+
 { #category : #'testing-types' }
 EP2WeakLayout >> isVariableLayout [
 

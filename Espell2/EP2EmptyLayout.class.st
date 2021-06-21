@@ -5,15 +5,15 @@ Class {
 }
 
 { #category : #'gt-inspector-extension' }
+EP2EmptyLayout class >> acceptsNewSlots [
+	^ false
+]
+
+{ #category : #'gt-inspector-extension' }
 EP2EmptyLayout class >> on: anEP2Mirror [
 	^ self new 
 		object: anEP2Mirror;
 		yourself
-]
-
-{ #category : #'gt-extension' }
-EP2EmptyLayout >> addSlot: name [ 
-	AddSlotException signal
 ]
 
 { #category : #'gt-extension' }

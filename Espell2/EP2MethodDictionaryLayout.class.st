@@ -8,6 +8,11 @@ Class {
 }
 
 { #category : #'remote-objects-relationship' }
+EP2MethodDictionaryLayout class >> acceptsNewSlots [
+	^ false
+]
+
+{ #category : #'remote-objects-relationship' }
 EP2MethodDictionaryLayout class >> defaultRemoteObjectClass [
 	^ EP2RemoteMethodDictionary 
 ]

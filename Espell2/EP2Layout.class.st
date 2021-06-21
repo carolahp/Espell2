@@ -8,6 +8,11 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
+{ #category : #'testing slots' }
+EP2Layout class >> acceptsNewSlots [
+	^ true
+]
+
 { #category : #'instance variables' }
 EP2Layout class >> addSlot: aName [
 	self error: 'You should call this method from the instance side. Instantiate a layout using the message EP2Layout >> on:'
@@ -62,13 +67,20 @@ EP2Layout class >> on: anEP2Remote [
 		yourself
 ]
 
+{ #category : #testing }
+EP2Layout >> acceptsNewSlots [
+	^ self class acceptsNewSlots
+]
+
 { #category : #'accessing - slots' }
 EP2Layout >> addSlot: aSlot [ 
+	self acceptsNewSlots ifFalse: [ AddSlotException signal ].
 	self backend addSlot: aSlot to: self object
 ]
 
 { #category : #slots }
 EP2Layout >> addSlot: aName index: anInteger [ 
+	self acceptsNewSlots ifFalse: [ AddSlotException signal ].
 	self backend addSlot: aName index: anInteger to: self object
 ]
 

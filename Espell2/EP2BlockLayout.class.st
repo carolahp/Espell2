@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #'instance creation' }
+EP2BlockLayout class >> acceptsNewSlots [ 
+	^ true
+]
+
+{ #category : #'instance creation' }
 EP2BlockLayout class >> on: anEP2Mirror [
 	^ self new 
 		object: anEP2Mirror;
