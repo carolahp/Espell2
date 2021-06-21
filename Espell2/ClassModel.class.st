@@ -943,6 +943,28 @@ ClassModel >> printOn: aStream [
 		nextPutAll: '"'
 ]
 
+{ #category : #printing }
+ClassModel >> printSubclasses [
+	^ self printSubclassesWithFormat: [ :c | c name ]
+]
+
+{ #category : #printing }
+ClassModel >> printSubclassesOn: aStream format: aBlock [
+	self printSubclassesOn: aStream format: aBlock indentation: 0
+]
+
+{ #category : #printing }
+ClassModel >> printSubclassesOn: aStream format: aBlock indentation: aNumber [
+	1 to: aNumber do: [ :i | aStream nextPutAll: '  ' ].
+	aStream nextPutAll: (aBlock value: self) asString; cr.
+	self subclassesDo: [:c | c printSubclassesOn: aStream format: aBlock indentation: aNumber + 1 ]
+]
+
+{ #category : #printing }
+ClassModel >> printSubclassesWithFormat: aBlock [
+	^ String streamContents: [:s | self printSubclassesOn: s format: aBlock]
+]
+
 { #category : #calypso }
 ClassModel >> pvtAddMethodTag: aSymbol [ 
 	self tagsForMethods add: aSymbol
