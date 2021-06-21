@@ -339,9 +339,11 @@ ClassModel >> hasComment [
 	^ false
 ]
 
-{ #category : #hooks }
+{ #category : #install }
 ClassModel >> hookInstall [
 	| remoteMethodDict remoteSuperclass |
+	self halt.
+	
 	self remoteIsInstalled
 		ifFalse: [ self installStub ].
 	self remote isStub
@@ -505,6 +507,40 @@ ClassModel >> instVarNames [
 	^ self slots collect: #name
 ]
 
+{ #category : #install }
+ClassModel >> install [
+	self installBasic.
+	self installCustom.
+	self assert: self indexInClassTable = self remote indexInClassTable
+
+]
+
+{ #category : #install }
+ClassModel >> installBasic [
+	| remoteMethodDict remoteSuperclass |
+	self remoteIsInstalled
+		ifFalse: [ self installStub ].
+	self remote isStub
+		ifFalse: [ "class is fully loaded" ^ self remote ].
+	"we install an empty methodDict, it will be filled later"
+	remoteMethodDict := EP2RemoteMethodDictionary	newWithBackend: self parent remote espellBackend.
+	remoteMethodDict test.
+	remoteSuperclass := self superclass
+		ifNil: [ nil ]
+		ifNotNil: [ self superclass ensureRemote ].
+	self remote
+		methodDictionary: remoteMethodDict;
+		superclass: remoteSuperclass;
+		format: self format.
+	self remoteSystemDictionary at: self name put: self remote.
+	^ self remote
+]
+
+{ #category : #install }
+ClassModel >> installCustom [
+	self subclassResponsibility 
+]
+
 { #category : #'api - stubs creation' }
 ClassModel >> installMetacircularStub [
 	"I install a class stub that is instance of itself"
@@ -529,7 +565,7 @@ ClassModel >> installMetacircularStub [
 	^ theNewMetaclass
 ]
 
-{ #category : #hooks }
+{ #category : #install }
 ClassModel >> installMethods [
 	(self localMethods select: #isInstallable)
 		do: [ :method | | remoteMethod | 

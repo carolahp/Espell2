@@ -469,6 +469,39 @@ LanguageModel >> classRoles [
 	^ classRoles
 ]
 
+{ #category : #roles }
+LanguageModel >> classRolesFromTonel: aFileReference [
+	| tonel packagesNames rolesRead |
+
+	self
+		flag:
+			'I am reading the tonel repo twice, now and when I load the definitions. 
+	Refactor me!'.
+	rolesRead := #() asDictionary.
+	tonel := EP2TonelRepository new
+		directory: aFileReference asFileReference;
+		metamodel: self.
+	packagesNames := tonel packageDescriptionsFromReadableFileNames
+		collect: [ :each | each at: 1 ].
+	self
+		assert: packagesNames isNotEmpty
+		description: 'The repository is empty'.
+	packagesNames
+		do: [ :pn | 
+			| package snap version |
+			package := self ensurePackageNamed: pn.
+			version := tonel
+				versionWithInfo: (tonel versionInfoFromVersionNamed: pn).
+			snap := version snapshot.
+			snap definitions
+				do: [ :each | 
+					((each isKindOf: EP2MCClassDefinition)
+						and: [ each role isNotNil ])
+						ifTrue:
+							[ rolesRead at: each role asSymbol put: each name ] ] ].
+		^ rolesRead
+]
+
 { #category : #'accessing special classes' }
 LanguageModel >> classSmallInteger [
 	
@@ -853,7 +886,7 @@ LanguageModel >> installClass: aClassDefinition [
 
 { #category : #hooks }
 LanguageModel >> installClasses [
-	(self allClasses select: #isInstallable) do: #hookInstall
+	(self allClasses select: #isInstallable) do: #install
 ]
 
 { #category : #hooks }
@@ -922,47 +955,32 @@ LanguageModel >> loadBaseLanguageModelDefinitions [
 
 { #category : #roles }
 LanguageModel >> loadClassRoles [
-	classRoles := self defaultClassRoles.
-	self tonelPath
-		ifNotNil: [ :path | self loadClassRolesFromTonel: path ].
-	self customClassRoles
-		ifNotNil: [ :customRoles | 
-			"update class roles according to custom roles. 
-			Custom roles override roles read from Tonel repo"		
-			customRoles
-				associationsDo: 	[ :assoc | 
-					classRoles at: assoc key put: assoc value ] ].
-		^ classRoles
-]
-
-{ #category : #roles }
-LanguageModel >> loadClassRolesFromTonel: aFileReference [
-	| tonel packagesNames |
-	self
-		flag:
-			'I am reading the tonel repo twice, now and when I load the definitions. 
-	Refactor me!'.
-	tonel := EP2TonelRepository new
-		directory: aFileReference asFileReference;
-		metamodel: self.
-	packagesNames := tonel packageDescriptionsFromReadableFileNames
-		collect: [ :each | each at: 1 ].
-	self
-		assert: packagesNames isNotEmpty
-		description: 'The repository is empty'.
-	packagesNames
-		do: [ :pn | 
-			| package snap version |
-			package := self ensurePackageNamed: pn.
-			version := tonel
-				versionWithInfo: (tonel versionInfoFromVersionNamed: pn).
-			snap := version snapshot.
-			snap definitions
-				do: [ :each | 
-					((each isKindOf: EP2MCClassDefinition)
-						and: [ each role isNotNil ])
-						ifTrue:
-							[ self classRoles at: each role asSymbol put: each name ] ] ]
+	| defaultRoles rolesFromTonel customRoles |
+	defaultRoles := self defaultClassRoles.
+	rolesFromTonel := (self tonelPath
+		ifNotNil: [ :path | self classRolesFromTonel: path ]
+		ifNil: [ #() ]) asDictionary.
+	
+	customRoles := (self customClassRoles ifNil: [ #() ]) asDictionary.
+	"initialize the instance var classRoles with no values"
+	classRoles := #() asDictionary.
+	defaultRoles
+		associationsDo: [ :assoc | 
+			| theRole theClass classDefault classTonel classCustom |
+			theRole := assoc key.
+			classDefault := assoc value.
+			classTonel := rolesFromTonel at: theRole ifAbsent: [ nil ].
+			classCustom := customRoles at: theRole ifAbsent: [ nil ].
+			(classTonel isNotNil and: [ classCustom isNotNil ])
+				ifTrue: [ self
+						assert: classTonel = classCustom
+						description:
+							'role ' , theRole
+								, ' is different between tonel repository and method >>customClassRoles' ].
+			theClass := classCustom
+				ifNil: [ classTonel ifNil: [ classDefault ] ].
+			classRoles at: theRole put: theClass ].
+	^ classRoles
 ]
 
 { #category : #hooks }
@@ -1291,13 +1309,25 @@ LanguageModel >> systemClassMapping [
 LanguageModel >> test [
 	| metaclassModel metaclassInstVars classModelsInstVars metaclassInstVarsEnd classModelInstVarsEnd classModelInstVarsFirst |
 	self assert: self name isNotNil.
-	
+
+	"ensure every custom role has a class associated"
+	self customClassRoles
+		ifNotNil: [ :customRoles | 
+			customRoles
+				associationsDo: [ :assoc | 
+					self haltIf: [assoc key = #ByteSymbol].
+					self assert: (self classNamed: assoc value ifAbsent: [ false ] ifPresent: [true]) ] ].
+			
 	metaclassModel := self classWithRole: 'Metaclass'.
 	metaclassInstVars := metaclassModel allInstVarNames.
 	classModelsInstVars := self class classMetaclass
 		allClassModelInstVarNames.
-	metaclassInstVarsEnd := (metaclassInstVars	copyFrom: 4	to: metaclassInstVars size) asIdentitySet.
-	classModelInstVarsEnd := (classModelsInstVars	copyFrom: 4	to: classModelsInstVars size) asIdentitySet.
+	metaclassInstVarsEnd := (metaclassInstVars
+		copyFrom: 4
+		to: metaclassInstVars size) asIdentitySet.
+	classModelInstVarsEnd := (classModelsInstVars
+		copyFrom: 4
+		to: classModelsInstVars size) asIdentitySet.
 	classModelInstVarsFirst := classModelsInstVars copyFrom: 1 to: 3.
 	self
 		assert: (metaclassInstVars beginsWith: classModelInstVarsFirst)

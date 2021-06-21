@@ -165,11 +165,6 @@ EP2RemoteClass >> classNameIndex [
 	^ (self systemDefinition instanceVariableMapping classNameIndex) ifNil: [ self class unmappedInstVarIndex ]
 ]
 
-{ #category : #'accessing-specialInstVars' }
-EP2RemoteClass >> classPool [
-	^ (self instanceVariableAtIndex: self classPoolIndex) asRemoteDictionary 
-]
-
 { #category : #'high-level-messages' }
 EP2RemoteClass >> classPool: anObject [ 
 	
@@ -179,6 +174,11 @@ EP2RemoteClass >> classPool: anObject [
 { #category : #'instVars-mapping' }
 EP2RemoteClass >> classPoolIndex [
 	^ (self asClassDefinition metaclass allInstVarNames indexOf: 'classPool') = 0 ifTrue: [ self class unmappedInstVarIndex ]
+]
+
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteClass >> classPoolOld [
+	^ (self instanceVariableAtIndex: self classPoolIndex) asRemoteDictionary 
 ]
 
 { #category : #'instVars-mapping' }
@@ -367,12 +367,12 @@ EP2RemoteClass >> methodDictionary: aRemoteDictionary [
 ]
 
 { #category : #accessing }
-EP2RemoteClass >> name [
+EP2RemoteClass >> nameOld [
 	^ self instanceVariableAtIndex: self classNameIndex 
 ]
 
 { #category : #'high-level-messages' }
-EP2RemoteClass >> name: anObject [ 
+EP2RemoteClass >> nameOld: anObject [ 
 	| name |
 	name := (anObject isKindOf: String) ifTrue: [anObject asSymbol] ifFalse: [anObject].
 	self instanceVariableAtIndex: self classNameIndex put: name 
@@ -394,7 +394,7 @@ EP2RemoteClass >> printOn: aStream [
 ]
 
 { #category : #'accessing-specialInstVars' }
-EP2RemoteClass >> sharedPool [
+EP2RemoteClass >> sharedPoolOld [
 	^ self instanceVariableAtIndex: self classSharedPoolsIndex 
 ]
 
