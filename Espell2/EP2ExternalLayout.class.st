@@ -4,6 +4,11 @@ Class {
 	#category : #'Espell2-Kernel-Layouts'
 }
 
+{ #category : #testing }
+EP2ExternalLayout class >> isExternal [
+	^ true
+]
+
 { #category : #'accessing-instVars' }
 EP2ExternalLayout >> instanceVariableAtIndex: index [
 	^ (object target object instVarAt: index) asRemoteObjectInObjectSpace: self objectSpace

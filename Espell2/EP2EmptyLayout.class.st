@@ -12,6 +12,11 @@ EP2EmptyLayout class >> on: anEP2Mirror [
 ]
 
 { #category : #'gt-extension' }
+EP2EmptyLayout >> addSlot: name [ 
+	AddSlotException signal
+]
+
+{ #category : #'gt-extension' }
 EP2EmptyLayout >> gtInspectorIn: composite [
 	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
 	^ composite text

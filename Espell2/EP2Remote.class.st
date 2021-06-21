@@ -82,7 +82,7 @@ EP2Remote class >> on: anEPMirror [
 
 { #category : #constants }
 EP2Remote class >> role [ 
-	^ 'ProtoObject'
+	^ nil
 ]
 
 { #category : #constants }

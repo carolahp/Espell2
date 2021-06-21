@@ -28,6 +28,35 @@ EP2MCClassDefinition >> doesNotUnderstand: aMessage [
 	^ result
 ]
 
+{ #category : #'layout mapping' }
+EP2MCClassDefinition >> espell2LayoutType [
+	| layout |
+	layout := (Dictionary
+		newFrom:
+			{(#compiledMethod -> EP2CompiledMethodLayout).
+			(#bytes -> EP2ByteLayout).
+			(#immediate -> EP2ImmediateLayout).
+			(#words -> EP2WordLayout).
+			(#week -> EP2WeakLayout).
+			(#variable
+				->
+					(self instVarNames isEmpty
+						ifTrue: EP2VariableLayout
+						ifFalse: EP2VariableWithInstVarsLayout)).
+			"#ephemeron -> EP2EphemeronLayout."
+			(#normal -> EP2FixedLayout).
+			(#weak -> EP2WeakLayout).
+			(#empty -> EP2EmptyLayout)}) at: type.
+	self role
+		ifNotNil: [ | roleLayout |
+			roleLayout := (EP2Remote allSubclasses
+				select: [ :c | c role = self role ]) anyOne layoutClass.
+			self
+				assert: (layout = roleLayout or: [ roleLayout inheritsFrom: layout ]).
+			layout := roleLayout ].
+	^ layout
+]
+
 { #category : #'as yet unclassified' }
 EP2MCClassDefinition >> extraInstVarNamed: key [
 	^ self extraInstVarsDict at: key ifAbsent: [nil]

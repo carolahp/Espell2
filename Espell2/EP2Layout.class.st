@@ -26,6 +26,11 @@ EP2Layout class >> gtInspectorLayoutOfMirror: mirror in: composite [
 		send: #value
 ]
 
+{ #category : #testing }
+EP2Layout class >> isExternal [
+	^ false
+]
+
 { #category : #'mapping-instSpec-class' }
 EP2Layout class >> layoutClassForClass: aRemoteClass [
 	| instSpec | 
@@ -227,6 +232,11 @@ EP2Layout >> isEmptyLayout [
 EP2Layout >> isEphemeronLayout [
 
 	^ false
+]
+
+{ #category : #'testing-types' }
+EP2Layout >> isExternal [ 
+	^ self class isExternal
 ]
 
 { #category : #'testing-types' }

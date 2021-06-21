@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteDictionary class >> layoutClass [
+	^ EP2FixedLayout
+]
+
+{ #category : #constants }
 EP2RemoteDictionary class >> modelInstSpec [
 	^ 1
 ]

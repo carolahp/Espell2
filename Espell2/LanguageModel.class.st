@@ -1030,12 +1030,12 @@ LanguageModel >> loadRequiredBehaviors [
 	"we load object and class first because they are special in the inheritance chain. 
 	Object is the root and class is instance of itself"
 
-	objModel := self newBehaviorFromTemplate: EP2Remote.
+	objModel := self newBehaviorFromTemplate: EP2RemoteEmpty.
 	objModel superclass: nil.
 	self addBehavior: objModel.
 	classModel := self newBehaviorFromTemplate: EP2RemoteClass.
 	self addBehavior: classModel.
-	objModel initializeWithTemplate: EP2Remote.
+	objModel initializeWithTemplate: EP2RemoteEmpty.
 	
 	classModel initializeWithTemplate: EP2RemoteClass.
 	

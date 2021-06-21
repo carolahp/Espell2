@@ -455,26 +455,35 @@ ClassModel >> initializeWithTemplateCustom: aTemplateClass [.
 ClassModel >> initializeWithTemplateGeneric: aTemplateClass [
 	| superclassModel superTemplates superTemplate templates |
 
-	templates := EP2Remote allSubclasses
-		add: EP2Remote;
-		yourself.
-
-	superTemplates := aTemplateClass allSuperclasses
-		select: [ :each | (templates includes: each) and: [ each role isNotNil ] ].
-	superTemplate := superTemplates at: 1 ifAbsent: [ nil ].
-
-	superclassModel := superTemplate
-		ifNil: [ nil ]
-		ifNotNil: [ self parent classNamed: superTemplate role ].
-		
-	"this happens when a class has more than one role"
-	(superclassModel isNotNil and: [ superclassModel name = self name ]) ifTrue: [ self error: 'The language model contains a clas with multiple roles'  ].
-	self superclass: superclassModel.
-	
 	indexInClassTable := template indexInClassTable.
 	index2InClassTable := template index2InClassTable.
 	indexInSpecialObjectsArray := template indexInSpecialObjectsArray.
 	
+	"ProtoObject superclass is nil"
+	(self role = #ProtoObject) 
+		ifTrue: [self superclass: nil.
+			^ self].
+	"For other templates, we calculate the superclass"
+	templates := EP2Remote allSubclasses
+		add: EP2Remote;
+		yourself.
+	
+	superTemplates := aTemplateClass allSuperclasses
+		select: [ :each | 
+			(templates includes: each)
+				and: [ each role isNotNil ] ].
+			
+	superTemplate := superTemplates at: 1 ifAbsent: [ nil ].
+	
+	superclassModel := superTemplate
+		ifNil: [ self parent classWithRole: #ProtoObject ]
+		ifNotNil: [ self parent classNamed: superTemplate role ].
+
+	"this happens when a class has more than one role"
+	(superclassModel isNotNil and: [ superclassModel name = self name ])
+		ifTrue:
+			[ self error: 'The language model contains a clas with multiple roles' ].
+	self superclass: superclassModel.
 	^ self
 ]
 

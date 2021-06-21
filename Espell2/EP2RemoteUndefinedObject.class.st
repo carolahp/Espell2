@@ -1,23 +1,8 @@
 Class {
 	#name : #EP2RemoteUndefinedObject,
-	#superclass : #EP2Remote,
+	#superclass : #EP2RemoteEmpty,
 	#category : #'Espell2-Kernel'
 }
-
-{ #category : #constants }
-EP2RemoteUndefinedObject class >> layoutClass [
-	^ EP2EmptyLayout
-]
-
-{ #category : #constants }
-EP2RemoteUndefinedObject class >> modelInstSpec [
-	^ 0
-]
-
-{ #category : #constants }
-EP2RemoteUndefinedObject class >> modelInstVarNames [
-	^ #()
-]
 
 { #category : #'instance creation' }
 EP2RemoteUndefinedObject class >> on: anEPMirror [ 
