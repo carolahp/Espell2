@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteAssociation class >> layoutClass [ 
+	^ EP2FixedLayout 
+]
+
+{ #category : #constants }
 EP2RemoteAssociation class >> modelInstSpec [
 	^ 1
 ]

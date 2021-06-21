@@ -6,7 +6,7 @@ Class {
 
 { #category : #constants }
 EP2RemoteMagnitude class >> layoutClass [ 
-	^ EP2FixedLayout 
+	^ EP2EmptyLayout 
 ]
 
 { #category : #constants }
