@@ -29,6 +29,11 @@ EP2Mirror >> = anotherMirror [
 	^ self pointsToSameObject: anotherMirror
 ]
 
+{ #category : #convert }
+EP2Mirror >> asCastedRemoteClass [
+	^ self target asCastedRemoteClass 
+]
+
 { #category : #'converting-external-mirror' }
 EP2Mirror >> asDASTBlockMirror [
 
@@ -93,13 +98,7 @@ EP2Mirror >> asRemoteCharacter [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteClass [ 
-	| remoteClass |
-	self isNilObject ifTrue: [^ backend nilObject ].
-	remoteClass := (EP2RemoteClass on: self).
-	"remoteClass target isExternalHandle ifFalse: [ 
-		remoteClass asRGClass isMetaclass ifTrue: [ ^ EP2RemoteMetaclass on: self ].
-	]. "
-	^ remoteClass
+	^ self target asRemoteClass
 ]
 
 { #category : #'converting -high level' }
@@ -152,7 +151,7 @@ EP2Mirror >> asRemoteObject [
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteObjectCasted [
 	"gets the corresponding layout according to my instSpec and then uses it to create a remoteObject with the correct type"
-	| basicClass layoutClass |
+	| basicClass class layoutClass |
 	self isNilObject
 		ifTrue: [ ^ self asRemoteNil ].
 	self isTrueObject
@@ -161,24 +160,8 @@ EP2Mirror >> asRemoteObjectCasted [
 		ifTrue: [ ^ self asRemoteFalse ].
 		
 	basicClass := self basicRemoteClass.
-	(basicClass inheritsFrom: (self backend systemDefinition classWithRole: #Metaclass) remote) 
-		ifTrue: [ ^ EP2RemoteMetaclass on: self ].
-	
-	basicClass isNilObject
-		ifFalse: [ 
-			basicClass asLocalClass
-				ifNotNil: [ :localClass | 
-					basicClass = (self backend systemDefinition classWithRole: #Metaclass) remote
-						ifTrue: [ ^ EP2RemoteMetaclass on: self ].
-					localClass = EP2RemoteMetaclass
-						ifTrue: [ ^ EP2RemoteClass on: self ].
-					^ localClass on: self ]
-				 ].
-	layoutClass := self isSmallInteger
-		ifTrue: [ EP2ImmediateLayout ]
-		ifFalse: [ EP2Layout layoutClassForInstSpec: basicClass instSpec ].
-		
-	^ layoutClass defaultRemoteObjectClass on: self
+	class := basicClass asCastedRemoteClass.
+	^ class on: self
 ]
 
 { #category : #'as yet unclassified' }
@@ -353,7 +336,7 @@ EP2Mirror >> isFalseObject [
 
 { #category : #testing }
 EP2Mirror >> isNilObject [
-	^ self backend nilObject mirror = self 
+	^ self target isNilObject
 ]
 
 { #category : #testing }

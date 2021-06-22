@@ -35,6 +35,11 @@ EP2RemoteClass >> allSlots [
 	^ self layout allSlots
 ]
 
+{ #category : #casting }
+EP2RemoteClass >> asCastedRemoteClass [
+	^ self mirror target asCastedRemoteClass
+]
+
 { #category : #'converting-local' }
 EP2RemoteClass >> asClassDefinition [
 	| result |
@@ -253,10 +258,12 @@ EP2RemoteClass >> indexInClassTable [
 
 { #category : #testing }
 EP2RemoteClass >> inheritsFrom: anEP2RemoteClass [
-	| superclass | 
+	| superclass |
 	superclass := self superclass.
-	superclass = anEP2RemoteClass ifTrue: [ ^ true ].
-	(superclass isNilObject or: [ superclass = self ]) ifTrue: [ ^ false ].
+	superclass = anEP2RemoteClass
+		ifTrue: [ ^ true ].
+	(superclass isNilObject or: [ superclass = self ])
+		ifTrue: [ ^ false ].
 	^ superclass inheritsFrom: anEP2RemoteClass
 ]
 

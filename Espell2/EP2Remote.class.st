@@ -387,7 +387,7 @@ EP2Remote >> isExternalObject [
 
 { #category : #testing }
 EP2Remote >> isNilObject [
-	^ self backend nilObject = self 
+	^ self mirror isNilObject
 ]
 
 { #category : #testing }

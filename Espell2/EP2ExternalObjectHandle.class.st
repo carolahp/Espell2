@@ -12,9 +12,21 @@ EP2ExternalObjectHandle >> address [
 	^ backend nilObject target address
 ]
 
+{ #category : #casting }
+EP2ExternalObjectHandle >> asCastedRemoteClass [
+	^ self object ep2RemoteClass 
+]
+
 { #category : #converting }
 EP2ExternalObjectHandle >> asClassIndexHandle [
 	^ self
+]
+
+{ #category : #casting }
+EP2ExternalObjectHandle >> asRemoteClass [
+	object isClass
+		ifFalse: [ self error: 'casting non class object as class' ].
+	^ backend remoteClassOn: (backend mirrorOn: self)
 ]
 
 { #category : #accessing }
@@ -25,8 +37,9 @@ EP2ExternalObjectHandle >> basicClassHandle [
 
 { #category : #accessing }
 EP2ExternalObjectHandle >> basicRemoteClassHandle [
-	"answers my corresponding class in the kernel"
-	^ backend handleOnAddress: (backend builder bootstrapEnvironmentAt: object remoteClassName) target address
+	
+	^ backend handleOnExternalObject: object class
+	
 ]
 
 { #category : #accessing }
@@ -48,6 +61,11 @@ EP2ExternalObjectHandle >> isAddressHandle [
 { #category : #accessing }
 EP2ExternalObjectHandle >> isExternalHandle [
 	^ true
+]
+
+{ #category : #testing }
+EP2ExternalObjectHandle >> isNilObject [
+	^ false
 ]
 
 { #category : #accessing }

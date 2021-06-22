@@ -1070,6 +1070,11 @@ EP2Backend >> rawHashOf: anAddress [
 	^ self objectMemory rawHashBitsOf: anAddress
 ]
 
+{ #category : #'remotes instantiation' }
+EP2Backend >> remoteClassOn: mirror [ 
+	^ EP2RemoteClass on: mirror
+]
+
 { #category : #'accessing special classes' }
 EP2Backend >> semaphoreClass [
 

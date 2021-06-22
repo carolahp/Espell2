@@ -63,6 +63,11 @@ EP2InternalObjectHandle >> isExternalHandle [
 	^ false
 ]
 
+{ #category : #testing }
+EP2InternalObjectHandle >> isNilObject [
+	^ backend nilObject mirror target = self 
+]
+
 { #category : #'as yet unclassified' }
 EP2InternalObjectHandle >> isSmallInteger [
 	^ backend isSmallInteger: self

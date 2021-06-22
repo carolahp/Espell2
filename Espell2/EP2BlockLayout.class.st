@@ -25,7 +25,6 @@ EP2BlockLayout >> allInstVars [
 
 { #category : #'gt-extension' }
 EP2BlockLayout >> gtInspectorIn: composite [
-	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
 	^ composite text
 		title: self object asRemoteBlock asString;
 		display: [ '*', self object asRemoteBlock sourceCode, '*' ]
