@@ -84,6 +84,24 @@ ClassModel >> addSlot: aString index: anInteger [
 	self layout addSlot: aString index: anInteger
 ]
 
+{ #category : #adding }
+ClassModel >> addSlotRecursivelyWherePossible: slotName [
+	| insert required |
+	self
+		recursivellyDo: [ :class | 
+			insert := class acceptsNewSlots.
+			class allSubclasses
+				do: [ :subclass | 
+					insert := insert and: subclass acceptsNewSlots.
+					required := subclass template
+						ifNil: [ #() ]
+						ifNotNil: [ subclass template modelAllInstVarNames ].
+					insert := insert and: (required endsWith: class allSlots) ].
+			insert
+				ifTrue: [ class slotNamed: slotName ifAbsent: [ class addSlot: slotName ] ] ]
+		to: [ :c | c subclasses ]
+]
+
 { #category : #slots }
 ClassModel >> addSlotRefactoringSubclasses: slotName [
 	self allSubclasses
