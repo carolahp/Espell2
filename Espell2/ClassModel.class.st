@@ -329,8 +329,9 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 			"fail if tonel sets a wrong type"
 			self
 				assert:
-					(self layout class = newLayoutClass
-						or: [ self layout class inheritsFrom: newLayoutClass ]).
+					((self layout class = newLayoutClass
+						or: [ self layout class inheritsFrom: newLayoutClass ])
+						or: [ self layout class == EP2EmptyLayout and: newLayoutClass == EP2FixedLayout ]).
 			"keep my old layout since it is more specialized"
 			self layout ]
 		ifNil: [ newLayoutClass on: self ].
