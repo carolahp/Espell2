@@ -167,6 +167,12 @@ EP2ObjectSpace >> newRemoteDictionaryFrom: aDictionary [
 	^ EP2RemoteDictionary newFrom: remoteArray
 ]
 
+{ #category : #'remote-objects-instantiation' }
+EP2ObjectSpace >> newRemoteDictionaryOfSize: size [
+	
+	^ EP2RemoteDictionary newWithBackend: self backend size: size
+]
+
 { #category : #'accessing-specialObjects' }
 EP2ObjectSpace >> nilObject [
 	^ self backend nilObject
