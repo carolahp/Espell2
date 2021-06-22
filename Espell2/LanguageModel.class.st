@@ -865,12 +865,13 @@ LanguageModel >> initialize [
 	self loadClassRoles.
 	self loadRequiredBehaviors.
 	self loadRequiredGlobalVariables.
-	self loadEntryPoint.
 	self loadGlobalVariables.
 	"load definitions from Tonel if corresponds"
 	self loadClasses.
+	"load entry point"
+	self loadEntryPoint.
 	"apply custom transformations implemented using MOP"
-	self transform
+	"self transform"
 ]
 
 { #category : #hooks }
