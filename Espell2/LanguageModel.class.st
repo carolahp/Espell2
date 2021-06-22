@@ -1330,31 +1330,34 @@ LanguageModel >> systemClassMapping [
 
 { #category : #testing }
 LanguageModel >> test [
-	| metaclassModel metaclassInstVars classModelsInstVars metaclassInstVarsEnd classModelInstVarsEnd classModelInstVarsFirst |
+	| model metamodel modelVars metamodelVars modelVarsLast metamodelVarsEnd modelVarsFirst |
 	self assert: self name isNotNil.
-		
-	metaclassModel := self classWithRole: 'Metaclass'.
-	metaclassInstVars := metaclassModel allInstVarNames.
-	classModelsInstVars := self class metaclassModel
+	
+	model := self classWithRole: 'Metaclass'.
+	metamodel := self class metaclassModel.
+	
+	modelVars := model allInstVarNames.
+	metamodelVars := metamodel
 		allClassModelInstVarNames.
-	metaclassInstVarsEnd := (metaclassInstVars
+	modelVarsLast := (modelVars
 		copyFrom: 4
-		to: metaclassInstVars size) asIdentitySet.
-	classModelInstVarsEnd := (classModelsInstVars
+		to: modelVars size) asIdentitySet.
+	metamodelVarsEnd := (metamodelVars
 		copyFrom: 4
-		to: classModelsInstVars size) asIdentitySet.
-	classModelInstVarsFirst := classModelsInstVars copyFrom: 1 to: 3.
+		to: metamodelVars size) asIdentitySet.
+	modelVarsFirst := metamodelVars copyFrom: 1 to: 3.
 	self
-		assert: (metaclassInstVars beginsWith: classModelInstVarsFirst)
+		assert: (modelVars beginsWith: modelVarsFirst)
 		description:
-			'The first 3 instance variables of "' , metaclassModel name
-				, '" must be ' , classModelInstVarsFirst asString.
+			'The first 3 instance variables of "' , model name
+				, '" must be ' , modelVarsFirst asString.
 	self
-		assert: (metaclassInstVarsEnd asSet difference: classModelInstVarsEnd asSet) isEmpty
+		assert: (modelVarsLast asSet difference: metamodelVarsEnd asSet) isEmpty
 		description:
-			'The class ' , self class metaclassModel asString
+			'The class ' , metamodel asString
 				, ' must define the same instance variables than'
-				, metaclassModel asString.
+				, model asString.
+				
 	self behaviors do: [ :beh | beh test ].
 	self globalVariables do: [ :glob | glob test ]
 ]
