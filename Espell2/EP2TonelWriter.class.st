@@ -46,7 +46,7 @@ EP2TonelWriter >> typeDefinitionOf: aClassDefinition [
 	aClassDefinition type = #normal ifFalse: [ 
 		definition at: #type put: aClassDefinition type ].
 	
-	
+	self flag: 'check this works correctly'.
 	(aClassDefinition variables select: #isInstanceVariable thenCollect: #name)
 		ifNotEmpty: [ :vars | definition at: #instVars put: vars asArray ].
 
