@@ -220,11 +220,11 @@ EP2RemoteCompiledMethod >> pragmas [
 
 { #category : #accessing }
 EP2RemoteCompiledMethod >> primitive [
-	| primBits |
-	primBits := self header bitAnd: 16r100001FF.
-	
-	^ (primBits bitAnd: 16r1FF) + (primBits bitShift: -19)
-
+	| initialPC |
+	^ (self header anyMask: 65536)
+		ifTrue: [ (self at: (initialPC := self initialPC) + 1) asLocalSmallInteger
+				+ ((self at: initialPC + 2) asLocalSmallInteger bitShift: 8) ]
+		ifFalse: [ 0 ]	"Is the hasPrimitive? flag set?"
 ]
 
 { #category : #printing }
