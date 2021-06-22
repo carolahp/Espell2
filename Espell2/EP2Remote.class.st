@@ -118,6 +118,11 @@ EP2Remote >> asContextMirror [
 ]
 
 { #category : #converting }
+EP2Remote >> asExternalContext [
+	^ self mirror asExternalContext
+]
+
+{ #category : #converting }
 EP2Remote >> asLocalByteSymbol [
 	^self backend fromRemoteByteSymbol: self mirror 
 ]

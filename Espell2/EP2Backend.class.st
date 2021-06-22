@@ -327,6 +327,11 @@ EP2Backend >> contextClass: aRemoteClass [
 	self specialObjectsArray at: 11 put: aRemoteClass. 
 ]
 
+{ #category : #instantiating }
+EP2Backend >> contextFrom: aDASTContext [ 
+	^ (self mirrorOnExternalHandle: aDASTContext) asExternalContext.
+]
+
 { #category : #'method-compiling' }
 EP2Backend >> createCompiledMethodWithSize: bytecodeSize andHeader: methodHeader [ 
 	

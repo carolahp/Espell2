@@ -40,6 +40,12 @@ EP2Mirror >> asDASTBlockMirror [
 	^ backend mirrorOn: self target
 ]
 
+{ #category : #'remote conversion' }
+EP2Mirror >> asExternalContext [
+	self isNilObject ifTrue: [^ backend nilObject ].
+	^ EP2ExternalContext on: self
+]
+
 { #category : #'converting-local' }
 EP2Mirror >> asLocalSmallInteger [
 
@@ -325,8 +331,7 @@ EP2Mirror >> isEP2Remote [
 
 { #category : #testing }
 EP2Mirror >> isEPDASTBlockMirror [
-self halt. "this should be called only from high level remote objects"
-	^ self target isExternalHandle and: [self target object isKindOf: DASTBlock].
+	^ self target isEPDASTBlockMirror 
 ]
 
 { #category : #testing }

@@ -35,6 +35,11 @@ EP2Handle >> instSpec [
 	self subclassResponsibility
 ]
 
+{ #category : #testing }
+EP2Handle >> isEPDASTBlockMirror [
+	self subclassResponsibility 
+]
+
 { #category : #accessing }
 EP2Handle >> isExternalHandle [
 	self subclassResponsibility 

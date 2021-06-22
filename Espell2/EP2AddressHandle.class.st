@@ -75,6 +75,11 @@ EP2AddressHandle >> classIndex [
 	^ backend objectMemory classIndexOf: self address  
 ]
 
+{ #category : #testing }
+EP2AddressHandle >> isEPDASTBlockMirror [
+	^ false
+]
+
 { #category : #printing }
 EP2AddressHandle >> printOn: aStream [
 	aStream 

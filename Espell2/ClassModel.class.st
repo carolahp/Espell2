@@ -878,7 +878,7 @@ ClassModel >> lookupSelectorAndMarkTraversedClasses: selector [
 { #category : #marking }
 ClassModel >> markMethodAsAccessed: aMethod [ 
 	"We ask the class to mark the method instead of asking the method itself to do it, for handling the case in which aMethod is a compiled method coming from DASTBlock or BlockClosure" 
-	(self methodNamed: aMethod selector)
+	([self methodNamed: aMethod selector] on: PBMethodDefinitionNotFound do: [nil])
 		ifNil: [ Transcript show: 'selector ', aMethod selector, 'not found';cr. ]
 		ifNotNil: [ :method | method markAsAccessed ] 
 ]

@@ -1,6 +1,6 @@
 Extension { #name : #EPASTEvaluator }
 
 { #category : #'*Espell2' }
-EPASTEvaluator >> contextFrom: aDASTContext [ 
-	^ (self objectSpace backend mirrorOnExternalHandle: aDASTContext) asRemoteContext
+EPASTEvaluator >> contextFrom: aDASTContext [
+	^ self objectSpace backend contextFrom: aDASTContext
 ]

@@ -14,6 +14,12 @@ EP2ExternalContextLayout >> allInstVars [
 { #category : #'accessing - slots' }
 EP2ExternalContextLayout >> gtInspectorIn: composite [
 	^ composite text
-		title: self object asRemoteContext asString;
-		display: [ '*', self object asRemoteContext asString , '*' ]
+		title: self object asExternalContext asString;
+		display: [ '*', self object asExternalContext asString , '*' ]
+]
+
+{ #category : #'accessing - slots' }
+EP2ExternalContextLayout >> instanceVariableNamed: aString [ 
+
+	^ (object target object instVarNamed: aString) asRemoteObjectInObjectSpace: self objectSpace
 ]

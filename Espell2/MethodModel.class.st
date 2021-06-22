@@ -214,6 +214,11 @@ MethodModel >> readsRef: literalAssociation [
 	
 ]
 
+{ #category : #access }
+MethodModel >> remote [
+	^ remote
+]
+
 { #category : #accessing }
 MethodModel >> remote: anEP2RemoteCompiledMethod [ 
 	remote := anEP2RemoteCompiledMethod 

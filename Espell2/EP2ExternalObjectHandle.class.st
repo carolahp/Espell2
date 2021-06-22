@@ -58,6 +58,12 @@ EP2ExternalObjectHandle >> isAddressHandle [
 	self shouldBeImplemented.
 ]
 
+{ #category : #testing }
+EP2ExternalObjectHandle >> isEPDASTBlockMirror [
+	"this should be called only from high level remote objects"
+	^ object isKindOf: DASTBlock
+]
+
 { #category : #accessing }
 EP2ExternalObjectHandle >> isExternalHandle [
 	^ true
