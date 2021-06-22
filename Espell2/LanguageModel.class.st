@@ -1334,7 +1334,7 @@ LanguageModel >> test [
 			'The first 3 instance variables of "' , metaclassModel name
 				, '" must be ' , classModelInstVarsFirst asString.
 	self
-		assert: metaclassInstVarsEnd = classModelInstVarsEnd
+		assert: (metaclassInstVarsEnd asSet difference: classModelInstVarsEnd asSet) isEmpty
 		description:
 			'The class ' , self class classMetaclass asString
 				, ' must define the same instance variables than'

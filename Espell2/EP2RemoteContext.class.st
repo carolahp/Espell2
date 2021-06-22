@@ -151,7 +151,7 @@ EP2RemoteContext >> primitiveInitializeTempsInStack [
 EP2RemoteContext >> printOn: aStream [
 	aStream 
 		nextPutAll: '*a Context (';
-		print: self method;
+		print: self mirror asString;
 		nextPutAll: ')*'
 ]
 
