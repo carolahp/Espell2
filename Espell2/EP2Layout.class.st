@@ -374,7 +374,7 @@ EP2Layout >> slotNamed: aString [
 EP2Layout >> slotNamed: aString ifAbsent: aBlockClosure [ 
 	^ ((self slotNamed: aString ifPresent: [ :slot | slot ])
 	 	ifNil: [ aBlockClosure ]
-		ifNotNil: [ :slot ]) value
+		ifNotNil: [ :slot | slot]) value
 ]
 
 { #category : #slots }
