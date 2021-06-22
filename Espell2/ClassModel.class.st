@@ -90,7 +90,8 @@ ClassModel >> addSlotRefactoringSubclasses: slotName [
 		do: [ :c | 
 			(c slots anySatisfy: [ :s | s name = slotName ])
 				ifTrue: [ c removeSlot: slotName ] ].
-	self addSlot: slotName
+	self addSlot: slotName.
+	self allSubclasses do: #test
 ]
 
 { #category : #'accessing instance variables' }
@@ -217,6 +218,11 @@ ClassModel >> compiler [
 { #category : #'accessing format' }
 ClassModel >> defaultMethodDictionary [
 	^ IdentityDictionary new 
+]
+
+{ #category : #testing }
+ClassModel >> definesSlot: slotName [ 
+	^ self layout definesSlot: slotName
 ]
 
 { #category : #calypso }
@@ -1065,6 +1071,11 @@ ClassModel >> slotNamed: aString [
 				key: aString;
 				signal ]
 		ifNotEmpty: [ :collection | collection anyOne ]
+]
+
+{ #category : #slots }
+ClassModel >> slotNamed: aString ifAbsent: aBlockClosure [ 
+	^ self layout slotNamed: aString ifAbsent: aBlockClosure 
 ]
 
 { #category : #'accessing slots' }

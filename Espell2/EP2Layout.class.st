@@ -73,12 +73,10 @@ EP2Layout >> acceptsNewSlots [
 ]
 
 { #category : #'accessing - slots' }
-EP2Layout >> addSlot: aSlot [
-	self acceptsNewSlots
-		ifFalse: [ AddSlotException signal ].
-	self slotNamed: aSlot ifPresent: [ ^ SlotDuplicated signal ].
-	self object allSubclasses do: [ :c | c slotNamed: aSlot ifPresent: [ ^ SlotDuplicatedInSubclass signal ] ].
-	self backend addSlot: aSlot to: self object
+EP2Layout >> addSlot: slotName [
+
+	self slotNamed: slotName ifPresent: [ ^ SlotDuplicated signal ].
+	self backend addSlot: slotName to: self object
 ]
 
 { #category : #slots }
@@ -138,6 +136,11 @@ EP2Layout >> backend [
 { #category : #accessing }
 EP2Layout >> defaultSlots [
 	^ OrderedCollection new
+]
+
+{ #category : #'slots test' }
+EP2Layout >> definesSlot: slotName [ 
+	^ slots anySatisfy: [ :slot | slot name = slotName ]
 ]
 
 { #category : #'gt-extension' }
@@ -365,6 +368,13 @@ EP2Layout >> slotNamed: aString [
 		ifNotEmpty: [:results | results anyOne].
 	
 		
+]
+
+{ #category : #slots }
+EP2Layout >> slotNamed: aString ifAbsent: aBlockClosure [ 
+	^ ((self slotNamed: aString ifPresent: [ :slot | slot ])
+	 	ifNil: [ aBlockClosure ]
+		ifNotNil: [ :slot ]) value
 ]
 
 { #category : #slots }
