@@ -1096,6 +1096,11 @@ ClassModel >> slotNamed: aString ifAbsent: aBlockClosure [
 	^ self layout slotNamed: aString ifAbsent: aBlockClosure 
 ]
 
+{ #category : #slots }
+ClassModel >> slotNamed: aString ifAbsent: absentBlock ifPresent: presentBlock [ 
+	^ self layout slotNamed: aString ifAbsent: absentBlock ifPresent: presentBlock 
+]
+
 { #category : #'accessing slots' }
 ClassModel >> slotNamed: aString ifNone: aBlockClosure [ 
 	^ [ self slotNamed: aString ] on: KeyNotFound do: aBlockClosure

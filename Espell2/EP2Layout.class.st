@@ -378,10 +378,22 @@ EP2Layout >> slotNamed: aString ifAbsent: aBlockClosure [
 ]
 
 { #category : #slots }
+EP2Layout >> slotNamed: aString ifAbsent: aBlockClosure ifPresent: aBlockClosure3 [ 
+	^ self slotNamed: aString ifPresent: aBlockClosure3 ifAbsent: aBlockClosure
+]
+
+{ #category : #slots }
 EP2Layout >> slotNamed: aString ifPresent: aBlockClosure [ 
 	| slot |
 	slot := [self slotNamed: aString] on: NotFoundSlot do: [ ^ nil ].
 	^ aBlockClosure cull: slot
+]
+
+{ #category : #slots }
+EP2Layout >> slotNamed: aString ifPresent: aPresentBlock ifAbsent: anAbsentBlock [  
+
+	self slotNamed: aString ifPresent: [:v | ^ aPresentBlock cull: v].
+	^ anAbsentBlock value
 ]
 
 { #category : #'accessing - slots' }
