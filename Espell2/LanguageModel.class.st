@@ -56,12 +56,6 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
-{ #category : #'hooks-api' }
-LanguageModel class >> classMetaclass [
-	" Return the subclass of ClassModel that defines the metamodel for classes of the language "
-	self subclassResponsibility  
-]
-
 { #category : #'accessing - defaults' }
 LanguageModel class >> defaultPackagesListFull [
 	^ nil
@@ -73,7 +67,7 @@ LanguageModel class >> entryPointSelector [
 ]
 
 { #category : #'hooks-api' }
-LanguageModel class >> globalVariableMetaclass [
+LanguageModel class >> globalModel [
 	" return the subclass of GlobalModel used to represent globals in your language "
 	self subclassResponsibility 
 ]
@@ -89,7 +83,13 @@ LanguageModel class >> instanceVariableSlotMetaclass [
 ]
 
 { #category : #'hooks-api' }
-LanguageModel class >> methodMetaclass [ 
+LanguageModel class >> metaclassModel [
+	" Return the subclass of ClassModel that defines the metamodel for classes of the language "
+	self subclassResponsibility  
+]
+
+{ #category : #'hooks-api' }
+LanguageModel class >> methodModel [ 
 	self deprecated: 'use ClassModel >> methodMetaclass'
 	
 ]
@@ -122,7 +122,7 @@ LanguageModel class >> newFromModel: aFileReferenceToTonelRepo withName: aString
 
 { #category : #instantiation }
 LanguageModel class >> newPackageModel [
-	^ self packageMetaclass new
+	^ self packageModel new
 ]
 
 { #category : #instantiation }
@@ -134,7 +134,7 @@ LanguageModel class >> newWithName: aString1 withEntryPoint: aString2 [
 ]
 
 { #category : #'hooks-api' }
-LanguageModel class >> packageMetaclass [
+LanguageModel class >> packageModel [
 	self subclassResponsibility 
 ]
 
@@ -648,7 +648,7 @@ LanguageModel >> ensureClassNamed: aString [
 	^ self
 		classNamed: aString
 		ifAbsent: [ | newBeh |
-			newBeh := self class classMetaclass named: aString parent: self.
+			newBeh := self class metaclassModel named: aString parent: self.
 			self addBehavior: newBeh.
 			newBeh ]
 ]
@@ -787,7 +787,7 @@ LanguageModel >> hookGlobalNotFound: aString [
 		confirm: 'Load class ' , aString , ' from host system to model?')
 		ifTrue: [ | newClass |
 			"getting the class from the system"
-			newClass := self class classMetaclass new
+			newClass := self class metaclassModel new
 				parent: self;
 				initializeWithLocal: localClass;
 				yourself.
@@ -1077,13 +1077,13 @@ LanguageModel >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 LanguageModel >> loadRequiredGlobalVariables [
 	self globalVariables
 		add:
-			((self class globalVariableMetaclass named: #Undeclared parent: self)
+			((self class globalModel named: #Undeclared parent: self)
 				role: 'Undeclared';
 				initializationCode: [ :remoteBackend | 
 						EP2RemoteDictionary newWithBackend: remoteBackend ];
 				yourself);
 		add:
-			((self class globalVariableMetaclass named: #Processor parent: self)
+			((self class globalModel named: #Processor parent: self)
 				role: #Processor;
 				initializationCode: [ :anEspellBackend | 
 					| processor processList |
@@ -1149,7 +1149,7 @@ LanguageModel >> methodBuilder [
 { #category : #'accessing backend' }
 LanguageModel >> newBehaviorFromMonticelloDefinition: aMCClassDefinition [.
 	self deprecated: 'use extendWithMonticello: instead'.
-	^ (self class classMetaclass
+	^ (self class metaclassModel
 				named: aMCClassDefinition className
 				parent: self) 
 				initializeWithMonticello: aMCClassDefinition;
@@ -1335,7 +1335,7 @@ LanguageModel >> test [
 		
 	metaclassModel := self classWithRole: 'Metaclass'.
 	metaclassInstVars := metaclassModel allInstVarNames.
-	classModelsInstVars := self class classMetaclass
+	classModelsInstVars := self class metaclassModel
 		allClassModelInstVarNames.
 	metaclassInstVarsEnd := (metaclassInstVars
 		copyFrom: 4
@@ -1352,7 +1352,7 @@ LanguageModel >> test [
 	self
 		assert: (metaclassInstVarsEnd asSet difference: classModelInstVarsEnd asSet) isEmpty
 		description:
-			'The class ' , self class classMetaclass asString
+			'The class ' , self class metaclassModel asString
 				, ' must define the same instance variables than'
 				, metaclassModel asString.
 	self behaviors do: [ :beh | beh test ].

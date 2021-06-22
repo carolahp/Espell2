@@ -39,7 +39,7 @@ ClassModel class >> allClassModelInstVarNames [
 ]
 
 { #category : #'hooks-api' }
-ClassModel class >> methodMetaclass [
+ClassModel class >> methodModel [
 	^ MethodModel
 ]
 
@@ -293,7 +293,7 @@ ClassModel >> ensureLocalMethodNamed: aSymbol [
 	
 	^ self localMethodNamed: aSymbol ifAbsent: [ 
 		| newMethod |
-		newMethod := self methodMetaclass named: aSymbol asSymbol parent: self.
+		newMethod := self methodModel named: aSymbol asSymbol parent: self.
 		newMethod parent: self.
 		newMethod selector: aSymbol.
 		self methodDict at: aSymbol put: newMethod.
@@ -914,8 +914,8 @@ ClassModel >> methodDict: aDictionary [
 ]
 
 { #category : #'metamodel-accessing' }
-ClassModel >> methodMetaclass [
-	^ self class methodMetaclass
+ClassModel >> methodModel [
+	^ self class methodModel
 ]
 
 { #category : #'accessing methods' }
