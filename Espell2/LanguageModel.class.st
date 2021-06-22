@@ -121,11 +121,21 @@ LanguageModel class >> newFromModel: aFileReferenceToTonelRepo withName: aString
 ]
 
 { #category : #instantiation }
+LanguageModel class >> newPackageModel [
+	^ self packageMetaclass new
+]
+
+{ #category : #instantiation }
 LanguageModel class >> newWithName: aString1 withEntryPoint: aString2 [
 	self
 		newFromModel: nil
 		withName: aString1
 		withEntryPoint: aString2
+]
+
+{ #category : #'hooks-api' }
+LanguageModel class >> packageMetaclass [
+	self subclassResponsibility 
 ]
 
 { #category : #'hooks-dynamic method loading' }
@@ -500,7 +510,7 @@ LanguageModel >> classRolesFromTonel: aFileReference [
 							each role
 								ifNotNil: [ result at: each role asSymbol put: each name ] ] ] ].
 	"I am putting the next code here just to prevent reading the tonel repo twice, but this screams for a refactor"
-	self customClassRoles
+	(self customClassRoles ifNil: #())
 		do: [ :assoc | 
 			self
 				assert: (definedClasses anySatisfy: [ :defclass | defclass = assoc value ])
@@ -607,7 +617,7 @@ LanguageModel >> defaultGlobalVariables [
 { #category : #'default model values' }
 LanguageModel >> defaultPackages [
 	| package |
-	package := PackageModel new
+	package := self newPackageModel 
 		name: #'Kernel-VM';
 		parent: self;
 		yourself.
@@ -649,7 +659,7 @@ LanguageModel >> ensurePackageNamed: aString [
 	^ self packages
 		at: aString
 		ifAbsent: [ | package |
-			package := PackageModel new
+			package := self newPackageModel
 				name: aString asSymbol;
 				parent: self;
 				yourself.
@@ -1164,6 +1174,11 @@ LanguageModel >> newGlobalBindingFor: aSymbol [
 		name: aSymbol;
 		objectSpace: self objectSpace;
 		yourself
+]
+
+{ #category : #instanciation }
+LanguageModel >> newPackageModel [
+	^ self class newPackageModel
 ]
 
 { #category : #marking }

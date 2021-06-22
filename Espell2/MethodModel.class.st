@@ -26,8 +26,8 @@ MethodModel >> argumentNames [
 MethodModel >> asMCDefinition [
 	
 	^ MCMethodDefinition 
-		className: self parent name
-		classIsMeta: false
+		className: self parent instanceSide name
+		classIsMeta: self parent classIsMeta
 		selector: self name
 		category: 'as yet unclassified'
 		timeStamp: ''

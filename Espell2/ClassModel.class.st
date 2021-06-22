@@ -185,6 +185,12 @@ ClassModel >> category [
 	^ self package name
 ]
 
+{ #category : #testing }
+ClassModel >> classIsMeta [
+	"tonel compatibility"
+	^ false
+]
+
 { #category : #'accessing backend' }
 ClassModel >> classLoader [
 	^ self parent classLoader
