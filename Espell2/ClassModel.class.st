@@ -117,6 +117,20 @@ ClassModel >> allInstVarNames [
 	^ (self allSlots select: #isInstanceVariableSlot) collect: #name
 ]
 
+{ #category : #querying }
+ClassModel >> allMethods [
+	| methods |
+	methods := self localMethods asOrderedCollection.
+	self allSuperclasses
+		do: [ :class | 
+			methods
+				addAll:
+					(class localMethods asOrderedCollection
+						reject:
+							[ :method | methods anySatisfy: [ :each | each selector = method selector ] ]) ].
+	^ methods
+]
+
 { #category : #'accessing slots' }
 ClassModel >> allSlots [
 	^ self layout ifNil: [ #() ] ifNotNil: [:layo | layo allSlots ]
@@ -132,6 +146,19 @@ ClassModel >> allSubclasses [
 	subclasses := self subclasses.
 	subclasses addAll: (subclasses flatCollect: [ :class | class allSubclasses ]).
 	^ subclasses
+]
+
+{ #category : #'accessing superclasses' }
+ClassModel >> allSuperclasses [
+	"Answer an OrderedCollection of the receiver's and the receiver's  
+	ancestor's superclasses. The first element is the receiver's immediate  
+	superclass, followed by its superclass; the last element is Object."
+	| temp |
+	^ self superclass == nil
+		ifTrue: [ OrderedCollection new]
+		ifFalse: [temp := self superclass allSuperclasses.
+			temp addFirst: self superclass.
+			temp]
 ]
 
 { #category : #monticello }
