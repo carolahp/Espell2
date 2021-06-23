@@ -145,11 +145,6 @@ MethodModel >> isInstalled [
 
 { #category : #marking }
 MethodModel >> markAsAccessed [
-	(#(70 71 79 148 160) includes: remote primitive)
-		ifTrue: [ remote backend builder debuggerInterpreter interpreter
-				currentContext sender methodModel
-				ifNotNil: [ :method | method propertyNamed: #sendsNew put: true ] ].
-	
 	self
 		propertyNamed: self parent parent objectAccessedPropertyName
 		put: true
