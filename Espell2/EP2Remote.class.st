@@ -475,7 +475,7 @@ EP2Remote >> remoteBasicIdentityHash [
 { #category : #'high-level-message' }
 EP2Remote >> remoteIdentityHash [
 	"identityHash of the remote object in the remote kernel"
-	^ (self remoteBasicIdentityHash bitShift: 18)
+	^ (self remoteBasicIdentityHash bitShift: 8)
 ]
 
 { #category : #hash }

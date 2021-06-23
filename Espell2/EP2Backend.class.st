@@ -544,6 +544,16 @@ EP2Backend >> forBootstrap [
 	self simulator transcript: ThreadSafeTranscript new.
 ]
 
+{ #category : #'local to remote' }
+EP2Backend >> fromLocalByteArray: aCollection [ 
+	| remoteByteArray |
+	remoteByteArray := (self byteArrayClass basicNew: aCollection size).
+	1 to: aCollection size do: [ :i |
+		remoteByteArray at: i put: ((aCollection at: i) asRemoteObjectInObjectSpace: self objectSpace). 
+	].
+	^ remoteByteArray asRemoteByteArray 
+]
+
 { #category : #'from local to remote' }
 EP2Backend >> fromLocalByteString: aString [ 
 	| remoteString |
@@ -635,6 +645,14 @@ EP2Backend >> handleOnExternalObject: aLocalObject [
 { #category : #'accesssing compiled method' }
 EP2Backend >> headerOfCompiledMethod: anEP2AddressHandle [ 
 	^ (self compiledMethod: anEP2AddressHandle objectAt: 1) asSmallInteger
+]
+
+{ #category : #'accessing special classes' }
+EP2Backend >> identityDictionaryClass [
+	
+	^ [ self builder remoteClass: #IdentityDictionary ]
+		on: PBClassDefinitionNotFound
+		do: [ self builder remoteClass: #Dictionary ]
 ]
 
 { #category : #initializing }

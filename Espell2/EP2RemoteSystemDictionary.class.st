@@ -16,9 +16,25 @@ EP2RemoteSystemDictionary class >> modelInstVarNames [
 ]
 
 { #category : #constants }
+EP2RemoteSystemDictionary class >> newWithBackend: anEP2Backend size: nElements [
+	| class dict array tally initialSize |
+	class := anEP2Backend identityDictionaryClass
+		ifNil: [ ^ super newWithBackend: anEP2Backend size: nElements ].
+		
+	initialSize := (nElements + 1) * 4 // 3.
+	dict := (anEP2Backend basicNewOn: class) asRemoteSystemDictionary.
+	array := EP2RemoteArray
+		newWithSize: initialSize
+		withBackend: anEP2Backend.
+	tally := anEP2Backend fromLocalInteger: 0.
+	dict array: array.
+	dict tally: tally.
+	^ dict
+]
+
+{ #category : #constants }
 EP2RemoteSystemDictionary class >> role [
-	^ nil
-	"^ 'SystemDictionary'"
+	^'IdentityDictionary'
 ]
 
 { #category : #'high-level-messages' }
