@@ -31,11 +31,15 @@ EP2AddressHandle >> address: anInteger [
 EP2AddressHandle >> asCastedRemoteClass [
 	| basicClass layoutClass |
 	basicClass := (backend mirrorOn: self) asRemoteClass.
-	(basicClass
+	"(basicClass
 		inheritsFrom: (backend systemDefinition classWithRole: #Metaclass) remote)
-		ifTrue: [ ^ EP2RemoteMetaclass ].
+		ifTrue: [ ^ EP2RemoteMetaclass ]."
 	basicClass isNilObject
-		ifFalse: [ basicClass asLocalClass
+		ifFalse: [ 
+			basicClass asClassDefinition isMeta
+				ifTrue: [^ EP2RemoteMetaclass ].
+	
+			basicClass asLocalClass
 				ifNotNil: [ :localClass | 
 					basicClass
 						= (backend systemDefinition classWithRole: #Metaclass) remote
@@ -43,6 +47,7 @@ EP2AddressHandle >> asCastedRemoteClass [
 					localClass = EP2RemoteMetaclass
 						ifTrue: [ ^ EP2RemoteClass ].
 					^ localClass ] ].
+	
 	layoutClass := self isSmallInteger
 		ifTrue: [ EP2ImmediateLayout ]
 		ifFalse: [ EP2Layout layoutClassForInstSpec: basicClass instSpec ].

@@ -50,24 +50,36 @@ ObjectModel >> evaluateCode: aString [
 	^ self evaluateCode: aString temps: #()
 ]
 
-{ #category : #'evaluating ast' }
+{ #category : #'evaluate ast' }
 ObjectModel >> evaluateCode: aString temps: aCollection [ 
 	^ (self newInstruction code: aString; temps: aCollection) evaluate asRemoteObjectCasted
 ]
 
-{ #category : #'evaluating ast' }
+{ #category : #'evaluate ast' }
+ObjectModel >> evaluateMarking: aString [
+	^ self evaluateMarking: aString temps: #() 
+]
+
+{ #category : #'evaluate ast' }
+ObjectModel >> evaluateMarking: aString temps: aCollection [
+	^ (self newInstruction
+		code: aString;
+		temps: aCollection) evaluateMarking
+]
+
+{ #category : #'evaluate ast' }
 ObjectModel >> evaluateToSpecialize: aString [ 
 	^ self evaluateToSpecialize: aString temps: #()
 ]
 
-{ #category : #'evaluating ast' }
+{ #category : #'evaluate ast' }
 ObjectModel >> evaluateToSpecialize: aString temps: aCollection [
 	self installAccessedObjectsOnly: true.
 	self environment
 		removeFromAllElementsPropertyNamed: self environment objectAccessedPropertyName.
 	^ (self newInstruction
 		code: aString;
-		temps: aCollection) evaluateToSpecialize
+		temps: aCollection) evaluateMarking
 ]
 
 { #category : #testing }

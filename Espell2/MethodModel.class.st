@@ -145,7 +145,12 @@ MethodModel >> isInstalled [
 
 { #category : #marking }
 MethodModel >> markAsAccessed [
-	self propertyNamed: self parent parent objectAccessedPropertyName put: true
+	(#(70 71 79 148 160) includes: remote primitive)
+		ifTrue: [ remote backend builder debuggerInterpreter interpreter
+				currentContext sender methodModel propertyNamed: #sendsNew put: true ].
+	self
+		propertyNamed: self parent parent objectAccessedPropertyName
+		put: true
 ]
 
 { #category : #calypso }
