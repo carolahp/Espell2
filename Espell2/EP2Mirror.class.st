@@ -157,7 +157,7 @@ EP2Mirror >> asRemoteObject [
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteObjectCasted [
 	"gets the corresponding layout according to my instSpec and then uses it to create a remoteObject with the correct type"
-	| basicClass class layoutClass |
+	| basicClass templateClass |
 	self isNilObject
 		ifTrue: [ ^ self asRemoteNil ].
 	self isTrueObject
@@ -166,8 +166,8 @@ EP2Mirror >> asRemoteObjectCasted [
 		ifTrue: [ ^ self asRemoteFalse ].
 		
 	basicClass := self basicRemoteClass.
-	class := basicClass asCastedRemoteClass.
-	^ class on: self
+	templateClass := basicClass asCastedRemoteClass.
+	^ templateClass on: self
 ]
 
 { #category : #'as yet unclassified' }

@@ -157,7 +157,7 @@ EP2RemoteContext >> printOn: aStream [
 
 { #category : #accessing }
 EP2RemoteContext >> receiver [
-	^ (self instanceVariableAtIndex: self contextReceiverIndex) asRemoteObjectCasted
+	^ (self instanceVariableAtIndex: self contextReceiverIndex) "asRemoteObjectCasted"
 ]
 
 { #category : #accessing }
