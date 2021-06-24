@@ -1300,6 +1300,11 @@ ClassModel >> theNonMetaClass [
 	^ self
 ]
 
+{ #category : #'tonel compatibility' }
+ClassModel >> tonelInstanceSide [
+	^ self
+]
+
 { #category : #calypso }
 ClassModel >> users [
 	^ #() 
