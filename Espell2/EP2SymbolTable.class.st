@@ -27,6 +27,11 @@ EP2SymbolTable >> at: aLocalSymbol ifAbsentPut: aBlock [
 	^ self at: aLocalSymbol ifAbsent: [ self installSymbol: aBlock value ]
 ]
 
+{ #category : #destroy }
+EP2SymbolTable >> destroy [
+	objectSpace := nil
+]
+
 { #category : #public }
 EP2SymbolTable >> includesKey: aLocalSymbol [
 

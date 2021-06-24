@@ -20,6 +20,12 @@ EP2ExternalSymbolTable >> at: aLocalSymbol ifAbsent: aBlock [
 	
 ]
 
+{ #category : #destroy }
+EP2ExternalSymbolTable >> destroy [
+	super destroy.
+	symbols := nil.
+]
+
 { #category : #public }
 EP2ExternalSymbolTable >> includesKey: aLocalSymbol [
 

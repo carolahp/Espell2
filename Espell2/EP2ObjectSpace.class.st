@@ -61,6 +61,28 @@ EP2ObjectSpace >> debuggerInterpreter: aDASTEvaluator [
 
 ]
 
+{ #category : #destroy }
+EP2ObjectSpace >> destroy [
+	backend := nil.
+	characterTable ifNotNil: [ 
+		characterTable destroy. 
+		characterTable := nil].
+	debuggerInterpreter ifNotNil: [ 
+		debuggerInterpreter destroy.
+		debuggerInterpreter := nil ].
+	interpreter ifNotNil: [ 
+		interpreter destroy.
+		interpreter := nil ].
+	specialObjectsArray := nil.
+	symbolTable ifNotNil: [ 
+		symbolTable destroy.
+		symbolTable := nil ].
+	systemDictionary ifNotNil: [ 
+		systemDictionary destroy.
+		systemDictionary := nil ].
+	
+]
+
 { #category : #'accessing-specialObjects' }
 EP2ObjectSpace >> falseObject [
 	^ self backend falseObject

@@ -47,6 +47,13 @@ EP2Environment >> classNamed: aSymbol [
 	^ self builder classNamed: aSymbol
 ]
 
+{ #category : #destroy }
+EP2Environment >> destroy [
+	array := nil.
+	builder := nil.
+	tally := nil.
+]
+
 { #category : #public }
 EP2Environment >> globalNamed: aString put: aRemoteObject [ 
 	self deprecated: 'Use (LanguageModel>>gobalVariableNamed:) setValue:'.

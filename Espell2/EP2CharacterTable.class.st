@@ -7,6 +7,12 @@ Class {
 	#category : #'Espell2-Image'
 }
 
+{ #category : #destroy }
+EP2CharacterTable >> destroy [
+	objectSpace := nil.
+	 
+]
+
 { #category : #public }
 EP2CharacterTable >> initializeTable [
 

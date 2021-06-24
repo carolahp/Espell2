@@ -38,7 +38,6 @@ Class {
 	#superclass : #ObjectModel,
 	#instVars : [
 		'tonelPath',
-		'pbRepository',
 		'packages',
 		'globalVariables',
 		'behaviors',
@@ -628,19 +627,51 @@ LanguageModel >> defaultPackages [
 
 { #category : #'initialize-destroy' }
 LanguageModel >> destroy [
-	backend ifNotNil: [ 
-		backend environment: nil ].
-	backend := nil.
-	pbRepository ifNotNil: [ pbRepository destroy ].
-	pbRepository := nil.
-	pbBootstrapper :=nil.
-	builder ifNotNil: [ builder destroy ].
-	builder := nil.
-	behaviors ifNotNil: [ :behvs | behvs do: [ :beh | beh parent: nil ]].
-	behaviors := nil.
-	packages := nil.
-	globalVariables := nil.
+	super destroy.
 	
+	behaviors ifNotNil: [ 
+		behaviors do: [ :beh | beh destroy ].
+		behaviors := nil.].
+	
+	packages ifNotNil: [ 
+		packages do: [ :pac | pac destroy ].
+		packages := nil.].
+	
+	globalVariables ifNotNil: [ 
+		globalVariables do: [ :glob | glob destroy ].
+		globalVariables := nil.].
+		
+	builder ifNotNil: [ 	
+		builder pbRepository ifNotNil: [:repository | 
+			repository bootstrapper ifNotNil: [ :bootstrapper |
+					bootstrapper builder ifNotNil: [ :imageBuilder |
+						imageBuilder espellBackend ifNotNil: [ :espellBackend |
+							espellBackend destroy.
+							 ].
+						imageBuilder destroy.
+						 ].	
+				bootstrapper destroy.
+				 ].
+			repository destroy.
+			 ].
+		builder destroy.
+	 ].
+	builder := nil.
+	pbBootstrapper := nil.
+	backend ifNotNil: [ 
+		backend destroy.
+		backend := nil].
+	
+	announcer ifNotNil: [ 
+		announcer subscriptions reset.
+		announcer := nil.
+		 ].
+	
+	instanceVariableMapping ifNotNil: [ 
+		instanceVariableMapping destroy.
+		instanceVariableMapping := nil ].
+	
+	tonelPath := nil
 ]
 
 { #category : #'creating classes' }
@@ -1244,11 +1275,6 @@ LanguageModel >> pbBootstrapper [
 { #category : #accessing }
 LanguageModel >> pbBootstrapper: aPBBootstrapGeneric [ 
 	pbBootstrapper := aPBBootstrapGeneric
-]
-
-{ #category : #accessing }
-LanguageModel >> pbRepository: aPBRepository [ 
-	pbRepository := aPBRepository 
 ]
 
 { #category : #bootstrap }

@@ -143,6 +143,12 @@ EP2Layout >> definesSlot: slotName [
 	^ slots anySatisfy: [ :slot | slot name = slotName ]
 ]
 
+{ #category : #destroy }
+EP2Layout >> destroy [
+	object := nil.
+	slots := nil.
+]
+
 { #category : #'gt-extension' }
 EP2Layout >> gtInspectorIn: composite [
 	"self object isRoleMetaclass ifTrue: [ self haltOnce. ]."

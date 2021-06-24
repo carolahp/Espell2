@@ -18,6 +18,16 @@ LiteralVariableModel >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 	self subclassResponsibility 
 ]
 
+{ #category : #testing }
+LiteralVariableModel >> destroy [ 
+	super destroy.
+	initializationCode := nil.
+	pbInstruction ifNotNil: [
+		pbInstruction destroy.
+		pbInstruction := nil.
+	]
+]
+
 { #category : #'read - write' }
 LiteralVariableModel >> emitStore: anIRBuilder [ 
 	anIRBuilder storeIntoLiteralVariable: self.

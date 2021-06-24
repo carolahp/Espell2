@@ -40,6 +40,17 @@ ObjectModel >> debugCode: aString temps: aCollection [
 	^ (self newInstruction code: aString; temps: aCollection) debug
 ]
 
+{ #category : #'instruction hooks' }
+ObjectModel >> destroy [
+	remote := nil.
+	role := nil.
+	parent := nil.
+	objectName := nil.
+	properties := nil.
+	
+	
+]
+
 { #category : #accessing }
 ObjectModel >> environment [
 	^ parent

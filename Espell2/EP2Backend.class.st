@@ -361,6 +361,21 @@ EP2Backend >> createObjectWithFormat: classFormat withSize: aSize classIndex: cl
 	^ self mirrorOnAddress: oop.
 ]
 
+{ #category : #destroy }
+EP2Backend >> destroy [
+	associationClass := nil.
+	aSymbolTableClass ifNotNil: [ 
+		aSymbolTableClass destroy.
+		aSymbolTableClass := nil.
+		 ].
+	byteSymbolClass := nil.
+	extraRoots := nil.
+	objectSpace := nil.
+	simulator := nil.
+	systemDefinition := nil.
+	
+]
+
 { #category : #'accessing special classes' }
 EP2Backend >> dictionaryClass [
 	^ self builder remoteClass: #Dictionary

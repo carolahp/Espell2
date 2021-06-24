@@ -315,6 +315,26 @@ ClassModel >> definition [
 	^ aStream contents
 ]
 
+{ #category : #destroy }
+ClassModel >> destroy [ 
+	super destroy.
+	index2InClassTable := nil.
+	indexInClassTable := nil.
+	indexInSpecialObjectsArray := nil.
+	layout ifNotNil: [ 
+		layout destroy.
+		layout := nil.
+	] .
+	methodDict ifNotNil: [ 
+		methodDict valuesDo: [ :method | method destroy ].
+		methodDict := nil.
+	].
+	superclass := nil.
+	tagsForMethods := nil.
+	template := nil
+	
+]
+
 { #category : #calypso }
 ClassModel >> ensureLocalMethodNamed: aSymbol [
 	

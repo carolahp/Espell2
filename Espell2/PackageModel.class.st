@@ -96,6 +96,15 @@ PackageModel >> definesBehavior: anOLClass [
 	^ self definedBehaviors anySatisfy: [:beh | beh = anOLClass ].
 ]
 
+{ #category : #calypso }
+PackageModel >> destroy [
+	super destroy.
+	definedBehaviors
+		ifNotNil: [ 
+			definedBehaviors do: [ :beh | beh destroy ].
+			definedBehaviors := nil ]
+]
+
 { #category : #accessing }
 PackageModel >> environment [ 
 	^ self parent

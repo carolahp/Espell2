@@ -38,6 +38,11 @@ SlotModel >> definingClass: anEP2RemoteClass [
 	definingClass := anEP2RemoteClass
 ]
 
+{ #category : #testing }
+SlotModel >> destroy [ 
+	self halt.
+]
+
 { #category : #accessing }
 SlotModel >> environment [ 
 	self halt

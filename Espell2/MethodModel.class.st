@@ -64,6 +64,14 @@ MethodModel >> calypsoEnvironmentType [
 ]
 
 { #category : #accessing }
+MethodModel >> destroy [ 
+	super destroy.
+	selector := nil.
+	sourceCode := nil.
+	tags := nil.
+]
+
+{ #category : #accessing }
 MethodModel >> environment [ 
 	^ self parent parent
 ]

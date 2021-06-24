@@ -41,6 +41,12 @@ LanguageModelBackend >> addSlot: aString to: aLayout [
 	self addSlot: aString index: aLayout allSlots size + 1 to: aLayout
 ]
 
+{ #category : #destroy }
+LanguageModelBackend >> destroy [
+	super destroy.
+	environment := nil
+]
+
 { #category : #accessing }
 LanguageModelBackend >> environment: aLanguageModel [
 	environment := aLanguageModel
