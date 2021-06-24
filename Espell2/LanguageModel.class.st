@@ -703,6 +703,11 @@ LanguageModel >> exportAsTonelRepository: aFileReference [
 			EP2TonelWriter fileOut: aVersion on: aFileReference metamodel: self ]
 ]
 
+{ #category : #hooks }
+LanguageModel >> firstMetaclasses [
+	self subclassResponsibility 
+]
+
 { #category : #refactor }
 LanguageModel >> fixCircularInheritance [
 	self allClasses do: [ :class | class superclass = self ifTrue: [ class superclass: nil ] ]
@@ -939,9 +944,8 @@ LanguageModel >> installMulticlassStubs: aCollection [
 
 { #category : #hooks }
 LanguageModel >> installStubs [
-	self installMulticlassStubs: self allClassesWithRole
-	"^ self allClassesWithRole do: [ :each |
-		each installStub ]"
+	
+	self installMulticlassStubs: self firstMetaclasses "self allClassesWithRole"
 ]
 
 { #category : #'vm-constants' }
@@ -1087,12 +1091,12 @@ LanguageModel >> loadRequiredGlobalVariables [
 				role: #Processor;
 				initializationCode: [ :anEspellBackend | 
 					| processor processList |
-					processor := (self classWithRole: #ProcessorScheduler) remote
+					processor := (self classWithRole: #ProcessorScheduler) ensureRemote
 						basicNew asRemoteScheduler.
-					processList := (self classWithRole: #Array) remote basicNew: 5.
+					processList := (self classWithRole: #Array) ensureRemote basicNew: 5.
 					1 to: 5 do: [ :index | 
 						| process |
-						process := (self classWithRole: #ProcessList) remote basicNew.
+						process := (self classWithRole: #ProcessList) ensureRemote basicNew.
 						processList at: index put: process ].
 					processor suspendedProcessList: processList.
 					processor ])

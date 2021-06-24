@@ -26,7 +26,7 @@ MethodModel >> argumentNames [
 MethodModel >> asMCDefinition [
 	
 	^ MCMethodDefinition 
-		className: self parent instanceSide name
+		className: self parent tonelInstanceSide name
 		classIsMeta: self parent classIsMeta
 		selector: self name
 		category: 'as yet unclassified'
