@@ -127,7 +127,7 @@ LanguageModel class >> newPackageModel [
 
 { #category : #instantiation }
 LanguageModel class >> newWithName: aString1 withEntryPoint: aString2 [
-	self
+	^self
 		newFromModel: nil
 		withName: aString1
 		withEntryPoint: aString2
@@ -668,6 +668,11 @@ LanguageModel >> ensurePackageNamed: aString [
 ]
 
 { #category : #hooks }
+LanguageModel >> entryPointClass [
+	^ self classWithRole: #UndefinedObject
+]
+
+{ #category : #hooks }
 LanguageModel >> entryPointCode [
 	^ entryPointCode ifNil: [ Error signal: 'Undefined Entry Point. Define it using entryPointCode:' ]
 ]
@@ -675,6 +680,11 @@ LanguageModel >> entryPointCode [
 { #category : #hooks }
 LanguageModel >> entryPointCode: aString [
 	entryPointCode := aString 
+]
+
+{ #category : #hooks }
+LanguageModel >> entryPointReceiver [
+	^ 'nil'
 ]
 
 { #category : #hooks }
@@ -705,6 +715,7 @@ LanguageModel >> exportAsTonelRepository: aFileReference [
 
 { #category : #hooks }
 LanguageModel >> firstMetaclasses [
+	"return a collection with the class model of metaclasses involved in circular metaclass references, e.g. { Metaclass . Metaclass class }"
 	self subclassResponsibility 
 ]
 
@@ -876,7 +887,7 @@ LanguageModel >> initialize [
 	"load entry point"
 	self loadEntryPoint.
 	"apply custom transformations implemented using MOP"
-	"self transform"
+	self transform
 ]
 
 { #category : #hooks }
@@ -1015,7 +1026,7 @@ LanguageModel >> loadClasses [
 LanguageModel >> loadEntryPoint [
 	| classUndefinedObject selector |
 	"do not modify unless you know what you are doing"
-	classUndefinedObject := self classWithRole: #UndefinedObject.
+	classUndefinedObject := self entryPointClass.
 	selector := self entryPointSelector.
 	classUndefinedObject
 		addLocalMethodFromSource:
