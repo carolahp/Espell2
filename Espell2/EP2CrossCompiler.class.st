@@ -15,14 +15,17 @@ EP2CrossCompiler class >> newCompiler [
 { #category : #compiling }
 EP2CrossCompiler >> basicCompileDoItFromSourceCode: sourceCode [ 
 
-	"Ugly. We should not build a remote environment on demand like this. Think wether to put it in the object space or make the cross compiler know it."
 	| highLevelUndefinedObjectClass |
 	
 	highLevelUndefinedObjectClass := objectSpace nilObject basicClass.
-	^ (OpalCompiler new 
+	
+	^ (self class newCompiler
 		noPattern: true;
-		environment: (EP2DummyEnvironment on: objectSpace);
-		source: sourceCode; class: highLevelUndefinedObjectClass; requestor: objectSpace nilObject; failBlock: [self error]; parse) generate
+		environment: highLevelUndefinedObjectClass asClassDefinition environment;
+		source: sourceCode; 
+		class: highLevelUndefinedObjectClass; 
+		requestor: objectSpace nilObject; 
+		failBlock: [self error]; parse) generate
 ]
 
 { #category : #compiling }

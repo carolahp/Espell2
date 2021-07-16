@@ -226,7 +226,7 @@ LanguageModel >> addMethodFromMonticelloDefinition: aMCMethodDefinition [
 
 { #category : #'accessing classes' }
 LanguageModel >> allClasses [
-	^ behaviors
+	^ self behaviors
 ]
 
 { #category : #'accessing classes' }
@@ -1265,7 +1265,7 @@ LanguageModel >> packageFor: anEP2MBehavior [
 
 { #category : #'accessing backend' }
 LanguageModel >> packageNamed: aString [ 
-	^ self packages at: aString
+	^ self packages at: aString asSymbol
 ]
 
 { #category : #accessing }
