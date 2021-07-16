@@ -120,12 +120,11 @@ MethodModel >> initializeWithLocal: aCompiledMethod [
 { #category : #installing }
 MethodModel >> install [
 	| remoteMethod |
-	
 	remoteMethod := self parent remote backend builder objectSpace
 		crossCompiler
 		compile: self sourceCode
 		forClass: self methodClass
-		inEnvironment: self parent remote backend builder.
+		inEnvironment: self environment "self parent remote backend builder".
 	remoteMethod test.
 	self remote: remoteMethod.
 	^ remoteMethod

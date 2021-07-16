@@ -251,8 +251,14 @@ LanguageModel >> announcer [
 
 { #category : #calypso }
 LanguageModel >> at: aSymbol [
-
+self halt.
 	^ self classNamed: aSymbol
+]
+
+{ #category : #'compiler compatibility' }
+LanguageModel >> at: aString ifAbsent: aBlockClosure [ 
+	"returns nil because this method is used to get CompiledMethod for generating Compiled Method instances durin the bootstrap"
+	^ aBlockClosure value
 ]
 
 { #category : #'accessing backend' }
