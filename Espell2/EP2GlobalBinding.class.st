@@ -12,9 +12,11 @@ EP2GlobalBinding >> accept: anEPASTInterpreter assign: anEPMirror inNode: aRBVar
 { #category : #visiting }
 EP2GlobalBinding >> asGlobalOrClassModel [
 	| languageModel |
+	self flag: 'hardcoding access to globals, classes or packages is wrong, the metamodel should be more flexible'.
 	languageModel := objectSpace backend systemDefinition.
-	^ (languageModel globalVariableNamed: name)
-		ifNil: [ languageModel classNamed: name ]
+	^ ((languageModel globalVariableNamed: name)
+		ifNil: [ languageModel classNamed: name ifAbsent: [ nil ] ])
+		ifNil: [ languageModel packageNamed: name ]
 ]
 
 { #category : #'from local to remote' }

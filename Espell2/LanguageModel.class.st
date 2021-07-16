@@ -1268,6 +1268,11 @@ LanguageModel >> packageNamed: aString [
 	^ self packages at: aString
 ]
 
+{ #category : #accessing }
+LanguageModel >> packageNamed: aString ifAbsent: aBlockClosure [ 
+	^ [self packageNamed: aString] on: KeyNotFound do: [ aBlockClosure value ]
+]
+
 { #category : #'accessing backend' }
 LanguageModel >> packages [
 	^ packages

@@ -7,6 +7,11 @@ Class {
 	#category : #'Espell2-Backend'
 }
 
+{ #category : #instantiation }
+EP2CrossCompiler class >> newCompiler [
+	^ EP2Compiler new
+]
+
 { #category : #compiling }
 EP2CrossCompiler >> basicCompileDoItFromSourceCode: sourceCode [ 
 
@@ -27,10 +32,10 @@ EP2CrossCompiler >> basicCompileSourceCode: sourceCode forClass: anEP2CrossCompi
 	options := #().
 	contextClass := objectSpace backend interpreter codeProvider systemDefinition classContext.
 	anEP2CrossCompilerBinding className == contextClass name ifTrue: [ options := #(+ optionLongIvarAccessBytecodes)].
-	compiler := OpalCompiler new
+	compiler := self class newCompiler
 		options: options;
-		class: anEP2CrossCompilerBinding classModel"anEP2CrossCompilerBinding";
-		environment: anEP2CrossCompilerBinding classModel environment"anEP2CrossCompilerBinding environment";
+		class: anEP2CrossCompilerBinding classModel;
+		environment: anEP2CrossCompilerBinding classModel environment;
 		requestor: nil;
 		failBlock: [ self error ].
 	"compiler compilationContext parserClass: ".

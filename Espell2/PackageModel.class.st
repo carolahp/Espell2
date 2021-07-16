@@ -143,6 +143,11 @@ PackageModel >> isNotEmpty [
 	^ self definedBehaviors size > 0
 ]
 
+{ #category : #'compatibilty candle' }
+PackageModel >> maybeAccessedPropertyName [
+	^ self environment maybeAccessedPropertyName
+]
+
 { #category : #calypso }
 PackageModel >> packageManifestOrNil [
 	^ nil
@@ -154,6 +159,16 @@ PackageModel >> printOn: aStream [
 		nextPutAll: 'a Package "';
 		nextPutAll: self name asString;
 		nextPutAll: '"'
+]
+
+{ #category : #registering }
+PackageModel >> register [ 
+	^ self registerCustom
+]
+
+{ #category : #registering }
+PackageModel >> registerCustom [
+	self subclassResponsibility
 ]
 
 { #category : #calypso }
