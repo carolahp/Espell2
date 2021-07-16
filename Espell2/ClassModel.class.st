@@ -643,7 +643,7 @@ ClassModel >> installBasic [
 		methodDictionary: remoteMethodDict;
 		superclass: remoteSuperclass;
 		format: self format.
-	self remoteSystemDictionary at: self name put: self remote.
+	self register.
 	^ self remote
 ]
 
@@ -1068,6 +1068,17 @@ ClassModel >> recursivellyDo: doBlock to: nextClassesBlock [
 	
 	doBlock value: self.
 	(nextClassesBlock value: self) do: [ :c | c recursivellyDo: doBlock to: nextClassesBlock  ]
+]
+
+{ #category : #hooks }
+ClassModel >> register [ 
+	self remoteSystemDictionary at: self name put: self remote.
+	self registerCustom
+]
+
+{ #category : #hooks }
+ClassModel >> registerCustom [
+	self subclassResponsibility 
 ]
 
 { #category : #'accessing remote backend' }

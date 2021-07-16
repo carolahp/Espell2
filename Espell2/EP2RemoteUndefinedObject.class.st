@@ -16,6 +16,11 @@ EP2RemoteUndefinedObject class >> role [
 	^ 'UndefinedObject'
 ]
 
+{ #category : #casting }
+EP2RemoteUndefinedObject >> asCastedRemoteClass [
+	^ self class
+]
+
 { #category : #'converting local' }
 EP2RemoteUndefinedObject >> asLocalByteString [
 	^ nil

@@ -85,7 +85,7 @@ EP2Backend >> arrayClass: aRemoteClass [
 
 { #category : #'accessing special classes' }
 EP2Backend >> associationClass [
-	^ associationClass asRemoteClass
+	^ (self builder remoteClass: #Association) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -234,7 +234,7 @@ EP2Backend >> byteStringClass: aRemoteClass [
 EP2Backend >> byteSymbolClass [
 	^ byteSymbolClass
 		ifNil:
-			[ (self systemDefinition classNamed: #ByteSymbol) remote asRemoteClass ]
+			[ (self systemDefinition classNamed: #ByteSymbol) ensureRemote asRemoteClass ]
 ]
 
 { #category : #'accessing-special classes' }
@@ -312,7 +312,8 @@ EP2Backend >> contextClass [
 
 	"The method Comtext class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Context"
-	^ (self specialObjectsArray at: 11) asRemoteClass
+	^ ((self specialObjectsArray at: 11)
+		ifNilObject: [ self builder remoteClass: #Context ]) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -878,8 +879,10 @@ EP2Backend >> messageClass: aRemoteClass [
 ]
 
 { #category : #'accessing-special classes' }
-EP2Backend >> methodClass [ 
-	^ (self specialObjectsArray at: 17) asRemoteClass 
+EP2Backend >> methodClass [
+	^ ((self specialObjectsArray at: 17)
+		ifNilObject: [ self builder remoteClass: #CompiledMethod ])
+		asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
@@ -1069,10 +1072,11 @@ EP2Backend >> primitiveModNumber [
 
 { #category : #'accessing special classes' }
 EP2Backend >> processClass [
-
 	"The Point class in most special objects arrays.
 	Smalltalk specialObjectsArray indexOf: Process"
-	^ (self specialObjectsArray at: 28) asRemoteClass
+
+	^ ((self specialObjectsArray at: 28)
+		ifNilObject: [ self builder remoteClass: #Process ]) asRemoteClass
 ]
 
 { #category : #'accessing-special classes' }
