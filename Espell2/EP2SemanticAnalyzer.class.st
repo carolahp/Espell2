@@ -6,8 +6,10 @@ Class {
 
 { #category : #variables }
 EP2SemanticAnalyzer >> declareVariableNode: aVariableNode [
-	| env varModel |
+	| env varModel result |
 	env := compilationContext environment.
 	varModel := env tempVariableModel named: aVariableNode name parent: env.
-	^self declareVariableNode: aVariableNode as: varModel
+	result := self declareVariableNode: aVariableNode as: varModel.
+	varModel index: (scope tempVars indexOfKey: aVariableNode name).
+	^ result
 ]
