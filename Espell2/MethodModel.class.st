@@ -127,6 +127,7 @@ MethodModel >> install [
 		inEnvironment: self environment "self parent remote backend builder".
 	remoteMethod test.
 	self remote: remoteMethod.
+	self installCustom.
 	^ remoteMethod
 	"installMethods
 	| methods |
@@ -137,6 +138,11 @@ MethodModel >> install [
 			method test.
 			 ].
 	self remote methodDictionary test."
+]
+
+{ #category : #hooks }
+MethodModel >> installCustom [
+	^ remote
 ]
 
 { #category : #calypso }

@@ -1,6 +1,6 @@
 Class {
 	#name : #LiteralVariableModel,
-	#superclass : #ObjectModel,
+	#superclass : #VariableModel,
 	#instVars : [
 		'initializationCode',
 		'pbInstruction'
@@ -43,16 +43,6 @@ LiteralVariableModel >> isGlobalClassNameBinding [
 	^ false
 ]
 
-{ #category : #testing }
-LiteralVariableModel >> isGlobalVariable [ 
-	self subclassResponsibility 
-]
-
-{ #category : #testing }
-LiteralVariableModel >> isSpecialVariable [
-	^false
-]
-
 { #category : #'as yet unclassified' }
 LiteralVariableModel >> isUninitialized [
 	self shouldBeImplemented.
@@ -74,11 +64,6 @@ LiteralVariableModel >> isWritable [
 { #category : #'accessing-api' }
 LiteralVariableModel >> key [ 
 	^ self name asSymbol
-]
-
-{ #category : #'as yet unclassified' }
-LiteralVariableModel >> originalVar [
-	^self
 ]
 
 { #category : #accessing }

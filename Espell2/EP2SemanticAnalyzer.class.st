@@ -6,8 +6,8 @@ Class {
 
 { #category : #variables }
 EP2SemanticAnalyzer >> declareVariableNode: aVariableNode [
-	| language varModel |
-	language := compilationContext environment.
-	varModel := language class tempVariableModel named: aVariableNode name parent: language.
+	| env varModel |
+	env := compilationContext environment.
+	varModel := env tempVariableModel named: aVariableNode name parent: env.
 	^self declareVariableNode: aVariableNode as: varModel
 ]

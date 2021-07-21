@@ -1385,6 +1385,11 @@ LanguageModel >> systemClassMapping [
 		"} asDictionary 
 ]
 
+{ #category : #metamodel }
+LanguageModel >> tempVariableModel [
+	^ self class tempVariableModel
+]
+
 { #category : #testing }
 LanguageModel >> test [
 	| model metamodel modelVars metamodelVars modelVarsLast metamodelVarsEnd modelVarsFirst |
