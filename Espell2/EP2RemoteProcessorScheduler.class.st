@@ -16,7 +16,7 @@ EP2RemoteProcessorScheduler class >> modelInstSpec [
 
 { #category : #constants }
 EP2RemoteProcessorScheduler class >> modelInstVarNames [ 
-	^  #(#suspendedProcessLists #activeProcess)
+	^ #(#suspendedProcessLists #activeProcess)
 ]
 
 { #category : #constants }
@@ -34,7 +34,33 @@ EP2RemoteProcessorScheduler >> activeProcess: aRemoteProcess [
 	self instanceVariableAtIndex: self processSchedulerActiveProcessIndex put: aRemoteProcess
 ]
 
+{ #category : #converting }
+EP2RemoteProcessorScheduler >> asRemoteScheduler [
+	^ self
+]
+
+{ #category : #'inst-var mapping' }
+EP2RemoteProcessorScheduler >> printOn: aStream [
+	aStream 
+		nextPutAll: '*a ProcessorScheduler*'
+]
+
 { #category : #'inst-var mapping' }
 EP2RemoteProcessorScheduler >> processSchedulerActiveProcessIndex [
 	^ (self systemDefinition instanceVariableMapping processSchedulerActiveProcessIndex) ifNil: [ self class unmappedInstVarIndex ]
+]
+
+{ #category : #'as yet unclassified' }
+EP2RemoteProcessorScheduler >> suspendedProcessList [
+	^ self instanceVariableAtIndex: self suspendedProcessListIndex
+]
+
+{ #category : #'as yet unclassified' }
+EP2RemoteProcessorScheduler >> suspendedProcessList: aRemoteArray [
+	self instanceVariableAtIndex: self suspendedProcessListIndex put: aRemoteArray 
+]
+
+{ #category : #'as yet unclassified' }
+EP2RemoteProcessorScheduler >> suspendedProcessListIndex [
+	^ 1
 ]

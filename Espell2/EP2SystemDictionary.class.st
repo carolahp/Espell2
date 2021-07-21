@@ -93,6 +93,13 @@ EP2SystemDictionary >> buildCache [
 		cache at: each className put: each ]
 ]
 
+{ #category : #destroy }
+EP2SystemDictionary >> destroy [
+	cache := nil.
+	objectSpace := nil.
+	systemDictionary := nil
+]
+
 { #category : #accessing }
 EP2SystemDictionary >> environment [
 	^ self objectSpace interpreter environment
@@ -166,8 +173,13 @@ EP2SystemDictionary >> size [
 			withTemps: { 'systemDictionary' -> systemDictionary }) asSmallInteger
 ]
 
+{ #category : #accessing }
+EP2SystemDictionary >> systemDictionary [
+	^ systemDictionary
+]
+
 { #category : #initialization }
 EP2SystemDictionary >> withSystemDictionary: aSystemDictionary [
 
-	systemDictionary := aSystemDictionary asRemoteDictionary
+	systemDictionary := aSystemDictionary asRemoteSystemDictionary
 ]

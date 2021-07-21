@@ -7,35 +7,48 @@ Class {
 	#category : #'Espell2-Backend'
 }
 
+{ #category : #instantiation }
+EP2CrossCompiler class >> newCompiler [
+	^ EP2Compiler new
+]
+
 { #category : #compiling }
 EP2CrossCompiler >> basicCompileDoItFromSourceCode: sourceCode [ 
 
-	"Ugly. We should not build a remote environment on demand like this. Think wether to put it in the object space or make the cross compiler know it."
 	| highLevelUndefinedObjectClass |
 	
 	highLevelUndefinedObjectClass := objectSpace nilObject basicClass.
-	^ (OpalCompiler new 
+	
+	^ (self class newCompiler
 		noPattern: true;
-		environment: (EP2DummyEnvironment on: objectSpace);
-		source: sourceCode; class: highLevelUndefinedObjectClass; requestor: objectSpace nilObject; failBlock: [self error]; parse) generate
+		environment: highLevelUndefinedObjectClass asClassDefinition environment;
+		source: sourceCode; 
+		class: highLevelUndefinedObjectClass; 
+		requestor: objectSpace nilObject; 
+		failBlock: [self error]; parse) generate
 ]
 
 { #category : #compiling }
 EP2CrossCompiler >> basicCompileSourceCode: sourceCode forClass: anEP2CrossCompilerBinding [ 
 
-	| options contextClass |
+	| options contextClass compiler ast |
 	options := #().
 	contextClass := objectSpace backend interpreter codeProvider systemDefinition classContext.
-	anEP2CrossCompilerBinding className == contextClass name ifTrue: [ options := #(+ optionLongIvarAccessBytecodes) ].
-	
-	^ (OpalCompiler new
+	anEP2CrossCompilerBinding className == contextClass name ifTrue: [ options := #(+ optionLongIvarAccessBytecodes)].
+	compiler := self class newCompiler
 		options: options;
-		source: sourceCode;
-		class: anEP2CrossCompilerBinding;
-		environment: anEP2CrossCompilerBinding environment;
+		class: anEP2CrossCompilerBinding classModel;
+		environment: anEP2CrossCompilerBinding classModel environment;
 		requestor: nil;
-		failBlock: [ self error ];
-		parse) generate
+		failBlock: [ self error ].
+	"compiler compilationContext parserClass: ".
+	ast := compiler source: sourceCode; parse.
+	"vars := (ast allVariables select: [:node | node name = #grades and: node isRead ]) .
+	accessor := compiler source: 'self grades'; parseExpression.
+	vars parent replaceNode: vars withNode: accessor.
+	ast."
+	
+	^ ast generate
 ]
 
 { #category : #compiling }
@@ -89,6 +102,21 @@ EP2CrossCompiler >> transformLiteral: aLiteral asLiteralInObjectSpace: anObjectS
 		^ aLiteral selector asRemoteObjectInObjectSpace: anObjectSpace 
 	].
 	^ aLiteral asRemoteObjectInObjectSpace: anObjectSpace  
+]
+
+{ #category : #'translating to remote' }
+EP2CrossCompiler >> translateToLocalCompiledMethod: remoteCompiledMethod [ 
+
+	| localMethod methodSize |
+	methodSize := remoteCompiledMethod bytecode size + CompiledMethodTrailer empty size.
+	localMethod := self
+						createCompiledMethodWithSize: methodSize
+						andHeader: remoteCompiledMethod header.
+	localMethod bytecodes: remoteCompiledMethod bytecode.
+	remoteCompiledMethod allLiterals withIndexDo: [ :literal :index |
+		localMethod literalAt: index put: (self transformLiteral: literal asLiteralInObjectSpace: objectSpace).
+	].
+	^localMethod
 ]
 
 { #category : #'translating to remote' }

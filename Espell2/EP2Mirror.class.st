@@ -29,10 +29,21 @@ EP2Mirror >> = anotherMirror [
 	^ self pointsToSameObject: anotherMirror
 ]
 
+{ #category : #convert }
+EP2Mirror >> asCastedRemoteClass [
+	^ self target asCastedRemoteClass 
+]
+
 { #category : #'converting-external-mirror' }
 EP2Mirror >> asDASTBlockMirror [
 
 	^ backend mirrorOn: self target
+]
+
+{ #category : #'remote conversion' }
+EP2Mirror >> asExternalContext [
+	self isNilObject ifTrue: [^ backend nilObject ].
+	^ EP2ExternalContext on: self
 ]
 
 { #category : #'converting-local' }
@@ -93,13 +104,7 @@ EP2Mirror >> asRemoteCharacter [
 
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteClass [ 
-	| remoteClass |
-	self isNilObject ifTrue: [^ backend nilObject ].
-	remoteClass := (EP2RemoteClass on: self).
-	"remoteClass target isExternalHandle ifFalse: [ 
-		remoteClass asRGClass isMetaclass ifTrue: [ ^ EP2RemoteMetaclass on: self ].
-	]. "
-	^ remoteClass
+	^ self target asRemoteClass
 ]
 
 { #category : #'converting -high level' }
@@ -152,27 +157,17 @@ EP2Mirror >> asRemoteObject [
 { #category : #'converting-high-level' }
 EP2Mirror >> asRemoteObjectCasted [
 	"gets the corresponding layout according to my instSpec and then uses it to create a remoteObject with the correct type"
-
-	| basicClass layoutClass |
-	basicClass := self basicRemoteClass.
-	basicClass isNilObject
-		ifFalse: [ basicClass asLocalClass
-				ifNotNil: [ :localClass | 
-					basicClass = backend builder classLoader metaclassClass
-						ifTrue: [ ^ EP2RemoteMetaclass on: self ].
-					localClass = EP2RemoteMetaclass
-						ifTrue: [ ^ EP2RemoteClass on: self ].
-					^ localClass on: self ] ].
+	| basicClass templateClass |
 	self isNilObject
 		ifTrue: [ ^ self asRemoteNil ].
 	self isTrueObject
 		ifTrue: [ ^ self asRemoteTrue ].
 	self isFalseObject
 		ifTrue: [ ^ self asRemoteFalse ].
-	layoutClass := self isSmallInteger
-		ifTrue: [ EP2ImmediateLayout ]
-		ifFalse: [ EP2Layout layoutClassForInstSpec: basicClass instSpec ].
-	^ layoutClass defaultRemoteObjectClass on: self
+		
+	basicClass := self basicRemoteClass.
+	templateClass := basicClass asCastedRemoteClass.
+	^ templateClass on: self
 ]
 
 { #category : #'as yet unclassified' }
@@ -180,8 +175,21 @@ EP2Mirror >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 	^ self asRemoteObject
 ]
 
+{ #category : #'converting-high-level' }
+EP2Mirror >> asRemoteProcess [
+	self isNilObject ifTrue: [^ backend nilObject ].
+	^ EP2RemoteProcess on: self
+]
+
+{ #category : #'converting-local' }
+EP2Mirror >> asRemoteScheduler [ 
+	self isNilObject ifTrue: [^ backend nilObject ].
+	^ EP2RemoteProcessorScheduler on: self 
+]
+
 { #category : #converting }
 EP2Mirror >> asRemoteSmallInteger [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteSmallInteger on: self
 ]
 
@@ -194,7 +202,14 @@ EP2Mirror >> asRemoteStub [
 ]
 
 { #category : #converting }
+EP2Mirror >> asRemoteSystemDictionary [
+	self isNilObject ifTrue: [^ backend nilObject ].
+	^ EP2RemoteSystemDictionary on: self
+]
+
+{ #category : #converting }
 EP2Mirror >> asRemoteTrue [
+	self isNilObject ifTrue: [^ backend nilObject ].
 	^ EP2RemoteTrue on: self
 ]
 
@@ -225,8 +240,16 @@ EP2Mirror >> basicClass [
 
 { #category : #comparing }
 EP2Mirror >> basicIdentityHash [
-
 	^ backend basicIdentityHashOf: self
+"
+	| result |
+	result := self backend
+		executePrimitiveNumber: self backend primitiveBasicIdentityHashNumber
+		on: self
+		withArguments: #().
+	result hasFailed
+		ifTrue: [ ^ self error: 'Impossible to apply primitive basicIdentityHash' ].
+	^ result value asLocalSmallInteger"
 ]
 
 { #category : #'accessing-header' }
@@ -283,7 +306,7 @@ EP2Mirror >> identityHash [
 	
 	^ self isSmallInteger
 		ifTrue: [ self target asSmallInteger hashMultiply ]
-		ifFalse: [ self basicIdentityHash bitShift: 18 ]
+		ifFalse: [ self basicIdentityHash bitShift: 8 ]
 ]
 
 { #category : #'accessing-header' }
@@ -308,8 +331,7 @@ EP2Mirror >> isEP2Remote [
 
 { #category : #testing }
 EP2Mirror >> isEPDASTBlockMirror [
-self halt. "this should be called only from high level remote objects"
-	^ self target isExternalHandle and: [self target object isKindOf: DASTBlock].
+	^ self target isEPDASTBlockMirror 
 ]
 
 { #category : #testing }
@@ -319,7 +341,12 @@ EP2Mirror >> isFalseObject [
 
 { #category : #testing }
 EP2Mirror >> isNilObject [
-	^ self backend nilObject mirror = self 
+	^ self target isNilObject
+]
+
+{ #category : #testing }
+EP2Mirror >> isNotNilObject [
+	^ self isNilObject not
 ]
 
 { #category : #testing }
@@ -362,6 +389,11 @@ EP2Mirror >> printOn: aStream [
 		nextPutAll: 'aMirror [ ';
 		nextPutAll: self target asString;
 		nextPutAll: ' ]'
+]
+
+{ #category : #hash }
+EP2Mirror >> remoteRawHashBits [
+	^ self backend simulator objectMemory rawHashBitsOf: self target address
 ]
 
 { #category : #'accessing-header' }

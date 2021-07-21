@@ -36,6 +36,12 @@ EP2InternalObjectHandle >> basicSize [
 ]
 
 { #category : #'high-level-message' }
+EP2InternalObjectHandle >> instSize [
+	"we assume this method is called only when I point to a class. Otherwise this will fail in the assertions done by the vm simulator"
+	^ backend instSizeOfClass: self
+]
+
+{ #category : #'high-level-message' }
 EP2InternalObjectHandle >> instSpec [
 	"we assume this method is called only when I point to a class. Otherwise this will fail in the assertions done by the vm simulator"
 	^ backend instSpecOfClass: self
@@ -47,9 +53,19 @@ EP2InternalObjectHandle >> instanceVariableAtIndex: anInteger [
 	^ backend object: self address instVarAt: anInteger
 ]
 
+{ #category : #testing }
+EP2InternalObjectHandle >> isClassTableHandler [
+	^ false
+]
+
 { #category : #accessing }
 EP2InternalObjectHandle >> isExternalHandle [
 	^ false
+]
+
+{ #category : #testing }
+EP2InternalObjectHandle >> isNilObject [
+	^ backend nilObject mirror target = self 
 ]
 
 { #category : #'as yet unclassified' }

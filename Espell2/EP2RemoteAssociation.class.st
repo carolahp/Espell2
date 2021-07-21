@@ -5,13 +5,18 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteAssociation class >> layoutClass [ 
+	^ EP2FixedLayout 
+]
+
+{ #category : #constants }
 EP2RemoteAssociation class >> modelInstSpec [
 	^ 1
 ]
 
 { #category : #constants }
 EP2RemoteAssociation class >> modelInstVarNames [
-	^#(#key #value)
+	^ #(#key #value)
 ]
 
 { #category : #'instance creation' }
@@ -31,6 +36,11 @@ EP2RemoteAssociation class >> role [
 EP2RemoteAssociation >> asLocalLiteral [
 	self flag: 'different from Espell'.
 	^ self key -> self value
+]
+
+{ #category : #converting }
+EP2RemoteAssociation >> asRemoteAssociation [
+	^ self
 ]
 
 { #category : #'instance-variables-mapping' }
@@ -55,9 +65,9 @@ EP2RemoteAssociation >> key: aString [
 
 { #category : #printing }
 EP2RemoteAssociation >> printOn: aStream [
-	self key printOn: aStream.
+	self key asRemoteObjectCasted printOn: aStream.
 	aStream nextPutAll: ' -> '.
-	self value printOn: aStream
+	self value asRemoteObjectCasted printOn: aStream
 ]
 
 { #category : #'high-level-message' }

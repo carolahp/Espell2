@@ -16,7 +16,7 @@ EP2RemoteClass class >> modelInstSpec [
 
 { #category : #constants }
 EP2RemoteClass class >> modelInstVarNames [
-	^#(#superclass #methodDict #format)
+	^ #(#superclass #methodDict #format)
 ]
 
 { #category : #constants }
@@ -26,17 +26,30 @@ EP2RemoteClass class >> role [
 
 { #category : #accessing }
 EP2RemoteClass >> addressDefinitionMap [
+	"self deprecated: 'use EP2MClass >> remote instead'."
 	^ self backend objectSpace interpreter codeProvider classLoader addressDefinitionMap
 ]
 
 { #category : #'accessing-slots' }
 EP2RemoteClass >> allSlots [ 
-	^ self slots
+	^ self layout allSlots
+]
+
+{ #category : #casting }
+EP2RemoteClass >> asCastedRemoteClass [
+	^ self mirror target asCastedRemoteClass
 ]
 
 { #category : #'converting-local' }
 EP2RemoteClass >> asClassDefinition [
-	^ [self addressDefinitionMap at: self target address ] on: KeyNotFound do: [ self backend builder systemDefinitionAt: #Class ]
+	| result |
+	result := self systemDefinition allClasses
+		select: [ :classDef | classDef remote = self ].
+	result size = 0
+		ifTrue: [ ^ self systemDefinition classClass ].
+	result size > 1
+		ifTrue: [ self error: 'More than one definition for one class' ].
+	^ result anyOne
 ]
 
 { #category : #compatibility }
@@ -52,9 +65,7 @@ EP2RemoteClass >> asLocalClass [
 	"^ self addressLocalClassMap 
 		at: self mirror target address 
 		ifAbsentPut: [" | definition role localClassOrNil |
-			definition := [self addressDefinitionMap at: self mirror target address] 
-				on: KeyNotFound 
-				do: [ ^ nil " self backend builder systemDefinitionAt: #Class" ].
+			definition := self asClassDefinition.
 			"if I am a metaclass, my instances can be represented as instances of EP2RemoteMetaclass"
 			definition isMetaclass ifTrue: [^ EP2RemoteMetaclass].
 			role := self backend systemDefinition roleOfClass: definition.
@@ -66,6 +77,16 @@ EP2RemoteClass >> asLocalClass [
 { #category : #'converting-local' }
 EP2RemoteClass >> asRGClass [
 	^ self asClassDefinition
+]
+
+{ #category : #accessing }
+EP2RemoteClass >> asRemoteClass [
+	^ self
+]
+
+{ #category : #'accessing-slots' }
+EP2RemoteClass >> asRemoteObjectCasted [
+	^ self
 ]
 
 { #category : #'high-level-messages' }
@@ -88,7 +109,8 @@ EP2RemoteClass >> binding [
 
 { #category : #binding }
 EP2RemoteClass >> bindingOf: aSymbol [ 
-	| binding |
+	^ self asClassDefinition bindingOf: aSymbol
+	"| binding |
 	(self classPool isNilObject not 
 	and: [ self asRGClass classPool includes: aSymbol ]) 
 		ifTrue: [ binding := self classPool at: aSymbol ].
@@ -96,19 +118,19 @@ EP2RemoteClass >> bindingOf: aSymbol [
 	(self sharedPool isNilObject) ifFalse: [ self halt ].
 	
 	self flag: 'superclass is nil for all stubs, check this later'.
-	(self superclass isNilObject) ifFalse:  [
+	(self superclass isNilObject or: self superclass = self) ifFalse:  [
 		(self superclass bindingOf: aSymbol) ifNotNil: [ :bind | ^ bind ]].
 	
 	(self backend builder systemDefinition globalVariableNamed: aSymbol)
-	ifNotNil: [ 
+	ifNotNil: [ "
 		"checking that the remote class exists"
-		(self backend objectSpace systemDictionary at: aSymbol) ifNil: [ self halt: 'asking for a class that has not yet been installed' ].
+		"(self backend objectSpace systemDictionary at: aSymbol) ifNil: [ self halt: 'asking for a class that has not yet been installed' ].
 		^ EP2GlobalBinding new
 			name: aSymbol;
 			objectSpace: self backend objectSpace;
 			yourself ].
 	
-	^ nil
+	^ nil"
 ]
 
 { #category : #'instVars-mapping' }
@@ -123,10 +145,13 @@ EP2RemoteClass >> classMethodDictionaryIndex [
 
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> className [
-	| remoteName |
-	remoteName := [self instanceVariableAtIndex: self classNameIndex] on: SubscriptOutOfBounds do: [ ^ nil ].
+	^ self asClassDefinition
+		ifNil: [ nil ]
+		ifNotNil: [ :classDef | classDef name ]
+	"| remoteName |
+	remoteName := [self instanceVariableAtIndex: self classNameIndex] on: SubscriptOutOfBounds, Error do: [ ^ nil ].
 	remoteName isNilObject ifTrue: [^nil].
-	^ self backend fromRemoteByteSymbol: remoteName
+	^ self backend fromRemoteByteSymbol: remoteName"
 ]
 
 { #category : #accessing }
@@ -135,7 +160,7 @@ EP2RemoteClass >> classNameFromAnyOrigin [
 	result := self className. 
 	^ (result isNil or: [result basicSize = 0]) 
 		ifTrue: [ self asClassDefinition 
-					ifNil: [ 'error (', self mirror asString,')' ] 
+					ifNil: [ 'Class with no name (', self mirror asString,')' ] 
 					ifNotNil: [:classDef | classDef name] ]
 		ifFalse: [ result ]
 ]
@@ -143,11 +168,6 @@ EP2RemoteClass >> classNameFromAnyOrigin [
 { #category : #'instVars-mapping' }
 EP2RemoteClass >> classNameIndex [
 	^ (self systemDefinition instanceVariableMapping classNameIndex) ifNil: [ self class unmappedInstVarIndex ]
-]
-
-{ #category : #'accessing-specialInstVars' }
-EP2RemoteClass >> classPool [
-	^ (self instanceVariableAtIndex: self classPoolIndex) asRemoteDictionary 
 ]
 
 { #category : #'high-level-messages' }
@@ -158,7 +178,12 @@ EP2RemoteClass >> classPool: anObject [
 
 { #category : #'instVars-mapping' }
 EP2RemoteClass >> classPoolIndex [
-	^ (self systemDefinition instanceVariableMapping classPoolIndex) ifNil: [ self class unmappedInstVarIndex ]
+	^ (self asClassDefinition metaclass allInstVarNames indexOf: 'classPool') = 0 ifTrue: [ self class unmappedInstVarIndex ]
+]
+
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteClass >> classPoolOld [
+	^ (self instanceVariableAtIndex: self classPoolIndex) asRemoteDictionary 
 ]
 
 { #category : #'instVars-mapping' }
@@ -190,6 +215,27 @@ EP2RemoteClass >> compactClassIndex [
 	
 ]
 
+{ #category : #'accessors does not understand' }
+EP2RemoteClass >> doesNotUnderstand: aMessage [
+	| selector index result instVarName |
+	"this allows the user to access instance variables defined in their class model by accessors"
+	selector := aMessage selector.
+	index := selector indexOf: $:.
+	[index > 0
+		ifTrue: [ 
+			"possibly a setter"
+			selector size = index
+				ifFalse: [ self error ]
+				ifTrue: [ 
+					instVarName := selector copyUpTo: $:.
+					result := self instanceVariableNamed: instVarName put: (aMessage arguments at: 1) ] ]
+		ifFalse: [ 
+			"possibly a getter"
+			result := result := self instanceVariableNamed: aMessage selector  ].
+	] on: Exception do: [ super doesNotUnderstand: aMessage ].
+	^ result
+]
+
 { #category : #'public-api' }
 EP2RemoteClass >> fixedSize [
 	^self basicClass instanceFixedSize
@@ -205,6 +251,22 @@ EP2RemoteClass >> format: anInteger [
 	^self layout instanceVariableAtIndex: self classFormatIndex put: anInteger
 ]
 
+{ #category : #'accessing header' }
+EP2RemoteClass >> indexInClassTable [
+	^ self classTableIndex
+]
+
+{ #category : #testing }
+EP2RemoteClass >> inheritsFrom: anEP2RemoteClass [
+	| superclass |
+	superclass := self superclass.
+	superclass = anEP2RemoteClass
+		ifTrue: [ ^ true ].
+	(superclass isNilObject or: [ superclass = self ])
+		ifTrue: [ ^ false ].
+	^ superclass inheritsFrom: anEP2RemoteClass
+]
+
 { #category : #initialize }
 EP2RemoteClass >> initialize [ 
 	super initialize
@@ -212,6 +274,9 @@ EP2RemoteClass >> initialize [
 
 { #category : #binding }
 EP2RemoteClass >> innerBindingOf: aSymbol [ 
+	
+	^ self asClassDefinition innerBindingOf: aSymbol
+	"
 	| result |
 	self classPool isNilObject not 
 		ifTrue: [ result := self classPool at: aSymbol ifAbsent: [ nil ] ].
@@ -225,9 +290,14 @@ EP2RemoteClass >> innerBindingOf: aSymbol [
 	(self sharedPool isNilObject) ifFalse: [ self halt ].
 	
 	self flag: 'superclass is nil for all stubs, check this later'.
-	(self superclass isNilObject) ifFalse:  [^ self superclass innerBindingOf: aSymbol].
+	(self superclass isNilObject or: self superclass = self) ifFalse:  [^ self superclass innerBindingOf: aSymbol].
 	
-	^ nil
+	^ nil"
+]
+
+{ #category : #'accessing header' }
+EP2RemoteClass >> instSize [
+	^ self mirror target instSize
 ]
 
 { #category : #'accessing-specialInstVars' }
@@ -304,14 +374,15 @@ EP2RemoteClass >> methodDictionary: aRemoteDictionary [
 ]
 
 { #category : #accessing }
-EP2RemoteClass >> name [
-	^ self className
+EP2RemoteClass >> nameOld [
+	^ self instanceVariableAtIndex: self classNameIndex 
 ]
 
 { #category : #'high-level-messages' }
-EP2RemoteClass >> name: aString [ 
-
-	self instanceVariableAtIndex: self classNameIndex put: aString asSymbol
+EP2RemoteClass >> nameOld: anObject [ 
+	| name |
+	name := (anObject isKindOf: String) ifTrue: [anObject asSymbol] ifFalse: [anObject].
+	self instanceVariableAtIndex: self classNameIndex put: name 
 ]
 
 { #category : #'high-level-messages' }
@@ -330,7 +401,7 @@ EP2RemoteClass >> printOn: aStream [
 ]
 
 { #category : #'accessing-specialInstVars' }
-EP2RemoteClass >> sharedPool [
+EP2RemoteClass >> sharedPoolOld [
 	^ self instanceVariableAtIndex: self classSharedPoolsIndex 
 ]
 
@@ -349,4 +420,49 @@ EP2RemoteClass >> superclass [
 { #category : #'as yet unclassified' }
 EP2RemoteClass >> superclass: anEP2RemoteClass [ 
 	^ self instanceVariableAtIndex: self classSuperclassIndex put: anEP2RemoteClass 
+]
+
+{ #category : #accessing }
+EP2RemoteClass >> target [
+	
+	^ mirror target asClassIndexHandle address = mirror backend nilObject target address
+		ifTrue: [ mirror target ]
+		ifFalse: [ mirror target asClassIndexHandle ]
+]
+
+{ #category : #testing }
+EP2RemoteClass >> test [
+	| existentIndexes myIndex |
+	self assert: (self superclass isNotNilObject or: [self asClassDefinition role = #ProtoObject]).
+	self assert: self methodDictionary isNotNilObject.
+	self assert: self format isNotNilObject.
+
+	self assert: self classNameFromAnyOrigin equals: self asClassDefinition name.
+	self methodDictionary test.
+	self methodDictionary associations do: [ :assoc | 
+		assoc value asRemoteCompiledMethod test
+	].
+	
+	"Class table tests"
+	myIndex := self classTableIndex.	
+	self assert: self target address equals: (self backend objectMemory classAtIndex: myIndex).	
+
+	existentIndexes := ((self backend builder bootstrapEnvironment allClasses) collect: [ :remoteClasss | remoteClasss classTableIndex ]) values.
+	existentIndexes := existentIndexes select: [ :index | index = myIndex ].
+	self assert: existentIndexes size = 1 description: 'Index ', myIndex asString, ' appears twice in the class table'.
+]
+
+{ #category : #testing }
+EP2RemoteClass >> testStub [
+	| existentIndexes myIndex |
+	self assert: self superclass isNilObject.
+	self assert: self basicClass isNotNilObject.
+	self assert: self methodDictionary isNilObject.
+	self assert: self format isNilObject not.
+	myIndex := self classTableIndex.
+	self assert: self target address = (self backend objectMemory classAtIndex: myIndex).	
+	self assert: self asClassDefinition format = self format asLocalSmallInteger.
+	existentIndexes := ((self backend builder bootstrapEnvironment allClasses) collect: [ :remoteClasss | remoteClasss classTableIndex ]) values.
+	existentIndexes := existentIndexes select: [ :index | index = myIndex ].
+	self assert: existentIndexes size = 1 description: 'Index should appear only once in the class table. Maybe you forgot to register the class ', self className asString, '?'.
 ]

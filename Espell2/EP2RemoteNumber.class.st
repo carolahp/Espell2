@@ -5,6 +5,21 @@ Class {
 }
 
 { #category : #constants }
-EP2RemoteNumber class >> role [ 
-	^ 'Number'
+EP2RemoteNumber class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #constants }
+EP2RemoteNumber class >> role [
+	^ nil 
+	"^ 'Number'"
+]
+
+{ #category : #'gt-inspector' }
+EP2RemoteNumber >> gtInspectorIn: composite [
+	"self object isRoleMetaclass ifTrue: [ self haltOnce. ]."
+
+	^ composite text
+		title: self asString;
+		display: [ self asString ]
 ]

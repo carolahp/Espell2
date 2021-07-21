@@ -4,6 +4,21 @@ Class {
 	#category : #'Espell2-Kernel'
 }
 
+{ #category : #'instance creation' }
+EP2RemoteArray class >> index2InClassTable [
+	^ 16
+]
+
+{ #category : #'instance creation' }
+EP2RemoteArray class >> indexInClassTable [
+	^ 51
+]
+
+{ #category : #'instance creation' }
+EP2RemoteArray class >> indexInSpecialObjectsArray [ 
+	^ 8
+]
+
 { #category : #constants }
 EP2RemoteArray class >> layoutClass [
 	^ EP2VariableLayout
@@ -12,6 +27,11 @@ EP2RemoteArray class >> layoutClass [
 { #category : #constants }
 EP2RemoteArray class >> modelInstSpec [
 	^ 2
+]
+
+{ #category : #'instance creation' }
+EP2RemoteArray class >> modelInstVarNames [
+	^ #()
 ]
 
 { #category : #'instance creation' }
@@ -27,6 +47,16 @@ EP2RemoteArray class >> role [
 { #category : #'high-level-messages' }
 EP2RemoteArray >> asDictionary [
 	^ EP2RemoteDictionary newFrom: self
+]
+
+{ #category : #converting }
+EP2RemoteArray >> asRemoteArray [
+	^ self
+]
+
+{ #category : #converting }
+EP2RemoteArray >> asRemoteObjectCasted [
+	^ self
 ]
 
 { #category : #'high-level-messages' }

@@ -10,6 +10,16 @@ Class {
 	#category : #'Espell2-Handles'
 }
 
+{ #category : #casting }
+EP2Handle >> asCastedRemoteClass [
+	^ self object ep2RemoteClass
+]
+
+{ #category : #casting }
+EP2Handle >> asRemoteClass [
+	self subclassResponsibility 
+]
+
 { #category : #accessing }
 EP2Handle >> backend: anEP2SimulatorBackend [ 
 	backend := anEP2SimulatorBackend
@@ -23,6 +33,11 @@ EP2Handle >> basicClassHandle [
 { #category : #'high-level-message' }
 EP2Handle >> instSpec [
 	self subclassResponsibility
+]
+
+{ #category : #testing }
+EP2Handle >> isEPDASTBlockMirror [
+	self subclassResponsibility 
 ]
 
 { #category : #accessing }

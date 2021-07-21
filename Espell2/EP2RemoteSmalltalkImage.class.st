@@ -16,10 +16,11 @@ EP2RemoteSmalltalkImage class >> modelInstSpec [
 
 { #category : #constants }
 EP2RemoteSmalltalkImage class >> modelInstVarNames [ 
-	^  #(#globals)
+	^ #(#globals)
 ]
 
 { #category : #constants }
-EP2RemoteSmalltalkImage class >> role [ 
-	^ 'SmalltalkImage'
+EP2RemoteSmalltalkImage class >> role [
+	^ nil 
+	"^ 'SmalltalkImage'"
 ]

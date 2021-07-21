@@ -2,11 +2,21 @@ Class {
 	#name : #EP2Layout,
 	#superclass : #Object,
 	#instVars : [
-		'remote',
+		'object',
 		'slots'
 	],
 	#category : #'Espell2-Kernel-Layouts'
 }
+
+{ #category : #'testing slots' }
+EP2Layout class >> acceptsNewSlots [
+	^ true
+]
+
+{ #category : #'instance variables' }
+EP2Layout class >> addSlot: aName [
+	self error: 'You should call this method from the instance side. Instantiate a layout using the message EP2Layout >> on:'
+]
 
 { #category : #'remote-objects-relationship' }
 EP2Layout class >> defaultRemoteObjectClass [
@@ -19,6 +29,11 @@ EP2Layout class >> gtInspectorLayoutOfMirror: mirror in: composite [
 		title: 'a *', mirror basicClass classNameFromAnyOrigin, '*';
 		display: [ { 'self' -> mirror asString } ];
 		send: #value
+]
+
+{ #category : #testing }
+EP2Layout class >> isExternal [
+	^ false
 ]
 
 { #category : #'mapping-instSpec-class' }
@@ -48,29 +63,58 @@ EP2Layout class >> layoutClassForInstSpec: instSpec [
 { #category : #'instance creation' }
 EP2Layout class >> on: anEP2Remote [
 	^ (self layoutClassForClass: anEP2Remote basicClass ) new 
-		remote: anEP2Remote;
+		object: anEP2Remote;
 		yourself
 ]
 
+{ #category : #testing }
+EP2Layout >> acceptsNewSlots [
+	^ self class acceptsNewSlots
+]
+
 { #category : #'accessing - slots' }
-EP2Layout >> addSlot: aSlot [ 
-	self backend addSlot: aSlot to: self 
+EP2Layout >> addSlot: slotName [
+
+	self slotNamed: slotName ifPresent: [ ^ SlotDuplicated signal ].
+	self backend addSlot: slotName to: self object
+]
+
+{ #category : #slots }
+EP2Layout >> addSlot: aName index: anInteger [ 
+	self backend addSlot: aName index: anInteger to: self object
 ]
 
 { #category : #'accessing - slots' }
 EP2Layout >> allInstVars [
-	^ (self remote basicClass allSlots select: #isInstanceVariableSlot)
-		collect: [ :slot | slot name -> (slot read: self remote) ]
+	^ (self object basicClass allSlots select: #isInstanceVariableSlot)
+		collect: [ :slot | slot name -> (slot read: self object) ]
 ]
 
-{ #category : #'accessing slots' }
+{ #category : #'testing-types' }
 EP2Layout >> allSlots [
-	^ self slots
+	^ ((self object superclass isNil
+		or: [ self object superclass isNilObject ])
+		or: [ self object superclass = self object ])
+		ifTrue: [ self object slots ]
+		ifFalse: [ self object superclass allSlots , self object slots ]
 ]
 
 { #category : #'accessing - slots' }
 EP2Layout >> allVariables [
-	^ self remote basicClass allSlots collect: [ :slot | slot read: self remote ]
+	^ self object basicClass allSlots collect: [ :slot | slot read: self object ]
+]
+
+{ #category : #testing }
+EP2Layout >> assert: actual equals: expected [
+	self
+		assert: actual = expected
+		description: [ String streamContents: [:stream |
+			stream
+				nextPutAll: 'Assertion failed. Got ';
+				nextPutAll: actual fullPrintString;
+				nextPutAll: ' instead of ';
+				nextPutAll: expected fullPrintString;
+				nextPutAll: '.'] ]
 ]
 
 { #category : #accessing }
@@ -86,7 +130,7 @@ EP2Layout >> at: index put: anObject [
 
 { #category : #'accessing-pvt' }
 EP2Layout >> backend [ 
-	^ self remote backend
+	^ self object backend
 ]
 
 { #category : #accessing }
@@ -94,17 +138,28 @@ EP2Layout >> defaultSlots [
 	^ OrderedCollection new
 ]
 
+{ #category : #'slots test' }
+EP2Layout >> definesSlot: slotName [ 
+	^ slots anySatisfy: [ :slot | slot name = slotName ]
+]
+
+{ #category : #destroy }
+EP2Layout >> destroy [
+	object := nil.
+	slots := nil.
+]
+
 { #category : #'gt-extension' }
 EP2Layout >> gtInspectorIn: composite [
-	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
+	"self object isRoleMetaclass ifTrue: [ self haltOnce. ]."
 
 	^ composite table
-		title: self remote asString;
+		title: object asString;
 		display: [ 
-			{ 'self' -> remote },
-			(remote basicClass allSlots
+			{ 'self' -> object },
+			(object basicClass allSlots
 				collect:
-					[ :slot | slot name -> (remote readSlotNamed: slot name) asRemoteObjectCasted ]) ];
+					[ :slot | slot name -> (slot read: object) asRemoteObjectCasted ]) ];
 		column: 'Variable' evaluated: [ :assoc | assoc key ];
 		column: 'Value' evaluated: [ :assoc | assoc value ];
 		send: [ :assoc | 
@@ -134,16 +189,16 @@ EP2Layout >> instSpec [
 	 12 - 15 16-bit indexable
 	 16 - 23 byte indexable
 	 24 - 31 compiled method"
-	(remote isCompiledMethod) ifTrue: [ ^ 24 ].
-	(remote isBytes) ifTrue: [ ^ 16 ].
-	(remote isWords) ifTrue: [ ^ 10 ].
-	(remote isEphemeron) ifTrue: [ ^ 5 ].
-	(remote instSize = 0 and: [ remote isVariable not ]) ifTrue: [ ^ 0 ].
-	(remote instSize > 0 and: [ remote isVariable not ]) ifTrue: [ ^ 1 ].
-	(remote instSize = 0 and: [ remote isVariable     ]) ifTrue: [ ^ 2 ].
-	(remote instSize > 0 and: [ remote isVariable     ]) ifTrue: [ ^ 3 ].
-	(remote instSize > 0 and: [ remote isVariable and: [ remote isWeak ] ]) ifTrue: [ ^ 4 ].
-	(remote instSize > 0 and: [ remote isVariable not and: [ remote isWeak ] ]) ifTrue: [ ^ 5 ].
+	(object isCompiledMethod) ifTrue: [ ^ 24 ].
+	(object isBytes) ifTrue: [ ^ 16 ].
+	(object isWords) ifTrue: [ ^ 10 ].
+	(object isEphemeron) ifTrue: [ ^ 5 ].
+	(object instSize = 0 and: [ object isVariable not ]) ifTrue: [ ^ 0 ].
+	(object instSize > 0 and: [ object isVariable not ]) ifTrue: [ ^ 1 ].
+	(object instSize = 0 and: [ object isVariable     ]) ifTrue: [ ^ 2 ].
+	(object instSize > 0 and: [ object isVariable     ]) ifTrue: [ ^ 3 ].
+	(object instSize > 0 and: [ object isVariable and: [ object isWeak ] ]) ifTrue: [ ^ 4 ].
+	(object instSize > 0 and: [ object isVariable not and: [ object isWeak ] ]) ifTrue: [ ^ 5 ].
 	self error: 'illegal old format'
 ]
 
@@ -154,7 +209,7 @@ EP2Layout >> instVarNames [
 
 { #category : #accessing }
 EP2Layout >> instanceVariableAtIndex: index [
-	^ (self backend object: self instVarAt: index) asRemoteObject
+	^ self backend object: self instVarAt: index
 ]
 
 { #category : #accessing }
@@ -164,12 +219,12 @@ EP2Layout >> instanceVariableAtIndex: index put: anObject [
 
 { #category : #'accessing-instVars' }
 EP2Layout >> instanceVariableNamed: aString [ 
-	^ (self remote basicClass slotNamed: aString) read: self 
+	^ (self object basicClass slotNamed: aString) read: self 
 ]
 
 { #category : #'accessing instance variables' }
 EP2Layout >> instanceVariableNamed: aString put: aCollection [ 
-	^ (self remote basicClass slotNamed: aString) write: aCollection to: remote
+	^ (self object basicClass slotNamed: aString) write: aCollection to: object
 ]
 
 { #category : #'testing-types' }
@@ -200,6 +255,11 @@ EP2Layout >> isEmptyLayout [
 EP2Layout >> isEphemeronLayout [
 
 	^ false
+]
+
+{ #category : #'testing-types' }
+EP2Layout >> isExternal [ 
+	^ self class isExternal
 ]
 
 { #category : #'testing-types' }
@@ -251,8 +311,9 @@ EP2Layout >> isWordLayout [
 ]
 
 { #category : #utils }
-EP2Layout >> localObjectAsRemoteObject: anObject [ 
-	^ self remote mirror backend localObjectAsRemoteObject: anObject
+EP2Layout >> localObjectAsRemoteObject: anObject [
+	"we assume backend is Espell backend (to the kernel)" 
+	^ self backend localObjectAsRemoteObject: anObject
 ]
 
 { #category : #'testing-types' }
@@ -262,43 +323,101 @@ EP2Layout >> mcType [
 ]
 
 { #category : #'accessing-pvt' }
+EP2Layout >> object [
+	^ object 
+]
+
+{ #category : #'accessing-pvt' }
+EP2Layout >> object: anEPRemoteObject [
+	object := anEPRemoteObject
+]
+
+{ #category : #'accessing-pvt' }
 EP2Layout >> objectSpace [
-	^ self remote mirror backend objectSpace
+	^ self backend objectSpace
 ]
 
 { #category : #accessing }
 EP2Layout >> parent [
-	^ remote
+	^ object
 ]
 
-{ #category : #'accessing-pvt' }
-EP2Layout >> remote [
-	^ remote 
+{ #category : #slots }
+EP2Layout >> pvtAddSlot: aSlot [
+	(slots includes: aSlot)
+		ifFalse: [ slots add: aSlot ]
 ]
 
-{ #category : #'accessing-pvt' }
-EP2Layout >> remote: anEPRemoteObject [
-	remote := anEPRemoteObject
+{ #category : #slots }
+EP2Layout >> pvtRemoveSlot: aSlot [
+	(slots includes: aSlot)
+		ifTrue: [ slots remove: aSlot ]
+		ifFalse: [ SlotNotFound signal: 'Trying to remove an unexistent slot' ]
+]
+
+{ #category : #slots }
+EP2Layout >> pvtSlots [
+	^ slots
+]
+
+{ #category : #'accessing slots' }
+EP2Layout >> removeSlot: aString [
+	slots
+		remove: (self slotNamed: aString)
+		ifAbsent: [ self error: 'Slot not defined in class' ]
 ]
 
 { #category : #accessing }
 EP2Layout >> slotNamed: aString [
-	^ (self allSlots select: [ :slot | slot name = aString ]) anyOne
+	^ (self allSlots select: [ :slot | slot name = aString ]) 
+		ifEmpty: [ ^ NotFoundSlot signal ]
+		ifNotEmpty: [:results | results anyOne].
+	
+		
+]
+
+{ #category : #slots }
+EP2Layout >> slotNamed: aString ifAbsent: aBlockClosure [ 
+	^ ((self slotNamed: aString ifPresent: [ :slot | slot ])
+	 	ifNil: [ aBlockClosure ]
+		ifNotNil: [ :slot | slot]) value
+]
+
+{ #category : #slots }
+EP2Layout >> slotNamed: aString ifAbsent: aBlockClosure ifPresent: aBlockClosure3 [ 
+	^ self slotNamed: aString ifPresent: aBlockClosure3 ifAbsent: aBlockClosure
+]
+
+{ #category : #slots }
+EP2Layout >> slotNamed: aString ifPresent: aBlockClosure [ 
+	| slot |
+	slot := [self slotNamed: aString] on: NotFoundSlot do: [ ^ nil ].
+	^ aBlockClosure cull: slot
+]
+
+{ #category : #slots }
+EP2Layout >> slotNamed: aString ifPresent: aPresentBlock ifAbsent: anAbsentBlock [  
+
+	self slotNamed: aString ifPresent: [:v | ^ aPresentBlock cull: v].
+	^ anAbsentBlock value
 ]
 
 { #category : #'accessing - slots' }
 EP2Layout >> slots [
-	^ slots
+	| result |
+	result := #() asOrderedCollection.
+	self slotsDo: [ :slot |  result add: slot ].
+	^ result
 ]
 
 { #category : #'accessing - slots' }
 EP2Layout >> slotsDo: aBlock [
-	self backend slotsFor: self remote do: aBlock
+	self backend slotsFor: self object do: aBlock
 ]
 
 { #category : #'accessing-pvt' }
 EP2Layout >> target [ 
-	^ self remote mirror target
+	^ self object mirror target
 ]
 
 { #category : #'vm-tests' }

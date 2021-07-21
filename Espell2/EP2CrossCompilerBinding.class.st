@@ -17,8 +17,8 @@ EP2CrossCompilerBinding >> allSlots [
 
 { #category : #bindings }
 EP2CrossCompilerBinding >> binding [
-	
-	^ class isMeta ifTrue: [
+	^ class binding
+	"^ class isMeta ifTrue: [
 		EP2MetaclassBinding  new
 			name: class theNonMetaClass name; 
 			objectSpace: environment objectSpace;
@@ -26,12 +26,12 @@ EP2CrossCompilerBinding >> binding [
 		EP2GlobalBinding new
 			name: class theNonMetaClass name; 
 			objectSpace: environment objectSpace;
-			yourself ]
+			yourself ]"
 ]
 
 { #category : #binding }
 EP2CrossCompilerBinding >> bindingOf: aString [
-self halt.
+	self deprecated: 'Use bindings from ObjectModels'.
 	(class classVarNames includes: aString asSymbol)
 		ifTrue: [ self assert: environment notNil.
 			^ EP2ClassVariableBinding new
@@ -57,8 +57,13 @@ self halt.
 ]
 
 { #category : #accessing }
-EP2CrossCompilerBinding >> class: aRGClass [ 
-	class := aRGClass
+EP2CrossCompilerBinding >> class: aClassModel [ 
+	class := aClassModel
+]
+
+{ #category : #accessing }
+EP2CrossCompilerBinding >> classModel [
+	^ class
 ]
 
 { #category : #accessing }
@@ -79,8 +84,8 @@ EP2CrossCompilerBinding >> environment: aPBImageBuilderGeneric [
 
 { #category : #binding }
 EP2CrossCompilerBinding >> innerBindingOf: aString [ 
-
-	(class classVarNames includes: aString asSymbol)
+	^ class innerBindingOf: aString asSymbol.
+	"(class classVarNames includes: aString asSymbol)
 		ifTrue: [ self assert: environment notNil.
 			^ EP2ClassVariableBinding new
 					name: aString asSymbol
@@ -94,9 +99,9 @@ EP2CrossCompilerBinding >> innerBindingOf: aString [
 	class superclass
 		ifNotNil: [ (self superclassBinding innerBindingOf: aString)
 				ifNotNil: [ :binding | ^ binding ] ].
-
+	"
 	"If it is a temp or an instance variable"
-	^ nil
+	"^ nil"
 ]
 
 { #category : #accessing }

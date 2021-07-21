@@ -6,7 +6,7 @@ Class {
 
 { #category : #constants }
 EP2RemoteMagnitude class >> layoutClass [ 
-	^ EP2FixedLayout 
+	^ EP2EmptyLayout 
 ]
 
 { #category : #constants }
@@ -15,6 +15,17 @@ EP2RemoteMagnitude class >> modelInstSpec [
 ]
 
 { #category : #constants }
-EP2RemoteMagnitude class >> role [ 
-	^ 'Magnitude'
+EP2RemoteMagnitude class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #constants }
+EP2RemoteMagnitude class >> role [
+	^ nil 
+	"^ 'Magnitude'"
+]
+
+{ #category : #converting }
+EP2RemoteMagnitude >> asRemoteObjectCasted [
+	^ self
 ]

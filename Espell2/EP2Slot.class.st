@@ -11,7 +11,7 @@ Class {
 
 { #category : #accessing }
 EP2Slot >> backend [ 
-	^ definingRemoteClass backend
+	^ owningRemoteClass backend
 ]
 
 { #category : #accessing }
@@ -37,6 +37,11 @@ EP2Slot >> name [
 { #category : #accessing }
 EP2Slot >> name: aString [
 	name := aString
+]
+
+{ #category : #accessing }
+EP2Slot >> owningClass: anEP2RemoteClass [ 
+	owningRemoteClass := anEP2RemoteClass
 ]
 
 { #category : #printing }

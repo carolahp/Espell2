@@ -61,6 +61,28 @@ EP2ObjectSpace >> debuggerInterpreter: aDASTEvaluator [
 
 ]
 
+{ #category : #destroy }
+EP2ObjectSpace >> destroy [
+	backend := nil.
+	characterTable ifNotNil: [ 
+		characterTable destroy. 
+		characterTable := nil].
+	debuggerInterpreter ifNotNil: [ 
+		debuggerInterpreter destroy.
+		debuggerInterpreter := nil ].
+	interpreter ifNotNil: [ 
+		interpreter destroy.
+		interpreter := nil ].
+	specialObjectsArray := nil.
+	symbolTable ifNotNil: [ 
+		symbolTable destroy.
+		symbolTable := nil ].
+	systemDictionary ifNotNil: [ 
+		systemDictionary destroy.
+		systemDictionary := nil ].
+	
+]
+
 { #category : #'accessing-specialObjects' }
 EP2ObjectSpace >> falseObject [
 	^ self backend falseObject
@@ -69,6 +91,11 @@ EP2ObjectSpace >> falseObject [
 { #category : #'accessing-specialObjects' }
 EP2ObjectSpace >> falseObject: aFalseObject [
 	self backend falseObject: aFalseObject
+]
+
+{ #category : #'local to remote' }
+EP2ObjectSpace >> fromLocalByteArray: aCollection [ 
+	^ backend fromLocalByteArray: aCollection
 ]
 
 { #category : #'from local to remote' }
@@ -158,6 +185,19 @@ EP2ObjectSpace >> newRemoteArrayWithAll: elements [
 		array at: index put: element
 	].
 	^ array
+]
+
+{ #category : #'remote-objects-instantiation' }
+EP2ObjectSpace >> newRemoteDictionaryFrom: aDictionary [
+	| remoteArray |
+	remoteArray := aDictionary associations asRemoteObjectInObjectSpace: self.
+	^ EP2RemoteDictionary newFrom: remoteArray
+]
+
+{ #category : #'remote-objects-instantiation' }
+EP2ObjectSpace >> newRemoteDictionaryOfSize: size [
+	
+	^ EP2RemoteDictionary newWithBackend: self backend size: size
 ]
 
 { #category : #'accessing-specialObjects' }

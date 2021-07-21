@@ -15,6 +15,12 @@ EP2RemoteArrayedCollection class >> modelInstSpec [
 ]
 
 { #category : #constants }
-EP2RemoteArrayedCollection class >> role [ 
-	^ 'ArrayedCollection'
+EP2RemoteArrayedCollection class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #constants }
+EP2RemoteArrayedCollection class >> role [
+	^ nil 
+	"^ 'ArrayedCollection'"
 ]

@@ -36,7 +36,15 @@ EP2ClassTableHandle >> classIndex: anInteger [
 
 ]
 
+{ #category : #testing }
+EP2ClassTableHandle >> isClassTableHandler [
+	^ true
+]
+
 { #category : #printing }
 EP2ClassTableHandle >> printOn: aStream [
-	aStream nextPutAll: self address asString
+	aStream 
+		nextPutAll: 'classTableHandle[';
+		nextPutAll: self address asString;
+		nextPutAll: ']'
 ]

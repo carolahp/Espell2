@@ -5,15 +5,30 @@ Class {
 }
 
 { #category : #'remote-objects-relationship' }
+EP2ImmediateLayout class >> acceptsNewSlots [
+	^ false
+]
+
+{ #category : #'remote-objects-relationship' }
 EP2ImmediateLayout class >> defaultRemoteObjectClass [
 	^ EP2RemoteSmallInteger 
+]
+
+{ #category : #'testing-types' }
+EP2ImmediateLayout >> allInstVars [
+	^ #()
+]
+
+{ #category : #'testing-types' }
+EP2ImmediateLayout >> allVariables [
+	^ #()
 ]
 
 { #category : #'gt-extension' }
 EP2ImmediateLayout >> gtInspectorIn: composite [
 	"self remote isRoleMetaclass ifTrue: [ self haltOnce. ]."
 	^ composite text
-		title: self remote asRemoteObjectCasted asString;
+		title: self object asRemoteObjectCasted asString;
 		display: #yourself
 ]
 

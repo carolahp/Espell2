@@ -20,6 +20,16 @@ EP2RemoteContext class >> createContextForMethod: aRemoteCompiledMethod inObject
 ]
 
 { #category : #constants }
+EP2RemoteContext class >> indexInClassTable [
+	^ 36
+]
+
+{ #category : #constants }
+EP2RemoteContext class >> indexInSpecialObjectsArray [
+	^ 11
+]
+
+{ #category : #constants }
 EP2RemoteContext class >> layoutClass [
 	^ EP2ContextLayout
 ]
@@ -31,7 +41,7 @@ EP2RemoteContext class >> modelInstSpec [
 
 { #category : #constants }
 EP2RemoteContext class >> modelInstVarNames [ 
-	^  #(#sender #pc #stackp #method #closureOrNil #receiver)
+	^ #(#sender #pc #stackp #method #closureOrNil #receiver)
 ]
 
 { #category : #constants }
@@ -42,6 +52,21 @@ EP2RemoteContext class >> role [
 { #category : #converting }
 EP2RemoteContext >> asContextMirror [
 	^ self 
+]
+
+{ #category : #'inst-var mapping' }
+EP2RemoteContext >> asRemoteContext [
+	^ self
+]
+
+{ #category : #converting }
+EP2RemoteContext >> asRemoteObjectCasted [
+	^ self
+]
+
+{ #category : #accessing }
+EP2RemoteContext >> closure [ 
+	^ self instanceVariableAtIndex: self contextClosureOrNilIndex 
 ]
 
 { #category : #accessing }
@@ -79,6 +104,25 @@ EP2RemoteContext >> contextStackpIndex [
 	^ (self systemDefinition instanceVariableMapping contextStackpIndex) ifNil: [ self class unmappedInstVarIndex ]
 ]
 
+{ #category : #'gt-extension' }
+EP2RemoteContext >> gtInspectorIn: composite [
+	^ composite table
+		title: [ '*Raw*' ];
+		display: [ 
+			{ #self -> self . 
+			#sender -> self sender .
+			#pc -> self startpc.
+			#stackpc ->self stackPointer .
+			#method ->self method .
+			#closureOrNil ->self closure .
+			#receiver ->self receiver } ];
+		column: 'Variable'
+			evaluated: [:assoc |	assoc key ];
+		column: 'Value'
+			evaluated: [:assoc | assoc value ];
+		send: [ :assoc | assoc value ].
+]
+
 { #category : #initializing }
 EP2RemoteContext >> initializeTemporaryVariables [
 	"This will push in the context's stack a nil for each of the temporary variables of the method. Both the primitive and the code that follows are in theory doing the same."
@@ -103,9 +147,27 @@ EP2RemoteContext >> primitiveInitializeTempsInStack [
 	self backend initializeTempsInStackOfContext: self
 ]
 
+{ #category : #'initializing temps' }
+EP2RemoteContext >> printOn: aStream [
+	aStream 
+		nextPutAll: '*a Context (';
+		print: self mirror asString;
+		nextPutAll: ')*'
+]
+
+{ #category : #accessing }
+EP2RemoteContext >> receiver [
+	^ (self instanceVariableAtIndex: self contextReceiverIndex) "asRemoteObjectCasted"
+]
+
 { #category : #accessing }
 EP2RemoteContext >> receiver: aRemoteObject [
 	self instanceVariableAtIndex: self contextReceiverIndex put: aRemoteObject
+]
+
+{ #category : #accessing }
+EP2RemoteContext >> sender [
+	^ (self instanceVariableAtIndex: self contextSenderIndex) asRemoteContext
 ]
 
 { #category : #accessing }
@@ -114,8 +176,18 @@ EP2RemoteContext >> sender: aRemoteObject [
 ]
 
 { #category : #accesssing }
+EP2RemoteContext >> stackPointer [ 
+	^ (self instanceVariableAtIndex: self contextStackpIndex) asRemoteSmallInteger
+]
+
+{ #category : #accesssing }
 EP2RemoteContext >> stackPointer: anInteger [ 
 	self instanceVariableAtIndex: self contextStackpIndex put: anInteger
+]
+
+{ #category : #accessing }
+EP2RemoteContext >> startpc [
+	^ (self instanceVariableAtIndex: self contextPcIndex) asRemoteSmallInteger
 ]
 
 { #category : #accessing }

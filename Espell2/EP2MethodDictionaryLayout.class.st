@@ -3,9 +3,14 @@ vairable sized with instance variables
 "
 Class {
 	#name : #EP2MethodDictionaryLayout,
-	#superclass : #EP2VariableLayout,
+	#superclass : #EP2VariableWithInstVarsLayout,
 	#category : #'Espell2-Kernel-Layouts'
 }
+
+{ #category : #'remote-objects-relationship' }
+EP2MethodDictionaryLayout class >> acceptsNewSlots [
+	^ false
+]
 
 { #category : #'remote-objects-relationship' }
 EP2MethodDictionaryLayout class >> defaultRemoteObjectClass [
@@ -15,9 +20,9 @@ EP2MethodDictionaryLayout class >> defaultRemoteObjectClass [
 { #category : #accessing }
 EP2MethodDictionaryLayout >> basicAt: anIndex [
 	
-	^ (self backend 
-		object: remote  
-		at: anIndex)
+	^ self backend 
+		object: object  
+		at: anIndex
 ]
 
 { #category : #accessing }

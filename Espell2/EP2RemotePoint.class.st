@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemotePoint class >> indexInClassTable [
+	^ 54
+]
+
+{ #category : #constants }
+EP2RemotePoint class >> indexInSpecialObjectsArray [
+	^ 13
+]
+
+{ #category : #constants }
 EP2RemotePoint class >> layoutClass [ 
 	^ EP2FixedLayout 
 ]

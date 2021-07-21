@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteLargePositiveInteger class >> indexInClassTable [
+	^ 33
+]
+
+{ #category : #constants }
+EP2RemoteLargePositiveInteger class >> indexInSpecialObjectsArray [
+	^ 14
+]
+
+{ #category : #constants }
 EP2RemoteLargePositiveInteger class >> layoutClass [ 
 	^ EP2ByteLayout 
 ]
@@ -12,6 +22,11 @@ EP2RemoteLargePositiveInteger class >> layoutClass [
 { #category : #constants }
 EP2RemoteLargePositiveInteger class >> modelInstSpec [
 	^ 16
+]
+
+{ #category : #constants }
+EP2RemoteLargePositiveInteger class >> modelInstVarNames [
+	^ #()
 ]
 
 { #category : #constants }

@@ -9,9 +9,14 @@ EP2InstanceVariableSlot >> isInstanceVariableSlot [
 	^ true
 ]
 
+{ #category : #'meta-object-protocol' }
+EP2InstanceVariableSlot >> name [ 
+	^ name ifNil: [ name := (owningRemoteClass asClassDefinition allSlots at: index) name ]
+]
+
 { #category : #printing }
 EP2InstanceVariableSlot >> printOn: aStream [
-	aStream nextPutAll: name ,' => ', self slotName
+	aStream nextPutAll: self name ,' => ', self slotName
 ]
 
 { #category : #'meta-object-protocol' }

@@ -13,6 +13,12 @@ EP2ExternalCharacterTable >> at: aLocalCharacter [
 	^ characters at: aLocalCharacter
 ]
 
+{ #category : #destroy }
+EP2ExternalCharacterTable >> destroy [ 
+	super destroy.
+	characters := nil
+]
+
 { #category : #public }
 EP2ExternalCharacterTable >> includesKey: aLocalCharacter [
 

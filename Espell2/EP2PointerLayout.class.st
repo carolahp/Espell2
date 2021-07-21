@@ -7,7 +7,7 @@ Class {
 { #category : #'gt-inspector-extension' }
 EP2PointerLayout class >> on: anEP2RemoteObject [
 	^ self new 
-		remote: anEP2RemoteObject;
+		object: anEP2RemoteObject;
 		yourself
 ]
 

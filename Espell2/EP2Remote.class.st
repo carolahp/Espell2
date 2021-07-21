@@ -9,9 +9,38 @@ Class {
 }
 
 { #category : #constants }
+EP2Remote class >> index2InClassTable [
+	^ nil
+]
+
+{ #category : #constants }
+EP2Remote class >> indexInClassTable [
+	^ nil
+]
+
+{ #category : #constants }
+EP2Remote class >> indexInSpecialObjectsArray [
+	^ nil
+]
+
+{ #category : #constants }
 EP2Remote class >> layoutClass [
 	" generic layout "
 	^ EP2ObjectLayout
+]
+
+{ #category : #constants }
+EP2Remote class >> modelAcceptsExtraInstVars [
+	"the user can add instance variables beside after those specified in EP2Remote >> modelInstVarNames"
+	^true
+]
+
+{ #category : #constants }
+EP2Remote class >> modelAllInstVarNames [
+	" I am the root of the remote objects hierarchy "
+	^ (self = EP2Remote)
+		ifTrue: [ self modelInstVarNames ] 
+		ifFalse: [ self superclass modelAllInstVarNames, self modelInstVarNames ]
 ]
 
 { #category : #constants }
@@ -37,20 +66,23 @@ EP2Remote class >> modelInstSpec [
 
 { #category : #constants }
 EP2Remote class >> modelInstVarNames [
-	^#()
+	^ #()
 ]
 
 { #category : #'instance creation' }
 EP2Remote class >> on: anEPMirror [ 
-	
-	^ self new
+	| class |
+	class := anEPMirror isNilObject 
+		ifTrue: [ EP2RemoteUndefinedObject ]
+		ifFalse: [ self ].
+	^ class new
 		mirror: anEPMirror;
 		yourself
 ]
 
 { #category : #constants }
 EP2Remote class >> role [ 
-	^ 'ProtoObject'
+	^ nil
 ]
 
 { #category : #constants }
@@ -83,6 +115,11 @@ EP2Remote >> asClassDefinition [
 { #category : #converting }
 EP2Remote >> asContextMirror [
 	^ self asRemoteContext asContextMirror
+]
+
+{ #category : #converting }
+EP2Remote >> asExternalContext [
+	^ self mirror asExternalContext
 ]
 
 { #category : #converting }
@@ -122,7 +159,7 @@ EP2Remote >> asRemoteByteArray [
 
 { #category : #converting }
 EP2Remote >> asRemoteByteString [
-	^ EP2RemoteByteString on: self mirror 
+	^ self mirror asRemoteByteString
 ]
 
 { #category : #converting }
@@ -172,7 +209,7 @@ EP2Remote >> asRemoteMethodDictionary [
 
 { #category : #converting }
 EP2Remote >> asRemoteNil [
-	^ EP2RemoteUndefinedObject on: self mirror
+	^ self mirror asRemoteNil
 ]
 
 { #category : #converting }
@@ -192,17 +229,22 @@ EP2Remote >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 
 { #category : #converting }
 EP2Remote >> asRemoteProcess [
-	^ EP2RemoteProcess on: self mirror
+	^ self mirror asRemoteProcess
 ]
 
 { #category : #converting }
 EP2Remote >> asRemoteScheduler [
-	^ EP2RemoteProcessorScheduler on: self mirror
+	^ self mirror asRemoteScheduler 
 ]
 
 { #category : #converting }
 EP2Remote >> asRemoteSmallInteger [
-	^ EP2RemoteSmallInteger on: self mirror
+	^ self mirror asRemoteSmallInteger
+]
+
+{ #category : #converting }
+EP2Remote >> asRemoteSystemDictionary [
+	^ self mirror asRemoteSystemDictionary 
 ]
 
 { #category : #converting }
@@ -212,7 +254,20 @@ EP2Remote >> asRemoteTrue [
 
 { #category : #'converting-local' }
 EP2Remote >> asSmallInteger [
-	^ self asRemoteSmallInteger asSmallInteger 
+	^ self asRemoteSmallInteger asSmallInteger
+]
+
+{ #category : #testing }
+EP2Remote >> assert: actual equals: expected [
+	self
+		assert: actual = expected
+		description: [ String streamContents: [:stream |
+			stream
+				nextPutAll: 'Assertion failed. Got ';
+				nextPutAll: actual fullPrintString;
+				nextPutAll: ' instead of ';
+				nextPutAll: expected fullPrintString;
+				nextPutAll: '.'] ]
 ]
 
 { #category : #accessing }
@@ -279,6 +334,20 @@ EP2Remote >> gtInspectorIn: composite [
 	^ self layout gtInspectorIn: composite
 ]
 
+{ #category : #testing }
+EP2Remote >> ifNilObject: ifNilBlock [
+	^ self isNilObject
+		ifTrue: [ ifNilBlock cull: self ]
+		ifFalse: [ self ]
+]
+
+{ #category : #testing }
+EP2Remote >> ifNotNilObject: ifNotNilBlock [
+	^ self isNilObject
+		ifTrue: [ self ]
+		ifFalse: [ ifNotNilBlock cull: self ]
+]
+
 { #category : #'accessing-instVars' }
 EP2Remote >> instanceVariableAtIndex: index [
 	(index == self class unmappedInstVarIndex) ifTrue: [ ^self backend nilObject ].
@@ -323,7 +392,12 @@ EP2Remote >> isExternalObject [
 
 { #category : #testing }
 EP2Remote >> isNilObject [
-	^ self backend nilObject = self 
+	^ self mirror isNilObject
+]
+
+{ #category : #testing }
+EP2Remote >> isNotNilObject [
+	^ self isNilObject not 
 ]
 
 { #category : #testing }
@@ -376,33 +450,37 @@ EP2Remote >> printOn: aStream [
 	|selfcasted|
 	selfcasted := self asRemoteObjectCasted.
 	(selfcasted class = self class) 
-	ifTrue: [ aStream 
-		nextPutAll: 'aRemote [ ';
-		nextPutAll: self target asString;
-		nextPutAll: ' ]' ]
+	ifTrue: [ 
+		aStream 
+			nextPutAll: 'aRemote [ ';
+			nextPutAll: self target asString;
+			nextPutAll: ' ]' ]
 	ifFalse: [ selfcasted printOn: aStream ]
 	
 ]
 
 { #category : #'accessing-slots' }
 EP2Remote >> readSlotNamed: aName [
+	
+	self deprecated: 'use Slot>>read: instead'.
 	^ (self basicClass slotNamed: aName) read: self 
 ]
 
 { #category : #'high-level-messages' }
 EP2Remote >> remoteBasicIdentityHash [
-	| result |
+	^ self mirror basicIdentityHash.
 	
-	result := self backend executePrimitiveNumber: self backend primitiveBasicIdentityHashNumber on: self withArguments: #().
-	result hasFailed 
-		ifTrue: [ ^ self error: 'Impossible to apply primitive basicIdentityHash' ].
-	^ result value asLocalSmallInteger
 ]
 
 { #category : #'high-level-message' }
 EP2Remote >> remoteIdentityHash [
 	"identityHash of the remote object in the remote kernel"
-	^ (self remoteBasicIdentityHash bitShift: 18)
+	^ (self remoteBasicIdentityHash bitShift: 8)
+]
+
+{ #category : #hash }
+EP2Remote >> remoteRawHashBits [
+	^ self mirror remoteRawHashBits
 ]
 
 { #category : #'public-api' }
@@ -419,6 +497,7 @@ EP2Remote >> setClass: aRemoteClass [
 
 { #category : #'accessing-header' }
 EP2Remote >> setHashBitsTo: anInteger [ 
+	
 	self mirror setHashBitsTo: anInteger
 ]
 
@@ -430,10 +509,7 @@ EP2Remote >> size [
 
 { #category : #'accessing-slots' }
 EP2Remote >> slots [
-	| allSlots |
-	allSlots := OrderedCollection new.
-	self slotsDo: [ :each | allSlots add: each].
-	^ allSlots asArray
+	^ self layout slots
 ]
 
 { #category : #'accessing-slots' }

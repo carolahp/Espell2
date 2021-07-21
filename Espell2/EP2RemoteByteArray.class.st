@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteByteArray class >> indexInClassTable [
+	^ 50
+]
+
+{ #category : #constants }
+EP2RemoteByteArray class >> indexInSpecialObjectsArray [
+	^ 27
+]
+
+{ #category : #constants }
 EP2RemoteByteArray class >> layoutClass [
 	^ EP2ByteLayout 
 ]
@@ -15,6 +25,11 @@ EP2RemoteByteArray class >> modelInstSpec [
 ]
 
 { #category : #'instance creation' }
+EP2RemoteByteArray class >> modelInstVarNames [
+	^ #()
+]
+
+{ #category : #'instance creation' }
 EP2RemoteByteArray class >> newWithSize: anInteger withBackend: anEP2Backend [ 
 	^ anEP2Backend basicNewOn: anEP2Backend byteArrayClass withSize: anInteger
 ]
@@ -22,6 +37,16 @@ EP2RemoteByteArray class >> newWithSize: anInteger withBackend: anEP2Backend [
 { #category : #constants }
 EP2RemoteByteArray class >> role [ 
 	^'ByteArray'
+]
+
+{ #category : #'gt-inspector' }
+EP2RemoteByteArray >> asRemoteByteArray [
+	^ self
+]
+
+{ #category : #'gt-inspector' }
+EP2RemoteByteArray >> asRemoteObjectCasted [
+	^ self
 ]
 
 { #category : #'gt-inspector' }

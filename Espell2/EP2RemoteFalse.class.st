@@ -10,6 +10,11 @@ EP2RemoteFalse class >> role [
 ]
 
 { #category : #testing }
+EP2RemoteFalse >> asRemoteFalse [
+	^ self
+]
+
+{ #category : #testing }
 EP2RemoteFalse >> isTrueObject [
 	^ false
 ]

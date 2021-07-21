@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteFloat class >> indexInClassTable [
+	^ 34
+]
+
+{ #category : #constants }
+EP2RemoteFloat class >> indexInSpecialObjectsArray [
+	^ 10
+]
+
+{ #category : #constants }
 EP2RemoteFloat class >> layoutClass [ 
 	^ EP2WordLayout 
 ]
@@ -12,6 +22,11 @@ EP2RemoteFloat class >> layoutClass [
 { #category : #constants }
 EP2RemoteFloat class >> modelInstSpec [
 	^ 10
+]
+
+{ #category : #constants }
+EP2RemoteFloat class >> modelInstVarNames [
+	^ #()
 ]
 
 { #category : #constants }

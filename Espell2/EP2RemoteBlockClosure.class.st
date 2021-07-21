@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteBlockClosure class >> indexInClassTable [
+	^ 37
+]
+
+{ #category : #constants }
+EP2RemoteBlockClosure class >> indexInSpecialObjectsArray [
+	^ 37
+]
+
+{ #category : #constants }
 EP2RemoteBlockClosure class >> layoutClass [ 
 	^ EP2BlockLayout 
 ]
@@ -16,7 +26,7 @@ EP2RemoteBlockClosure class >> modelInstSpec [
 
 { #category : #constants }
 EP2RemoteBlockClosure class >> modelInstVarNames [
-	^#(#outerContext #startpc #numArgs)
+	^ #(#outerContext #startpc #numArgs)
 ]
 
 { #category : #constants }
@@ -27,6 +37,11 @@ EP2RemoteBlockClosure class >> role [
 { #category : #'high-level-messages' }
 EP2RemoteBlockClosure >> argumentNames [
 	^ self target object argumentNames
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteBlockClosure >> asRemoteObjectCasted [
+	^ self
 ]
 
 { #category : #accessing }

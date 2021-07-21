@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteMessage class >> indexInClassTable [
+	^ 35
+]
+
+{ #category : #constants }
+EP2RemoteMessage class >> indexInSpecialObjectsArray [
+	^ 16
+]
+
+{ #category : #constants }
 EP2RemoteMessage class >> layoutClass [ 
 	^ EP2FixedLayout 
 ]
@@ -12,6 +22,11 @@ EP2RemoteMessage class >> layoutClass [
 { #category : #constants }
 EP2RemoteMessage class >> modelInstSpec [
 	^ 1
+]
+
+{ #category : #constants }
+EP2RemoteMessage class >> modelInstVarNames [
+	^ #()
 ]
 
 { #category : #constants }

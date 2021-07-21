@@ -5,13 +5,18 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteDictionary class >> layoutClass [
+	^ EP2FixedLayout
+]
+
+{ #category : #constants }
 EP2RemoteDictionary class >> modelInstSpec [
 	^ 1
 ]
 
 { #category : #constants }
 EP2RemoteDictionary class >> modelInstVarNames [ 
-	^  #(#tally #array)
+	^ #(#tally #array)
 ]
 
 { #category : #'instance creation' }
@@ -55,7 +60,7 @@ EP2RemoteDictionary class >> newWithBackend: anEP2Backend size: nElements [
 ]
 
 { #category : #constants }
-EP2RemoteDictionary class >> role [ 
+EP2RemoteDictionary class >> role [
 	^ 'Dictionary'
 ]
 
@@ -79,6 +84,16 @@ EP2RemoteDictionary >> array [
 { #category : #'accessing-specialInstVars' }
 EP2RemoteDictionary >> array: anEP2RemoteObject [ 
 	(self instanceVariableAtIndex: self dictionaryArrayIndex put: anEP2RemoteObject asRemoteArray) 
+]
+
+{ #category : #'accessing-specialInstVars' }
+EP2RemoteDictionary >> asRemoteDictionary [
+	^ self
+]
+
+{ #category : #'high-level-messages' }
+EP2RemoteDictionary >> asRemoteObjectCasted [
+	^ self
 ]
 
 { #category : #'high-level-messages' }
@@ -148,7 +163,9 @@ EP2RemoteDictionary >> atNewIndex: index put: anEP2RemoteAssociation [
 
 { #category : #binding }
 EP2RemoteDictionary >> bindingOf: aSymbol [
-	^self associationAt: aSymbol ifAbsent:[nil]
+	| binding |
+	binding := self associationAt: aSymbol ifAbsent: [ nil ].
+	^ binding ifNotNil: [ :assoc | assoc asRemoteAssociation ]
 ]
 
 { #category : #'instVars-mapping' }

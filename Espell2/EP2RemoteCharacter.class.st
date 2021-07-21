@@ -5,6 +5,16 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteCharacter class >> indexInClassTable [
+	^ 2
+]
+
+{ #category : #constants }
+EP2RemoteCharacter class >> indexInSpecialObjectsArray [
+	^ 20
+]
+
+{ #category : #constants }
 EP2RemoteCharacter class >> layoutClass [
 	^ EP2ImmediateLayout
 ]
@@ -12,6 +22,11 @@ EP2RemoteCharacter class >> layoutClass [
 { #category : #constants }
 EP2RemoteCharacter class >> modelInstSpec [
 	^ 7
+]
+
+{ #category : #constants }
+EP2RemoteCharacter class >> modelInstVarNames [
+	^ #()
 ]
 
 { #category : #constants }
@@ -27,6 +42,11 @@ EP2RemoteCharacter >> asLocalCharacter [
 { #category : #'converting remote-to-local' }
 EP2RemoteCharacter >> asLocalLiteral [
 	 ^ self asLocalCharacter
+]
+
+{ #category : #'high-level-message' }
+EP2RemoteCharacter >> asRemoteCharacter [
+	^ self
 ]
 
 { #category : #accessing }

@@ -1,21 +1,26 @@
 Class {
 	#name : #EP2ExternalLayout,
-	#superclass : #EP2VariableLayout,
+	#superclass : #EP2VariableWithInstVarsLayout,
 	#category : #'Espell2-Kernel-Layouts'
 }
 
+{ #category : #testing }
+EP2ExternalLayout class >> isExternal [
+	^ true
+]
+
 { #category : #'accessing-instVars' }
 EP2ExternalLayout >> instanceVariableAtIndex: index [
-	^ (remote target object instVarAt: index) asRemoteObjectInObjectSpace: self objectSpace
+	^ (object target object instVarAt: index) asRemoteObjectInObjectSpace: self objectSpace
 ]
 
 { #category : #'accessing-instVars' }
 EP2ExternalLayout >> instanceVariableAtIndex: index put: anObject [
-	remote target object instVarAt: index put: (self backend localObjectAsRemoteObject: anObject)
+	object target object instVarAt: index put: (self backend localObjectAsRemoteObject: anObject)
 ]
 
 { #category : #'accessing-instVars' }
 EP2ExternalLayout >> instanceVariableNamed: aString [ 
 
-	^ (remote target object instVarNamed: aString) asRemoteObjectInObjectSpace: self objectSpace
+	^ (object target object instVarNamed: aString) asRemoteObjectInObjectSpace: self objectSpace
 ]

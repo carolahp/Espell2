@@ -5,6 +5,21 @@ Class {
 }
 
 { #category : #constants }
+EP2RemoteSmallInteger class >> index2InClassTable [
+	^ 3
+]
+
+{ #category : #constants }
+EP2RemoteSmallInteger class >> indexInClassTable [
+	^ 1
+]
+
+{ #category : #constants }
+EP2RemoteSmallInteger class >> indexInSpecialObjectsArray [
+	^ 6
+]
+
+{ #category : #constants }
 EP2RemoteSmallInteger class >> layoutClass [ 
 	^ EP2ImmediateLayout 
 ]
@@ -12,6 +27,11 @@ EP2RemoteSmallInteger class >> layoutClass [
 { #category : #constants }
 EP2RemoteSmallInteger class >> modelInstSpec [
 	^ 7
+]
+
+{ #category : #constants }
+EP2RemoteSmallInteger class >> modelInstVarNames [
+	^ #()
 ]
 
 { #category : #'instance creation' }

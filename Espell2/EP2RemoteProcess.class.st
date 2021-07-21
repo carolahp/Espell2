@@ -14,6 +14,11 @@ EP2RemoteProcess class >> createProcessForContext: aRemoteContext andPriority: a
 ]
 
 { #category : #constants }
+EP2RemoteProcess class >> indexInSpecialObjectsArray [
+	^ 28
+]
+
+{ #category : #constants }
 EP2RemoteProcess class >> layoutClass [ 
 	^ EP2FixedLayout 
 ]
@@ -25,7 +30,7 @@ EP2RemoteProcess class >> modelInstSpec [
 
 { #category : #constants }
 EP2RemoteProcess class >> modelInstVarNames [ 
-	^  #(#nextLink #suspendedContext #priority #myList #threadId #errorHandler)
+	^ #(#nextLink #suspendedContext #priority #myList #threadId #errorHandler)
 ]
 
 { #category : #constants }
@@ -34,10 +39,31 @@ EP2RemoteProcess class >> role [
 ]
 
 { #category : #accessing }
+EP2RemoteProcess >> asRemoteObjectCasted [
+	^ self
+]
+
+{ #category : #accessing }
+EP2RemoteProcess >> asRemoteProcess [
+	^ self
+]
+
+{ #category : #accessing }
+EP2RemoteProcess >> context [
+	^ self instanceVariableAtIndex: self processContextIndex
+]
+
+{ #category : #accessing }
 EP2RemoteProcess >> context: anEP2RemoteContext [ 
 	self 
 		instanceVariableAtIndex: self processContextIndex
 		put: anEP2RemoteContext 
+]
+
+{ #category : #printing }
+EP2RemoteProcess >> printOn: aStream [
+	aStream 
+		nextPutAll: '*a Process*'
 ]
 
 { #category : #accessing }
