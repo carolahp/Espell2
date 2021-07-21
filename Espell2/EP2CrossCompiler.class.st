@@ -26,7 +26,6 @@ EP2CrossCompiler >> basicCompile: methodModel forClass: anEP2CrossCompilerBindin
 		environment: anEP2CrossCompilerBinding classModel environment;
 		requestor: nil;
 		failBlock: [ self error ].
-	"compiler compilationContext parserClass: ".
 	ast := compiler source: methodModel sourceCode; parse.
 	
 	

@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #accessing }
+EP2CompilationContext >> bytecodeGeneratorClass [
+	^ bytecodeGeneratorClass ifNil: [ bytecodeGeneratorClass := EP2IRBytecodeGenerator ]
+]
+
+{ #category : #accessing }
 EP2CompilationContext >> semanticAnalyzerClass [
 	^ semanticAnalyzerClass ifNil: [ semanticAnalyzerClass := EP2SemanticAnalyzer  ]
 ]
