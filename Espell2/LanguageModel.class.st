@@ -137,6 +137,11 @@ LanguageModel class >> packageModel [
 	self subclassResponsibility 
 ]
 
+{ #category : #metamodel }
+LanguageModel class >> tempVariableModel [
+	^ TempVariableModel 
+]
+
 { #category : #'hooks-dynamic method loading' }
 LanguageModel >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject [
 	"loading the not understood message into the metamodel"
