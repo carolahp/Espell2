@@ -13,6 +13,27 @@ EP2CrossCompiler class >> newCompiler [
 ]
 
 { #category : #compiling }
+EP2CrossCompiler >> basicCompile: methodModel forClass: anEP2CrossCompilerBinding [ 
+
+	| options contextClass compiler ast |
+	options := #().
+	contextClass := objectSpace backend interpreter codeProvider systemDefinition classContext.
+	anEP2CrossCompilerBinding className == contextClass name ifTrue: [ options := #(+ optionLongIvarAccessBytecodes)].
+	
+	compiler := self class newCompiler
+		options: options;
+		class: anEP2CrossCompilerBinding classModel;
+		environment: anEP2CrossCompilerBinding classModel environment;
+		requestor: nil;
+		failBlock: [ self error ].
+	"compiler compilationContext parserClass: ".
+	ast := compiler source: methodModel sourceCode; parse.
+	
+	
+	^ methodModel localCompiledMethodFromAST: ast
+]
+
+{ #category : #compiling }
 EP2CrossCompiler >> basicCompileDoItFromSourceCode: sourceCode [ 
 
 	| highLevelUndefinedObjectClass |
@@ -32,6 +53,7 @@ EP2CrossCompiler >> basicCompileDoItFromSourceCode: sourceCode [
 EP2CrossCompiler >> basicCompileSourceCode: sourceCode forClass: anEP2CrossCompilerBinding [ 
 
 	| options contextClass compiler ast |
+	self deprecated: 'use basicCompile:forClass:'.
 	options := #().
 	contextClass := objectSpace backend interpreter codeProvider systemDefinition classContext.
 	anEP2CrossCompilerBinding className == contextClass name ifTrue: [ options := #(+ optionLongIvarAccessBytecodes)].
@@ -52,14 +74,14 @@ EP2CrossCompiler >> basicCompileSourceCode: sourceCode forClass: anEP2CrossCompi
 ]
 
 { #category : #compiling }
-EP2CrossCompiler >> compile: sourceCode forClass: aClass inEnvironment: anEnvironment [
+EP2CrossCompiler >> compile: methodModel forClass: aClass inEnvironment: anEnvironment [
 	| localCompiledMethod binding |
 	binding := EP2CrossCompilerBinding new
 		class: aClass;
 		environment: anEnvironment;
 		yourself.
 	[ localCompiledMethod := self
-		basicCompileSourceCode: sourceCode
+		basicCompile: methodModel
 		forClass: binding ]
 		on: OCUndeclaredVariableWarning
 		do: [ :e | 

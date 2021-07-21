@@ -39,7 +39,7 @@ EP2CompiledMethodLayout >> gtInspectorRawIn: composite [
 		title: [ '*Raw*' ];
 		display: [ |literals  bytecodes |
 			literals := object literals collectWithIndex: [ :val :index | ('(remote) #literal', index asString) -> val ].
-			bytecodes := object localBytecodes asOrderedCollection collectWithIndex: [ :val :index | ('#bc', index asString ) -> (val asString ,' ' , (object backend simulator class bytecodeTable at: val) asString) ]. 
+			bytecodes := object localBytecodes asOrderedCollection collectWithIndex: [ :val :index | ('#bc ', val asString ) -> ((object backend simulator class bytecodeTable at: val) asString) ]. 
 			literals , bytecodes];
 		column: 'Variable'
 			evaluated: [:assoc |	assoc key ];

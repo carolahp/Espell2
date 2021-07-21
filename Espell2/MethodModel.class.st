@@ -122,22 +122,13 @@ MethodModel >> install [
 	| remoteMethod |
 	remoteMethod := self parent remote backend builder objectSpace
 		crossCompiler
-		compile: self sourceCode
+		compile: self 
 		forClass: self methodClass
 		inEnvironment: self environment "self parent remote backend builder".
 	remoteMethod test.
 	self remote: remoteMethod.
 	self installCustom.
 	^ remoteMethod
-	"installMethods
-	| methods |
-	methods := (self methodBuilder methodsFromDefinition: self)
-		sorted: [ :a :b | a selector < b selector ].
-	methods do:
-			[ :method | 
-			method test.
-			 ].
-	self remote methodDictionary test."
 ]
 
 { #category : #hooks }
@@ -154,6 +145,11 @@ MethodModel >> isExtension [
 MethodModel >> isInstalled [
 	"calypso compatibility"
 	^ true
+]
+
+{ #category : #compiling }
+MethodModel >> localCompiledMethodFromAST: aRBMethodNode [ 
+	^ aRBMethodNode generate
 ]
 
 { #category : #marking }
