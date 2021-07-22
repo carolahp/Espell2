@@ -157,13 +157,14 @@ LanguageModel >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject
 	selector := aRBMessageNode selector.
 	classModel := self
 		classNamed: aRemoteObject basicClass classNameFromAnyOrigin.
-	systemClass := Smalltalk classNamed: classModel name.
+	systemClass := Smalltalk classNamed: (self equivalentClassNameInPharo: classModel name).
 	traversedClasses := #() asOrderedCollection.
 	[ systemClass isNotNil ]
 		whileTrue:
 			[ "we save traversed classes because the systemClass does not always belong to the metamodel.
 			So we install the method in the metamodel class that is nearest to the system class in the inheritance hierarchy "
 			traversedClasses add: systemClass name.
+			
 			systemClass methodDict
 				at: selector asSymbol
 				ifPresent: [ :method | 
@@ -171,7 +172,7 @@ LanguageModel >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject
 					traversedClasses
 						reverseDo: [ :travClass | 
 							self
-								classNamed: travClass
+								classNamed: (self equivalentClassNameFromPharo: travClass)
 								ifPresent: [ :class | 
 									"classModel := class.
 									newMethodModel := self class methodMetaclass
@@ -737,6 +738,24 @@ LanguageModel >> entryPointSelector [
 { #category : #accessing }
 LanguageModel >> environment [ 
 	^ self
+]
+
+{ #category : #'pharo name mapping' }
+LanguageModel >> equivalentClassNameFromPharo: aPharoClassName [ 
+	"ugly hardcoded way to get the equivalent name of a class in Pharo"
+	self flag: 'Future Caro refactor me!'.
+	^ (aPharoClassName endsWith: ' class')
+		ifTrue: (aPharoClassName copyReplaceAll: ' class' with: 'Meta')
+		ifFalse: aPharoClassName
+]
+
+{ #category : #'pharo name mapping' }
+LanguageModel >> equivalentClassNameInPharo: aClassModelName [
+	"ugly hardcoded way to get the equivalent name of a class in Pharo"
+	self flag: 'Future Caro refactor me!'.
+	^ (aClassModelName endsWith: 'Meta')
+		ifTrue: (aClassModelName copyReplaceAll: 'Meta' with: ' class') 
+		ifFalse: aClassModelName
 ]
 
 { #category : #'tonel repository' }
