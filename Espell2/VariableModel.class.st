@@ -57,6 +57,12 @@ VariableModel >> isWrite [
 	^ usage = #write or: [ self isRepeatedWrite ]
 ]
 
+{ #category : #mark }
+VariableModel >> markRead [
+	"reading does not change a #write, nor an #arg"
+	usage ifNil: [usage := #read]
+]
+
 { #category : #'accessing-api' }
 VariableModel >> markRepeatedWrite [
 	"blocks in a loop have to know if write usage happens outside (just #write) or

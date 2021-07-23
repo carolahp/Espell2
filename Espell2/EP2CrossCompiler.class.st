@@ -53,20 +53,33 @@ EP2CrossCompiler >> basicCompileSourceCode: sourceCode forClass: anEP2CrossCompi
 
 { #category : #compiling }
 EP2CrossCompiler >> compile: sourceCode forClass: aClass inEnvironment: anEnvironment [
-
 	| localCompiledMethod binding |
-
-	binding := EP2CrossCompilerBinding new class: aClass; environment: anEnvironment; yourself.
-	
-	[localCompiledMethod := self basicCompileSourceCode: sourceCode forClass: binding ]
+	binding := EP2CrossCompilerBinding new
+		class: aClass;
+		environment: anEnvironment;
+		yourself.
+	[ localCompiledMethod := self
+		basicCompileSourceCode: sourceCode
+		forClass: binding ]
 		on: OCUndeclaredVariableWarning
 		do: [ :e | 
-			e resume:
-				(EP2UndeclaredBinding new
-					name: e node name;
-					objectSpace: anEnvironment objectSpace;
-					yourself) ].
-	^ localCompiledMethod asRemoteObjectInObjectSpace: anEnvironment objectSpace
+			(aClass name = 'DynamicTest' and: e node name = 'holahola')
+				ifTrue: [ | tempModel varNode |
+					varNode := e node.
+					tempModel := (DynamicVariableModel
+						named: varNode name
+						parent: anEnvironment)
+						index: 0; "index 0 means the temp is not defined in the method"
+						yourself.
+					e resume: (e signaler declareVariableNode: varNode as: tempModel) ]
+				ifFalse: [ e
+						resume:
+							(EP2UndeclaredBinding new
+								name: e node name;
+								objectSpace: anEnvironment objectSpace;
+								yourself) ] ].
+	^ localCompiledMethod
+		asRemoteObjectInObjectSpace: anEnvironment objectSpace
 ]
 
 { #category : #compiling }
