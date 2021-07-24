@@ -921,7 +921,8 @@ LanguageModel >> imageBuilder [
 
 { #category : #api }
 LanguageModel >> imageInDisk [
-	^ imageInDisk
+	
+	^ imageInDisk ifNil: [ self error: 'Image file not found, Use #writeImage first' ]
 ]
 
 { #category : #api }
