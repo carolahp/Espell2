@@ -56,7 +56,7 @@ ObjectModel >> environment [
 	^ parent
 ]
 
-{ #category : #'ast-evaluation' }
+{ #category : #'evaluate ast' }
 ObjectModel >> evaluateCode: aString [ 
 	^ self evaluateCode: aString temps: #()
 ]

@@ -79,7 +79,6 @@ LanguageModel class >> indexedSlotModel [
 
 { #category : #metamodel }
 LanguageModel class >> instanceVariableSlotModel [
-	self deprecated: 'use ClassModel>>instanceVariableSlotModel'.
 	^ InstanceVariableSlotModel 
 ]
 
