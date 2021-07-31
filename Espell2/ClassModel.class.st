@@ -38,7 +38,7 @@ ClassModel class >> allClassModelInstVarNames [
 	^ allInstVars copyFrom: firstIndex to: allInstVars size
 ]
 
-{ #category : #'hooks-api' }
+{ #category : #metamodel }
 ClassModel class >> methodModel [
 	^ MethodModel
 ]

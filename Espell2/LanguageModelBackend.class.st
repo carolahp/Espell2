@@ -24,7 +24,7 @@ LanguageModelBackend >> addSlot: aString index: anInteger to: anEP2MClass [
 	| newSlot |
 	newSlot := anEP2MClass isClassMetamodel
 		ifTrue: [ 
-			(environment class instanceVariableSlotMetaclass
+			(environment class instanceVariableSlotModel
 				named: aString asSymbol
 				parent: anEP2MClass)
 				definingClass: anEP2MClass;

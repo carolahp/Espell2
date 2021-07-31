@@ -17,7 +17,7 @@ MethodModel class >> asYetUnclassifiedProtocolName [
 	^ 'as yet unclassified' asSymbol
 ]
 
-{ #category : #calypso }
+{ #category : #metamodel }
 MethodModel class >> tempVariableModel [ 
 	^ TempVariableModel
 ]

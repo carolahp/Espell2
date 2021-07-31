@@ -65,31 +65,33 @@ LanguageModel class >> entryPointSelector [
 	^ #entryPoint
 ]
 
-{ #category : #'hooks-api' }
+{ #category : #metamodel }
 LanguageModel class >> globalModel [
 	" return the subclass of GlobalModel used to represent globals in your language "
 	self subclassResponsibility 
 ]
 
-{ #category : #'hooks-api' }
-LanguageModel class >> indexedSlotMetaclass [
+{ #category : #metamodel }
+LanguageModel class >> indexedSlotModel [
+	self deprecated: 'use ClassModel>>indexedSlotModel'.
 	^ IndexedSlotModel
 ]
 
-{ #category : #'hooks-api' }
-LanguageModel class >> instanceVariableSlotMetaclass [
+{ #category : #metamodel }
+LanguageModel class >> instanceVariableSlotModel [
+	self deprecated: 'use ClassModel>>instanceVariableSlotModel'.
 	^ InstanceVariableSlotModel 
 ]
 
-{ #category : #'hooks-api' }
+{ #category : #metamodel }
 LanguageModel class >> metaclassModel [
 	" Return the subclass of ClassModel that defines the metamodel for classes of the language "
 	self subclassResponsibility  
 ]
 
-{ #category : #'hooks-api' }
+{ #category : #metamodel }
 LanguageModel class >> methodModel [ 
-	self deprecated: 'use ClassModel >> methodMetaclass'
+	self deprecated: 'use ClassModel >> methodModel'
 	
 ]
 
@@ -132,13 +134,14 @@ LanguageModel class >> newWithName: aString1 withEntryPoint: aString2 [
 		withEntryPoint: aString2
 ]
 
-{ #category : #'hooks-api' }
+{ #category : #metamodel }
 LanguageModel class >> packageModel [
-	self subclassResponsibility 
+	^ PackageModel
 ]
 
 { #category : #metamodel }
 LanguageModel class >> tempVariableModel [
+	self deprecated: 'use ClassModel>>tempVariableModel'.
 	^ TempVariableModel 
 ]
 
