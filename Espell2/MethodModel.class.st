@@ -18,6 +18,11 @@ MethodModel class >> asYetUnclassifiedProtocolName [
 ]
 
 { #category : #calypso }
+MethodModel class >> tempVariableModel [ 
+	^ TempVariableModel
+]
+
+{ #category : #calypso }
 MethodModel >> argumentNames [
 	^ self ast argumentNames
 ]

@@ -1338,7 +1338,7 @@ LanguageModel >> remote [
 
 { #category : #'accessing backend' }
 LanguageModel >> removeBehavior: aMClass [
-	self classNamed: aMClass name ifPresent: [ self halt ]
+	self classNamed: aMClass name ifPresent: [ behaviors removeKey: aMClass name ]
 ]
 
 { #category : #marking }
@@ -1387,6 +1387,7 @@ LanguageModel >> systemClassMapping [
 
 { #category : #metamodel }
 LanguageModel >> tempVariableModel [
+	self deprecated: 'use MethodModel>>tempVariableModel'.
 	^ self class tempVariableModel
 ]
 

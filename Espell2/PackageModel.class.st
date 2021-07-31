@@ -178,5 +178,6 @@ PackageModel >> tagsForClasses [
 
 { #category : #metamodel }
 PackageModel >> tempVariableModel [
+	self deprecated: 'use MethodModel>>tempVariableModel'.
 	^ self parent class tempVariableModel
 ]

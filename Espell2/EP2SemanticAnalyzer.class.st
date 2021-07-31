@@ -8,11 +8,16 @@ Class {
 EP2SemanticAnalyzer >> declareVariableNode: aVariableNode [
 	| env varModel |
 	env := compilationContext environment.
-	varModel := (compilationContext getClass name beginsWith: 'DynamicTest')
+	"varModel := (compilationContext getClass name beginsWith: 'DynamicTest')
 		ifTrue: [ 
 			(DynamicVariableModel named: aVariableNode name parent: env)
 				index: (aVariableNode parent temporaries indexOf: aVariableNode);
 				yourself ]
-		ifFalse: [ TempVariableModel named: aVariableNode name parent: env ].
+		ifFalse: [ TempVariableModel named: aVariableNode name parent: env ]."
+	
+	varModel := (compilationContext getClass methodDict at: aVariableNode parent parent selector) class tempVariableModel
+		newFrom: aVariableNode.
+	
+	aVariableNode parent parent selector. 
 	^ self declareVariableNode: aVariableNode as: varModel
 ]
