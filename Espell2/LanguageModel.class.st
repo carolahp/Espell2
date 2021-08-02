@@ -931,7 +931,9 @@ LanguageModel >> initialize [
 	"load entry point"
 	self loadEntryPoint.
 	"apply custom transformations implemented using MOP"
-	self transform
+	self transform.
+	self test.
+	
 ]
 
 { #category : #hooks }
@@ -1177,7 +1179,7 @@ LanguageModel >> loadTonelRepository: aFileReference [
 	self testCompletitude.
 	self cleanInstVars.
 	self cleanPackages.
-	self test.
+	
 ]
 
 { #category : #'tonel repository' }
