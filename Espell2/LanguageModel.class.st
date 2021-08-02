@@ -765,7 +765,12 @@ LanguageModel >> firstMetaclasses [
 
 { #category : #refactor }
 LanguageModel >> fixCircularInheritance [
-	self allClasses do: [ :class | class superclass = self ifTrue: [ class superclass: nil ] ]
+	self allClasses
+		do: [ :class | 
+			class superclass = self
+				ifTrue: [ class superclass: nil ].
+			class metaclass superclass 
+				ifNil: [ class metaclass superclass: self classMetaclass ] ]
 ]
 
 { #category : #'vm-constants' }
@@ -1106,6 +1111,7 @@ LanguageModel >> loadRequiredBehaviors [
 	objModel superclass: nil.
 	self addBehavior: objModel.
 	classModel := self newBehaviorFromTemplate: EP2RemoteClass.
+	classModel superclass: objModel.
 	self addBehavior: classModel.
 	objModel initializeWithTemplate: EP2RemoteEmpty.
 	
@@ -1115,8 +1121,6 @@ LanguageModel >> loadRequiredBehaviors [
 	EP2Remote
 		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ].	
 	"self class classMetaclass allClassModelInstVarNames do: [ :ivName | classModel addSlot: ivName ]."
-	
-	
 ]
 
 { #category : #'load definitions - required' }
@@ -1397,7 +1401,7 @@ LanguageModel >> tempVariableModel [
 
 { #category : #testing }
 LanguageModel >> test [
-	| model metamodel modelVars metamodelVars modelVarsLast metamodelVarsEnd modelVarsFirst |
+	| model metamodel modelVars metamodelVars modelVarsLast metamodelVarsEnd modelVarsFirst object |
 	self assert: self name isNotNil.
 	
 	model := self classWithRole: 'Metaclass'.
@@ -1424,8 +1428,8 @@ LanguageModel >> test [
 			'The class ' , metamodel asString
 				, ' must define the same instance variables than'
 				, model asString.
-				
-	self behaviors do: [ :beh | beh test ].
+	
+	self behaviors do: [ :beh | beh testFull ].
 	self globalVariables do: [ :glob | glob test ]
 ]
 

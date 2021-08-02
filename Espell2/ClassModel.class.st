@@ -153,12 +153,16 @@ ClassModel >> allSuperclasses [
 	"Answer an OrderedCollection of the receiver's and the receiver's  
 	ancestor's superclasses. The first element is the receiver's immediate  
 	superclass, followed by its superclass; the last element is Object."
+
 	| temp |
 	^ self superclass == nil
-		ifTrue: [ OrderedCollection new]
-		ifFalse: [temp := self superclass allSuperclasses.
+		ifTrue: [ OrderedCollection new ]
+		ifFalse: [ self superclass = self
+				ifTrue: [ self
+						error: 'circular references are forbidden in inheritance hierarchy' ].
+			temp := self superclass allSuperclasses.
 			temp addFirst: self superclass.
-			temp]
+			temp ]
 ]
 
 { #category : #monticello }
@@ -364,7 +368,7 @@ ClassModel >> environment [
 { #category : #transforming }
 ClassModel >> extendWithMonticello: aMCClassDefinition [
 	"An existent class is extended with a definition read from Monticello.
-	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we test the class at the end"
+	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we need to test all classes after they have been modified"
 
 	| mcDef instVarsDefs packageDef newLayoutClass newLayout |
 	mcDef := aMCClassDefinition.
@@ -697,6 +701,7 @@ ClassModel >> installStub [
 					'Use LanguageModel >> installMulticlassStubs to install required classes' ].
 	indexInClassTable
 		ifNil: [ indexInClassTable := self classLoader newClassIndex ].
+		
 	self metaclass installStub.
 	self installStubBasic.
 	self testStub.
@@ -957,7 +962,8 @@ ClassModel >> methodDict [
 
 { #category : #accessing }
 ClassModel >> methodDict: aDictionary [
-	^ self writeSlotNamed: #methodDict value: aDictionary 
+	"^ self writeSlotNamed: #methodDict value: aDictionary"
+	methodDict := aDictionary 
 ]
 
 { #category : #'metamodel-accessing' }
@@ -982,6 +988,18 @@ ClassModel >> methodNamed: aString ifAbsent: aBlock [
 { #category : #accessing }
 ClassModel >> methods [
 	^ self methodDict values asArray
+]
+
+{ #category : #'accessing backend' }
+ClassModel >> name: aName [
+	(self parent isNotNil and: [ self name ~= aName ])
+		ifTrue: [ self parent
+				ifNotNil: [ :lang | 
+					lang behaviors
+						removeKey: self name;
+						at: aName put: self.
+					lang classRoles at: self role put: aName ] ].
+	super name: aName
 ]
 
 { #category : #'api - stubs creation' }
@@ -1149,7 +1167,7 @@ ClassModel >> sharedPools [
 
 { #category : #'accessing slots' }
 ClassModel >> slotNamed: aString [
-	^ (self slots select: [ :slot | slot name = aString ])
+	^ (self allSlots select: [ :slot | slot name = aString ])
 		ifEmpty: [ PBSlotDefinitionNotFound new
 				key: aString;
 				signal ]
@@ -1282,6 +1300,15 @@ ClassModel >> testFormat [
 					'Missing instance variables in class "' , self name , '" (role "'
 						, self role , '"). It should define at least: '
 						, temp modelAllInstVarNames asString ]
+]
+
+{ #category : #hooks }
+ClassModel >> testFull [
+	self test.
+	"no circularities in inheritance chain (improve)"
+	self assert: self superclass ~= self.
+	"all metaclasses inherit from metaclass"
+	
 ]
 
 { #category : #testing }
