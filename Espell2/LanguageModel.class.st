@@ -55,6 +55,12 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #metamodel }
+LanguageModel class >> classModel [
+	" Return the subclass of ClassModel that defines the metamodel for classes of the language "
+	self subclassResponsibility  
+]
+
 { #category : #'accessing - defaults' }
 LanguageModel class >> defaultPackagesListFull [
 	^ nil
@@ -80,12 +86,6 @@ LanguageModel class >> indexedSlotModel [
 { #category : #metamodel }
 LanguageModel class >> instanceVariableSlotModel [
 	^ InstanceVariableSlotModel 
-]
-
-{ #category : #metamodel }
-LanguageModel class >> metaclassModel [
-	" Return the subclass of ClassModel that defines the metamodel for classes of the language "
-	self subclassResponsibility  
 ]
 
 { #category : #metamodel }
@@ -195,7 +195,8 @@ LanguageModel >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject
 LanguageModel >> addBehavior: aMClass [
 	self
 		classNamed: aMClass name
-		ifAbsent: [ 
+		ifAbsent: [ aMClass package
+				ifNil: [ self defaultPackage addDefinedBehavior: aMClass ].
 			self behaviors at: aMClass name put: aMClass ]
 		ifPresent: [ :found | 
 			aMClass = found
@@ -206,7 +207,7 @@ LanguageModel >> addBehavior: aMClass [
 { #category : #'accessing backend' }
 LanguageModel >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
 	| newClass mcDef |
-	mcDef := aMCClassDefinition.				
+	mcDef := aMCClassDefinition.		
 	newClass := self ensureClassNamed: aMCClassDefinition className.
 	newClass extendWithMonticello: mcDef.
 	newClass extendWithMonticelloCustom: mcDef.
@@ -279,6 +280,14 @@ LanguageModel >> at: aString ifAbsent: aBlockClosure [
 { #category : #'accessing backend' }
 LanguageModel >> backend [
 	^ backend ifNil: [ backend := LanguageModelBackend for: self ]
+]
+
+{ #category : #'creating classes' }
+LanguageModel >> basicNewClassNamed: aString [
+	^ self class classModel basicNew
+		name: aString;
+		parent: self;
+		yourself
 ]
 
 { #category : #'accessing backend' }
@@ -408,7 +417,7 @@ LanguageModel >> classCharacter [
 
 { #category : #'accessing special classes' }
 LanguageModel >> classClass [
-	^ self classMetaclass 
+	^ self classWithRole: #Class
 ]
 
 { #category : #'accessing special classes' }
@@ -433,11 +442,6 @@ LanguageModel >> classLoader [
 	^ self pbBootstrapper builder classLoader
 ]
 
-{ #category : #'accessing special classes' }
-LanguageModel >> classMetaclass [
-	^ self classWithRole: #Metaclass
-]
-
 { #category : #'accessing backend' }
 LanguageModel >> classNamed: aString [ 
 	^ self classNamed: aString ifAbsent: [ PBClassDefinitionNotFound new key: aString; signal ]
@@ -447,7 +451,8 @@ LanguageModel >> classNamed: aString [
 LanguageModel >> classNamed: aString ifAbsent: aBlockClosure [
 	^ [ self classNamedExactly: aString ]
 		on: KeyNotFound
-		do: aBlockClosure
+		do: [["this is necessary because EPASTInterpreter has some class names hardcoded"
+				self classWithRole: aString] on: Error do: aBlockClosure]
 ]
 
 { #category : #'accessing classes' }
@@ -548,7 +553,7 @@ LanguageModel >> classSmallInteger [
 
 { #category : #'accessing classes' }
 LanguageModel >> classWithRole: aString [ 
-	^ self classNamedExactly: (self classRoles at: aString "ifAbsent: [ aString ]")
+	^ self classNamedExactly: (self classRoles at: aString )
 ]
 
 { #category : #cleaning }
@@ -718,7 +723,7 @@ LanguageModel >> ensureClassNamed: aString [
 	^ self
 		classNamed: aString
 		ifAbsent: [ | newBeh |
-			newBeh := self class metaclassModel named: aString parent: self.
+			newBeh := self newClassNamed: aString.
 			self addBehavior: newBeh.
 			newBeh ]
 ]
@@ -796,7 +801,7 @@ LanguageModel >> fixCircularInheritance [
 			class superclass = self
 				ifTrue: [ class superclass: nil ].
 			class metaclass superclass 
-				ifNil: [ class metaclass superclass: self classMetaclass ] ]
+				ifNil: [ class metaclass superclass: self classClass ] ]
 ]
 
 { #category : #'vm-constants' }
@@ -878,7 +883,7 @@ LanguageModel >> hookGlobalNotFound: aString [
 		confirm: 'Load class ' , aString , ' from host system to model?')
 		ifTrue: [ | newClass |
 			"getting the class from the system"
-			newClass := self class metaclassModel new
+			newClass := self class classModel new
 				parent: self;
 				initializeWithLocal: localClass;
 				yourself.
@@ -1090,6 +1095,9 @@ LanguageModel >> loadClassRoles [
 			theClass := classCustom
 				ifNil: [ classTonel ifNil: [ classDefault ] ].
 			classRoles at: theRole put: theClass ].
+	customRoles associationsDo: [ :assoc |
+		classRoles at: assoc key ifAbsentPut: [ assoc value ]
+		 ].
 	^ classRoles
 ]
 
@@ -1246,7 +1254,7 @@ LanguageModel >> methodBuilder [
 { #category : #'accessing backend' }
 LanguageModel >> newBehaviorFromMonticelloDefinition: aMCClassDefinition [.
 	self deprecated: 'use extendWithMonticello: instead'.
-	^ (self class metaclassModel
+	^ (self class classModel
 				named: aMCClassDefinition className
 				parent: self) 
 				initializeWithMonticello: aMCClassDefinition;
@@ -1262,8 +1270,19 @@ LanguageModel >> newBehaviorFromTemplate: aClassEP2Remote [
 	model template: template.
 	model layout: (template layoutClass on: model).
 	template modelInstVarNames doWithIndex: [ :ivname :index| model addSlot: ivname index: index ].
-	(self packageNamed: self defaultPackageName) addDefinedBehavior: model.
 	^ model
+]
+
+{ #category : #'load definitions - required' }
+LanguageModel >> newBehaviorWithRole: aRole [
+	self halt.
+]
+
+{ #category : #'creating classes' }
+LanguageModel >> newClassNamed: aString [
+	^ (self basicNewClassNamed: aString asSymbol)
+		initialize;
+		yourself
 ]
 
 { #category : #binding }
@@ -1436,8 +1455,8 @@ LanguageModel >> test [
 	| model metamodel modelVars metamodelVars modelVarsLast metamodelVarsEnd modelVarsFirst object |
 	self assert: self name isNotNil.
 	
-	model := self classWithRole: 'Metaclass'.
-	metamodel := self class metaclassModel.
+	model := self classWithRole: #Class.
+	metamodel := self class classModel.
 	
 	modelVars := model allInstVarNames.
 	metamodelVars := metamodel

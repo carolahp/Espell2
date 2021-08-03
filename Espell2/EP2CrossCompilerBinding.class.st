@@ -117,6 +117,11 @@ EP2CrossCompilerBinding >> newBindingFor: aRGClass [
 		environment: environment
 ]
 
+{ #category : #accessing }
+EP2CrossCompilerBinding >> simpleClassModel [
+	^ class
+]
+
 { #category : #bindings }
 EP2CrossCompilerBinding >> superclassBinding [
 	

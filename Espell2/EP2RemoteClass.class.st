@@ -21,7 +21,7 @@ EP2RemoteClass class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteClass class >> role [ 
-	^ 'Metaclass'
+	^ 'Class'
 ]
 
 { #category : #accessing }

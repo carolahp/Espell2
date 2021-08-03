@@ -520,6 +520,8 @@ ClassModel >> initializeWithMonticello: aMCClassDefinition [
 	"A class is instantiated following the monticello definition"
 	| mcDef |
 	mcDef := aMCClassDefinition.
+	self template ifNotNil:[self halt.].
+	self role ifNotNil: [ self halt. ].
 	self
 		layout: (mcDef espell2LayoutType on: self);
 		template: nil.
@@ -700,13 +702,13 @@ ClassModel >> installStub [
 
 	self remoteIsInstalled
 		ifTrue: [ ^ self remote ].
-	(self = (self parent classWithRole: #Metaclass))
+	((self parent firstMetaclasses includes: self)
+		or: [ self metaclass = self or: [ self metaclass metaclass = self ] ])
 		ifTrue: [ self
 				error:
 					'Use LanguageModel >> installMulticlassStubs to install required classes' ].
 	indexInClassTable
 		ifNil: [ indexInClassTable := self classLoader newClassIndex ].
-		
 	self metaclass installStub.
 	self installStubBasic.
 	self testStub.

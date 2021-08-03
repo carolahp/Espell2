@@ -22,12 +22,12 @@ ExplicitMetaclassesClass >> extendWithMonticelloCustom: aMCClassDefinition [
 		metaclass:
 			(metaclassDef
 				ifNotNil: [ self parent ensureClassNamed: metaclassDef ]
-				ifNil: [ self parent classMetaclass ]).
+				ifNil: [ self parent classClass ]).
 ]
 
 { #category : #accessing }
 ExplicitMetaclassesClass >> initializeWithTemplateCustom: aTemplate [
-	self metaclass: self parent classMetaclass.
+	self metaclass: self parent classClass.
 ]
 
 { #category : #hooks }
