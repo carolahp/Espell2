@@ -530,12 +530,13 @@ LanguageModel >> classRolesFromTonel: aFileReference [
 							each role
 								ifNotNil: [ result at: each role asSymbol put: each name ] ] ] ].
 	"I am putting the next code here just to prevent reading the tonel repo twice, but this screams for a refactor"
-	(self customClassRoles ifNil: #())
+	"(self customClassRoles ifNil: #())
 		do: [ :assoc | 
 			self
 				assert: (definedClasses anySatisfy: [ :defclass | defclass = assoc value ])
-				description: [ 'Class "' , assoc value
-						, '" mentioned in >>customClassRoles is not defined in Tonel' ] ].
+				description: [ 'Class "
+					"' , assoc value, '" 
+					"mentioned in >>customClassRoles is not defined in Tonel' ] ]."
 	^ result
 ]
 
@@ -547,7 +548,7 @@ LanguageModel >> classSmallInteger [
 
 { #category : #'accessing classes' }
 LanguageModel >> classWithRole: aString [ 
-	^ self classNamedExactly: (self classRoles at: aString ifAbsent: [ aString ])
+	^ self classNamedExactly: (self classRoles at: aString "ifAbsent: [ aString ]")
 ]
 
 { #category : #cleaning }
@@ -632,6 +633,11 @@ LanguageModel >> defaultClassRoles [
 LanguageModel >> defaultGlobalVariables [
 	
 	^ IdentitySet new
+]
+
+{ #category : #'default model values' }
+LanguageModel >> defaultPackage [
+	^ self packageNamed: self defaultPackageName
 ]
 
 { #category : #'default model values' }
