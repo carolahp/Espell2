@@ -275,6 +275,11 @@ ClassModel >> defaultMethodDictionary [
 	^ IdentityDictionary new 
 ]
 
+{ #category : #'default values' }
+ClassModel >> defaultSuperclass [
+	^ self parent classWithRole: #ProtoObject
+]
+
 { #category : #testing }
 ClassModel >> definesSlot: slotName [ 
 	^ self layout definesSlot: slotName
@@ -503,7 +508,7 @@ ClassModel >> initializeWithLocal: localClass [
 	
 	self
 		layout: (self parent layoutForInstSpec: localClass instSpec on: self);
-		superclass: (self parent classByRoleOrName: localClass superclass name ifAbsent: [ self parent classNamed: #ProtoObject ]);
+		superclass: (self parent classByRoleOrName: localClass superclass name ifAbsent: [ self defaultSuperclass ]);
 		name: localClass name;
 		template: nil.
 	localClass instVarNames do: [:ivname | self addSlot: ivname ].
@@ -583,7 +588,7 @@ ClassModel >> initializeWithTemplateGeneric: aTemplateClass [
 	
 	superclassModel := superTemplate
 		ifNil: [ self parent classWithRole: #ProtoObject ]
-		ifNotNil: [ self parent classNamed: superTemplate role ].
+		ifNotNil: [ self parent classWithRole: superTemplate role ].
 
 	"this happens when a class has more than one role"
 	(superclassModel isNotNil and: [ superclassModel name = self name ])

@@ -231,6 +231,14 @@ LanguageModel >> addMethodFromMonticelloDefinition: aMCMethodDefinition [
 	^ methodDef
 ]
 
+{ #category : #'accessing backend' }
+LanguageModel >> addPackage: aPackageModel [
+	
+	self assert: (self definesPackageNamed: aPackageModel name) not.
+	self packages at: aPackageModel name asSymbol put: aPackageModel
+	
+]
+
 { #category : #'accessing classes' }
 LanguageModel >> allClasses [
 	^ self behaviors
@@ -439,7 +447,7 @@ LanguageModel >> classNamed: aString [
 LanguageModel >> classNamed: aString ifAbsent: aBlockClosure [
 	^ [ self classNamedExactly: aString ]
 		on: KeyNotFound
-		do: [[self classWithRole: aString] on: Error do: aBlockClosure]
+		do: aBlockClosure
 ]
 
 { #category : #'accessing classes' }
@@ -572,7 +580,7 @@ LanguageModel >> cleanPackages [
 	"removing empty packages"
 	| toRemove |
 	toRemove := self packages select: [ :pkg | pkg definedBehaviors isEmpty ].
-	toRemove do: [ :pkg | self packages removeKey: pkg name ]
+	toRemove do: [ :pkg | self packages removeKey: pkg name asSymbol ]
 ]
 
 { #category : #hooks }
@@ -627,15 +635,27 @@ LanguageModel >> defaultGlobalVariables [
 ]
 
 { #category : #'default model values' }
+LanguageModel >> defaultPackageName [
+	^ #'Kernel-VM'
+]
+
+{ #category : #'default model values' }
 LanguageModel >> defaultPackages [
 	| package |
 	package := self newPackageModel 
-		name: #'Kernel-VM';
+		name: self defaultPackageName;
 		parent: self;
 		yourself.
 	^ IdentityDictionary new
 		at: package name put: package;
 		yourself
+]
+
+{ #category : #testing }
+LanguageModel >> definesPackageNamed: aString [ 
+	| package |
+	package := self packageNamed: aString ifAbsent: [ nil ].
+	^ package isNotNil
 ]
 
 { #category : #'initialize-destroy' }
@@ -701,13 +721,13 @@ LanguageModel >> ensureClassNamed: aString [
 LanguageModel >> ensurePackageNamed: aString [
 
 	^ self packages
-		at: aString
+		at: aString asSymbol
 		ifAbsent: [ | package |
 			package := self newPackageModel
 				name: aString asSymbol;
 				parent: self;
 				yourself.
-			self packages at: package name put: package.
+			self addPackage: package.
 			package ]
 ]
 
@@ -1094,6 +1114,21 @@ LanguageModel >> loadGlobalVariables [
 	self subclassResponsibility 
 ]
 
+{ #category : #'load definitions - required' }
+LanguageModel >> loadKernel [
+	| objModel classModel |
+	" load the first classes necessary to create the rest "
+	" OVERRIDE if your language has implicit metaclasses "
+	objModel := self newBehaviorFromTemplate: EP2RemoteEmpty.
+	objModel superclass: nil.
+	self addBehavior: objModel.
+	classModel := self newBehaviorFromTemplate: EP2RemoteClass.
+	classModel superclass: objModel.
+	self addBehavior: classModel.
+	objModel initializeWithTemplate: EP2RemoteEmpty.
+	classModel initializeWithTemplate: EP2RemoteClass.
+]
+
 { #category : #'load definitions - from tonel' }
 LanguageModel >> loadLanguageModelDefinitions: aFileReference [
 	self deprecated: 'Use loadTonelRepository: self tonelPath'.
@@ -1107,16 +1142,7 @@ LanguageModel >> loadRequiredBehaviors [
 	"we load object and class first because they are special in the inheritance chain. 
 	Object is the root and class is instance of itself"
 
-	objModel := self newBehaviorFromTemplate: EP2RemoteEmpty.
-	objModel superclass: nil.
-	self addBehavior: objModel.
-	classModel := self newBehaviorFromTemplate: EP2RemoteClass.
-	classModel superclass: objModel.
-	self addBehavior: classModel.
-	objModel initializeWithTemplate: EP2RemoteEmpty.
-	
-	classModel initializeWithTemplate: EP2RemoteClass.
-	
+	self loadKernel.
 	" recursive call to load subclasses"
 	EP2Remote
 		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ].	
@@ -1230,7 +1256,7 @@ LanguageModel >> newBehaviorFromTemplate: aClassEP2Remote [
 	model template: template.
 	model layout: (template layoutClass on: model).
 	template modelInstVarNames doWithIndex: [ :ivname :index| model addSlot: ivname index: index ].
-	self packages anyOne addDefinedBehavior: model.
+	(self packageNamed: self defaultPackageName) addDefinedBehavior: model.
 	^ model
 ]
 
