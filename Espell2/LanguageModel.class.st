@@ -256,7 +256,7 @@ LanguageModel >> allClassesWithRole [
 	" classes with role are installed as Stubs at the beginning of bootstrap, they can be extended by loading classes from host system or from tonel repository"
 
 	^ self allClasses
-		select: [ :beh | beh isBehavior and: [ beh role isNotNil ] ]
+		select: [ :beh | beh isBehavior and: [ beh hasRole ] ]
 ]
 
 { #category : #announcer }
@@ -549,14 +549,6 @@ LanguageModel >> classRolesFromTonel: aFileReference [
 						ifTrue: [ definedClasses add: each name.
 							each role
 								ifNotNil: [ result at: each role asSymbol put: each name ] ] ] ].
-	"I am putting the next code here just to prevent reading the tonel repo twice, but this screams for a refactor"
-	"(self customClassRoles ifNil: #())
-		do: [ :assoc | 
-			self
-				assert: (definedClasses anySatisfy: [ :defclass | defclass = assoc value ])
-				description: [ 'Class "
-					"' , assoc value, '" 
-					"mentioned in >>customClassRoles is not defined in Tonel' ] ]."
 	^ result
 ]
 
@@ -1172,7 +1164,7 @@ LanguageModel >> loadRequiredBehaviors [
 	self loadKernel.
 	" missing roles are those that were not loaded in the kernel "
 	missingRoles := self classRoles keys asSet
-		difference: (self allClasses values collect: [:class | class role name ]).
+		difference: (self allClasses values select: #hasRole thenCollect: [:class | class role name ]).
 	missingRoles
 		do: [ :aRole | 
 			| class |
@@ -1185,6 +1177,7 @@ LanguageModel >> loadRequiredBehaviors [
 { #category : #'load definitions - required' }
 LanguageModel >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
 	| template model |
+	self deprecated: 'use ClassModel>>newClassWithRole: or ClassModel>>basicNewClassWithRole:'.
 	template := aClassEP2Remote.
 	template role ifNotNil: [ 
 		model := self newBehaviorFromTemplate: template.

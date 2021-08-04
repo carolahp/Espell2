@@ -37,6 +37,11 @@ ClassModel class >> allClassModelInstVarNames [
 	^ allInstVars copyFrom: firstIndex to: allInstVars size
 ]
 
+{ #category : #'hooks-api' }
+ClassModel class >> defaultLayout [
+	^ EP2FixedLayout
+]
+
 { #category : #metamodel }
 ClassModel class >> methodModel [
 	^ MethodModel
@@ -277,7 +282,7 @@ ClassModel >> compiler [
 
 { #category : #initialization }
 ClassModel >> defaultLayout [
-	^ EP2FixedLayout
+	^ self class defaultLayout 
 ]
 
 { #category : #'accessing format' }
@@ -477,6 +482,11 @@ ClassModel >> format [
 { #category : #calypso }
 ClassModel >> hasComment [
 	^ false
+]
+
+{ #category : #testing }
+ClassModel >> hasRole [
+	^ role isNotNil
 ]
 
 { #category : #install }
@@ -931,20 +941,13 @@ ClassModel >> layout: anEP2Layout [
 
 { #category : #'load role' }
 ClassModel >> loadRoleInformation [
-	| template metamodel roleInstVars |
-	self assert: role isNotNil.
-	template := self role.
-	indexInClassTable := template indexInClassTable.
-	index2InClassTable := template index2InClassTable.
-	indexInSpecialObjectsArray := template indexInSpecialObjectsArray.
-	self layout: (template layoutClass on: self).
-	self
-		flag:
-			'Refactor me! data for roles is duplicated in template (EP2Remote) and metamodel (ObjectModel)'.
-	roleInstVars := metamodel
-		ifNotNil: [ metamodel allClassModelInstVarNames ]
-		ifNil: [ template modelInstVarNames ].
-	
+	| roleInstVars |
+	self assert: self hasRole.
+	indexInClassTable := role indexInClassTable.
+	index2InClassTable := role index2InClassTable.
+	indexInSpecialObjectsArray := role indexInSpecialObjectsArray.
+	self layout: (role layoutClass on: self).
+	roleInstVars := role modelInstVarNames.
 	roleInstVars
 		doWithIndex: [ :ivname :index | self addSlot: ivname index: index ]
 ]
@@ -1326,7 +1329,9 @@ ClassModel >> tagsForMethods [
 
 { #category : #hooks }
 ClassModel >> test [
-	self role ifNotNil: [ self testVMInstanceVariables. self testFormat ].
+	self hasRole ifTrue: [ 
+		self role test: self
+		 ].
 	self assert: self layout isNotNil
 ]
 
@@ -1338,24 +1343,27 @@ ClassModel >> testForWriting [
 
 { #category : #testing }
 ClassModel >> testFormat [
-	self role
-		ifNotNil: [ 
-			| template myInstSpec correctInstSpec |
-			template := self role.
-			myInstSpec := self instSpec.
-			correctInstSpec := template modelInstSpec.
-			self
-				assert: (myInstSpec = correctInstSpec or: (correctInstSpec = 1 and: myInstSpec = 0))
-				description:
-					'Wrong inst spec in class "' , self name , '" (role "' , self role name
-						, '"). It should be ' , template modelInstSpec asString
-						, ' but it is ' , self instSpec asString.
-			self
-				assert: template modelInstVarNames size <= self instSize
-				description:
-					'Missing instance variables in class "' , self name , '" (role "'
-						, self role name , '"). It should define at least: '
-						, template modelInstVarNames asString ]
+	| myInstSpec correctInstSpec |
+	self deprecated: 'use Role>>testFormat:'.
+	self hasRole
+		ifFalse: [ ^ self ].
+	myInstSpec := self instSpec.
+	correctInstSpec := role modelInstSpec.
+	self
+		assert:
+			(myInstSpec = correctInstSpec
+				or: (correctInstSpec = 1 and: myInstSpec = 0))
+		description:
+			'Wrong inst spec in class "' , self name , '" (role "'
+				, self role name , '"). It should be '
+				, role modelInstSpec asString , ' but it is '
+				, self instSpec asString.
+	self
+		assert: role modelInstVarNames size <= self instSize
+		description:
+			'Missing instance variables in class "' , self name , '" (role "'
+				, self role name , '"). It should define at least: '
+				, role modelInstVarNames asString
 ]
 
 { #category : #hooks }
@@ -1387,9 +1395,9 @@ ClassModel >> testStub [
 
 { #category : #testing }
 ClassModel >> testVMInstanceVariables [
-	| template instVarsNames expectedInstVarsNames |
-	template := self role.
-	template modelInstVarNames
+	| instVarsNames expectedInstVarsNames |
+	self deprecated: 'use Role>>testVMInstanceVariables:'.
+	role modelInstVarNames
 		doWithIndex: [ :ivName :index | 
 			self
 				assert: (self instVarIndexFor: ivName ifAbsent: [ 0 ]) = index
@@ -1397,10 +1405,10 @@ ClassModel >> testVMInstanceVariables [
 					'Instance variable "' , ivName , '" should be in position '
 						, index asString , ' in class ' , self name , ' (role "'
 						, self role name , '") ' ].
-	template modelAcceptsExtraInstVars
+	role modelAcceptsExtraInstVars
 		ifTrue: [ ^ self ].
 	instVarsNames := self allInstVarNames.
-	expectedInstVarsNames := template modelInstVarNames.
+	expectedInstVarsNames := role modelInstVarNames.
 	self
 		assert: instVarsNames size = expectedInstVarsNames size
 		description:
