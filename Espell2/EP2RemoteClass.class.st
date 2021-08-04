@@ -433,7 +433,7 @@ EP2RemoteClass >> target [
 { #category : #testing }
 EP2RemoteClass >> test [
 	| existentIndexes myIndex |
-	self assert: (self superclass isNotNilObject or: [self asClassDefinition role = #ProtoObject]).
+	self assert: (self superclass isNotNilObject or: [self asClassDefinition isProtoObject ]).
 	self assert: self methodDictionary isNotNilObject.
 	self assert: self format isNotNilObject.
 

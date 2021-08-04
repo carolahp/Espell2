@@ -175,9 +175,3 @@ PackageModel >> registerCustom [
 PackageModel >> tagsForClasses [
 	^ IdentitySet new
 ]
-
-{ #category : #metamodel }
-PackageModel >> tempVariableModel [
-	self deprecated: 'use MethodModel>>tempVariableModel'.
-	^ self parent class tempVariableModel
-]

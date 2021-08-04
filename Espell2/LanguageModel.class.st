@@ -299,7 +299,7 @@ LanguageModel >> basicNewClassWithRole: aString [
 		ifAbsent: [ self error: 'undefined role: ' , roleName ].
 	class := (self
 		basicNewClassNamed: className)
-		role: roleName;
+		role: (self newRoleNamed: roleName);
 		yourself.
 	^ class
 ]
@@ -641,12 +641,7 @@ LanguageModel >> defaultBehaviors [
 
 { #category : #'default model values' }
 LanguageModel >> defaultClassRoles [
-	" get roles from EP2Remote subclasses"
-	| templates |
-	templates := (EP2Remote allSubclasses add: EP2Remote; yourself).
-	^ ((templates select: [ :each | each role isNotNil ])
-		collect: [ :each | each role asSymbol -> each role asSymbol ])
-		asDictionary
+	^ Role defaultClassRoles
 ]
 
 { #category : #'default model values' }
@@ -1087,6 +1082,7 @@ LanguageModel >> loadBaseLanguageModelDefinitions [
 LanguageModel >> loadClassRoles [
 	| defaultRoles rolesFromTonel customRoles |
 	defaultRoles := self defaultClassRoles.
+	
 	rolesFromTonel := (self tonelPath
 		ifNotNil: [ :path | self classRolesFromTonel: path ]
 		ifNil: [ #() ]) asDictionary.
@@ -1176,7 +1172,7 @@ LanguageModel >> loadRequiredBehaviors [
 	self loadKernel.
 	" missing roles are those that were not loaded in the kernel "
 	missingRoles := self classRoles keys asSet
-		difference: (self allClasses values collect: #role).
+		difference: (self allClasses values collect: [:class | class role name ]).
 	missingRoles
 		do: [ :aRole | 
 			| class |
@@ -1275,14 +1271,6 @@ LanguageModel >> maybeAccessedPropertyName [
 	^ #maybeAccessed
 ]
 
-{ #category : #roles }
-LanguageModel >> metamodelForRole: aString [
-	^ (({self class classModel} asOrderedCollection addAll: (self allClasses values collect: #class); yourself)
-		select: [ :metamodel | metamodel role = aString ])
-		ifNotEmpty: [ :result | result anyOne ]
-		ifEmpty: [ nil ]
-]
-
 { #category : #'accessing remote backend' }
 LanguageModel >> methodBuilder [
 	^ self pbBootstrapper builder methodBuilder
@@ -1343,6 +1331,11 @@ LanguageModel >> newGlobalBindingFor: aSymbol [
 { #category : #instanciation }
 LanguageModel >> newPackageModel [
 	^ self class newPackageModel
+]
+
+{ #category : #roles }
+LanguageModel >> newRoleNamed: aString [ 
+	^ Role named: aString for: self
 ]
 
 { #category : #marking }
@@ -1489,17 +1482,6 @@ LanguageModel >> systemClassMapping [
 		#Behavior -> #Class.
 		#ClassDescription -> #Class
 		"} asDictionary 
-]
-
-{ #category : #metamodel }
-LanguageModel >> tempVariableModel [
-	self deprecated: 'use MethodModel>>tempVariableModel'.
-	^ self class tempVariableModel
-]
-
-{ #category : #roles }
-LanguageModel >> templateForRole: aString [ 
-	^ (EP2Remote allSubclasses select: [:template | template role = aString ]) anyOne
 ]
 
 { #category : #testing }

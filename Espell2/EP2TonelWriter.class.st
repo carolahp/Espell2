@@ -41,7 +41,7 @@ EP2TonelWriter >> typeDefinitionOf: aClassDefinition [
 		yourself.
 	model := self metamodel classNamed: (definition at: #name).
 	model role ifNotNil: [ 
-		definition at: #role put: model role ].
+		definition at: #role put: model role name ].
 		
 	aClassDefinition type = #normal ifFalse: [ 
 		definition at: #type put: aClassDefinition type ].

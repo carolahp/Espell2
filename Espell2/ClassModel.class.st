@@ -99,7 +99,7 @@ ClassModel >> addSlotRecursivelyWherePossible: slotName [
 					insert := insert and: subclass acceptsNewSlots.
 					required := subclass role
 						ifNil: [ #() ]
-						ifNotNil: [ (self templateForRole: subclass role) modelInstVarNames ].
+						ifNotNil: [ subclass role modelInstVarNames ].
 					insert := insert and: (required endsWith: class allSlots) ].
 			insert
 				ifTrue: [ class slotNamed: slotName ifAbsent: [ class addSlot: slotName ] ] ]
@@ -386,7 +386,7 @@ ClassModel >> extendLayoutWithMonticello: aMCClassDefinition [
 	mcDef := aMCClassDefinition.
 	newLayoutClass := mcDef espell2LayoutType.
 	newLayout := self role
-		ifNotNil: [ self assert: (self templateForRole: self role) layoutClass = self layout class.
+		ifNotNil: [ self assert: self role layoutClass = self layout class.
 			"fail if tonel sets a wrong type"
 			self
 				assert:
@@ -418,17 +418,20 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 			(mcDef superclassName = #nil
 				ifTrue: [ nil ]
 				ifFalse: [ self parent ensureClassNamed: mcDef superclassName ]).
-	
+
 	"role"
-	mcDef role ifNotNil: [ 
-		self assert: (self parent classRoles keys includes: mcDef role) 
-			description: 'Tonel sets role: ''', mcDef role, ''' to class ', self name , 
-			' but the language does not define this role (in LanguageModel>>classRoles)'. .
-		self 
-			assert: mcDef role = self role 
-			description: 'Tonel sets role: ''', mcDef role, ''' to class ', self name , 
-			' but I did not have a role set'.
-	 ].
+	mcDef role
+		ifNotNil: [ self
+				assert: (self parent classRoles keys includes: mcDef role)
+				description:
+					'Tonel sets role: ''' , mcDef role , ''' to class ' , self name
+						,
+							' but the language does not define this role (in LanguageModel>>classRoles)'.
+			self
+				assert: mcDef role = self role name
+				description:
+					'Tonel sets role: ''' , mcDef role , ''' to class ' , self name
+						, ' but I did not have a role set' ].
 	"mcDef role
 		ifNotNil: [ self role ~= mcDef role
 				ifTrue: [ 
@@ -437,8 +440,8 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 	packageDef := mcDef category.
 	(self package isNotNil and: [ self package name ~= packageDef ])
 		ifTrue: [ self package definedBehaviors remove: self ].
-	self package isNil
-		ifTrue: [ | newPkg |
+	self package
+		ifNil: [ | newPkg |
 			newPkg := self parent ensurePackageNamed: packageDef.
 			self package: newPkg ].
 	^ self
@@ -822,7 +825,9 @@ ClassModel >> isEphemeronClass [
 
 { #category : #'testing layout' }
 ClassModel >> isImmediate [
-	^ self parent immediateClassRoles contains: [:rol | rol = self role ]
+	self role
+		ifNil: [ ^ false ].
+	^ self role isImmediate
 ]
 
 { #category : #'testing layout' }
@@ -928,8 +933,7 @@ ClassModel >> layout: anEP2Layout [
 ClassModel >> loadRoleInformation [
 	| template metamodel roleInstVars |
 	self assert: role isNotNil.
-	template := self templateForRole: role.
-	metamodel := self metamodelForRole: role.
+	template := self role.
 	indexInClassTable := template indexInClassTable.
 	index2InClassTable := template index2InClassTable.
 	indexInSpecialObjectsArray := template indexInSpecialObjectsArray.
@@ -1011,11 +1015,6 @@ ClassModel >> metaclass [
 	self subclassResponsibility 
 ]
 
-{ #category : #'accessing special objects' }
-ClassModel >> metamodelForRole: aString [ 
-	^ self parent metamodelForRole: aString
-]
-
 { #category : #'accessing backend' }
 ClassModel >> methodBuilder [
 	^ self parent methodBuilder
@@ -1064,7 +1063,7 @@ ClassModel >> name: aName [
 					lang behaviors
 						removeKey: self name;
 						at: aName put: self.
-					lang classRoles at: self role put: aName ] ].
+					lang classRoles at: self role name put: aName ] ].
 	super name: aName
 ]
 
@@ -1325,12 +1324,6 @@ ClassModel >> tagsForMethods [
 	^ tagsForMethods
 ]
 
-{ #category : #role }
-ClassModel >> templateForRole: aString [ 
-	^ self parent templateForRole: aString 
-
-]
-
 { #category : #hooks }
 ClassModel >> test [
 	self role ifNotNil: [ self testVMInstanceVariables. self testFormat ].
@@ -1348,20 +1341,20 @@ ClassModel >> testFormat [
 	self role
 		ifNotNil: [ 
 			| template myInstSpec correctInstSpec |
-			template := self templateForRole: role.
+			template := self role.
 			myInstSpec := self instSpec.
 			correctInstSpec := template modelInstSpec.
 			self
 				assert: (myInstSpec = correctInstSpec or: (correctInstSpec = 1 and: myInstSpec = 0))
 				description:
-					'Wrong inst spec in class "' , self name , '" (role "' , self role
+					'Wrong inst spec in class "' , self name , '" (role "' , self role name
 						, '"). It should be ' , template modelInstSpec asString
 						, ' but it is ' , self instSpec asString.
 			self
 				assert: template modelInstVarNames size <= self instSize
 				description:
 					'Missing instance variables in class "' , self name , '" (role "'
-						, self role , '"). It should define at least: '
+						, self role name , '"). It should define at least: '
 						, template modelInstVarNames asString ]
 ]
 
@@ -1395,7 +1388,7 @@ ClassModel >> testStub [
 { #category : #testing }
 ClassModel >> testVMInstanceVariables [
 	| template instVarsNames expectedInstVarsNames |
-	template := self templateForRole: self role.
+	template := self role.
 	template modelInstVarNames
 		doWithIndex: [ :ivName :index | 
 			self
@@ -1403,7 +1396,7 @@ ClassModel >> testVMInstanceVariables [
 				description:
 					'Instance variable "' , ivName , '" should be in position '
 						, index asString , ' in class ' , self name , ' (role "'
-						, self role , '") ' ].
+						, self role name , '") ' ].
 	template modelAcceptsExtraInstVars
 		ifTrue: [ ^ self ].
 	instVarsNames := self allInstVarNames.
