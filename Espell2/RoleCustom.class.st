@@ -1,3 +1,7 @@
+"
+I am a role defined by the user in its metamodel.
+I include the role #Class 
+"
 Class {
 	#name : #RoleCustom,
 	#superclass : #Role,
@@ -52,6 +56,11 @@ RoleCustom >> modelClass [
 		description: 'role "' , name , '" defined by more than one ObjectModel class'.
 	
 	^ result anyOne
+]
+
+{ #category : #constants }
+RoleCustom >> modelInstSpec [
+	^ self layoutClass instSpec 
 ]
 
 { #category : #constants }
