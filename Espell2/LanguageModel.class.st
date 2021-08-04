@@ -300,7 +300,6 @@ LanguageModel >> basicNewClassWithRole: aString [
 	class := (self
 		basicNewClassNamed: className)
 		role: roleName;
-		loadRoleInformation;
 		yourself.
 	^ class
 ]
@@ -1182,8 +1181,9 @@ LanguageModel >> loadRequiredBehaviors [
 		do: [ :aRole | 
 			| class |
 			class := self newClassWithRole: aRole.
-			self addBehavior: class.
-			self assert: class metaclass isNotNil ]
+			self addBehavior: class ].
+	
+	self test.
 ]
 
 { #category : #'load definitions - required' }
@@ -1244,9 +1244,10 @@ LanguageModel >> loadTonelRepository: aFileReference [
 				each ensureEspellDefinitionIn: self package: package.
 				each isClassDefinition ifTrue: [mcClassDefinitions add: each].
 			 ]].
-	mcClassDefinitions do: [ :each |
-		each extendLayoutWithMonticello: each
+	mcClassDefinitions do: [ :each | 
+		(self classNamed: each name) extendLayoutWithMonticello: each
 		 ].
+	self allClasses do: #test. 
 	self fixCircularInheritance.
 	self testCompletitude.
 	self cleanInstVars.
@@ -1272,6 +1273,14 @@ LanguageModel >> markMaybeAccessedBehaviorsAsAccessed [
 { #category : #marking }
 LanguageModel >> maybeAccessedPropertyName [
 	^ #maybeAccessed
+]
+
+{ #category : #roles }
+LanguageModel >> metamodelForRole: aString [
+	^ (({self class classModel} asOrderedCollection addAll: (self allClasses values collect: #class); yourself)
+		select: [ :metamodel | metamodel role = aString ])
+		ifNotEmpty: [ :result | result anyOne ]
+		ifEmpty: [ nil ]
 ]
 
 { #category : #'accessing remote backend' }

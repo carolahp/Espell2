@@ -10,12 +10,6 @@ EP2RemoteIdentityDictionary class >> modelInstSpec [
 ]
 
 { #category : #constants }
-EP2RemoteIdentityDictionary class >> modelInstVarNames [
-	"I inherit #(#tally #array) from RemoteDictionary so I don't redefine them. Use modelAllInstVarNames to get all my inst vars"
-	^ #()
-]
-
-{ #category : #constants }
 EP2RemoteIdentityDictionary class >> newWithBackend: anEP2Backend size: nElements [
 	| class dict array tally initialSize |
 	class := anEP2Backend identityDictionaryClass

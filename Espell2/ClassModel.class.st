@@ -42,6 +42,11 @@ ClassModel class >> methodModel [
 	^ MethodModel
 ]
 
+{ #category : #'hooks-api' }
+ClassModel class >> role [ 
+	^ #Class
+]
+
 { #category : #calypso }
 ClassModel >> >> aString [ 
 	^ self methodDict at: aString
@@ -94,7 +99,7 @@ ClassModel >> addSlotRecursivelyWherePossible: slotName [
 					insert := insert and: subclass acceptsNewSlots.
 					required := subclass role
 						ifNil: [ #() ]
-						ifNotNil: [ (self templateForRole: subclass role) modelAllInstVarNames ].
+						ifNotNil: [ (self templateForRole: subclass role) modelInstVarNames ].
 					insert := insert and: (required endsWith: class allSlots) ].
 			insert
 				ifTrue: [ class slotNamed: slotName ifAbsent: [ class addSlot: slotName ] ] ]
@@ -103,15 +108,13 @@ ClassModel >> addSlotRecursivelyWherePossible: slotName [
 
 { #category : #slots }
 ClassModel >> addSlotRefactoringSubclasses: slotName [
-self  allInstVarNames .
-	self haltIf: [ slotName = #tally or: slotName = #array ].
+
 	self allSubclasses
 		do: [ :c | 
 			(c slots anySatisfy: [ :s | s name = slotName ])
 				ifTrue: [ c removeSlot: slotName ] ].
 	self addSlot: slotName.
-	self haltIf: [ slotName = #tally or: slotName = #array ].
-	self allSubclasses do: #test
+	
 ]
 
 { #category : #'accessing instance variables' }
@@ -398,7 +401,7 @@ ClassModel >> extendLayoutWithMonticello: aMCClassDefinition [
 	instVarsDefs := (mcDef variables
 		select: [ :var | var class type = #instance ])
 		reject: [ :var | (self allInstVarNames indexOf: var name) > 0 ].
-	instVarsDefs do: [ :each | self addSlotRefactoringSubclasses: each name ].
+	instVarsDefs do: [ :each | self addSlotRefactoringSubclasses: each name ]
 ]
 
 { #category : #transforming }
@@ -520,13 +523,16 @@ ClassModel >> indexInClassTable: anInteger [
 ]
 
 { #category : #initialization }
-ClassModel >> initialize [ 
+ClassModel >> initialize [
 	super initialize.
 	methodDict := IdentityDictionary new.
 	tagsForMethods := Set new.
+	(superclass isNil and: [ self isProtoObject not ])
+		ifTrue: [ superclass := self defaultSuperclass ].
+	role ifNotNil: [ self loadRoleInformation ].
 	layout ifNil: [ layout := self defaultLayout on: self ].
-	superclass ifNil: [ superclass := self defaultSuperclass ].
-	self package ifNil: [ self parent defaultPackage addDefinedBehavior: self ]
+	self package
+		ifNil: [ self parent defaultPackage addDefinedBehavior: self ]
 ]
 
 { #category : #initialization }
@@ -857,6 +863,11 @@ ClassModel >> isPointers [
 	^ self isBits not
 ]
 
+{ #category : #initialization }
+ClassModel >> isProtoObject [
+	^ self = self parent classProtoObject
+]
+
 { #category : #calypso }
 ClassModel >> isRootInEnvironment [
 	^ self superclass == nil
@@ -915,13 +926,23 @@ ClassModel >> layout: anEP2Layout [
 
 { #category : #'load role' }
 ClassModel >> loadRoleInformation [
-	| template |
+	| template metamodel roleInstVars |
 	self assert: role isNotNil.
 	template := self templateForRole: role.
+	metamodel := self metamodelForRole: role.
 	indexInClassTable := template indexInClassTable.
 	index2InClassTable := template index2InClassTable.
 	indexInSpecialObjectsArray := template indexInSpecialObjectsArray.
-	self layout: (template layoutClass on: self)
+	self layout: (template layoutClass on: self).
+	self
+		flag:
+			'Refactor me! data for roles is duplicated in template (EP2Remote) and metamodel (ObjectModel)'.
+	roleInstVars := metamodel
+		ifNotNil: [ metamodel allClassModelInstVarNames ]
+		ifNil: [ template modelInstVarNames ].
+	
+	roleInstVars
+		doWithIndex: [ :ivname :index | self addSlot: ivname index: index ]
 ]
 
 { #category : #calypso }
@@ -988,6 +1009,11 @@ ClassModel >> metaLevelScope [
 { #category : #accessing }
 ClassModel >> metaclass [ 
 	self subclassResponsibility 
+]
+
+{ #category : #'accessing special objects' }
+ClassModel >> metamodelForRole: aString [ 
+	^ self parent metamodelForRole: aString
 ]
 
 { #category : #'accessing backend' }
@@ -1332,11 +1358,11 @@ ClassModel >> testFormat [
 						, '"). It should be ' , template modelInstSpec asString
 						, ' but it is ' , self instSpec asString.
 			self
-				assert: template modelAllInstVarNames size <= self instSize
+				assert: template modelInstVarNames size <= self instSize
 				description:
 					'Missing instance variables in class "' , self name , '" (role "'
 						, self role , '"). It should define at least: '
-						, template modelAllInstVarNames asString ]
+						, template modelInstVarNames asString ]
 ]
 
 { #category : #hooks }
@@ -1370,7 +1396,7 @@ ClassModel >> testStub [
 ClassModel >> testVMInstanceVariables [
 	| template instVarsNames expectedInstVarsNames |
 	template := self templateForRole: self role.
-	template modelAllInstVarNames
+	template modelInstVarNames
 		doWithIndex: [ :ivName :index | 
 			self
 				assert: (self instVarIndexFor: ivName ifAbsent: [ 0 ]) = index
@@ -1381,7 +1407,7 @@ ClassModel >> testVMInstanceVariables [
 	template modelAcceptsExtraInstVars
 		ifTrue: [ ^ self ].
 	instVarsNames := self allInstVarNames.
-	expectedInstVarsNames := template modelAllInstVarNames.
+	expectedInstVarsNames := template modelInstVarNames.
 	self
 		assert: instVarsNames size = expectedInstVarsNames size
 		description:

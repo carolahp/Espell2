@@ -38,6 +38,7 @@ EP2Remote class >> modelAcceptsExtraInstVars [
 { #category : #constants }
 EP2Remote class >> modelAllInstVarNames [
 	" I am the root of the remote objects hierarchy "
+	self deprecated: 'use modelInstVarNames'.
 	^ (self = EP2Remote)
 		ifTrue: [ self modelInstVarNames ] 
 		ifFalse: [ self superclass modelAllInstVarNames, self modelInstVarNames ]
