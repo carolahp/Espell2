@@ -21,7 +21,6 @@ Class {
 		'indexInSpecialObjectsArray',
 		'tagsForMethods',
 		'layout',
-		'template',
 		'superclass',
 		'methodDict',
 		'format'
@@ -93,9 +92,9 @@ ClassModel >> addSlotRecursivelyWherePossible: slotName [
 			class allSubclasses
 				do: [ :subclass | 
 					insert := insert and: subclass acceptsNewSlots.
-					required := subclass template
+					required := subclass role
 						ifNil: [ #() ]
-						ifNotNil: [ subclass template modelAllInstVarNames ].
+						ifNotNil: [ (self templateForRole: subclass role) modelAllInstVarNames ].
 					insert := insert and: (required endsWith: class allSlots) ].
 			insert
 				ifTrue: [ class slotNamed: slotName ifAbsent: [ class addSlot: slotName ] ] ]
@@ -104,6 +103,7 @@ ClassModel >> addSlotRecursivelyWherePossible: slotName [
 
 { #category : #slots }
 ClassModel >> addSlotRefactoringSubclasses: slotName [
+	self haltIf: [ slotName = #tally or: slotName = #array ].
 	self allSubclasses
 		do: [ :c | 
 			(c slots anySatisfy: [ :s | s name = slotName ])
@@ -270,6 +270,11 @@ ClassModel >> compiler [
 	^ self class compiler
 ]
 
+{ #category : #initialization }
+ClassModel >> defaultLayout [
+	^ EP2FixedLayout
+]
+
 { #category : #'accessing format' }
 ClassModel >> defaultMethodDictionary [
 	^ IdentityDictionary new 
@@ -339,8 +344,7 @@ ClassModel >> destroy [
 		methodDict := nil.
 	].
 	superclass := nil.
-	tagsForMethods := nil.
-	template := nil
+	tagsForMethods := nil
 	
 ]
 
@@ -387,7 +391,7 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 	"layout"
 	newLayoutClass := mcDef espell2LayoutType.
 	newLayout := self role
-		ifNotNil: [ self assert: self template layoutClass = self layout class.
+		ifNotNil: [ self assert: (self templateForRole: self role) layoutClass = self layout class.
 			"fail if tonel sets a wrong type"
 			self
 				assert:
@@ -500,7 +504,10 @@ ClassModel >> indexInClassTable: anInteger [
 ClassModel >> initialize [ 
 	super initialize.
 	methodDict := IdentityDictionary new.
-	tagsForMethods := Set new
+	tagsForMethods := Set new.
+	layout ifNil: [ layout := self defaultLayout on: self ].
+	superclass ifNil: [ superclass := self defaultSuperclass ].
+	self package ifNil: [ self parent defaultPackage addDefinedBehavior: self ]
 ]
 
 { #category : #initialization }
@@ -509,8 +516,7 @@ ClassModel >> initializeWithLocal: localClass [
 	self
 		layout: (self parent layoutForInstSpec: localClass instSpec on: self);
 		superclass: (self parent classByRoleOrName: localClass superclass name ifAbsent: [ self defaultSuperclass ]);
-		name: localClass name;
-		template: nil.
+		name: localClass name.
 	localClass instVarNames do: [:ivname | self addSlot: ivname ].
 	^ self
 ]
@@ -520,11 +526,8 @@ ClassModel >> initializeWithMonticello: aMCClassDefinition [
 	"A class is instantiated following the monticello definition"
 	| mcDef |
 	mcDef := aMCClassDefinition.
-	self template ifNotNil:[self halt.].
-	self role ifNotNil: [ self halt. ].
 	self
-		layout: (mcDef espell2LayoutType on: self);
-		template: nil.
+		layout: (mcDef espell2LayoutType on: self).
 	mcDef superclassName = #nil
 		ifTrue: [ self halt ]
 		ifFalse: [ self superclass: (self parent ensureClassNamed: mcDef superclassName) ].
@@ -552,42 +555,42 @@ ClassModel >> initializeWithMonticello: aMCClassDefinition [
 
 { #category : #initialization }
 ClassModel >> initializeWithTemplate: aTemplateClass [
+	self deprecated: 'use initialize.'.
 	self initializeWithTemplateGeneric: aTemplateClass.
-	self initializeWithTemplateCustom: aTemplateClass.
+	"self initializeWithTemplateCustom: aTemplateClass."
 	self test.
 	^ self
 		
 ]
 
 { #category : #initialization }
-ClassModel >> initializeWithTemplateCustom: aTemplateClass [.
-	self subclassResponsibility 
+ClassModel >> initializeWithTemplateCustom: aTemplateClass [
+	self subclassResponsibility
 ]
 
 { #category : #initialization }
 ClassModel >> initializeWithTemplateGeneric: aTemplateClass [
 	| superclassModel superTemplates superTemplate templates |
-
+	
+	self deprecated: 'this code should be called from initialize'.
 	indexInClassTable := template indexInClassTable.
 	index2InClassTable := template index2InClassTable.
 	indexInSpecialObjectsArray := template indexInSpecialObjectsArray.
-	
+	self layout: (aTemplateClass layoutClass on: self).
+	aTemplateClass modelInstVarNames
+		doWithIndex: [ :ivname :index | self addSlot: ivname index: index ].
 	"ProtoObject superclass is nil"
-	(self role = #ProtoObject) 
-		ifTrue: [self superclass: nil.
-			^ self].
+	self role = #ProtoObject
+		ifTrue: [ self superclass: nil.
+			^ self ].
 	"For other templates, we calculate the superclass"
 	templates := EP2Remote allSubclasses
 		add: EP2Remote;
 		yourself.
-	
 	superTemplates := aTemplateClass allSuperclasses
-		select: [ :each | 
-			(templates includes: each)
-				and: [ each role isNotNil ] ].
-			
+		select:
+			[ :each | (templates includes: each) and: [ each role isNotNil ] ].
 	superTemplate := superTemplates at: 1 ifAbsent: [ nil ].
-	
 	superclassModel := superTemplate
 		ifNil: [ self parent classWithRole: #ProtoObject ]
 		ifNotNil: [ self parent classWithRole: superTemplate role ].
@@ -887,8 +890,19 @@ ClassModel >> layout [
 ]
 
 { #category : #'accessing format' }
-ClassModel >> layout: anEP2LayoutClass [ 
-	layout := anEP2LayoutClass
+ClassModel >> layout: anEP2Layout [ 
+	layout := anEP2Layout
+]
+
+{ #category : #'load role' }
+ClassModel >> loadRoleInformation [
+	| template |
+	self assert: role isNotNil.
+	template := self templateForRole: role.
+	indexInClassTable := template indexInClassTable.
+	index2InClassTable := template index2InClassTable.
+	indexInSpecialObjectsArray := template indexInSpecialObjectsArray.
+	self layout: (template layoutClass on: self)
 ]
 
 { #category : #calypso }
@@ -1150,7 +1164,7 @@ ClassModel >> removeSlot: aString [
 
 { #category : #accessing }
 ClassModel >> role [
-	^ role ifNil: [ role := template ifNil: [ nil ] ifNotNil: [ template role ] ] 
+	^ role
 ]
 
 { #category : #accessing }
@@ -1266,19 +1280,15 @@ ClassModel >> tagsForMethods [
 	^ tagsForMethods
 ]
 
-{ #category : #'accessing format' }
-ClassModel >> template [
-	^ template 
-]
+{ #category : #role }
+ClassModel >> templateForRole: aString [ 
+	^ self parent templateForRole: aString 
 
-{ #category : #'accessing format' }
-ClassModel >> template: aClass [ 
-	template := aClass
 ]
 
 { #category : #hooks }
 ClassModel >> test [
-	self template ifNotNil: [ self testVMInstanceVariables. self testFormat ].
+	self role ifNotNil: [ self testVMInstanceVariables. self testFormat ].
 	self assert: self layout isNotNil
 ]
 
@@ -1290,23 +1300,24 @@ ClassModel >> testForWriting [
 
 { #category : #testing }
 ClassModel >> testFormat [
-	self template
-		ifNotNil: [ :temp | 
-			| myInstSpec correctInstSpec |
+	self role
+		ifNotNil: [ 
+			| template myInstSpec correctInstSpec |
+			template := self templateForRole: role.
 			myInstSpec := self instSpec.
-			correctInstSpec := temp modelInstSpec.
+			correctInstSpec := template modelInstSpec.
 			self
 				assert: (myInstSpec = correctInstSpec or: (correctInstSpec = 1 and: myInstSpec = 0))
 				description:
 					'Wrong inst spec in class "' , self name , '" (role "' , self role
-						, '"). It should be ' , temp modelInstSpec asString
+						, '"). It should be ' , template modelInstSpec asString
 						, ' but it is ' , self instSpec asString.
 			self
-				assert: temp modelAllInstVarNames size <= self instSize
+				assert: template modelAllInstVarNames size <= self instSize
 				description:
 					'Missing instance variables in class "' , self name , '" (role "'
 						, self role , '"). It should define at least: '
-						, temp modelAllInstVarNames asString ]
+						, template modelAllInstVarNames asString ]
 ]
 
 { #category : #hooks }
@@ -1338,7 +1349,9 @@ ClassModel >> testStub [
 
 { #category : #testing }
 ClassModel >> testVMInstanceVariables [
-	self template modelAllInstVarNames
+	| template instVarsNames expectedInstVarsNames |
+	template := self templateForRole: self role.
+	template modelAllInstVarNames
 		doWithIndex: [ :ivName :index | 
 			self
 				assert: (self instVarIndexFor: ivName ifAbsent: [ 0 ]) = index
@@ -1346,17 +1359,17 @@ ClassModel >> testVMInstanceVariables [
 					'Instance variable "' , ivName , '" should be in position '
 						, index asString , ' in class ' , self name , ' (role "'
 						, self role , '") ' ].
-	self template modelAcceptsExtraInstVars
-		ifFalse: [ | instVarsNames expectedInstVarsNames |
-			instVarsNames := self allInstVarNames.
-			expectedInstVarsNames := self template modelAllInstVarNames.
-			self
-				assert: instVarsNames size = expectedInstVarsNames size
-				description:
-					self name , ' defines ' , instVarsNames size asString
-						, ' instance variables, but it must have exactly '
-						, expectedInstVarsNames size asString , ' inst vars, which are: '
-						, expectedInstVarsNames asString ]
+	template modelAcceptsExtraInstVars
+		ifTrue: [ ^ self ].
+	instVarsNames := self allInstVarNames.
+	expectedInstVarsNames := template modelAllInstVarNames.
+	self
+		assert: instVarsNames size = expectedInstVarsNames size
+		description:
+			self name , ' defines ' , instVarsNames size asString
+				, ' instance variables, but it must have exactly '
+				, expectedInstVarsNames size asString , ' inst vars, which are: '
+				, expectedInstVarsNames asString
 ]
 
 { #category : #accessing }

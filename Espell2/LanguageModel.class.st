@@ -290,6 +290,21 @@ LanguageModel >> basicNewClassNamed: aString [
 		yourself
 ]
 
+{ #category : #'creating classes' }
+LanguageModel >> basicNewClassWithRole: aString [
+	| class className roleName |
+	roleName := aString.
+	className := self classRoles
+		at: roleName
+		ifAbsent: [ self error: 'undefined role: ' , roleName ].
+	class := (self
+		basicNewClassNamed: className)
+		role: roleName;
+		loadRoleInformation;
+		yourself.
+	^ class
+]
+
 { #category : #'accessing backend' }
 LanguageModel >> behaviors [ 
 	^ behaviors
@@ -1133,14 +1148,17 @@ LanguageModel >> loadKernel [
 	| objModel classModel |
 	" load the first classes necessary to create the rest "
 	" OVERRIDE if your language has implicit metaclasses "
-	objModel := self newBehaviorFromTemplate: EP2RemoteEmpty.
+	objModel := self basicNewClassWithRole: #ProtoObject.
+	classModel := self basicNewClassWithRole: #Class.
+	
 	objModel superclass: nil.
-	self addBehavior: objModel.
-	classModel := self newBehaviorFromTemplate: EP2RemoteClass.
 	classModel superclass: objModel.
+	
+	self addBehavior: objModel.
 	self addBehavior: classModel.
-	objModel initializeWithTemplate: EP2RemoteEmpty.
-	classModel initializeWithTemplate: EP2RemoteClass.
+	
+	objModel initialize.
+	classModel initialize
 ]
 
 { #category : #'load definitions - from tonel' }
@@ -1152,15 +1170,19 @@ LanguageModel >> loadLanguageModelDefinitions: aFileReference [
 
 { #category : #'load definitions - required' }
 LanguageModel >> loadRequiredBehaviors [
-	| objModel classModel |
-	"we load object and class first because they are special in the inheritance chain. 
-	Object is the root and class is instance of itself"
+	"we load core classes first (object, class, etc) because they are special in the inheritance chain"
 
+	| missingRoles |
 	self loadKernel.
-	" recursive call to load subclasses"
-	EP2Remote
-		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ].	
-	"self class classMetaclass allClassModelInstVarNames do: [ :ivName | classModel addSlot: ivName ]."
+	" missing roles are those that were not loaded in the kernel "
+	missingRoles := self classRoles keys asSet
+		difference: (self allClasses values collect: #role).
+	missingRoles
+		do: [ :aRole | 
+			| class |
+			class := self newClassWithRole: aRole.
+			self addBehavior: class.
+			self assert: class metaclass isNotNil ]
 ]
 
 { #category : #'load definitions - required' }
@@ -1264,6 +1286,7 @@ LanguageModel >> newBehaviorFromMonticelloDefinition: aMCClassDefinition [.
 { #category : #'accessing backend' }
 LanguageModel >> newBehaviorFromTemplate: aClassEP2Remote [
 	| template model modelName |
+	self deprecated: 'set role: and then send initialize'.
 	template := aClassEP2Remote.
 	modelName := self classRoles at: template role.
 	model := self ensureClassNamed: modelName.
@@ -1283,6 +1306,15 @@ LanguageModel >> newClassNamed: aString [
 	^ (self basicNewClassNamed: aString asSymbol)
 		initialize;
 		yourself
+]
+
+{ #category : #'creating classes' }
+LanguageModel >> newClassWithRole: aString [ 
+	| class |
+	class := self basicNewClassWithRole: aString.
+	class superclass: self classProtoObject.
+	class initialize.
+	^ class
 ]
 
 { #category : #binding }
@@ -1448,6 +1480,11 @@ LanguageModel >> systemClassMapping [
 LanguageModel >> tempVariableModel [
 	self deprecated: 'use MethodModel>>tempVariableModel'.
 	^ self class tempVariableModel
+]
+
+{ #category : #roles }
+LanguageModel >> templateForRole: aString [ 
+	^ (EP2Remote allSubclasses select: [:template | template role = aString ]) anyOne
 ]
 
 { #category : #testing }

@@ -27,6 +27,7 @@ ExplicitMetaclassesClass >> extendWithMonticelloCustom: aMCClassDefinition [
 
 { #category : #accessing }
 ExplicitMetaclassesClass >> initializeWithTemplateCustom: aTemplate [
+	self deprecated: 'this code should be called from initialize'.
 	self metaclass: self parent classClass.
 ]
 
