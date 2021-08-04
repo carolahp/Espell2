@@ -7,6 +7,11 @@ Class {
 	#category : #'Espell2-Metamodel'
 }
 
+{ #category : #metamodel }
+GlobalModel class >> usedModels [
+	^#()
+]
+
 { #category : #accessing }
 GlobalModel >> environment [ 
 	^ self parent

@@ -3,7 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'name',
-		'language'
+		'objectModel'
 	],
 	#category : #'Espell2-Roles'
 }
@@ -19,14 +19,14 @@ Role class >> defaultClassRoles [
 ]
 
 { #category : #instantiation }
-Role class >> named: aString for: aLanguageModel [
+Role class >> named: aString for: anObjectModel [
 	| roleClass |
 	roleClass := (self defaultClassRoles includes: aString)
 		ifTrue: [ Role ]
-		ifFalse: [RoleCustom].
+		ifFalse: [ RoleCustom ].
 	^ roleClass basicNew
 		name: aString;
-		language: aLanguageModel;
+		objectModel: anObjectModel;
 		initialize;
 		yourself
 ]
@@ -47,13 +47,9 @@ Role >> indexInSpecialObjectsArray [
 ]
 
 { #category : #testing }
-Role >> isImmediate [ 
-	^ language immediateClassRoles anySatisfy: [:rol | rol = name ]
-]
-
-{ #category : #accesssing }
-Role >> language: anObjVLispMinLanguage [ 
-	language := anObjVLispMinLanguage
+Role >> isImmediate [
+	^ objectModel language immediateClassRoles
+		anySatisfy: [ :rol | rol = name ]
 ]
 
 { #category : #accessing }
@@ -85,6 +81,11 @@ Role >> name [
 { #category : #accessing }
 Role >> name: aString [ 
 	name := aString
+]
+
+{ #category : #accessing }
+Role >> objectModel: anObjectModel [ 
+	objectModel := anObjectModel
 ]
 
 { #category : #accessing }

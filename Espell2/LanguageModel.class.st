@@ -77,23 +77,6 @@ LanguageModel class >> globalModel [
 	self subclassResponsibility 
 ]
 
-{ #category : #metamodel }
-LanguageModel class >> indexedSlotModel [
-	self deprecated: 'use ClassModel>>indexedSlotModel'.
-	^ IndexedSlotModel
-]
-
-{ #category : #metamodel }
-LanguageModel class >> instanceVariableSlotModel [
-	^ InstanceVariableSlotModel 
-]
-
-{ #category : #metamodel }
-LanguageModel class >> methodModel [ 
-	self deprecated: 'use ClassModel >> methodModel'
-	
-]
-
 { #category : #instantiation }
 LanguageModel class >> new [
 	self error: 'use methods in protocol instantiation'
@@ -139,9 +122,14 @@ LanguageModel class >> packageModel [
 ]
 
 { #category : #metamodel }
-LanguageModel class >> tempVariableModel [
-	self deprecated: 'use ClassModel>>tempVariableModel'.
-	^ TempVariableModel 
+LanguageModel class >> usedModels [
+	| models |
+	models := {self classModel.
+	self globalModel.
+	self packageModel} asOrderedCollection.
+	models addAll: (models flatCollect: [ :model | model usedModels ]).
+	models addAll: self customModels.
+	^ models
 ]
 
 { #category : #'hooks-dynamic method loading' }
@@ -297,9 +285,9 @@ LanguageModel >> basicNewClassWithRole: aString [
 	className := self classRoles
 		at: roleName
 		ifAbsent: [ self error: 'undefined role: ' , roleName ].
-	class := (self
-		basicNewClassNamed: className)
-		role: (self newRoleNamed: roleName);
+	class := self basicNewClassNamed: className.
+	class
+		role: (self newRoleNamed: roleName for: class);
 		yourself.
 	^ class
 ]
@@ -1054,6 +1042,11 @@ LanguageModel >> isClassDefinition: aString [
 	^ false
 ]
 
+{ #category : #testing }
+LanguageModel >> isLanguageModel [
+	^ true
+]
+
 { #category : #'vm-constants' }
 LanguageModel >> layoutClassForInstSpec: anInteger [
  ^ EP2Layout layoutClassForInstSpec: anInteger
@@ -1327,8 +1320,8 @@ LanguageModel >> newPackageModel [
 ]
 
 { #category : #roles }
-LanguageModel >> newRoleNamed: aString [ 
-	^ Role named: aString for: self
+LanguageModel >> newRoleNamed: aString for: anObjectModel [
+	^ Role named: aString for: anObjectModel
 ]
 
 { #category : #marking }

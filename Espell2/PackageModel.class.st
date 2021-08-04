@@ -20,6 +20,11 @@ PackageModel class >> prepareClassQueriesFrom: packages in: aNavigationEnvironme
 	}
 ]
 
+{ #category : #metamodel }
+PackageModel class >> usedModels [
+	^#()
+]
+
 { #category : #'accessing-backend' }
 PackageModel >> addDefinedBehavior: aClass [ 
 	(self definesBehavior: aClass)

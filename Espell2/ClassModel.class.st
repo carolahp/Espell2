@@ -43,6 +43,11 @@ ClassModel class >> defaultLayout [
 ]
 
 { #category : #metamodel }
+ClassModel class >> instanceVariableSlotModel [
+	^ InstanceVariableSlotModel 
+]
+
+{ #category : #metamodel }
 ClassModel class >> methodModel [
 	^ MethodModel
 ]
@@ -50,6 +55,14 @@ ClassModel class >> methodModel [
 { #category : #'hooks-api' }
 ClassModel class >> role [ 
 	^ #Class
+]
+
+{ #category : #metamodel }
+ClassModel class >> usedModels [
+	^ {self methodModel.
+	self instanceVariableSlotModel}
+		addAll: self customModels;
+		yourself
 ]
 
 { #category : #calypso }
@@ -809,7 +822,7 @@ ClassModel >> isBytes [
 ]
 
 { #category : #'testing layout' }
-ClassModel >> isClassMetamodel [
+ClassModel >> isClassModel [
 	^ true
 ]
 
@@ -1341,31 +1354,6 @@ ClassModel >> testForWriting [
 	self assert: self indexInClassTable isNotNil.
 ]
 
-{ #category : #testing }
-ClassModel >> testFormat [
-	| myInstSpec correctInstSpec |
-	self deprecated: 'use Role>>testFormat:'.
-	self hasRole
-		ifFalse: [ ^ self ].
-	myInstSpec := self instSpec.
-	correctInstSpec := role modelInstSpec.
-	self
-		assert:
-			(myInstSpec = correctInstSpec
-				or: (correctInstSpec = 1 and: myInstSpec = 0))
-		description:
-			'Wrong inst spec in class "' , self name , '" (role "'
-				, self role name , '"). It should be '
-				, role modelInstSpec asString , ' but it is '
-				, self instSpec asString.
-	self
-		assert: role modelInstVarNames size <= self instSize
-		description:
-			'Missing instance variables in class "' , self name , '" (role "'
-				, self role name , '"). It should define at least: '
-				, role modelInstVarNames asString
-]
-
 { #category : #hooks }
 ClassModel >> testFull [
 	self test.
@@ -1391,31 +1379,6 @@ ClassModel >> testStub [
 	self assert: self remote basicClass = self metaclass remote.
 	self assert: self remote indexInClassTable = self indexInClassTable.
 	self remote testStub
-]
-
-{ #category : #testing }
-ClassModel >> testVMInstanceVariables [
-	| instVarsNames expectedInstVarsNames |
-	self deprecated: 'use Role>>testVMInstanceVariables:'.
-	role modelInstVarNames
-		doWithIndex: [ :ivName :index | 
-			self
-				assert: (self instVarIndexFor: ivName ifAbsent: [ 0 ]) = index
-				description:
-					'Instance variable "' , ivName , '" should be in position '
-						, index asString , ' in class ' , self name , ' (role "'
-						, self role name , '") ' ].
-	role modelAcceptsExtraInstVars
-		ifTrue: [ ^ self ].
-	instVarsNames := self allInstVarNames.
-	expectedInstVarsNames := role modelInstVarNames.
-	self
-		assert: instVarsNames size = expectedInstVarsNames size
-		description:
-			self name , ' defines ' , instVarsNames size asString
-				, ' instance variables, but it must have exactly '
-				, expectedInstVarsNames size asString , ' inst vars, which are: '
-				, expectedInstVarsNames asString
 ]
 
 { #category : #accessing }

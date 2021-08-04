@@ -26,10 +26,16 @@ RoleCustom >> indexInSpecialObjectsArray [
 { #category : #constants }
 RoleCustom >> initialize [
 	super initialize.
+	self
+		assert: self modelClass isNotNil
+		description: 'undefined role "' , name , '". Define it in your subclass of ClassModel class>>role'.
 	self templateClass
 		ifNotNil: [ :template | 
 			self
-				assert: (self modelInstVarNames beginsWith: template modelInstVarNames) ]
+				assert: (self modelInstVarNames beginsWith: template modelInstVarNames)
+				description:
+					'role ' , name , ' inst vars should be defined in class '
+						, self modelClass asString ]
 ]
 
 { #category : #constants }
@@ -43,18 +49,13 @@ RoleCustom >> modelAcceptsExtraInstVars [
 ]
 
 { #category : #accessing }
-RoleCustom >> modelClass [ 
-	| metamodels result |
-	metamodels := ({language class classModel} asOrderedCollection
-		addAll: (language allClasses values collect: #class);
-		yourself) asSet.
-	result := (metamodels
-		select: [ :aMetamodel | aMetamodel role = name ]) ifEmpty: [^ nil].
-	
+RoleCustom >> modelClass [
+	| result |
+	result := (objectModel language class usedModels
+		select: [ :aMetamodel | aMetamodel role = name ]) ifEmpty: [ ^ nil ].
 	self
 		assert: result size = 1
 		description: 'role "' , name , '" defined by more than one ObjectModel class'.
-	
 	^ result anyOne
 ]
 

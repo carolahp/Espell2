@@ -12,6 +12,12 @@ Class {
 }
 
 { #category : #instanciation }
+ObjectModel class >> customModels [
+	" returns the model classes used to build the model "
+	^#()
+]
+
+{ #category : #instanciation }
 ObjectModel class >> named: aString parent: anEP2MLanguage [ 
 	^ self basicNew
 		name: aString asSymbol;
@@ -118,6 +124,11 @@ ObjectModel >> installAccessedObjectsOnly: aBoolean [
 	self environment installAccessedObjectsOnly: aBoolean
 ]
 
+{ #category : #testing }
+ObjectModel >> isClassModel [
+	^ false
+]
+
 { #category : #marking }
 ObjectModel >> isInstallable [
 	^ self environment installAccessedObjectsOnly
@@ -125,11 +136,25 @@ ObjectModel >> isInstallable [
 		ifFalse: [ true ]
 ]
 
+{ #category : #accessing }
+ObjectModel >> isLanguageModel [
+	^ false
+]
+
 { #category : #marking }
 ObjectModel >> isMarkedAsAccessed [
 	^ self 
 		propertyNamed: self environment objectAccessedPropertyName 
 		ifAbsent: [ false ]
+]
+
+{ #category : #accessing }
+ObjectModel >> language [
+	| model |
+	model := self.
+	[ model isNil or: [ model isLanguageModel ] ]
+		whileFalse: [ model := self parent ].
+	^ model
 ]
 
 { #category : #marking }
