@@ -86,7 +86,7 @@ GlobalModel >> register [
 { #category : #registering }
 GlobalModel >> registerCustom [
 	"Register this global in your system dictionary or anywhere you like"
-	self subclassResponsibility 
+	^ nil
 ]
 
 { #category : #registering }
