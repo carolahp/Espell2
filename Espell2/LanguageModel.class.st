@@ -480,6 +480,11 @@ LanguageModel >> classNamedExactly: aString [
 	^ self behaviors at: aSymbol
 ]
 
+{ #category : #'accessing classes' }
+LanguageModel >> classOrMetaclassNameFrom: aNameFromMonticello [	
+	^ aNameFromMonticello
+]
+
 { #category : #'accessing special classes' }
 LanguageModel >> classProcess [
 	^ self classWithRole: #Process
@@ -1227,7 +1232,7 @@ LanguageModel >> loadTonelRepository: aFileReference [
 				each isClassDefinition ifTrue: [mcClassDefinitions add: each].
 			 ]].
 	mcClassDefinitions do: [ :each | 
-		(self classNamed: each name) extendLayoutWithMonticello: each
+		(self classNamed: (self classOrMetaclassNameFrom: each name)) extendLayoutWithMonticello: each
 		 ].
 	self allClasses do: #test. 
 	self fixCircularInheritance.
