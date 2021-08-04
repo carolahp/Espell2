@@ -26,6 +26,11 @@ ObjectModel class >> named: aString parent: anEP2MLanguage [
 		yourself
 ]
 
+{ #category : #instanciation }
+ObjectModel class >> role [ 
+	^ nil
+]
+
 { #category : #accessing }
 ObjectModel >> announcer [ 
 	^ self environment announcer
@@ -250,6 +255,11 @@ ObjectModel >> removePropertyNamed: propertyName [
 	
 	(self hasPropertyNamed: propertyName)
 		ifTrue: [ properties removeKey: propertyName ]
+]
+
+{ #category : #accessing }
+ObjectModel >> role [ 
+	^ role
 ]
 
 { #category : #'transforming objects' }

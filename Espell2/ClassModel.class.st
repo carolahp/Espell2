@@ -1223,11 +1223,6 @@ ClassModel >> removeSlot: aString [
 ]
 
 { #category : #accessing }
-ClassModel >> role [
-	^ role
-]
-
-{ #category : #accessing }
 ClassModel >> role: aString [ 
 	role := aString
 ]

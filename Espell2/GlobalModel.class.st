@@ -118,11 +118,6 @@ GlobalModel >> remoteIsStub: aBoolean [
 ]
 
 { #category : #accessing }
-GlobalModel >> role [
-	^ role
-]
-
-{ #category : #accessing }
 GlobalModel >> role: aString [ 
 	role := aString
 ]
