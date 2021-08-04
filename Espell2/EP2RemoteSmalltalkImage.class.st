@@ -21,6 +21,5 @@ EP2RemoteSmalltalkImage class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteSmalltalkImage class >> role [
-	^ nil 
-	"^ 'SmalltalkImage'"
+	^ 'SmalltalkImage'
 ]

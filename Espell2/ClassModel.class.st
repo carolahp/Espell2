@@ -103,12 +103,14 @@ ClassModel >> addSlotRecursivelyWherePossible: slotName [
 
 { #category : #slots }
 ClassModel >> addSlotRefactoringSubclasses: slotName [
+self  allInstVarNames .
 	self haltIf: [ slotName = #tally or: slotName = #array ].
 	self allSubclasses
 		do: [ :c | 
 			(c slots anySatisfy: [ :s | s name = slotName ])
 				ifTrue: [ c removeSlot: slotName ] ].
 	self addSlot: slotName.
+	self haltIf: [ slotName = #tally or: slotName = #array ].
 	self allSubclasses do: #test
 ]
 
@@ -375,20 +377,10 @@ ClassModel >> environment [
 ]
 
 { #category : #transforming }
-ClassModel >> extendWithMonticello: aMCClassDefinition [
-	"An existent class is extended with a definition read from Monticello.
-	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we need to test all classes after they have been modified"
-
-	| mcDef instVarsDefs packageDef newLayoutClass newLayout |
-	mcDef := aMCClassDefinition.
-
-	"superclass"
-	self
-		superclass:
-			(mcDef superclassName = #nil
-				ifTrue: [ nil ]
-				ifFalse: [ self parent ensureClassNamed: mcDef superclassName ]).
+ClassModel >> extendLayoutWithMonticello: aMCClassDefinition [
 	"layout"
+	| mcDef newLayoutClass newLayout instVarsDefs |
+	mcDef := aMCClassDefinition.
 	newLayoutClass := mcDef espell2LayoutType.
 	newLayout := self role
 		ifNotNil: [ self assert: (self templateForRole: self role) layoutClass = self layout class.
@@ -407,10 +399,37 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 		select: [ :var | var class type = #instance ])
 		reject: [ :var | (self allInstVarNames indexOf: var name) > 0 ].
 	instVarsDefs do: [ :each | self addSlotRefactoringSubclasses: each name ].
+]
+
+{ #category : #transforming }
+ClassModel >> extendWithMonticello: aMCClassDefinition [
+	"An existent class is extended with a definition read from Monticello.
+	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we need to test all classes after they have been modified"
+
+	| mcDef packageDef |
+	mcDef := aMCClassDefinition.
+
+	"superclass"
+	self
+		superclass:
+			(mcDef superclassName = #nil
+				ifTrue: [ nil ]
+				ifFalse: [ self parent ensureClassNamed: mcDef superclassName ]).
+	
 	"role"
-	mcDef role
+	mcDef role ifNotNil: [ 
+		self assert: (self parent classRoles keys includes: mcDef role) 
+			description: 'Tonel sets role: ''', mcDef role, ''' to class ', self name , 
+			' but the language does not define this role (in LanguageModel>>classRoles)'. .
+		self 
+			assert: mcDef role = self role 
+			description: 'Tonel sets role: ''', mcDef role, ''' to class ', self name , 
+			' but I did not have a role set'.
+	 ].
+	"mcDef role
 		ifNotNil: [ self role ~= mcDef role
-				ifTrue: [ self role ifNil: [ self role: mcDef role ] ifNotNil: [ self halt ] ] ].
+				ifTrue: [ 
+					self role ifNil: [ self role: mcDef role ] ifNotNil: [ self halt ] ] ]."
 	"package"
 	packageDef := mcDef category.
 	(self package isNotNil and: [ self package name ~= packageDef ])

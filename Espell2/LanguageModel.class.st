@@ -522,6 +522,7 @@ LanguageModel >> classRoles [
 { #category : #roles }
 LanguageModel >> classRolesFromTonel: aFileReference [
 	| tonel packagesNames result definedClasses |
+	self deprecated: 'load class roles from templates or set custom roles in >>customClassRoles'.
 	self
 		flag:
 			'I am reading the tonel repo twice, now and when I load the definitions. 
@@ -1227,20 +1228,25 @@ LanguageModel >> loadRequiredGlobalVariables [
 
 { #category : #'tonel repository' }
 LanguageModel >> loadTonelRepository: aFileReference [
-	| tonel packagesNames  | 
+	| tonel packagesNames mcClassDefinitions | 
 	tonel := EP2TonelRepository new
 		directory: aFileReference asFileReference;
 		metamodel: self. 
 	packagesNames := tonel packageDescriptionsFromReadableFileNames collect: [:each | each at: 1].
 	self assert: packagesNames isNotEmpty description: 'The repository is empty'.
 
+	mcClassDefinitions := #() asOrderedCollection.
 	packagesNames	do: [ :pn | | package snap version |
 			package := self ensurePackageNamed: pn.
 			version := tonel versionWithInfo: (tonel versionInfoFromVersionNamed: pn).
 			snap := version snapshot.
 			snap definitions do: [ :each |
-				each ensureEspellDefinitionIn: self package: package
+				each ensureEspellDefinitionIn: self package: package.
+				each isClassDefinition ifTrue: [mcClassDefinitions add: each].
 			 ]].
+	mcClassDefinitions do: [ :each |
+		each extendLayoutWithMonticello: each
+		 ].
 	self fixCircularInheritance.
 	self testCompletitude.
 	self cleanInstVars.
