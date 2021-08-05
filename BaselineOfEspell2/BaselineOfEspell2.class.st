@@ -13,6 +13,9 @@ BaselineOfEspell2 >> baseline: spec [
 			spec
 				baseline: 'Espell'
 				with: [ spec repository: 'github://carolahp/espell' ].
+			spec
+				baseline: 'Phantom'
+				with: [ spec repository: 'github://carolahp/PHANtom:master' ].
 			spec package: 'Espell2' ].
 		
 
