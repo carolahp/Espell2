@@ -310,7 +310,7 @@ ClassModel >> defaultPackage [
 
 { #category : #'default values' }
 ClassModel >> defaultSuperclass [
-	^ self parent classWithRole: #ProtoObject
+	^ self parent classProtoObject
 ]
 
 { #category : #testing }

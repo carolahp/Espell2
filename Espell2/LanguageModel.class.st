@@ -808,7 +808,6 @@ LanguageModel >> generate [
 
 	self test.
 	self prepareBuilder.
-	self testRemoteStub.
 	self builder installClasses.
 	self builder installMethods.
 	self builder installProcess.
