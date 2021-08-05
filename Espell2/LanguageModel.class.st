@@ -959,6 +959,7 @@ LanguageModel >> initialize [
 	"load entry point"
 	self loadEntryPoint.
 	"apply custom transformations implemented using MOP"
+	self transformClasses.
 	self transform.
 	self test.
 	
@@ -1524,6 +1525,11 @@ LanguageModel >> tonelPath: aFileReference [
 LanguageModel >> transform [
 	"for the user to define custom transformations on the language model post default roles creation"
 	self subclassResponsibility 
+]
+
+{ #category : #hooks }
+LanguageModel >> transformClasses [
+	self allClasses do: #transform
 ]
 
 { #category : #api }

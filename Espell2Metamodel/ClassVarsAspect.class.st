@@ -2,15 +2,17 @@ Class {
 	#name : #ClassVarsAspect,
 	#superclass : #PhAspect,
 	#instVars : [
-		'metamodel'
+		'classModelClass',
+		'languageModelClass'
 	],
 	#category : #Espell2Metamodel
 }
 
 { #category : #'instance creation' }
-ClassVarsAspect class >> for: aClassModelClass [
+ClassVarsAspect class >> for: aClassModelClass in: aLanguageModelClass [
 	^ self basicNew 
-		metamodel: aClassModelClass;
+		classModelClass: aClassModelClass;
+		languageModelClass: aLanguageModelClass; 
 		initialize;
 		yourself.
 ]
@@ -21,17 +23,63 @@ ClassVarsAspect class >> new [
 ]
 
 { #category : #initialization }
+ClassVarsAspect >> adviceInitializeClass [
+	^ PhAdvice new
+		pointcut:
+			(PhPointcut new
+				receivers: classModelClass name;
+				selectors: 'initialize';
+				context: #(#receiver));
+		advice: [ :context | context receiver classVars: Dictionary new ];
+		type: #after
+]
+
+{ #category : #initialization }
+ClassVarsAspect >> adviceTransformClass [
+	| ivar getter |
+	ivar := self classVarsIVName.
+	getter := self varGetter: ivar.
+	
+	^ PhAdvice new
+		pointcut:
+			(PhPointcut new
+				receivers: classModelClass name;
+				selectors: 'transform';
+				context: #(#receiver));
+		advice: [ :context | 
+			context receiver addLocalMethodFromSource: getter selector: ivar ];
+		type: #before
+]
+
+{ #category : #initialization }
+ClassVarsAspect >> adviceTransformLanguage [
+	^ PhAdvice new
+		pointcut:
+			(PhPointcut new
+				receivers: languageModelClass name;
+				selectors: 'transform';
+				context: #(#receiver));
+		advice: [ :context | | dog |
+			dog := context receiver ensureClassNamed: 'Dog'.
+			dog classVars at: #Kingdom put: #animal ];
+		type: #after
+]
+
+{ #category : #accessing }
+ClassVarsAspect >> classModelClass: aClassModelClass [
+	classModelClass := aClassModelClass
+]
+
+{ #category : #initialization }
 ClassVarsAspect >> classModifier [
 	| getter setter ivar |
 	ivar := self classVarsIVName.
-	getter := ivar, '
-	^ ',ivar.
-	setter := ivar, ': anObject
-	', ivar, ' := anObject'.
+	getter := self varGetter: ivar.
+	setter := self varSetter: ivar.
 	
 	^ PhClassModifier new
 		on:
-			(PhPointcut receivers: self metamodel name selectors: #any asParser);
+			(PhPointcut receivers: classModelClass name selectors: #any asParser);
 		addNewInstanceVar: ivar;
 		addNewInstanceMethod: getter;
 		addNewInstanceMethod: setter;
@@ -47,36 +95,36 @@ ClassVarsAspect >> classVarsIVName [
 ClassVarsAspect >> initialize [
 	super initialize.
 	self addClassModifier: self classModifier.
-	self add: ((PhAdvice new)
-					pointcut: ((PhPointcut new)
-						receivers: self metamodel name;
-						selectors: 'transform';
-						context: #(#receiver));
-					advice: [ :context | 
-						context receiver  ];
-					type: #before)
+	self add: self adviceInitializeClass.
 	
 ]
 
 { #category : #'install-uninstall' }
 ClassVarsAspect >> install [
-	self assert: (self metamodel hasInstVarNamed: self classVarsIVName) not.
+	self assert: (classModelClass hasInstVarNamed: self classVarsIVName) not.
 	super install.
-	self assert: (self metamodel hasInstVarNamed: self classVarsIVName)
+	self assert: (classModelClass hasInstVarNamed: self classVarsIVName)
 ]
 
 { #category : #accessing }
-ClassVarsAspect >> metamodel [
-	^ metamodel
-]
-
-{ #category : #accessing }
-ClassVarsAspect >> metamodel: aClassModelClass [
-	metamodel := aClassModelClass
+ClassVarsAspect >> languageModelClass: aLanguageModelClass [
+	languageModelClass := aLanguageModelClass
 ]
 
 { #category : #'install-uninstall' }
 ClassVarsAspect >> uninstall [
 	super uninstall.
-	self assert: (self metamodel hasInstVarNamed: self classVarsIVName) not
+	self assert: (classModelClass hasInstVarNamed: self classVarsIVName) not
+]
+
+{ #category : #constants }
+ClassVarsAspect >> varGetter: var [
+	^ var, ' 
+	^ ' , var
+]
+
+{ #category : #constants }
+ClassVarsAspect >> varSetter: var [
+	^ var, ': anObject
+	', var, ' := anObject'.
 ]

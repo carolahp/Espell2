@@ -1385,6 +1385,11 @@ ClassModel >> tonelInstanceSide [
 	^ self
 ]
 
+{ #category : #hooks }
+ClassModel >> transform [ 
+	^ self 
+]
+
 { #category : #calypso }
 ClassModel >> users [
 	^ #() 
