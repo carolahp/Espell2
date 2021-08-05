@@ -30,7 +30,10 @@ ClassVarsAspect >> adviceInitializeClass [
 				receivers: classModelClass name;
 				selectors: 'initialize';
 				context: #(#receiver));
-		advice: [ :context | context receiver classVars: Dictionary new ];
+		advice: [ :context | 
+			context receiver
+				perform: self classVarsIVName , ':'
+				with: Dictionary new ];
 		type: #after
 ]
 
