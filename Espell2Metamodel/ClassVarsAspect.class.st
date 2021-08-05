@@ -2,39 +2,64 @@ Class {
 	#name : #ClassVarsAspect,
 	#superclass : #PhAspect,
 	#instVars : [
-		'classModifier',
 		'metamodel'
 	],
 	#category : #Espell2Metamodel
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #'instance creation' }
+ClassVarsAspect class >> for: aClassModelClass [
+	^ self basicNew 
+		metamodel: aClassModelClass;
+		initialize;
+		yourself.
+]
+
+{ #category : #'instance creation' }
+ClassVarsAspect class >> new [
+	self error: 'use >>for:'
+]
+
+{ #category : #initialization }
 ClassVarsAspect >> classModifier [
 	^ PhClassModifier new
 		on:
-			(PhPointcut
-				receivers: self metamodel name
-				selectors: #any asParser)
+			(PhPointcut receivers: self metamodel name selectors: #any asParser);
+		addNewInstanceVar: self classVarsIVName;
+		yourself
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #constants }
 ClassVarsAspect >> classVarsIVName [
 	^ #classPool
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #initialization }
 ClassVarsAspect >> initialize [
-	classModifier := self classModifier.
-	self assert: (self metamodel hasInstVarNamed: self classVarsIVName) not.
-	classModifier addNewInstanceVar: self classVarsIVName.
+	super initialize.
+	self addClassModifier: self classModifier
+	
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'install-uninstall' }
+ClassVarsAspect >> install [
+	self assert: (self metamodel hasInstVarNamed: self classVarsIVName) not.
+	super install.
+	self assert: (self metamodel hasInstVarNamed: self classVarsIVName)
+]
+
+{ #category : #accessing }
 ClassVarsAspect >> metamodel [
 	^ metamodel
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 ClassVarsAspect >> metamodel: aClassModelClass [
 	metamodel := aClassModelClass
+]
+
+{ #category : #'install-uninstall' }
+ClassVarsAspect >> uninstall [
+	super uninstall.
+	self assert: (self metamodel hasInstVarNamed: self classVarsIVName) not
 ]

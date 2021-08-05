@@ -7,9 +7,10 @@ Class {
 { #category : #bootstrapping }
 CandleWithClassVarsDemo class >> bootstrap [
 	| candle classVars |
-	[ classVars := ClassVarsAspect new
-		metamodel: CandleFromObjVLispLanguage classModel;
-		yourself.
+	"next line is to ensure the aspect gets uninstalled"
+	candle := Role new.
+	[ 
+	classVars := ClassVarsAspect for: CandleFromObjVLispLanguage classModel.
 	classVars install.
 	
 	candle := CandleFromObjVLispLanguage
@@ -21,12 +22,14 @@ CandleWithClassVarsDemo class >> bootstrap [
 		System log: System tinyBenchmarks.
 		System quit'.
 	self assert: (candle classClass allInstVarNames includes: classVars classVarsIVName).
+	Transcript show: candle classClass allInstVarNames;cr.
 	"candle generate.
 	candle writeImage.
 	candle imageInDisk executeInVM" ]
 		ensure: [ 
 			candle destroy.
-			classVars uninstall ]
+			classVars uninstall
+			 ]
 ]
 
 { #category : #bootstrapping }
