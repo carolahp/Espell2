@@ -10,8 +10,7 @@ SystemDictionaryAspect >> createRemoteAdvice [
 		pointcut:
 			(PhPointcut new
 				receivers: 'CandleFromObjVLispLanguage';
-				selectors: 'createRemoteSystemDictionary';
-				context:#(#receiver));
+				selectors: 'createRemoteSystemDictionary');
 		advice: [ :context | 
 			| code |
 			code := '
@@ -37,12 +36,11 @@ SystemDictionaryAspect >> loadGlobalVariablesAdvice [
 		pointcut:
 			(PhPointcut new
 				receivers: 'CandleFromObjVLispLanguage';
-				selectors: 'loadGlobalVariables';
-				context:#(#receiver));
+				selectors: 'loadGlobalVariables');
 		advice: [ :context | 
 			context receiver globalVariables
 				add:
-					((context receiver class globalModel named: #Smalltalk parent: context receiver)
+					((context receiver class globalModel named: #Smalltalk parent: self)
 						role: #Smalltalk;
 						initializationCode: 'SmalltalkImage basicNew') ];
 		type: #after
@@ -54,9 +52,8 @@ SystemDictionaryAspect >> transformAdvice [
 		pointcut:
 			(PhPointcut new
 				receivers: 'CandleFromObjVLispLanguage';
-				selectors: 'transform';
-				context:#(#receiver));
-		advice: [ :receiver | 
+				selectors: 'transform');
+		advice: [ :context | 
 			Transcript show: Character cr.
 			Transcript show: 'Transform from aspect'.
 			Transcript show: Character cr.];
