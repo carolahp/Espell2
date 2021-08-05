@@ -366,7 +366,10 @@ ClassModel >> destroy [
 	layout ifNotNil: [ 
 		layout destroy.
 		layout := nil.
-	] .
+	].
+	role ifNotNil: [ 
+		role destroy.
+		role := nil ].
 	methodDict ifNotNil: [ 
 		methodDict valuesDo: [ :method | method destroy ].
 		methodDict := nil.

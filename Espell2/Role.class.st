@@ -31,6 +31,12 @@ Role class >> named: aString for: anObjectModel [
 		yourself
 ]
 
+{ #category : #destroy }
+Role >> destroy [ 
+	objectModel := nil.
+	name := nil
+]
+
 { #category : #constants }
 Role >> index2InClassTable [
 	^ self templateClass index2InClassTable 
