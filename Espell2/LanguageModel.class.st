@@ -1073,10 +1073,10 @@ LanguageModel >> loadClassRoles [
 	| defaultRoles rolesFromTonel customRoles |
 	defaultRoles := self defaultClassRoles.
 	
-	rolesFromTonel := (self tonelPath
+	"rolesFromTonel := (self tonelPath
 		ifNotNil: [ :path | self classRolesFromTonel: path ]
-		ifNil: [ #() ]) asDictionary.
-	
+		ifNil: [ #() ]) asDictionary."
+	rolesFromTonel := #() asDictionary.
 	customRoles := (self customClassRoles ifNil: [ #() ]) asDictionary.
 	"initialize the instance var classRoles with no values"
 	classRoles := #() asDictionary.
@@ -1477,35 +1477,9 @@ LanguageModel >> systemClassMapping [
 
 { #category : #testing }
 LanguageModel >> test [
-	| model metamodel modelVars metamodelVars modelVarsLast metamodelVarsEnd modelVarsFirst object |
 	self assert: self name isNotNil.
 	
-	model := self classWithRole: #Class.
-	metamodel := self class classModel.
-	
-	modelVars := model allInstVarNames.
-	metamodelVars := metamodel
-		allClassModelInstVarNames.
-	modelVarsLast := (modelVars
-		copyFrom: 4
-		to: modelVars size) asIdentitySet.
-	metamodelVarsEnd := (metamodelVars
-		copyFrom: 4
-		to: metamodelVars size) asIdentitySet.
-	modelVarsFirst := metamodelVars copyFrom: 1 to: 3.
-	self
-		assert: (modelVars beginsWith: modelVarsFirst)
-		description:
-			'The first 3 instance variables of "' , model name
-				, '" must be ' , modelVarsFirst asString.
-	self
-		assert: (modelVarsLast asSet difference: metamodelVarsEnd asSet) isEmpty
-		description:
-			'The class ' , metamodel asString
-				, ' must define the same instance variables than'
-				, model asString.
-	
-	self behaviors do: [ :beh | beh testFull ].
+	self behaviors do: [ :beh | beh test ].
 	self globalVariables do: [ :glob | glob test ]
 ]
 

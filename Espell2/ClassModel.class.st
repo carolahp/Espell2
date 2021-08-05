@@ -1340,7 +1340,10 @@ ClassModel >> test [
 	self hasRole ifTrue: [ 
 		self role test: self
 		 ].
-	self assert: self layout isNotNil
+	self assert: self layout isNotNil.
+	self assert: self metaclass isNotNil.
+	self assert: self superclass ~= self.
+	self assert: (self allSuperclasses includes: self) not
 ]
 
 { #category : #hooks }
