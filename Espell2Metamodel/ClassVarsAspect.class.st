@@ -95,8 +95,10 @@ ClassVarsAspect >> classVarsIVName [
 ClassVarsAspect >> initialize [
 	super initialize.
 	self addClassModifier: self classModifier.
-	self add: self adviceInitializeClass.
-	
+	self
+		add: self adviceInitializeClass;
+		add: self adviceTransformClass;
+		add: self adviceTransformLanguage
 ]
 
 { #category : #'install-uninstall' }

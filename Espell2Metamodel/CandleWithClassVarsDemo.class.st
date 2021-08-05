@@ -24,11 +24,8 @@ CandleWithClassVarsDemo class >> bootstrap [
 	self
 		assert:
 			(candle classClass allInstVarNames includes: classVars classVarsIVName).
-	Transcript
-		show: candle classClass allInstVarNames;
-		cr.
-	self assert: candle classClass classPool isNil
-
+	self assert: candle classClass classPool isDictionary.
+	self assert: ((candle classNamed: #Dog) classVars at: #Kingdom) = #animal.
 	"candle generate.
 	candle writeImage.
 	candle imageInDisk executeInVM" ]
