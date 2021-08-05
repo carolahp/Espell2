@@ -23,6 +23,9 @@ CandleWithClassVarsDemo class >> bootstrap [
 		System quit'.
 	self assert: (candle classClass allInstVarNames includes: classVars classVarsIVName).
 	Transcript show: candle classClass allInstVarNames;cr.
+	self assert: candle classClass classPool isNil.
+	candle classClass classPool: 42.
+	self assert: candle classClass classPool = 42.
 	"candle generate.
 	candle writeImage.
 	candle imageInDisk executeInVM" ]

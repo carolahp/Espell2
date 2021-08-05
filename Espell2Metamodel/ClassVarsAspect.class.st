@@ -22,10 +22,19 @@ ClassVarsAspect class >> new [
 
 { #category : #initialization }
 ClassVarsAspect >> classModifier [
+	| getter setter ivar |
+	ivar := self classVarsIVName.
+	getter := ivar, '
+	^ ',ivar.
+	setter := ivar, ': anObject
+	', ivar, ' := anObject'.
+	
 	^ PhClassModifier new
 		on:
 			(PhPointcut receivers: self metamodel name selectors: #any asParser);
-		addNewInstanceVar: self classVarsIVName;
+		addNewInstanceVar: ivar;
+		addNewInstanceMethod: getter;
+		addNewInstanceMethod: setter;
 		yourself
 ]
 
@@ -37,7 +46,15 @@ ClassVarsAspect >> classVarsIVName [
 { #category : #initialization }
 ClassVarsAspect >> initialize [
 	super initialize.
-	self addClassModifier: self classModifier
+	self addClassModifier: self classModifier.
+	self add: ((PhAdvice new)
+					pointcut: ((PhPointcut new)
+						receivers: self metamodel name;
+						selectors: 'transform';
+						context: #(#receiver));
+					advice: [ :context | 
+						context receiver  ];
+					type: #before)
 	
 ]
 
