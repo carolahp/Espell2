@@ -442,27 +442,10 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 				ifTrue: [ nil ]
 				ifFalse: [ self parent ensureClassNamed: mcDef superclassName ]).
 
-	"role"
-	mcDef role
-		ifNotNil: [ self
-				assert: (self parent classRoles keys includes: mcDef role)
-				description:
-					'Tonel sets role: ''' , mcDef role , ''' to class ' , self name
-						,
-							' but the language does not define this role (in LanguageModel>>classRoles)'.
-			self
-				assert: mcDef role = self role name
-				description:
-					'Tonel sets role: ''' , mcDef role , ''' to class ' , self name
-						, ' but I did not have a role set' ].
-	"mcDef role
-		ifNotNil: [ self role ~= mcDef role
-				ifTrue: [ 
-					self role ifNil: [ self role: mcDef role ] ifNotNil: [ self halt ] ] ]."
 	"package"
 	packageDef := mcDef category.
 	(self package isNotNil and: [ self package name ~= packageDef ])
-		ifTrue: [ self package definedBehaviors remove: self ].
+		ifTrue: [ self package removeDefinedBehavior: self ].
 	self package
 		ifNil: [ | newPkg |
 			newPkg := self parent ensurePackageNamed: packageDef.
@@ -1026,7 +1009,7 @@ ClassModel >> mcType [
 
 { #category : #calypso }
 ClassModel >> metaLevelScope [
-	^self isInstanceSide ifTrue: [ ClyInstanceSideScope ] ifFalse: [ self halt."ClyClassSideScope" ]
+	^self isInstanceSide ifTrue: [ ClyInstanceSideScope ] ifFalse: [ ClyClassSideScope ]
 ]
 
 { #category : #accessing }
