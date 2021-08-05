@@ -725,7 +725,7 @@ LanguageModel >> ensureClassNamed: aString [
 
 { #category : #'accessing backend' }
 LanguageModel >> ensurePackageNamed: aString [
-
+	self assert: aString isNotNil.
 	^ self packages
 		at: aString asSymbol
 		ifAbsent: [ | package |
