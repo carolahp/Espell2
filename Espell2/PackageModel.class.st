@@ -176,6 +176,12 @@ PackageModel >> registerCustom [
 	self subclassResponsibility
 ]
 
+{ #category : #accessing }
+PackageModel >> removeDefinedBehavior: aClassModel [
+	(self definesBehavior: aClassModel)
+		ifTrue: [ self definedBehaviors remove: aClassModel ]
+]
+
 { #category : #calypso }
 PackageModel >> tagsForClasses [
 	^ IdentitySet new

@@ -183,9 +183,7 @@ LanguageModel >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject
 LanguageModel >> addBehavior: aMClass [
 	self
 		classNamed: aMClass name
-		ifAbsent: [ aMClass package
-				ifNil: [ self defaultPackage addDefinedBehavior: aMClass ].
-			self behaviors at: aMClass name put: aMClass ]
+		ifAbsent: [ self behaviors at: aMClass name put: aMClass ]
 		ifPresent: [ :found | 
 			aMClass = found
 				ifFalse: [ self error: 'trying to replace existent behavior' ]
@@ -1234,8 +1232,9 @@ LanguageModel >> loadTonelRepository: aFileReference [
 	mcClassDefinitions do: [ :each | 
 		(self classNamed: (self classOrMetaclassNameFrom: each name)) extendLayoutWithMonticello: each
 		 ].
+	
+	"self fixCircularInheritance."
 	self allClasses do: #test. 
-	self fixCircularInheritance.
 	self testCompletitude.
 	self cleanInstVars.
 	self cleanPackages.

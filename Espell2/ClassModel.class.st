@@ -303,6 +303,11 @@ ClassModel >> defaultMethodDictionary [
 	^ IdentityDictionary new 
 ]
 
+{ #category : #accessing }
+ClassModel >> defaultPackage [
+	^ self parent defaultPackage
+]
+
 { #category : #'default values' }
 ClassModel >> defaultSuperclass [
 	^ self parent classWithRole: #ProtoObject
@@ -556,9 +561,7 @@ ClassModel >> initialize [
 	(superclass isNil and: [ self isProtoObject not ])
 		ifTrue: [ superclass := self defaultSuperclass ].
 	role ifNotNil: [ self loadRoleInformation ].
-	layout ifNil: [ layout := self defaultLayout on: self ].
-	self package
-		ifNil: [ self parent defaultPackage addDefinedBehavior: self ]
+	layout ifNil: [ layout := self defaultLayout on: self ]
 ]
 
 { #category : #initialization }
@@ -1108,12 +1111,18 @@ ClassModel >> objectSpace [
 
 { #category : #accessing }
 ClassModel >> package [
-	^ self parent packageFor: self
+	^ (self parent packageFor: self)
+		ifNil: [ self defaultPackage addDefinedBehavior: self.
+			self parent packageFor: self ].
+	
 ]
 
 { #category : #accessing }
-ClassModel >> package: anEP2MPackage [ 
-	anEP2MPackage addDefinedBehavior: self
+ClassModel >> package: aPackageModel [ 
+	| oldPackage |
+	oldPackage := self package.
+	oldPackage removeDefinedBehavior: self.
+	aPackageModel addDefinedBehavior: self
 ]
 
 { #category : #'hooks-dynamic method loading' }
