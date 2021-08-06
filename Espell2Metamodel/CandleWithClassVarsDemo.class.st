@@ -12,9 +12,9 @@ CandleWithClassVarsDemo class >> bootstrap [
 	[ 
 	langAspect := self languageAspect.
 	langAspect install.
-	classVars := ClassVarAspect for: CandleFromObjVLispClass.
+	classVars := ClassVarAspect for: MatchClass.
 	classVars install.
-	candle := CandleFromObjVLispLanguage basicNew
+	candle := MatchLanguage basicNew
 		name: 'Candle';
 		tonelPath: self sources asFileReference;
 		entryPointCode:

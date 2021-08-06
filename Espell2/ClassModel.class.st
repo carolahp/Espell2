@@ -1332,13 +1332,18 @@ ClassModel >> tagsForMethods [
 
 { #category : #hooks }
 ClassModel >> test [
-	self hasRole ifTrue: [ 
-		self role test: self
-		 ].
+	| supclass |
+	self hasRole
+		ifTrue: [ self role test: self ].
 	self assert: self layout isNotNil.
 	self assert: self metaclass isNotNil.
-	self assert: self superclass ~= self.
-	self assert: (self allSuperclasses includes: self) not
+	"assert I am not in my superclasses"
+	supclass := self.
+	[ supclass isNil ]
+		whileFalse: [ supclass := supclass superclass.
+			self
+				assert: supclass ~= self
+				description: 'cycles in inheritance chain are forbidden' ]
 ]
 
 { #category : #hooks }

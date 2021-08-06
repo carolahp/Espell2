@@ -49,10 +49,12 @@ LanguageTest >> newImageInMemory [
 
 { #category : #'language creation' }
 LanguageTest >> newModel [
-	^ model := self languageModelClass
+	model := self languageModelClass
 		newFromModel: self sourcesPath asFileReference
 		withName: self languageModelClass name
-		withEntryPoint: entryPointCode
+		withEntryPoint: entryPointCode.
+	model build.
+	^ model
 ]
 
 { #category : #'instance creation' }

@@ -342,6 +342,24 @@ LanguageModel >> browseAs: browserTitleString [
 	^ browser open.
 ]
 
+{ #category : #initialization }
+LanguageModel >> build [
+	self loadClassRoles.
+	self loadKernel.
+	self loadRequiredBehaviors.
+	self loadRequiredGlobalVariables.
+	self loadGlobalVariables.
+	"load definitions from Tonel if corresponds"
+	self loadClasses.
+	self test. 
+	"load entry point"
+	self loadEntryPoint.
+	"apply custom transformations implemented using MOP"
+	self transformClasses.
+	self transform.
+	self test
+]
+
 { #category : #accessing }
 LanguageModel >> builder [
 	^ builder
@@ -787,16 +805,6 @@ LanguageModel >> firstMetaclasses [
 	self subclassResponsibility 
 ]
 
-{ #category : #refactor }
-LanguageModel >> fixCircularInheritance [
-	self allClasses
-		do: [ :class | 
-			class superclass = self
-				ifTrue: [ class superclass: nil ].
-			class metaclass superclass 
-				ifNil: [ class metaclass superclass: self classClass ] ]
-]
-
 { #category : #'vm-constants' }
 LanguageModel >> formatOfImmediate [
 	^7
@@ -947,21 +955,11 @@ LanguageModel >> immediateClassRoles [
 
 { #category : #initialization }
 LanguageModel >> initialize [ 
+	super initialize.
 	behaviors :=  self defaultBehaviors.
 	packages := self defaultPackages.
 	globalVariables := self defaultGlobalVariables.
-	self loadClassRoles.
-	self loadRequiredBehaviors.
-	self loadRequiredGlobalVariables.
-	self loadGlobalVariables.
-	"load definitions from Tonel if corresponds"
-	self loadClasses.
-	"load entry point"
-	self loadEntryPoint.
-	"apply custom transformations implemented using MOP"
-	self transformClasses.
-	self transform.
-	self test.
+	
 	
 ]
 
@@ -1154,10 +1152,8 @@ LanguageModel >> loadLanguageModelDefinitions: aFileReference [
 
 { #category : #'load definitions - required' }
 LanguageModel >> loadRequiredBehaviors [
-	"we load core classes first (object, class, etc) because they are special in the inheritance chain"
-
+	
 	| missingRoles |
-	self loadKernel.
 	" missing roles are those that were not loaded in the kernel "
 	missingRoles := self classRoles keys asSet
 		difference: (self allClasses values select: #hasRole thenCollect: [:class | class role name ]).
@@ -1233,8 +1229,6 @@ LanguageModel >> loadTonelRepository: aFileReference [
 		(self classNamed: (self classOrMetaclassNameFrom: each name)) extendLayoutWithMonticello: each
 		 ].
 	
-	"self fixCircularInheritance."
-	self allClasses do: #test. 
 	self testCompletitude.
 	self cleanInstVars.
 	self cleanPackages.
@@ -1477,8 +1471,8 @@ LanguageModel >> systemClassMapping [
 { #category : #testing }
 LanguageModel >> test [
 	self assert: self name isNotNil.
-	
-	self behaviors do: [ :beh | beh test ].
+	" cycles in inheritance chain are forbidden "
+	self allClasses do: [ :class | class test ].
 	self globalVariables do: [ :glob | glob test ]
 ]
 
