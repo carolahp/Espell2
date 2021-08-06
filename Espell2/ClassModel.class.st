@@ -740,10 +740,8 @@ ClassModel >> installMethods [
 
 { #category : #'api - stubs creation' }
 ClassModel >> installStub [
-	" I install the stub of my corresponding class in the kernel.
-	I depend on the implementation of installStubCustom "
-
-	self remoteIsInstalled
+	^ self classLoader installStub: self
+"	self remoteIsInstalled
 		ifTrue: [ ^ self remote ].
 	((self parent firstMetaclasses includes: self)
 		or: [ self metaclass = self or: [ self metaclass metaclass = self ] ])
@@ -755,11 +753,12 @@ ClassModel >> installStub [
 	self metaclass installStub.
 	self installStubBasic.
 	self testStub.
-	^ self remote
+	^ self remote"
 ]
 
 { #category : #'api - stubs creation' }
 ClassModel >> installStubBasic [
+	self deprecated: 'use PBClassLoader>>installStubBasic:'.
 	" I install the stub of my corresponding class in the kernel "
 	self remote: (self classLoader
 								createStubForClassNamed: self name

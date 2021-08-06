@@ -28,8 +28,8 @@ Role class >> defaultClassRolesFor: aLanguageModel [
 	self
 		assert: metamodelRoles asSet size = metamodelRoles size
 		description: 'same role defined for more than one ObjectModel class'.
-	roles := metamodelRoles addAll: self defaultClassRoles.
-	^ (roles collect: [ :each | each -> each ]) asDictionary
+	metamodelRoles addAll: self defaultClassRoles.
+	^ (metamodelRoles asSet collect: [ :each | each -> each ]) asDictionary
 ]
 
 { #category : #instantiation }
