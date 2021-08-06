@@ -1521,7 +1521,7 @@ LanguageModel >> tonelPath: aFileReference [
 	tonelPath := aFileReference
 ]
 
-{ #category : #hooks }
+{ #category : #accessing }
 LanguageModel >> transform [
 	"for the user to define custom transformations on the language model post default roles creation"
 	self subclassResponsibility 

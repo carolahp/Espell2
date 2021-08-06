@@ -6,21 +6,19 @@ Class {
 
 { #category : #bootstrapping }
 CandleWithClassVarsDemo class >> bootstrap [
-	| candle classVars langAspect membrane |
+	| candle classVars langAspect classMemb langMemb |
 	"next line is to ensure the aspect gets uninstalled"
 	candle := Role new.
-	[
-	membrane := PhMembrane new.
-	classVars := ClassVarAspect for: CandleFromObjVLispClass.
+	[ 
 	langAspect := self languageAspect.
-	classVars registerOn: membrane.
-	langAspect registerOn: membrane.
-	membrane deployOn: candle.
+	langAspect install.
+	classVars := ClassVarAspect for: CandleFromObjVLispClass.
+	classVars install.
 	candle := CandleFromObjVLispLanguage basicNew
 		name: 'Candle';
-		tonelPath: self sources asFileReference; 
-		entryPointCode: 
-		'System log: ''candle!''.
+		tonelPath: self sources asFileReference;
+		entryPointCode:
+			'System log: ''candle!''.
 		System log: System tinyBenchmarks.
 		System quit';
 		yourself.
@@ -33,32 +31,40 @@ CandleWithClassVarsDemo class >> bootstrap [
 	"candle generate.
 	candle writeImage.
 	candle imageInDisk executeInVM" ]
-		ensure: [ 
-			candle destroy.
-			membrane uninstall.
-			
-			"classVars uninstall."
-			"langAspect uninstall" ]
+		ensure: [ candle destroy.
+			langAspect uninstall.
+			classVars uninstall.
+		 ]
 ]
 
 { #category : #bootstrapping }
 CandleWithClassVarsDemo class >> languageAspect [
-
 	^ PhAspect new
 		add:
 			(PhAdvice new
 				pointcut:
 					(PhPointcut new
 						receivers: 'CandleFromObjVLispLanguage';
-						selectors: 'transform';
+						selectors: #(transform);
 						context: #(#receiver));
 				advice: [ :context | 
 					| dog dict |
+					
+					Transcript show: 'executing advice transform Language from LanguageAspect!';cr.
+	
 					dog := context receiver ensureClassNamed: 'Dog'.
 					dict := dog classPool.
 					dict at: #Kingdom put: #animal ];
 				type: #after);
-				yourself.
+		yourself
+]
+
+{ #category : #bootstrapping }
+CandleWithClassVarsDemo class >> languagePointcut [
+	^ PhPointcut new
+		receivers: 'CandleFromObjVLispLanguage';
+		selectors: #();
+		context: #(#receiver)
 ]
 
 { #category : #bootstrapping }

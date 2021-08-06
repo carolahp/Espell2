@@ -29,27 +29,19 @@ FieldAspect >> adviceInitializeClass [
 				selectors: 'initialize';
 				context: #(#receiver));
 		advice: [ :context | 
+			Transcript
+				show: 'initializing classVars dict!';
+				cr.
+			"setting default value of field"
 			context receiver
 				perform: self fieldName , ':'
-				with: self defaultFieldValue ];
+				with: self defaultFieldValue.
+			"adding acessor method to the class model whose role 'metaclass' or 'class'' "
+			context receiver role = modelClass role
+				ifTrue: [ context receiver
+						addLocalMethodFromSource: self fieldGetter
+						selector: self fieldName ] ];
 		type: #after
-]
-
-{ #category : #constants }
-FieldAspect >> adviceTransformClass [
-	| ivar getter |
-	ivar := self fieldName.
-	getter := self fieldGetter.
-	
-	^ PhAdvice new
-		pointcut:
-			(PhPointcut new
-				receivers: modelClass name;
-				selectors: 'transform';
-				context: #(#receiver));
-		advice: [ :context | 
-			context receiver addLocalMethodFromSource: getter selector: ivar ];
-		type: #before
 ]
 
 { #category : #initialization }
@@ -97,15 +89,18 @@ FieldAspect >> fieldSetter [
 { #category : #initialization }
 FieldAspect >> initialize [
 	super initialize.
+	Transcript
+		show: 'initializing ClassVar Aspect!';
+		cr.
 	self addClassModifier: self classModifier.
-	self
-		add: self adviceInitializeClass;
-		add: self adviceTransformClass
+	self add: self adviceInitializeClass
 ]
 
 { #category : #'install-uninstall' }
 FieldAspect >> install [
 	self assert: (modelClass hasInstVarNamed: self fieldName) not.
+	
+	Transcript show: 'Installing ClassVar Aspect!';cr.
 	super install.
 	self assert: (modelClass hasInstVarNamed: self fieldName)
 ]
@@ -117,6 +112,9 @@ FieldAspect >> modelClass: aModelClass [
 
 { #category : #'install-uninstall' }
 FieldAspect >> uninstall [
+	Transcript show: 'Uninstalling ClassVar Aspect!';cr.
+	
 	super uninstall.
+	
 	self assert: (modelClass hasInstVarNamed: self fieldName) not
 ]
