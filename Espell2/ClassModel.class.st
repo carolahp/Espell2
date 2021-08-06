@@ -75,13 +75,13 @@ ClassModel >> acceptsNewSlots [
 	^ self layout acceptsNewSlots 
 ]
 
-{ #category : #'accessing methods' }
+{ #category : #'bootstrap - build model methods' }
 ClassModel >> addLocalMethod: anEP2MMethod [
 	self deprecated: 'use addLocalMethodFromsource:selector:'.
 	
 ]
 
-{ #category : #'accessing methods' }
+{ #category : #'bootstrap - build model methods' }
 ClassModel >> addLocalMethodFromSource: source selector: selector [
 	
 	^ (self ensureLocalMethodNamed: selector)
@@ -90,23 +90,23 @@ ClassModel >> addLocalMethodFromSource: source selector: selector [
 		yourself
 ]
 
-{ #category : #calypso }
+{ #category : #'bootstrap - build model methods' }
 ClassModel >> addMethodTag: aSymbol [ 
 	self backend addMethodTag: aSymbol to: self
 ]
 
-{ #category : #'accessing slots' }
+{ #category : #'bootstrap - build model fields' }
 ClassModel >> addSlot: aString [ 
 	^ self layout addSlot: aString
 		
 ]
 
-{ #category : #'accessing slots' }
+{ #category : #'bootstrap - build model fields' }
 ClassModel >> addSlot: aString index: anInteger [  
 	self layout addSlot: aString index: anInteger
 ]
 
-{ #category : #adding }
+{ #category : #'bootstrap - build model fields' }
 ClassModel >> addSlotRecursivelyWherePossible: slotName [
 	| insert required |
 	self
@@ -124,7 +124,7 @@ ClassModel >> addSlotRecursivelyWherePossible: slotName [
 		to: [ :c | c subclasses ]
 ]
 
-{ #category : #slots }
+{ #category : #'bootstrap - build model fields' }
 ClassModel >> addSlotRefactoringSubclasses: slotName [
 
 	self allSubclasses
@@ -135,7 +135,7 @@ ClassModel >> addSlotRefactoringSubclasses: slotName [
 	
 ]
 
-{ #category : #'accessing instance variables' }
+{ #category : #'accessing fields' }
 ClassModel >> allInstVarNames [
 	^ (self allSlots select: #isInstanceVariableSlot) collect: #name
 ]
@@ -171,7 +171,7 @@ ClassModel >> allSubclasses [
 	^ subclasses
 ]
 
-{ #category : #'accessing superclasses' }
+{ #category : #querying }
 ClassModel >> allSuperclasses [
 	"Answer an OrderedCollection of the receiver's and the receiver's  
 	ancestor's superclasses. The first element is the receiver's immediate  
@@ -188,7 +188,7 @@ ClassModel >> allSuperclasses [
 			temp ]
 ]
 
-{ #category : #monticello }
+{ #category : #'tonel compatibility' }
 ClassModel >> asMCDefinition [
 	^ (MCClassDefinitionEspell
 		name: self name
@@ -212,7 +212,7 @@ ClassModel >> backend [
 	^ self parent backend 
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing metaclass' }
 ClassModel >> basicClass [
 	^ self metaclass
 ]
@@ -245,7 +245,7 @@ ClassModel >> classIsMeta [
 	^ false
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'accessing kernel backend' }
 ClassModel >> classLoader [
 	^ self parent classLoader
 ]
@@ -255,7 +255,7 @@ ClassModel >> classSide [
 	^ self metaclass
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing fields' }
 ClassModel >> classVarNames [
 	"compiler compatibility"
 	^ #()
@@ -298,17 +298,17 @@ ClassModel >> defaultLayout [
 	^ self class defaultLayout 
 ]
 
-{ #category : #'accessing format' }
+{ #category : #'initialization - default values' }
 ClassModel >> defaultMethodDictionary [
 	^ IdentityDictionary new 
 ]
 
-{ #category : #accessing }
+{ #category : #'initialization - default values' }
 ClassModel >> defaultPackage [
 	^ self parent defaultPackage
 ]
 
-{ #category : #'default values' }
+{ #category : #'initialization - default values' }
 ClassModel >> defaultSuperclass [
 	^ self parent classProtoObject
 ]
@@ -391,7 +391,7 @@ ClassModel >> ensureLocalMethodNamed: aSymbol [
 		newMethod].
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> ensureRemote [
 	^ (self remote
 		ifNil:
@@ -400,12 +400,12 @@ ClassModel >> ensureRemote [
 			self remote ]) asRemoteClass
 ]
 
-{ #category : #accessing }
+{ #category : #binding }
 ClassModel >> environment [ 
 	^ self parent 
 ]
 
-{ #category : #transforming }
+{ #category : #'tonel repository' }
 ClassModel >> extendLayoutWithMonticello: aMCClassDefinition [
 	"layout"
 	| mcDef newLayoutClass newLayout instVarsDefs |
@@ -430,7 +430,7 @@ ClassModel >> extendLayoutWithMonticello: aMCClassDefinition [
 	instVarsDefs do: [ :each | self addSlotRefactoringSubclasses: each name ]
 ]
 
-{ #category : #transforming }
+{ #category : #'tonel repository' }
 ClassModel >> extendWithMonticello: aMCClassDefinition [
 	"An existent class is extended with a definition read from Monticello.
 	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we need to test all classes after they have been modified"
@@ -456,7 +456,7 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 	^ self
 ]
 
-{ #category : #hooks }
+{ #category : #'tonel repository' }
 ClassModel >> extendWithMonticelloCustom: aEP2MCClassDefinition [
 	"Specify how Class attributes read from Tonel files are loaded into this class model. 
 	Access attributes by sending a message whose selector is the attribute name.
@@ -493,7 +493,7 @@ ClassModel >> hasRole [
 	^ role isNotNil
 ]
 
-{ #category : #install }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> hookInstall [
 	| remoteMethodDict remoteSuperclass |
 	self halt.
@@ -524,7 +524,7 @@ ClassModel >> includesMethodsAffectedBy: aMethodRemoved [
 	^aMethodRemoved affectsMethodsDefinedInPackage: self
 ]
 
-{ #category : #'accessing methods' }
+{ #category : #testing }
 ClassModel >> includesSelector: aString [ 
 	^ self methodDict anySatisfy: [ :method | method selector = aString ]
 ]
@@ -643,7 +643,7 @@ ClassModel >> initializeWithTemplateGeneric: aTemplateClass [
 	^ self
 ]
 
-{ #category : #hooks }
+{ #category : #binding }
 ClassModel >> innerBindingOf: aSymbol [ 
 	"Answer the binding of some variable resolved in the scope of the receiver, or one of its superclass
 	but do not look up binding in receiver's environment.
@@ -662,17 +662,17 @@ ClassModel >> instSpec [
 	^ self layout instSpec
 ]
 
-{ #category : #'accessing instance variables' }
+{ #category : #'accessing fields' }
 ClassModel >> instVarIndexFor: aString ifAbsent: aBlockClosure [ 
 	^ self allInstVarNames indexOf: aString ifAbsent: aBlockClosure 
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing fields' }
 ClassModel >> instVarNames [
 	^ self slots collect: #name
 ]
 
-{ #category : #install }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> install [
 	self installBasic.
 	self installCustom.
@@ -680,7 +680,7 @@ ClassModel >> install [
 
 ]
 
-{ #category : #install }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> installBasic [
 	| remoteMethodDict remoteSuperclass |
 	self remoteIsInstalled
@@ -701,12 +701,12 @@ ClassModel >> installBasic [
 	^ self remote
 ]
 
-{ #category : #install }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> installCustom [
 	self subclassResponsibility 
 ]
 
-{ #category : #'api - stubs creation' }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> installMetacircularStub [
 	"I install a class stub that is instance of itself"
 	| theNewMetaclass metaclassIndex |
@@ -730,7 +730,7 @@ ClassModel >> installMetacircularStub [
 	^ theNewMetaclass
 ]
 
-{ #category : #install }
+{ #category : #'bootstrap - build model methods' }
 ClassModel >> installMethods [
 	(self localMethods select: #isInstallable)
 		do: [ :method | | remoteMethod | 
@@ -738,7 +738,7 @@ ClassModel >> installMethods [
 			self remote methodDictionary at: remoteMethod selector put: remoteMethod ]
 ]
 
-{ #category : #'api - stubs creation' }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> installStub [
 	^ self classLoader installStub: self
 "	self remoteIsInstalled
@@ -756,7 +756,7 @@ ClassModel >> installStub [
 	^ self remote"
 ]
 
-{ #category : #'api - stubs creation' }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> installStubBasic [
 	self deprecated: 'use PBClassLoader>>installStubBasic:'.
 	" I install the stub of my corresponding class in the kernel "
@@ -771,14 +771,14 @@ ClassModel >> installStubBasic [
 	^ self remote
 ]
 
-{ #category : #hooks }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> installStubCustom [
 	"Using method from protocol 'api-stubs creation' create your own stub and return it"
 	self deprecated: 'Use first Language >> installMulticlassStubs: to create the first stubs. Use >>installStub to load classes after stub creation'.
 	self subclassResponsibility
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing metaclass' }
 ClassModel >> instanceSide [
 	"compiler compatibility"
 	^ self
@@ -851,7 +851,7 @@ ClassModel >> isInstanceSide [
 	^ true
 ]
 
-{ #category : #accessing }
+{ #category : #testing }
 ClassModel >> isMeta [
 	"compiler compatibility"
 	^ false
@@ -940,7 +940,7 @@ ClassModel >> layout: anEP2Layout [
 	layout := anEP2Layout
 ]
 
-{ #category : #'load role' }
+{ #category : #role }
 ClassModel >> loadRoleInformation [
 	| roleInstVars |
 	self assert: self hasRole.
@@ -961,7 +961,7 @@ ClassModel >> localMethodNamed: aSymbol ifAbsent: aBlock [
 	^ aBlock value.
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing methods' }
 ClassModel >> localMethods [
 	^ methodDict
 ]
@@ -1004,7 +1004,7 @@ ClassModel >> markMethodAsAccessed: aMethod [
 		ifNotNil: [ :method | method markAsAccessed ] 
 ]
 
-{ #category : #monticello }
+{ #category : #'tonel compatibility' }
 ClassModel >> mcType [
 	^ self layout mcType
 ]
@@ -1014,12 +1014,12 @@ ClassModel >> metaLevelScope [
 	^self isInstanceSide ifTrue: [ ClyInstanceSideScope ] ifFalse: [ ClyClassSideScope ]
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing metaclass' }
 ClassModel >> metaclass [ 
 	self subclassResponsibility 
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'accessing kernel backend' }
 ClassModel >> methodBuilder [
 	^ self parent methodBuilder
 ]
@@ -1029,13 +1029,13 @@ ClassModel >> methodDict [
 	^ methodDict
 ]
 
-{ #category : #accessing }
+{ #category : #'bootstrap - build model' }
 ClassModel >> methodDict: aDictionary [
 	"^ self writeSlotNamed: #methodDict value: aDictionary"
 	methodDict := aDictionary 
 ]
 
-{ #category : #'metamodel-accessing' }
+{ #category : #metamodel }
 ClassModel >> methodModel [
 	^ self class methodModel
 ]
@@ -1054,12 +1054,12 @@ ClassModel >> methodNamed: aString ifAbsent: aBlock [
 	^ [self methodDict at: aString asSymbol] on: KeyNotFound do: aBlock
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing methods' }
 ClassModel >> methods [
 	^ self methodDict values asArray
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'bootstrap - build model' }
 ClassModel >> name: aName [
 	(self parent isNotNil and: [ self name ~= aName ])
 		ifTrue: [ self parent
@@ -1071,7 +1071,7 @@ ClassModel >> name: aName [
 	super name: aName
 ]
 
-{ #category : #'api - stubs creation' }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> newStubWithFormat: anInteger [
 	" Only valid for metaclasses. 
 	I create a new class stub in the kernel by instantiating myself "
@@ -1089,12 +1089,12 @@ ClassModel >> objectAccessedPropertyName [
 	^ parent objectAccessedPropertyName
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'accessing kernel backend' }
 ClassModel >> objectSpace [
 	^ self parent objectSpace
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing package' }
 ClassModel >> package [
 	^ (self parent packageFor: self)
 		ifNil: [ self defaultPackage addDefinedBehavior: self.
@@ -1102,7 +1102,7 @@ ClassModel >> package [
 	
 ]
 
-{ #category : #accessing }
+{ #category : #'bootstrap - build model' }
 ClassModel >> package: aPackageModel [ 
 	| oldPackage |
 	oldPackage := self package.
@@ -1110,7 +1110,7 @@ ClassModel >> package: aPackageModel [
 	aPackageModel addDefinedBehavior: self
 ]
 
-{ #category : #'hooks-dynamic method loading' }
+{ #category : #'bootstrap - build kernel dynamic methods' }
 ClassModel >> parserClass [ 
 	^ RBParser
 ]
@@ -1163,18 +1163,18 @@ ClassModel >> recursivellyDo: doBlock to: nextClassesBlock [
 	(nextClassesBlock value: self) do: [ :c | c recursivellyDo: doBlock to: nextClassesBlock  ]
 ]
 
-{ #category : #hooks }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> register [ 
 	self remoteSystemDictionary at: self name put: self remote.
 	self registerCustom
 ]
 
-{ #category : #hooks }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> registerCustom [
 	self subclassResponsibility 
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'accessing kernel objects' }
 ClassModel >> remote [
 	remote ifNil: [ ^nil ].
 	^ remote isNilObject 
@@ -1182,7 +1182,7 @@ ClassModel >> remote [
 		ifFalse: [ remote asRemoteClass ]
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> remote: anEP2RemoteClass [ 
 	remote := anEP2RemoteClass
 ]
@@ -1192,7 +1192,7 @@ ClassModel >> remoteIsInstalled [
 	^ self remote isNotNil and: [ self remote isNotNilObject ]
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'accessing kernel objects' }
 ClassModel >> remoteSystemDictionary [
 	^ self parent remote espellBackend objectSpace systemDictionary
 ]
@@ -1210,18 +1210,18 @@ ClassModel >> removeLocalMethod: aMethodModel [
 
 ]
 
-{ #category : #'accessing slots' }
+{ #category : #'bootstrap - build model fields' }
 ClassModel >> removeSlot: aString [ 
 	^ self layout removeSlot: aString
 		
 ]
 
-{ #category : #accessing }
+{ #category : #role }
 ClassModel >> role: aString [ 
 	role := aString
 ]
 
-{ #category : #transforming }
+{ #category : #'bootstrap - build model' }
 ClassModel >> setLayoutKeepingSlots: anEP2Layout [
 	| oldSlots |
 	oldSlots := self layout ifNil: [ #() ] ifNotNil: [ self slots ].
@@ -1229,7 +1229,7 @@ ClassModel >> setLayoutKeepingSlots: anEP2Layout [
 	oldSlots do: [ :slot | self addSlot: slot name index: slot index ]
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing fields' }
 ClassModel >> sharedPools [
 	"compiler compatibility"
 	^#()
@@ -1244,12 +1244,12 @@ ClassModel >> slotNamed: aString [
 		ifNotEmpty: [ :collection | collection anyOne ]
 ]
 
-{ #category : #slots }
+{ #category : #'accessing fields' }
 ClassModel >> slotNamed: aString ifAbsent: aBlockClosure [ 
 	^ self layout slotNamed: aString ifAbsent: aBlockClosure 
 ]
 
-{ #category : #slots }
+{ #category : #'accessing fields' }
 ClassModel >> slotNamed: aString ifAbsent: absentBlock ifPresent: presentBlock [ 
 	^ self layout slotNamed: aString ifAbsent: absentBlock ifPresent: presentBlock 
 ]
@@ -1259,7 +1259,7 @@ ClassModel >> slotNamed: aString ifNone: aBlockClosure [
 	^ [ self slotNamed: aString ] on: KeyNotFound do: aBlockClosure
 ]
 
-{ #category : #slots }
+{ #category : #'accessing fields' }
 ClassModel >> slotNamed: aString ifPresent: aBlockClosure [ 
 	^ self layout slotNamed: aString ifPresent: aBlockClosure 
 
@@ -1307,7 +1307,7 @@ ClassModel >> superclass [
 	^ superclass
 ]
 
-{ #category : #accessing }
+{ #category : #'bootstrap - build model' }
 ClassModel >> superclass: anEP2MBehavior [
 	^ superclass := anEP2MBehavior 
 ]
@@ -1329,7 +1329,7 @@ ClassModel >> tagsForMethods [
 	^ tagsForMethods
 ]
 
-{ #category : #hooks }
+{ #category : #tests }
 ClassModel >> test [
 	| supclass |
 	self hasRole
@@ -1345,13 +1345,13 @@ ClassModel >> test [
 				description: 'cycles in inheritance chain are forbidden' ]
 ]
 
-{ #category : #hooks }
+{ #category : #tests }
 ClassModel >> testForWriting [
 	self test.
 	self assert: self indexInClassTable isNotNil.
 ]
 
-{ #category : #hooks }
+{ #category : #tests }
 ClassModel >> testFull [
 	self test.
 	"no circularities in inheritance chain (improve)"
@@ -1360,17 +1360,17 @@ ClassModel >> testFull [
 	
 ]
 
-{ #category : #testing }
+{ #category : #tests }
 ClassModel >> testRemote [
 	self remote test
 ]
 
-{ #category : #testing }
+{ #category : #tests }
 ClassModel >> testRemoteStub [
 	self remote asRemoteClass testStub
 ]
 
-{ #category : #testing }
+{ #category : #tests }
 ClassModel >> testStub [
 	self assert: self remote isNotNil.
 	self assert: self remote basicClass = self metaclass remote.
@@ -1378,7 +1378,7 @@ ClassModel >> testStub [
 	self remote testStub
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing metaclass' }
 ClassModel >> theNonMetaClass [
 	"compiler compatibility"
 	^ self
@@ -1389,7 +1389,7 @@ ClassModel >> tonelInstanceSide [
 	^ self
 ]
 
-{ #category : #hooks }
+{ #category : #'bootstrap - build model' }
 ClassModel >> transform [ 
 	^ self 
 ]
@@ -1404,7 +1404,7 @@ ClassModel >> visibleMethods [
 	^ self localMethods
 ]
 
-{ #category : #'accessing slots' }
+{ #category : #'bootstrap - build model fields' }
 ClassModel >> writeSlotNamed: aString value: anObject [
 	
 	(self basicClass slotNamed: aString) write: anObject to: self
