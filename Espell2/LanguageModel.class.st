@@ -642,7 +642,8 @@ LanguageModel >> defaultBehaviors [
 
 { #category : #'default model values' }
 LanguageModel >> defaultClassRoles [
-	^ Role defaultClassRoles
+	
+	^ Role defaultClassRolesFor: self
 ]
 
 { #category : #'default model values' }
@@ -1068,33 +1069,15 @@ LanguageModel >> loadBaseLanguageModelDefinitions [
 LanguageModel >> loadClassRoles [
 	| defaultRoles rolesFromTonel customRoles |
 	defaultRoles := self defaultClassRoles.
-	
-	"rolesFromTonel := (self tonelPath
-		ifNotNil: [ :path | self classRolesFromTonel: path ]
-		ifNil: [ #() ]) asDictionary."
-	rolesFromTonel := #() asDictionary.
 	customRoles := (self customClassRoles ifNil: [ #() ]) asDictionary.
-	"initialize the instance var classRoles with no values"
 	classRoles := #() asDictionary.
+	"custom roles override default ones"
+	customRoles
+		associationsDo:
+			[ :assoc | classRoles at: assoc key put: assoc value ].
 	defaultRoles
 		associationsDo: [ :assoc | 
-			| theRole theClass classDefault classTonel classCustom |
-			theRole := assoc key.
-			classDefault := assoc value.
-			classTonel := rolesFromTonel at: theRole ifAbsent: [ nil ].
-			classCustom := customRoles at: theRole ifAbsent: [ nil ].
-			(classTonel isNotNil and: [ classCustom isNotNil ])
-				ifTrue: [ self
-						assert: classTonel = classCustom
-						description:
-							'role ' , theRole
-								, ' is different between tonel repository and method >>customClassRoles' ].
-			theClass := classCustom
-				ifNil: [ classTonel ifNil: [ classDefault ] ].
-			classRoles at: theRole put: theClass ].
-	customRoles associationsDo: [ :assoc |
-		classRoles at: assoc key ifAbsentPut: [ assoc value ]
-		 ].
+			classRoles at: assoc key ifAbsentPut: assoc value ].
 	^ classRoles
 ]
 

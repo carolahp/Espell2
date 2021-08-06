@@ -36,7 +36,7 @@ EP2RemoteByteArray class >> newWithSize: anInteger withBackend: anEP2Backend [
 
 { #category : #constants }
 EP2RemoteByteArray class >> role [ 
-	^'ByteArray'
+	^#ByteArray
 ]
 
 { #category : #'gt-inspector' }

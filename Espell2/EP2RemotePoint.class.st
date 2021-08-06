@@ -31,5 +31,5 @@ EP2RemotePoint class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemotePoint class >> role [ 
-	^ 'Point'
+	^ #Point
 ]

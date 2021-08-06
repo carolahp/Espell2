@@ -21,5 +21,5 @@ EP2RemoteLargeNegativeInteger class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteLargeNegativeInteger class >> role [ 
-	^ 'LargeNegativeInteger'
+	^ #LargeNegativeInteger
 ]

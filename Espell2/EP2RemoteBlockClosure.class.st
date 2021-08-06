@@ -31,7 +31,7 @@ EP2RemoteBlockClosure class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteBlockClosure class >> role [ 
-	^ 'BlockClosure'
+	^ #BlockClosure
 ]
 
 { #category : #'high-level-messages' }

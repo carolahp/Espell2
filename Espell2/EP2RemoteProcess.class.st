@@ -35,7 +35,7 @@ EP2RemoteProcess class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteProcess class >> role [ 
-	^ 'Process'
+	^ #Process
 ]
 
 { #category : #accessing }

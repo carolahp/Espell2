@@ -29,7 +29,7 @@ EP2RemoteAssociation class >> newWithBackend: anEP2Backend key: aString value: a
 
 { #category : #'instance creation' }
 EP2RemoteAssociation class >> role [ 
-	^ 'Association'
+	^ #Association
 ]
 
 { #category : #'converting-local' }

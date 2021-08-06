@@ -11,17 +11,31 @@ Class {
 { #category : #constants }
 Role class >> defaultClassRoles [
 	" get roles from EP2Remote subclasses"
+
 	| templates |
-	templates := (EP2Remote allSubclasses add: EP2Remote; yourself).
-	^ ((templates select: [ :each | each role isNotNil and: [each role ~= #Class ]])
-		collect: [ :each | each role asSymbol -> each role asSymbol ])
-		asDictionary
+	templates := EP2Remote allSubclasses
+		add: EP2Remote;
+		yourself.
+	^ templates collect: #role thenSelect: #isNotNil
+]
+
+{ #category : #'bootstrap roles' }
+Role class >> defaultClassRolesFor: aLanguageModel [
+	| metamodelRoles roles |
+	metamodelRoles := aLanguageModel class usedModels
+		collect: #role
+		thenSelect: #isNotNil.
+	self
+		assert: metamodelRoles asSet size = metamodelRoles size
+		description: 'same role defined for more than one ObjectModel class'.
+	roles := metamodelRoles addAll: self defaultClassRoles.
+	^ (roles collect: [ :each | each -> each ]) asDictionary
 ]
 
 { #category : #instantiation }
 Role class >> named: aString for: anObjectModel [
 	| roleClass |
-	roleClass := (self defaultClassRoles includes: aString)
+	roleClass := (aString ~= #Class and: [self defaultClassRoles includes: aString])
 		ifTrue: [ Role ]
 		ifFalse: [ RoleCustom ].
 	^ roleClass basicNew

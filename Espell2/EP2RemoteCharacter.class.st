@@ -31,7 +31,7 @@ EP2RemoteCharacter class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteCharacter class >> role [ 
-	^ 'Character'
+	^ #Character
 ]
 
 { #category : #'high-level-message' }

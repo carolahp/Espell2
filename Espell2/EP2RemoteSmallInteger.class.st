@@ -41,7 +41,7 @@ EP2RemoteSmallInteger class >> on: anEP2SimulatorAddressHandle from: anEP2Backen
 
 { #category : #'bootstrap roles' }
 EP2RemoteSmallInteger class >> role [ 
-	^ 'SmallInteger'
+	^ #SmallInteger
 ]
 
 { #category : #'high-level-messages' }

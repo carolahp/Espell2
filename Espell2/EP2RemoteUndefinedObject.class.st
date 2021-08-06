@@ -13,7 +13,7 @@ EP2RemoteUndefinedObject class >> on: anEPMirror [
 
 { #category : #constants }
 EP2RemoteUndefinedObject class >> role [ 
-	^ 'UndefinedObject'
+	^ #UndefinedObject
 ]
 
 { #category : #casting }

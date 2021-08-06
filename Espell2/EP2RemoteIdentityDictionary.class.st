@@ -28,7 +28,7 @@ EP2RemoteIdentityDictionary class >> newWithBackend: anEP2Backend size: nElement
 
 { #category : #constants }
 EP2RemoteIdentityDictionary class >> role [
-	^'IdentityDictionary'
+	^#IdentityDictionary
 ]
 
 { #category : #'accessing-specialInstVars' }

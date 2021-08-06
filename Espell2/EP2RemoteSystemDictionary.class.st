@@ -6,5 +6,5 @@ Class {
 
 { #category : #constants }
 EP2RemoteSystemDictionary class >> role [
-	^'SystemDictionary'
+	^#SystemDictionary
 ]

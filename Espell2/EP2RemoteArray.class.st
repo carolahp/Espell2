@@ -41,7 +41,7 @@ EP2RemoteArray class >> newWithSize: anInteger withBackend: anEP2Backend [
 
 { #category : #'instance creation' }
 EP2RemoteArray class >> role [ 
-	^ 'Array'
+	^ #Array
 ]
 
 { #category : #'high-level-messages' }

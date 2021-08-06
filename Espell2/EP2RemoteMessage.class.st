@@ -31,5 +31,5 @@ EP2RemoteMessage class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteMessage class >> role [ 
-	^ 'Message'
+	^ #Message
 ]

@@ -31,5 +31,5 @@ EP2RemoteFloat class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteFloat class >> role [ 
-	^ 'Float'
+	^ #Float
 ]
