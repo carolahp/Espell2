@@ -593,56 +593,6 @@ ClassModel >> initializeWithMonticello: aMCClassDefinition [
 	self test
 ]
 
-{ #category : #initialization }
-ClassModel >> initializeWithTemplate: aTemplateClass [
-	self deprecated: 'use initialize.'.
-	self initializeWithTemplateGeneric: aTemplateClass.
-	"self initializeWithTemplateCustom: aTemplateClass."
-	self test.
-	^ self
-		
-]
-
-{ #category : #initialization }
-ClassModel >> initializeWithTemplateCustom: aTemplateClass [
-	self subclassResponsibility
-]
-
-{ #category : #initialization }
-ClassModel >> initializeWithTemplateGeneric: aTemplateClass [
-	| superclassModel superTemplates superTemplate templates |
-	
-	self deprecated: 'this code should be called from initialize'.
-	indexInClassTable := template indexInClassTable.
-	index2InClassTable := template index2InClassTable.
-	indexInSpecialObjectsArray := template indexInSpecialObjectsArray.
-	self layout: (aTemplateClass layoutClass on: self).
-	aTemplateClass modelInstVarNames
-		doWithIndex: [ :ivname :index | self addSlot: ivname index: index ].
-	"ProtoObject superclass is nil"
-	self role = #ProtoObject
-		ifTrue: [ self superclass: nil.
-			^ self ].
-	"For other templates, we calculate the superclass"
-	templates := EP2Remote allSubclasses
-		add: EP2Remote;
-		yourself.
-	superTemplates := aTemplateClass allSuperclasses
-		select:
-			[ :each | (templates includes: each) and: [ each role isNotNil ] ].
-	superTemplate := superTemplates at: 1 ifAbsent: [ nil ].
-	superclassModel := superTemplate
-		ifNil: [ self parent classWithRole: #ProtoObject ]
-		ifNotNil: [ self parent classWithRole: superTemplate role ].
-
-	"this happens when a class has more than one role"
-	(superclassModel isNotNil and: [ superclassModel name = self name ])
-		ifTrue:
-			[ self error: 'The language model contains a clas with multiple roles' ].
-	self superclass: superclassModel.
-	^ self
-]
-
 { #category : #binding }
 ClassModel >> innerBindingOf: aSymbol [ 
 	"Answer the binding of some variable resolved in the scope of the receiver, or one of its superclass
