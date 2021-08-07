@@ -108,6 +108,46 @@ MatchDemo class >> buildModel1 [
 ]
 
 { #category : #'as yet unclassified' }
+MatchDemo class >> buildModel2 [
+	| membrane0 membrane1 aspClass aspLang match membrane2 |
+	
+	aspClass := ClassVarAspect for: MatchClass.
+	aspClass customFieldValues: {#Dog -> {#Kingdom -> #animal} asDictionary}.
+	
+	aspLang := LanguageAspect for: MatchLanguage.
+	aspLang fieldAspect: aspClass.
+	
+	membrane0 := PhMembrane new.
+	membrane1 := PhMembrane new advise: membrane0.
+	membrane2 := PhMembrane new advise: membrane1.
+	[
+	 
+	aspClass registerOn: membrane1.
+	aspClass registerOn: membrane2.
+	aspLang registerOn: membrane1.
+	
+	match := self newModel.
+	membrane0 deployOn: match.
+	
+	self assert: PhAspectWeaver installedMembranes isEmpty.
+	match build.
+	self assert: (match classNamed: #Dog) isNotNil.
+	self assert: (match classNamed: #Dog) classPool isDictionary.
+	self assert: (match classNamed: #Class) classPool isDictionary.
+	self assert: ((match classNamed: #Dog) classPool at: #Kingdom) = #animal.
+	self assert: ((match classNamed: #Class) methodDict at: #classPool) isNotNil .
+	 ] ensure: [ 
+		match destroy.
+		aspClass unregisterFrom: membrane1.
+		aspClass unregisterFrom: membrane2.
+		aspLang unregisterFrom: membrane1.
+		membrane0 undeployFrom: match.
+		
+	 ]
+	
+]
+
+{ #category : #'as yet unclassified' }
 MatchDemo class >> buildModelAndGenerate [
 	| membrane0 membrane1 aspClass aspLang match membrane2 |
 	

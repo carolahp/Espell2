@@ -3,7 +3,7 @@ Class {
 	#superclass : #PhAspect,
 	#instVars : [
 		'modelClass',
-		'pcTransform'
+		'fieldAspect'
 	],
 	#category : #Espell2Metamodel
 }
@@ -26,14 +26,24 @@ LanguageAspect >> adviceAddClasses [
 	^ PhAdvice new
 		pointcut: self pcTransform;
 		advice: [ :context | 
-			context receiver ensureClassNamed: 'Dog' ];
+			context receiver ensureClassNamed: 'Dog'.
+			(context receiver classWithRole: fieldAspect modelClass role)
+				addLocalMethodFromSource: fieldAspect fieldGetter
+				selector: fieldAspect fieldName ];
 		type: #after
+]
+
+{ #category : #'accessing aspects' }
+LanguageAspect >> fieldAspect: anAspect [
+	fieldAspect := anAspect 
+	
 ]
 
 { #category : #initialization }
 LanguageAspect >> initialize [
 	super initialize.
-	self add: self adviceAddClasses 
+	self add: self adviceAddClasses.
+	
 ]
 
 { #category : #pointcuts }
@@ -48,9 +58,8 @@ LanguageAspect >> modelClass: aLanguageModelClass [
 
 { #category : #pointcuts }
 LanguageAspect >> pcTransform [
-	^ pcTransform
-		ifNil: [ pcTransform := PhPointcut new
-				receivers: self modelClass name;
-				selectors: 'transform';
-				context: #('receiver') ]
+	^ PhPointcut new
+		receivers: self modelClass name;
+		selectors: 'transform';
+		context: #('receiver')
 ]

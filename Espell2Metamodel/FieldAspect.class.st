@@ -33,24 +33,21 @@ FieldAspect class >> new [
 { #category : #advices }
 FieldAspect >> adviceInitializeFieldValue [
 	^ PhAdvice new
-		pointcut: self pcInitialize;
-		advice: [ :context | 
+		pointcut: self pcInitializeClass;
+		advice: [ :context | | model | 
 			"setting default value of field"
-			context receiver
+			model := context receiver.
+			model
 				perform: self fieldName , ':'
 				with: self defaultFieldValue.
-			"adding acessor method to the class model whose role is 'metaclass' or 'class'' "
-			"context receiver role = modelClass role
-				ifTrue: [ context receiver
-						addLocalMethodFromSource: self fieldGetter
-						selector: self fieldName ]" ];
+			];
 		type: #after
 ]
 
 { #category : #advices }
 FieldAspect >> adviceInstallFieldValue [
 	^ PhAdvice new
-		pointcut: self pcInstall;
+		pointcut: self pcInstallClass;
 		advice: [ :context | | fieldValue model |
 			model := context receiver.
 			fieldValue := model perform: self fieldName.
@@ -64,7 +61,7 @@ FieldAspect >> adviceInstallFieldValue [
 { #category : #advices }
 FieldAspect >> adviceSetCustomFieldValue [
 	^ PhAdvice new
-		pointcut: self pcTransform;
+		pointcut: self pcTransformClass;
 		advice: [ :context | 
 			| model |
 			model := context receiver.
@@ -155,7 +152,7 @@ FieldAspect >> modelClass: aModelClass [
 ]
 
 { #category : #pointcuts }
-FieldAspect >> pcInitialize [
+FieldAspect >> pcInitializeClass [
 	^ PhPointcut new
 		receivers: self modelClass name;
 		selectors: 'initialize';
@@ -163,7 +160,7 @@ FieldAspect >> pcInitialize [
 ]
 
 { #category : #pointcuts }
-FieldAspect >> pcInstall [
+FieldAspect >> pcInstallClass [
 	^ PhPointcut new
 		receivers: self modelClass name;
 		selectors: 'installCustom';
@@ -171,7 +168,7 @@ FieldAspect >> pcInstall [
 ]
 
 { #category : #pointcuts }
-FieldAspect >> pcTransform [
+FieldAspect >> pcTransformClass [
 	^ PhPointcut new
 		receivers: self modelClass name;
 		selectors: 'transform';
