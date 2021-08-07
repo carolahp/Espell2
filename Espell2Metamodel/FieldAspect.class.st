@@ -12,8 +12,6 @@ Class {
 	#superclass : #PhAspect,
 	#instVars : [
 		'modelClass',
-		'pcInitialize',
-		'pcInstall',
 		'customFielValues'
 	],
 	#category : #Espell2Metamodel
@@ -159,29 +157,26 @@ FieldAspect >> modelClass: aModelClass [
 
 { #category : #pointcuts }
 FieldAspect >> pcInitialize [
-	^ pcInitialize
-		ifNil: [ pcInitialize := PhPointcut new
-				receivers: self modelClass name;
-				selectors: 'initialize';
-				context: #('receiver') ]
+	^ PhPointcut new
+		receivers: self modelClass name;
+		selectors: 'initialize';
+		context: #('receiver')
 ]
 
 { #category : #pointcuts }
 FieldAspect >> pcInstall [
-	^ pcInstall
-		ifNil: [ pcInstall := PhPointcut new
-				receivers: self modelClass name;
-				selectors: 'installCustom';
-				context: #('receiver') ]
+	^ PhPointcut new
+		receivers: self modelClass name;
+		selectors: 'installCustom';
+		context: #('receiver')
 ]
 
 { #category : #pointcuts }
 FieldAspect >> pcTransform [
-	^ pcInstall
-		ifNil: [ pcInstall := PhPointcut new
-				receivers: self modelClass name;
-				selectors: 'transform';
-				context: #('receiver') ]
+	^ PhPointcut new
+		receivers: self modelClass name;
+		selectors: 'transform';
+		context: #('receiver')
 ]
 
 { #category : #'install-uninstall' }
