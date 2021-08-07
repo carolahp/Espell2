@@ -224,7 +224,7 @@ EP2RemoteClass >> doesNotUnderstand: aMessage [
 					result := self instanceVariableNamed: instVarName put: (aMessage arguments at: 1) ] ]
 		ifFalse: [ 
 			"possibly a getter"
-			result := result := self instanceVariableNamed: aMessage selector  ].
+			result := (self instanceVariableNamed: aMessage selector) asRemoteObjectCasted  ].
 	] on: Exception do: [ super doesNotUnderstand: aMessage ].
 	^ result
 ]

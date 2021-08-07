@@ -41,7 +41,7 @@ EP2RemoteDictionary class >> newFrom: aDict [
 
 { #category : #'instance creation' }
 EP2RemoteDictionary class >> newWithBackend: anEP2Backend [
-	^ self newWithBackend: anEP2Backend size: 5
+	^ self newWithBackend: anEP2Backend size: 4
 ]
 
 { #category : #'instance creation' }
