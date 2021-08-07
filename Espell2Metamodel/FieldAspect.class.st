@@ -13,7 +13,8 @@ Class {
 	#instVars : [
 		'modelClass',
 		'pcInitialize',
-		'pcInstall'
+		'pcInstall',
+		'customFielValues'
 	],
 	#category : #Espell2Metamodel
 }
@@ -62,6 +63,20 @@ FieldAspect >> adviceInstallFieldValue [
 		type: #after
 ]
 
+{ #category : #advices }
+FieldAspect >> adviceSetCustomFieldValue [
+	^ PhAdvice new
+		pointcut: self pcTransform;
+		advice: [ :context | 
+			| model |
+			model := context receiver.
+			self customFieldValues
+				at: model name
+				ifPresent:
+					[ :val | model perform: self fieldName , ':' with: val ] ];
+		type: #after
+]
+
 { #category : #'class modifiers' }
 FieldAspect >> classModifier [
 	| getter setter ivar |
@@ -76,6 +91,16 @@ FieldAspect >> classModifier [
 		addNewInstanceMethod: getter;
 		addNewInstanceMethod: setter;
 		yourself
+]
+
+{ #category : #accessing }
+FieldAspect >> customFieldValues [
+	^ customFielValues 
+]
+
+{ #category : #accessing }
+FieldAspect >> customFieldValues: aCollection [
+	customFielValues := aCollection asDictionary
 ]
 
 { #category : #accessing }
@@ -110,7 +135,9 @@ FieldAspect >> initialize [
 	self
 		addClassModifier: self classModifier;
 		add: self adviceInitializeFieldValue;
-		add: self adviceInstallFieldValue 
+		add: self adviceSetCustomFieldValue;
+		add: self adviceInstallFieldValue
+		
 ]
 
 { #category : #'install-uninstall' }
@@ -145,6 +172,15 @@ FieldAspect >> pcInstall [
 		ifNil: [ pcInstall := PhPointcut new
 				receivers: self modelClass name;
 				selectors: 'installCustom';
+				context: #('receiver') ]
+]
+
+{ #category : #pointcuts }
+FieldAspect >> pcTransform [
+	^ pcInstall
+		ifNil: [ pcInstall := PhPointcut new
+				receivers: self modelClass name;
+				selectors: 'transform';
 				context: #('receiver') ]
 ]
 

@@ -25,7 +25,8 @@ LanguageAspect class >> new [
 LanguageAspect >> adviceAddClasses [
 	^ PhAdvice new
 		pointcut: self pcTransform;
-		advice: [ :context | context receiver ensureClassNamed: 'Dog' ];
+		advice: [ :context | 
+			context receiver ensureClassNamed: 'Dog' ];
 		type: #after
 ]
 

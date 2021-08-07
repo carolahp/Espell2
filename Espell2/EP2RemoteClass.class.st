@@ -171,27 +171,6 @@ EP2RemoteClass >> classNameIndex [
 ]
 
 { #category : #'high-level-messages' }
-EP2RemoteClass >> classPool: anObject [ 
-	
-	^ self instanceVariableAtIndex: self classPoolIndex put: anObject
-]
-
-{ #category : #'instVars-mapping' }
-EP2RemoteClass >> classPoolIndex [
-	^ (self asClassDefinition metaclass allInstVarNames indexOf: 'classPool') = 0 ifTrue: [ self class unmappedInstVarIndex ]
-]
-
-{ #category : #'accessing-specialInstVars' }
-EP2RemoteClass >> classPoolOld [
-	^ (self instanceVariableAtIndex: self classPoolIndex) asRemoteDictionary 
-]
-
-{ #category : #'instVars-mapping' }
-EP2RemoteClass >> classSharedPoolsIndex [
-	^ (self systemDefinition instanceVariableMapping classSharedPoolsIndex) ifNil: [ self class unmappedInstVarIndex ]
-]
-
-{ #category : #'high-level-messages' }
 EP2RemoteClass >> classSide [
 	^ self isMetaclass 
 		ifTrue: [ self	]
@@ -251,7 +230,7 @@ EP2RemoteClass >> format: anInteger [
 	^self layout instanceVariableAtIndex: self classFormatIndex put: anInteger
 ]
 
-{ #category : #'accessing header' }
+{ #category : #'accessing-header' }
 EP2RemoteClass >> indexInClassTable [
 	^ self classTableIndex
 ]
@@ -295,7 +274,7 @@ EP2RemoteClass >> innerBindingOf: aSymbol [
 	^ nil"
 ]
 
-{ #category : #'accessing header' }
+{ #category : #'accessing-header' }
 EP2RemoteClass >> instSize [
 	^ self mirror target instSize
 ]
@@ -398,11 +377,6 @@ EP2RemoteClass >> printOn: aStream [
 		nextPutAll: '*';
 		nextPutAll: self classNameFromAnyOrigin;
 		nextPutAll: '*'
-]
-
-{ #category : #'accessing-specialInstVars' }
-EP2RemoteClass >> sharedPoolOld [
-	^ self instanceVariableAtIndex: self classSharedPoolsIndex 
 ]
 
 { #category : #'accessing-slots' }
