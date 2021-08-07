@@ -42,14 +42,24 @@ EP2RemoteClass >> asCastedRemoteClass [
 
 { #category : #'converting-local' }
 EP2RemoteClass >> asClassDefinition [
-	| result |
+	| result classIndex |
+	classIndex := self indexInClassTable.
+	result := self systemDefinition allClasses
+		select:
+			[ :classModel | classModel indexInClassTable = classIndex ].
+	result isEmpty
+		ifTrue: [ self error: 'Class definition not found!' ].
+	result size > 1
+		ifTrue: [ self error: 'Two classes with the same index' ].
+	^ result anyOne
+	"| result |
 	result := self systemDefinition allClasses
 		select: [ :classDef | classDef remote = self ].
 	result size = 0
 		ifTrue: [ ^ self systemDefinition classClass ].
 	result size > 1
 		ifTrue: [ self error: 'More than one definition for one class' ].
-	^ result anyOne
+	^ result anyOne"
 ]
 
 { #category : #compatibility }
@@ -62,16 +72,20 @@ EP2RemoteClass >> asLocalClass [
 	"it returns the EP2Remote class that corresponds with this class.
 	For example: Association asLocalClass will return EP2RemoteAssociation.
 	We use this to instantiate the correct class for each remote object we fetch from the remote object memory"
+
 	"^ self addressLocalClassMap 
 		at: self mirror target address 
-		ifAbsentPut: [" | definition role localClassOrNil |
-			definition := self asClassDefinition.
-			"if I am a metaclass, my instances can be represented as instances of EP2RemoteMetaclass"
-			definition isMetaclass ifTrue: [^ EP2RemoteMetaclass].
-			role := self backend systemDefinition roleOfClass: definition.
-			localClassOrNil := Smalltalk classNamed: 'EP2Remote', role asString.
-		^	localClassOrNil
-		"]"
+		ifAbsentPut: ["
+
+	| definition role localClassOrNil |
+	definition := self asClassDefinition.
+	"if I am a metaclass, my instances can be represented as instances of EP2RemoteMetaclass"
+	definition isMetaclass
+		ifTrue: [ ^ EP2RemoteMetaclass ].
+	role := self backend systemDefinition roleOfClass: definition.
+	localClassOrNil := Smalltalk classNamed: 'EP2Remote' , role asString.
+	^ localClassOrNil
+	"]"
 ]
 
 { #category : #'converting-local' }

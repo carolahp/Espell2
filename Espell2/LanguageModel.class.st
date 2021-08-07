@@ -255,7 +255,7 @@ LanguageModel >> addPackage: aPackageModel [
 
 { #category : #'accessing classes' }
 LanguageModel >> allClasses [
-	^ self behaviors
+	^ classes
 ]
 
 { #category : #'accessing classes' }
@@ -509,7 +509,7 @@ LanguageModel >> classNamed: aString ifPresent: aBlockClosure [
 LanguageModel >> classNamedExactly: aString [ 
 	| aSymbol |
 	aSymbol := aString ifNotNil: [ aString asSymbol ].
-	^ self behaviors at: aSymbol
+	^ self allClasses at: aSymbol
 ]
 
 { #category : #'accessing classes' }
