@@ -34,9 +34,6 @@ MatchDemo class >> buildModel [
 			(PhAdvice new
 				pointcut: pcClass;
 				advice: [ :context | 
-					Transcript
-						show: 'initializing class from aspect';
-						cr.
 					context receiver classPool: Dictionary new ];
 				type: #after); yourself.
 	aspLang := PhAspect new
@@ -44,9 +41,6 @@ MatchDemo class >> buildModel [
 			(PhAdvice new
 				pointcut: pcLang;
 				advice: [ :context | 
-					Transcript
-						show: 'transforming language';
-						cr.
 					context receiver ensureClassNamed: 'Dog' ];
 				type: #after); yourself.
 	[
@@ -55,7 +49,7 @@ MatchDemo class >> buildModel [
 	aspClass registerOn: membrane2.
 	aspLang registerOn: membrane1.
 	
-	match := MatchDemo newModel.
+	match := self newModel.
 	membrane0 deployOn: match.
 	
 	self assert: PhAspectWeaver installedMembranes isEmpty.
@@ -70,6 +64,77 @@ MatchDemo class >> buildModel [
 		aspClass unregisterFrom: membrane2.
 		aspLang unregisterFrom: membrane1.
 		membrane0 uninstall.
+	 ]
+	
+]
+
+{ #category : #'as yet unclassified' }
+MatchDemo class >> buildModel1 [
+	| membrane0 membrane1 aspClass aspLang match membrane2 |
+	
+	aspClass := ClassVarAspect for: MatchClass.	
+	aspLang := LanguageAspect for: MatchLanguage.
+	
+	membrane0 := PhMembrane new.
+	membrane1 := PhMembrane new advise: membrane0.
+	membrane2 := PhMembrane new advise: membrane1.
+	[
+	 
+	aspClass registerOn: membrane1.
+	aspClass registerOn: membrane2.
+	aspLang registerOn: membrane1.
+	
+	match := self newModel.
+	membrane0 deployOn: match.
+	
+	self assert: PhAspectWeaver installedMembranes isEmpty.
+	match build.
+	self assert: (match classNamed: #Dog) isNotNil.
+	self assert: (match classNamed: #Dog) classPool isDictionary.
+	self assert: (match classNamed: #Class) classPool isDictionary.
+	
+	 ] ensure: [ 
+		match destroy.
+		aspClass unregisterFrom: membrane1.
+		aspClass unregisterFrom: membrane2.
+		aspLang unregisterFrom: membrane1.
+		membrane0 undeployFrom: match.
+		
+	 ]
+	
+]
+
+{ #category : #'as yet unclassified' }
+MatchDemo class >> buildModelAndGenerate [
+	| membrane0 membrane1 aspClass aspLang match membrane2 |
+	
+	aspClass := ClassVarAspect for: MatchClass.	
+	aspLang := LanguageAspect for: MatchLanguage.
+	
+	membrane0 := PhMembrane new.
+	membrane1 := PhMembrane new advise: membrane0.
+	membrane2 := PhMembrane new advise: membrane1.
+	[
+	 
+	aspClass registerOn: membrane1.
+	aspClass registerOn: membrane2.
+	aspLang registerOn: membrane1.
+	
+	match := self newModel.
+	membrane0 deployOn: match.
+	
+	self assert: PhAspectWeaver installedMembranes isEmpty.
+	match build.
+	self assert: (match classNamed: #Dog) isNotNil.
+	self assert: (match classNamed: #Dog) classPool isDictionary.
+	self assert: (match classNamed: #Class) classPool isDictionary.
+	match generate
+	 ] ensure: [ 
+		aspClass unregisterFrom: membrane1.
+		aspClass unregisterFrom: membrane2.
+		aspLang unregisterFrom: membrane1.
+		membrane0 undeployFrom: match.
+		match destroy.
 	 ]
 	
 ]
