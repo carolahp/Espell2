@@ -69,9 +69,8 @@ FieldAspect >> adviceSetCustomFieldValue [
 			| model |
 			model := context receiver.
 			self customFieldValues
-				at: model name
-				ifPresent:
-					[ :val | model perform: self fieldName , ':' with: val ] ];
+				at: model name asSymbol
+				ifPresent: [ :val | model perform: self fieldName , ':' with: val ] ];
 		type: #after
 ]
 

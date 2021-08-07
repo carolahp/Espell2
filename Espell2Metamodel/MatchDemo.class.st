@@ -112,6 +112,7 @@ MatchDemo class >> buildModelAndGenerate [
 	| membrane0 membrane1 aspClass aspLang match membrane2 |
 	
 	aspClass := ClassVarAspect for: MatchClass.	
+	aspClass customFieldValues: {#Dog -> {#Kingdom -> #animal} asDictionary}.
 	aspLang := LanguageAspect for: MatchLanguage.
 	
 	membrane0 := PhMembrane new.
@@ -136,6 +137,7 @@ MatchDemo class >> buildModelAndGenerate [
 	match generate.
 	self assert: (match classNamed: #Dog) remote isNotNil.
 	self assert: (match classNamed: #Dog) remote classPool isEP2Remote.
+	self assert: ((match classNamed: #Dog) remote classPool at: #Kingdom) asLocalString = 'animal'.
 	
 	 ] ensure: [ 
 		aspClass unregisterFrom: membrane1.

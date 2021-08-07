@@ -377,8 +377,8 @@ LanguageModel >> build [
 	self loadClasses.
 	self test.
 	"apply custom transformations implemented using MOP"
-	self transformClasses.
 	self transform.
+	self transformClasses.
 	self loadEntryPoint.
 	self test
 ]
