@@ -13,16 +13,21 @@ SharedPoolsAspect >> adviceInnerBindingOf [
 			(context dynamicContext).
 			model := context receiver.
 			varName := (context arguments at: 1) asSymbol.
-			model sharedPools bindingOf: varName ];
+			(model mySharedPools bindingOf: varName) 
+			 ifNil: [ | next |
+				next := context currentAdvice asOrderedCollection select: [ :each | each owner class = ClassVarAspect ].
+				context currentAdvice: next continueAt: 1.
+				context proceed
+				]];
 		type: #around
 ]
 
 { #category : #accessing }
 SharedPoolsAspect >> defaultFieldValue [
-	^ OrderedCollection new
+	^ Dictionary new
 ]
 
 { #category : #accessing }
 SharedPoolsAspect >> fieldName [
-	^ #sharedPools
+	^ #mySharedPools
 ]
