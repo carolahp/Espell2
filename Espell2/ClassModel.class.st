@@ -497,7 +497,7 @@ ClassModel >> hasRole [
 { #category : #'bootstrap - build kernel classes' }
 ClassModel >> hookInstall [
 	| remoteMethodDict remoteSuperclass |
-	self halt.
+	self deprecated: 'use installCustom'.
 	
 	self remoteIsInstalled
 		ifFalse: [ self installStub ].
