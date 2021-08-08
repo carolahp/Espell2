@@ -61,6 +61,11 @@ LanguageModel class >> classModel [
 	self subclassResponsibility  
 ]
 
+{ #category : #metamodels }
+LanguageModel class >> classModelFor: aString [ 
+	^ self classModel
+]
+
 { #category : #'accessing - defaults' }
 LanguageModel class >> defaultPackagesListFull [
 	^ nil
@@ -195,9 +200,10 @@ LanguageModel >> addBehavior: aMClass [
 { #category : #'bootstrap - build model classes' }
 LanguageModel >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
 	| newClass mcDef |
+	
 	self deprecated: 'Use #addClassFromMonticelloDefinition: instead.' transformWith: '`@receiver addBehaviorFromMonticelloDefinition:`@arg' -> '`@receiver addClassFromMonticelloDefinition:`@arg'.
-	mcDef := aMCClassDefinition.		
-	newClass := self ensureClassNamed: aMCClassDefinition className.
+	mcDef := aMCClassDefinition.	
+	newClass := self ensureClassNamed: (self classNameFromMonticello: aMCClassDefinition className).
 	newClass extendWithMonticello: mcDef.
 	newClass extendWithMonticelloCustom: mcDef.
 	" we can't test yet since not all classes have been loaded "
@@ -234,12 +240,11 @@ LanguageModel >> addGlobalVariable: anEP2MGlobalVariable [
 	self globalVariables add: anEP2MGlobalVariable
 ]
 
-{ #category : #'bootstrap - build model methods' }
-LanguageModel >> addMethodFromMonticelloDefinition: aMCMethodDefinition [ 
-	| methodDef classDef mcDef className |
+{ #category : #'accessing backend' }
+LanguageModel >> addMethodFromMonticelloDefinition: aMCMethodDefinition [
+	| methodDef classDef mcDef |
 	mcDef := aMCMethodDefinition.
-	className := mcDef classIsMeta ifTrue: [mcDef className, self metaclassSuffix] ifFalse: [mcDef className]. 
-	classDef := self ensureClassNamed: className.
+	classDef := self ensureClassNamedFromMonticello: mcDef className.
 	methodDef := classDef ensureLocalMethodNamed: mcDef selector.
 	methodDef extendWithMonticello: mcDef.
 	^ methodDef
@@ -291,7 +296,7 @@ LanguageModel >> backend [
 
 { #category : #'bootstrap - build model classes' }
 LanguageModel >> basicNewClassNamed: aString [
-	^ self class classModel basicNew
+	^ (self class classModelFor: aString) basicNew
 		name: aString;
 		parent: self;
 		yourself
@@ -370,6 +375,7 @@ LanguageModel >> browseAs: browserTitleString [
 LanguageModel >> build [
 	self loadClassRoles.
 	self loadKernel.
+	self test.
 	self loadRequiredClasses.
 	self loadRequiredGlobalVariables.
 	self loadGlobalVariables.
@@ -476,6 +482,11 @@ LanguageModel >> classLoader [
 	^ self pbBootstrapper builder classLoader
 ]
 
+{ #category : #'tonel repository' }
+LanguageModel >> classNameFromMonticello: aString [ 
+	^ aString
+]
+
 { #category : #'accessing classes' }
 LanguageModel >> classNamed: aString [ 
 	^ self classNamed: aString ifAbsent: [ PBClassDefinitionNotFound new key: aString; signal ]
@@ -483,6 +494,7 @@ LanguageModel >> classNamed: aString [
 
 { #category : #'accessing classes' }
 LanguageModel >> classNamed: aString ifAbsent: aBlockClosure [
+	
 	^ [ self classNamedExactly: aString ]
 		on: KeyNotFound
 		do: [["this is necessary because EPASTInterpreter has some class names hardcoded"
@@ -510,11 +522,6 @@ LanguageModel >> classNamedExactly: aString [
 	| aSymbol |
 	aSymbol := aString ifNotNil: [ aString asSymbol ].
 	^ self allClasses at: aSymbol
-]
-
-{ #category : #'accessing classes' }
-LanguageModel >> classOrMetaclassNameFrom: aNameFromMonticello [	
-	^ aNameFromMonticello
 ]
 
 { #category : #'accessing classes - special' }
@@ -720,6 +727,11 @@ LanguageModel >> ensureClassNamed: aString [
 			newBeh := self newClassNamed: aString.
 			self addBehavior: newBeh.
 			newBeh ]
+]
+
+{ #category : #'tonel repository' }
+LanguageModel >> ensureClassNamedFromMonticello: aString [
+	^ self ensureClassNamed: (self classNameFromMonticello: aString)
 ]
 
 { #category : #'bootstrap - build model packages' }
@@ -1059,7 +1071,11 @@ LanguageModel >> loadClasses [
 
 { #category : #'loading definitions' }
 LanguageModel >> loadClassesFromRepository [
-	self tonelPath ifNotNil: [ :path | self loadTonelRepository: path ]
+	self tonelPath ifNotNil: [ :path | self loadTonelRepository: path ].
+	self cleanInstVars.
+	self cleanPackages.
+	self allClasses do: [ :class | class initializeCustom ].
+	self testCompletitude
 ]
 
 { #category : #'loading definitions' }
@@ -1161,12 +1177,8 @@ LanguageModel >> loadTonelRepository: aFileReference [
 				each isClassDefinition ifTrue: [mcClassDefinitions add: each].
 			 ]].
 	mcClassDefinitions do: [ :each | 
-		(self classNamed: (self classOrMetaclassNameFrom: each name)) extendLayoutWithMonticello: each
-		 ].
-	
-	self testCompletitude.
-	self cleanInstVars.
-	self cleanPackages.
+		(self classNamed: (self classNameFromMonticello: each name)) extendLayoutWithMonticello: each
+		 ]
 	
 ]
 

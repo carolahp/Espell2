@@ -443,7 +443,8 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 		superclass:
 			(mcDef superclassName = #nil
 				ifTrue: [ nil ]
-				ifFalse: [ self parent ensureClassNamed: mcDef superclassName ]).
+				ifFalse: [ self parent
+						ensureClassNamedFromMonticello: mcDef superclassName ]).
 
 	"package"
 	packageDef := mcDef category.
@@ -551,6 +552,11 @@ ClassModel >> initialize [
 ]
 
 { #category : #initialization }
+ClassModel >> initializeCustom [
+	
+]
+
+{ #category : #initialization }
 ClassModel >> initializeWithLocal: localClass [
 	
 	self
@@ -570,7 +576,7 @@ ClassModel >> initializeWithMonticello: aMCClassDefinition [
 		layout: (mcDef espell2LayoutType on: self).
 	mcDef superclassName = #nil
 		ifTrue: [ self halt ]
-		ifFalse: [ self superclass: (self parent ensureClassNamed: mcDef superclassName) ].
+		ifFalse: [ self superclass: (self parent ensureClassNamedFromMonticello: mcDef superclassName) ].
 	mcDef variables
 		do: [ :each | 
 			"the simplest metamodel considers only instance variables"
@@ -829,7 +835,7 @@ ClassModel >> isPointers [
 	^ self isBits not
 ]
 
-{ #category : #initialization }
+{ #category : #testing }
 ClassModel >> isProtoObject [
 	^ self = self parent classProtoObject
 ]
