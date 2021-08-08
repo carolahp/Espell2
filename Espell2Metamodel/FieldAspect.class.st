@@ -37,6 +37,19 @@ FieldAspect class >> new [
 ]
 
 { #category : #advices }
+FieldAspect >> adviceBindingOf [
+	^ PhAdvice new
+		pointcut: self pcBindingOf;
+		advice: [ :context | 
+			| model varName |
+			model := context receiver.
+			varName := (context arguments at: 1) asSymbol.
+			(model innerBindingOf: varName)
+				ifNil: [ model environment bindingOf: varName ] ];
+		type: #around
+]
+
+{ #category : #advices }
 FieldAspect >> adviceInitializeFieldValue [
 	^ PhAdvice new
 		pointcut: self pcInitializeClass;
@@ -48,6 +61,11 @@ FieldAspect >> adviceInitializeFieldValue [
 				with: self defaultFieldValue.
 			];
 		type: #after
+]
+
+{ #category : #advices }
+FieldAspect >> adviceInnerBindingOf [
+	self subclassResponsibility 
 ]
 
 { #category : #advices }
@@ -79,17 +97,11 @@ FieldAspect >> adviceSetCustomFieldValue [
 
 { #category : #'class modifiers' }
 FieldAspect >> classModifier [
-	| getter setter ivar |
-	ivar := self fieldName.
-	getter := self fieldMethodGetter.
-	setter := self fieldMethodSetter.
-	
 	^ PhClassModifier new
-		on:
-			(PhPointcut receivers: modelClass name selectors: #any asParser);
-		addNewInstanceVar: ivar;
-		addNewInstanceMethod: getter;
-		addNewInstanceMethod: setter;
+		on: (PhPointcut receivers: modelClass name selectors: #any asParser);
+		addNewInstanceVar: self fieldName;
+		addNewInstanceMethod: self fieldMethodGetter;
+		addNewInstanceMethod: self fieldMethodSetter;
 		yourself
 ]
 
@@ -136,7 +148,9 @@ FieldAspect >> initialize [
 		addClassModifier: self classModifier;
 		add: self adviceInitializeFieldValue;
 		add: self adviceSetCustomFieldValue;
-		add: self adviceInstallFieldValue
+		add: self adviceInstallFieldValue;
+		add: self adviceBindingOf;
+		add: self adviceInnerBindingOf 
 		
 ]
 
@@ -158,11 +172,27 @@ FieldAspect >> modelClass: aModelClass [
 ]
 
 { #category : #pointcuts }
+FieldAspect >> pcBindingOf [
+	^ PhPointcut new
+		receivers: self modelClass name;
+		selectors: 'bindingOf:';
+		context: #('receiver' 'arguments')
+]
+
+{ #category : #pointcuts }
 FieldAspect >> pcInitializeClass [
 	^ PhPointcut new
 		receivers: self modelClass name;
 		selectors: 'initialize';
 		context: #('receiver')
+]
+
+{ #category : #pointcuts }
+FieldAspect >> pcInnerBindingOf [
+	^ PhPointcut new
+		receivers: self modelClass name;
+		selectors: 'innerBindingOf:';
+		context: #('receiver' 'arguments' 'advice')
 ]
 
 { #category : #pointcuts }

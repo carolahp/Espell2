@@ -26,9 +26,13 @@ LanguageAspect >> adviceAddClasses [
 	^ PhAdvice new
 		pointcut: self pcTransform;
 		advice: [ :context | 
-			| language |
+			| language dog |
 			language := context receiver.
-			language ensureClassNamed: 'Dog'.
+			dog := language ensureClassNamed: 'Dog'.
+			dog addLocalMethodFromSource: 'kingdom 
+			^ Kingdom' 
+				selector: #kingdom.
+			
 			self fieldAspects
 				do: [ :asp | 
 					(language classWithRole: asp modelClass role)
