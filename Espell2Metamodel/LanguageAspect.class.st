@@ -3,7 +3,7 @@ Class {
 	#superclass : #PhAspect,
 	#instVars : [
 		'modelClass',
-		'fieldAspect'
+		'fieldAspects'
 	],
 	#category : #Espell2Metamodel
 }
@@ -26,16 +26,28 @@ LanguageAspect >> adviceAddClasses [
 	^ PhAdvice new
 		pointcut: self pcTransform;
 		advice: [ :context | 
-			context receiver ensureClassNamed: 'Dog'.
-			(context receiver classWithRole: fieldAspect modelClass role)
-				addLocalMethodFromSource: fieldAspect fieldGetter
-				selector: fieldAspect fieldName ];
+			| language |
+			language := context receiver.
+			language ensureClassNamed: 'Dog'.
+			self fieldAspects
+				do: [ :asp | 
+					(language classWithRole: asp modelClass role)
+						addLocalMethodFromSource: asp fieldMethodGetter
+						selector: asp fieldName;
+						addLocalMethodFromSource: asp fieldMethodSetter
+						selector: asp fieldName,':' ] ];
 		type: #after
 ]
 
 { #category : #'accessing aspects' }
-LanguageAspect >> fieldAspect: anAspect [
-	fieldAspect := anAspect 
+LanguageAspect >> fieldAspects [
+	^ fieldAspects
+]
+
+{ #category : #'accessing aspects' }
+LanguageAspect >> fieldAspects: aCollection [
+	aCollection do: [ :aspect | aspect getPointcuts isNotEmpty ].
+	fieldAspects := aCollection
 	
 ]
 

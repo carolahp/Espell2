@@ -12,15 +12,21 @@ Class {
 	#superclass : #PhAspect,
 	#instVars : [
 		'modelClass',
-		'customFielValues'
+		'customFieldValues'
 	],
 	#category : #Espell2Metamodel
 }
 
 { #category : #'instance creation' }
 FieldAspect class >> for: aClassModelClass [
-	^ self basicNew 
+	^ self for: aClassModelClass customValues: #() asDictionary
+]
+
+{ #category : #'instance creation' }
+FieldAspect class >> for: aClassModelClass customValues: aDictionary [
+	^ self basicNew
 		modelClass: aClassModelClass; 
+		customFieldValues: aDictionary;
 		initialize;
 		yourself.
 ]
@@ -75,8 +81,8 @@ FieldAspect >> adviceSetCustomFieldValue [
 FieldAspect >> classModifier [
 	| getter setter ivar |
 	ivar := self fieldName.
-	getter := self fieldGetter.
-	setter := self fieldSetter.
+	getter := self fieldMethodGetter.
+	setter := self fieldMethodSetter.
 	
 	^ PhClassModifier new
 		on:
@@ -89,12 +95,12 @@ FieldAspect >> classModifier [
 
 { #category : #accessing }
 FieldAspect >> customFieldValues [
-	^ customFielValues 
+	^ customFieldValues 
 ]
 
 { #category : #accessing }
 FieldAspect >> customFieldValues: aCollection [
-	customFielValues := aCollection asDictionary
+	customFieldValues := aCollection asDictionary
 ]
 
 { #category : #accessing }
@@ -103,7 +109,7 @@ FieldAspect >> defaultFieldValue [
 ]
 
 { #category : #accessing }
-FieldAspect >> fieldGetter [
+FieldAspect >> fieldMethodGetter [
 	| var |
 	var := self fieldName.
 	^ var, ' 
@@ -111,16 +117,16 @@ FieldAspect >> fieldGetter [
 ]
 
 { #category : #accessing }
-FieldAspect >> fieldName [
-	self subclassResponsibility 
-]
-
-{ #category : #accessing }
-FieldAspect >> fieldSetter [
+FieldAspect >> fieldMethodSetter [
 	| var |
 	var := self fieldName.
 	^ var, ': anObject
 	', var, ' := anObject'.
+]
+
+{ #category : #accessing }
+FieldAspect >> fieldName [
+	self subclassResponsibility 
 ]
 
 { #category : #initialization }

@@ -4,12 +4,12 @@ Class {
 	#category : #Espell2Metamodel
 }
 
-{ #category : #constants }
+{ #category : #accessing }
 ClassVarAspect >> defaultFieldValue [
 	^ Dictionary new
 ]
 
-{ #category : #constants }
+{ #category : #accessing }
 ClassVarAspect >> fieldName [
 	^ #classPool
 ]
