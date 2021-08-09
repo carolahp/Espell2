@@ -1,6 +1,9 @@
 Class {
 	#name : #ClassVariableModel,
-	#superclass : #GlobalModel,
+	#superclass : #ObjectModel,
+	#instVars : [
+		'pbInstruction'
+	],
 	#category : #'Espell2-Metamodel-Variables'
 }
 
@@ -17,9 +20,38 @@ ClassVariableModel >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 		yourself
 ]
 
+{ #category : #compile }
+ClassVariableModel >> emitValue: anIRBuilder [
+	anIRBuilder pushLiteralVariable: self.
+]
+
+{ #category : #'initial value' }
+ClassVariableModel >> initialValue [ 
+	^ pbInstruction evaluate
+]
+
+{ #category : #initialization }
+ClassVariableModel >> initializationCode: aBlockOraString [
+	| languageModel |
+	languageModel := self environment.
+	
+	pbInstruction := aBlockOraString
+		asPBInstructionFor: languageModel
+]
+
 { #category : #testing }
 ClassVariableModel >> isGlobalVariable [
 	^ false
+]
+
+{ #category : #testing }
+ClassVariableModel >> isWritable [
+	^ true
+]
+
+{ #category : #accessing }
+ClassVariableModel >> key [ 
+	^ self name asSymbol
 ]
 
 { #category : #'accessing-api' }
