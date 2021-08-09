@@ -78,6 +78,20 @@ ObjectModel >> evaluateCode: aString temps: aCollection [
 ]
 
 { #category : #'evaluate ast' }
+ObjectModel >> evaluateCodeD: aString [
+	" use DASTInterpreter for the evaluation "
+	^ self evaluateCodeD: aString temps: #() 
+]
+
+{ #category : #'evaluate ast' }
+ObjectModel >> evaluateCodeD: aString temps: aCollection [ 
+	" use DASTInterpreter for the evaluation "
+	^ (self newInstruction
+		code: aString;
+		temps: aCollection) evaluateWithDASTInterpreter 
+]
+
+{ #category : #'evaluate ast' }
 ObjectModel >> evaluateMarking: aString [
 	^ self evaluateMarking: aString temps: #() 
 ]

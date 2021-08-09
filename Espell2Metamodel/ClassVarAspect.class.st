@@ -13,9 +13,10 @@ ClassVarAspect >> adviceInnerBindingOf [
 			(context dynamicContext).
 			model := context receiver.
 			varName := (context arguments at: 1) asSymbol.
-			(model classPool bindingOf: varName) 
-				ifNil: [
-					self halt.]];
+			(model classPool bindingOf: varName)
+			ifNil: [
+				context proceed
+				]];
 		type: #around
 ]
 
