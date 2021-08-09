@@ -5,7 +5,7 @@ Class {
 		'owningClass',
 		'definingClass'
 	],
-	#category : #'Espell2-Metamodel'
+	#category : #'Espell2-Metamodel-Variables'
 }
 
 { #category : #testing }

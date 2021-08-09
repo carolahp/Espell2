@@ -172,7 +172,7 @@ ObjectModel >> language [
 	| model |
 	model := self.
 	[ model isNil or: [ model isLanguageModel ] ]
-		whileFalse: [ model := self parent ].
+		whileFalse: [ model := model parent ].
 	^ model
 ]
 

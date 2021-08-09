@@ -380,9 +380,9 @@ EP2RemoteClass >> nameOld: anObject [
 
 { #category : #'high-level-messages' }
 EP2RemoteClass >> new [
-	^ self 
+	^ (self 
 		evaluateCode: 'aClass new'
-		withTemps: { #aClass -> self } 
+		withTemps: { #aClass -> self }) asRemoteObjectCasted 
 ]
 
 { #category : #printing }

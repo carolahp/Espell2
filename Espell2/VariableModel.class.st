@@ -5,7 +5,7 @@ Class {
 		'scope',
 		'usage'
 	],
-	#category : #'Espell2-Metamodel'
+	#category : #'Espell2-Metamodel-Variables'
 }
 
 { #category : #'code generation' }

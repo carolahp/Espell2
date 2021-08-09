@@ -26,20 +26,33 @@ LanguageAspect >> adviceAddClasses [
 	^ PhAdvice new
 		pointcut: self pcTransform;
 		advice: [ :context | 
-			| language dog |
+			| language dog classPool classVar |
 			language := context receiver.
+			
+			"classVar := language newClassWithRole: #ClassVariable.
+			language addBehavior: classVar.
+			classVar superclass: (language classWithRole: #Association)."
+			
 			dog := language ensureClassNamed: 'Dog'.
-			dog addLocalMethodFromSource: 'kingdom 
-			^ Kingdom' 
+			dog
+				addLocalMethodFromSource:
+					'kingdom 
+			^ Kingdom'
 				selector: #kingdom.
 			
+			classPool := {((ClassVariableModel
+				named: #Classification
+				parent: dog) initializationCode: '#dogclassification')}
+				asDictionary.
+			dog classPool: classPool.
+				
 			self fieldAspects
 				do: [ :asp | 
 					(language classWithRole: asp modelClass role)
 						addLocalMethodFromSource: asp fieldMethodGetter
-						selector: asp fieldName;
+							selector: asp fieldName;
 						addLocalMethodFromSource: asp fieldMethodSetter
-						selector: asp fieldName,':' ] ];
+							selector: asp fieldName , ':' ] ];
 		type: #after
 ]
 

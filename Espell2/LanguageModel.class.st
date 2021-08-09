@@ -807,7 +807,7 @@ LanguageModel >> formatOfImmediate [
 
 { #category : #'bootstrap - build kernel' }
 LanguageModel >> generate [
-	self canGenerate ifFalse: [ self error: 'Failure, please instantiate the language model' ].
+	self canGenerate ifFalse: [ self error: 'Failure, please build the language model using LanguageModel>>build' ].
 
 	self test.
 	self prepareBuilder.

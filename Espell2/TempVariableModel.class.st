@@ -6,7 +6,7 @@ Class {
 		'index',
 		'name'
 	],
-	#category : #'Espell2-Metamodel'
+	#category : #'Espell2-Metamodel-Variables'
 }
 
 { #category : #'accessing-api' }
