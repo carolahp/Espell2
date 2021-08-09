@@ -26,7 +26,7 @@ LanguageAspect >> adviceAddClasses [
 	^ PhAdvice new
 		pointcut: self pcTransform;
 		advice: [ :context | 
-			| language dog classPool classVar |
+			| language dog classPool |
 			language := context receiver.
 			
 			"classVar := language newClassWithRole: #ClassVariable.
@@ -34,11 +34,18 @@ LanguageAspect >> adviceAddClasses [
 			classVar superclass: (language classWithRole: #Association)."
 			
 			dog := language ensureClassNamed: 'Dog'.
+
 			dog
 				addLocalMethodFromSource:
-					'kingdom 
-			^ Kingdom'
-				selector: #kingdom.
+					'classification 
+			^ Classification'
+				selector: #classification.
+			
+			dog
+				addLocalMethodFromSource:
+					'classification: aString 
+			^ Classification := aString'
+				selector: #classification:.
 			
 			classPool := {((ClassVariableModel
 				named: #Classification
