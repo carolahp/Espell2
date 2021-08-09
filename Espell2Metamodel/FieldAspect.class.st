@@ -65,7 +65,21 @@ FieldAspect >> adviceInitializeFieldValue [
 
 { #category : #advices }
 FieldAspect >> adviceInnerBindingOf [
-	self subclassResponsibility 
+	^ PhAdvice new
+		pointcut: self pcInnerBindingOf;
+		advice: [ :context | 
+			| model varName |
+			model := context receiver.
+			varName := (context arguments at: 1) asSymbol.
+			(self innerBindingOf: varName in: model)
+				ifNil: [ | next |
+					next := context currentAdvice asOrderedCollection
+						select: [ :each | 
+							each owner class ~= self class
+								and: [ each owner class isKindOf: FieldAspect ] ].
+					next ifNotEmpty: [ context currentAdvice: next continueAt: 1 ].
+					context proceed ] ];
+		type: #around
 ]
 
 { #category : #advices }
@@ -152,6 +166,11 @@ FieldAspect >> initialize [
 		add: self adviceBindingOf;
 		add: self adviceInnerBindingOf 
 		
+]
+
+{ #category : #binding }
+FieldAspect >> innerBindingOf: aSymbol in: aClassModel [
+	self subclassResponsibility 
 ]
 
 { #category : #'install-uninstall' }

@@ -5,22 +5,6 @@ Class {
 }
 
 { #category : #accessing }
-ClassVarAspect >> adviceInnerBindingOf [
-	^ PhAdvice new
-		pointcut: self pcInnerBindingOf;
-		advice: [ :context | 
-			| model varName |
-			(context dynamicContext).
-			model := context receiver.
-			varName := (context arguments at: 1) asSymbol.
-			(model classPool bindingOf: varName)
-			ifNil: [
-				context proceed
-				]];
-		type: #around
-]
-
-{ #category : #accessing }
 ClassVarAspect >> defaultFieldValue [
 	^ Dictionary new
 ]
@@ -28,4 +12,9 @@ ClassVarAspect >> defaultFieldValue [
 { #category : #accessing }
 ClassVarAspect >> fieldName [
 	^ #classPool
+]
+
+{ #category : #advices }
+ClassVarAspect >> innerBindingOf: aSymbol in: aClassModel [
+	^ aClassModel classPool bindingOf: aSymbol
 ]
