@@ -6,7 +6,7 @@ Class {
 
 { #category : #bootstrapping }
 CandleWithClassVarsDemo class >> bootstrap [
-	| candle classVars langAspect classMemb langMemb |
+	| candle classVars langAspect |
 	"next line is to ensure the aspect gets uninstalled"
 	candle := Role new.
 	[ 

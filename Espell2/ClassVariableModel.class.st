@@ -20,6 +20,11 @@ ClassVariableModel >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 		yourself
 ]
 
+{ #category : #compilation }
+ClassVariableModel >> emitStore: anIRBuilder [ 
+	anIRBuilder storeIntoLiteralVariable: self
+]
+
 { #category : #compile }
 ClassVariableModel >> emitValue: anIRBuilder [
 	anIRBuilder pushLiteralVariable: self.
@@ -37,6 +42,11 @@ ClassVariableModel >> initializationCode: aBlockOraString [
 	
 	pbInstruction := aBlockOraString
 		asPBInstructionFor: languageModel
+]
+
+{ #category : #testing }
+ClassVariableModel >> isClassVariable [
+	^ true
 ]
 
 { #category : #testing }
@@ -62,5 +72,5 @@ ClassVariableModel >> value [
 { #category : #value }
 ClassVariableModel >> value: anEP2Remote [ 
 	self assert: anEP2Remote isEP2Remote.
-	self remote: anEP2Remote
+	remote := anEP2Remote
 ]
