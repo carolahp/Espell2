@@ -1037,7 +1037,7 @@ ClassModel >> name: aName [
 	(self parent isNotNil and: [ self name ~= aName ])
 		ifTrue: [ self parent
 				ifNotNil: [ :lang | 
-					lang behaviors
+					lang allClasses
 						removeKey: self name;
 						at: aName put: self.
 					lang classRoles at: self role name put: aName ] ].

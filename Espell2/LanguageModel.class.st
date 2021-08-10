@@ -185,38 +185,11 @@ LanguageModel >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject
 ]
 
 { #category : #'bootstrap - build model classes' }
-LanguageModel >> addBehavior: aMClass [
-
-	self deprecated: 'Use #addClass: instead.' transformWith: '`@receiver addBehavior:`@arg' -> '`@receiver addClass:`@arg'.
-	self
-		classNamed: aMClass name
-		ifAbsent: [ self behaviors at: aMClass name put: aMClass ]
-		ifPresent: [ :found | 
-			aMClass = found
-				ifFalse: [ self error: 'trying to replace existent behavior' ]
-				ifTrue: [ found ] ]
-]
-
-{ #category : #'bootstrap - build model classes' }
-LanguageModel >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
-	| newClass mcDef |
-	
-	self deprecated: 'Use #addClassFromMonticelloDefinition: instead.' transformWith: '`@receiver addBehaviorFromMonticelloDefinition:`@arg' -> '`@receiver addClassFromMonticelloDefinition:`@arg'.
-	mcDef := aMCClassDefinition.	
-	newClass := self ensureClassNamed: (self classNameFromMonticello: aMCClassDefinition className).
-	newClass extendWithMonticello: mcDef.
-	newClass extendWithMonticelloCustom: mcDef.
-	" we can't test yet since not all classes have been loaded "
-	^ newClass
-	
-]
-
-{ #category : #'bootstrap - build model classes' }
 LanguageModel >> addClass: aMClass [
 
 	self
 		classNamed: aMClass name
-		ifAbsent: [ self behaviors at: aMClass name put: aMClass ]
+		ifAbsent: [ self allClasses at: aMClass name put: aMClass ]
 		ifPresent: [ :found | 
 			aMClass = found
 				ifFalse: [ self error: 'trying to replace existent behavior' ]
@@ -227,12 +200,11 @@ LanguageModel >> addClass: aMClass [
 LanguageModel >> addClassFromMonticelloDefinition: aMCClassDefinition [
 	| newClass mcDef |
 	mcDef := aMCClassDefinition.		
-	newClass := self ensureClassNamed: aMCClassDefinition className.
+	newClass := self ensureClassNamedFromMonticello: aMCClassDefinition className.
 	newClass extendWithMonticello: mcDef.
 	newClass extendWithMonticelloCustom: mcDef.
 	" we can't test yet since not all classes have been loaded "
 	^ newClass
-	
 ]
 
 { #category : #'bootstrap - build model globals' }
@@ -314,14 +286,6 @@ LanguageModel >> basicNewClassWithRole: aString [
 		role: (self newRoleNamed: roleName for: class);
 		yourself.
 	^ class
-]
-
-{ #category : #'accessing classes' }
-LanguageModel >> behaviors [
-	self
-		deprecated: 'Use #allClasses instead.'
-		transformWith: '`@receiver behaviors' -> '`@receiver allClasses'.
-	^ classes
 ]
 
 { #category : #binding }
@@ -725,7 +689,7 @@ LanguageModel >> ensureClassNamed: aString [
 		classNamed: aString
 		ifAbsent: [ | newBeh |
 			newBeh := self newClassNamed: aString.
-			self addBehavior: newBeh.
+			self addClass: newBeh.
 			newBeh ]
 ]
 
@@ -863,12 +827,6 @@ LanguageModel >> globalWithRole: aString [
 ]
 
 { #category : #hooks }
-LanguageModel >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
-	self deprecated: 'use hooks in EP2MClass instead'.
-	
-]
-
-{ #category : #hooks }
 LanguageModel >> hookGlobalNotFound: aString [
 	| localClass |
 	"load missing class from the system"
@@ -882,7 +840,7 @@ LanguageModel >> hookGlobalNotFound: aString [
 				parent: self;
 				initializeWithLocal: localClass;
 				yourself.
-			self addBehavior: newClass.
+			self addClass: newClass.
 			^ newClass ]
 ]
 
@@ -894,19 +852,6 @@ LanguageModel >> hookInitializeClassStubs [
 { #category : #hooks }
 LanguageModel >> hookInitializeMethodDictionaryFor: anEP2RemoteClass [ 
 	^ self newDummyInstruction   
-]
-
-{ #category : #hooks }
-LanguageModel >> hookInitializeProcessScheduler [ 
-	self deprecated: 'Use the GlobalModel with role #Processor instead'
-	"|code|
-	code := 'Processor := ProcessorScheduler basicNew.
-				Processor initProcessLists.'.
-	^ (self newInstruction
-		code: code;
-		temps: #();
-		yourself ) evaluate
-"
 ]
 
 { #category : #hooks }
@@ -989,37 +934,6 @@ LanguageModel >> installClasses [
 LanguageModel >> installMethods [
 	(self allClasses select: #isInstallable)
 		do: [ :class | class installMethods ]
-]
-
-{ #category : #'bootstrap - build kernel stubs' }
-LanguageModel >> installMulticlassStubs: aCollection [
-	| names theclasses |
-	" ensure the metaclass of each class-model in the collection is present  "
-	self deprecated: 'use PBClassLoadeer>>installMulticlassStubs: instead'.
-	names := aCollection collect: #name.
-	theclasses := #() asOrderedCollection.
-	aCollection
-		do: [ :class | 
-			(names anySatisfy: [ :c | c = class metaclass name ])
-				ifFalse: [ theclasses add: class metaclass ] ].
-	theclasses addAll: aCollection.
-	"calculate index in class table"
-	theclasses
-		do: [ :class | 
-			class indexInClassTable
-				ifNil: [ class indexInClassTable: self classLoader newClassIndex ] ].
-	"create stubs for each class and register"
-	theclasses
-		do: [ :class | 
-			class remoteIsInstalled
-				ifFalse: [ class installStubBasic ] ].
-	theclasses do: [ :class | class testStub ]
-]
-
-{ #category : #hooks }
-LanguageModel >> installStubs [
-	self deprecated: 'use PBClassLoader>>installStubs'.
-	self installMulticlassStubs: self firstMetaclasses 
 ]
 
 { #category : #'vm-constants' }
@@ -1110,8 +1024,8 @@ LanguageModel >> loadKernel [
 	objModel superclass: nil.
 	classModel superclass: objModel.
 	
-	self addBehavior: objModel.
-	self addBehavior: classModel.
+	self addClass: objModel.
+	self addClass: classModel.
 	
 	objModel initialize.
 	classModel initialize
@@ -1128,7 +1042,7 @@ LanguageModel >> loadRequiredClasses [
 		do: [ :aRole | 
 			| class |
 			class := self newClassWithRole: aRole.
-			self addBehavior: class ].
+			self addClass: class ].
 	
 	self test.
 ]
