@@ -2,7 +2,6 @@ Class {
 	#name : #LiteralVariableModel,
 	#superclass : #VariableModel,
 	#instVars : [
-		'initializationCode',
 		'pbInstruction'
 	],
 	#category : #'Espell2-Metamodel-Variables'
@@ -21,7 +20,6 @@ LiteralVariableModel >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 { #category : #testing }
 LiteralVariableModel >> destroy [ 
 	super destroy.
-	initializationCode := nil.
 	pbInstruction ifNotNil: [
 		pbInstruction destroy.
 		pbInstruction := nil.

@@ -1,79 +1,10 @@
 Class {
 	#name : #ClassVariableModel,
-	#superclass : #ObjectModel,
-	#instVars : [
-		'pbInstruction',
-		'value'
-	],
+	#superclass : #LiteralVariableModel1,
 	#category : #'Espell2-Metamodel-Variables'
 }
-
-{ #category : #hooks }
-ClassVariableModel >> accept: anEPASTInterpreter assign: anEP2Remote inNode: aRBGlobalNode [ 
-	self value: anEP2Remote 
-]
-
-{ #category : #'accessing-api' }
-ClassVariableModel >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
-	remote ifNotNil: [ ^ remote ].
-	^ remote := (self language classWithRole: #Association) ensureRemote new
-		key: self name;
-		value: self value;
-		yourself
-]
-
-{ #category : #compilation }
-ClassVariableModel >> emitStore: anIRBuilder [ 
-	anIRBuilder storeIntoLiteralVariable: self
-]
-
-{ #category : #compile }
-ClassVariableModel >> emitValue: anIRBuilder [
-	anIRBuilder pushLiteralVariable: self.
-]
-
-{ #category : #'initial value' }
-ClassVariableModel >> initialValue [ 
-	^ pbInstruction evaluate
-]
-
-{ #category : #initialization }
-ClassVariableModel >> initializationCode: aBlockOraString [
-	| languageModel |
-	languageModel := self environment.
-	
-	pbInstruction := aBlockOraString
-		asPBInstructionFor: languageModel
-]
-
-{ #category : #testing }
-ClassVariableModel >> isClassVariable [
-	^ true
-]
 
 { #category : #testing }
 ClassVariableModel >> isGlobalVariable [
 	^ false
-]
-
-{ #category : #testing }
-ClassVariableModel >> isWritable [
-	^ true
-]
-
-{ #category : #accessing }
-ClassVariableModel >> key [ 
-	^ self name asSymbol
-]
-
-{ #category : #'accessing-api' }
-ClassVariableModel >> value [ 
-	value ifNil: [ 
-		value := self initialValue ].
-	^ value
-]
-
-{ #category : #value }
-ClassVariableModel >> value: anObject [
-	value := anObject 
 ]
