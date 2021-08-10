@@ -76,12 +76,6 @@ ClassModel >> acceptsNewSlots [
 ]
 
 { #category : #'bootstrap - build model methods' }
-ClassModel >> addLocalMethod: anEP2MMethod [
-	self deprecated: 'use addLocalMethodFromsource:selector:'.
-	
-]
-
-{ #category : #'bootstrap - build model methods' }
 ClassModel >> addLocalMethodFromSource: source selector: selector [
 	
 	^ (self ensureLocalMethodNamed: selector)
@@ -679,30 +673,6 @@ ClassModel >> installCustom [
 		self test
 ]
 
-{ #category : #'bootstrap - build kernel classes' }
-ClassModel >> installMetacircularStub [
-	"I install a class stub that is instance of itself"
-	| theNewMetaclass metaclassIndex |
-	
-	self deprecated: 'Use LanguageModel >> installMulticlassStubs:'.
-	" If the metaclass was already created, it will be found in the bootstrapEnvironment dictionary "
-	self remoteIsInstalled
-		ifTrue: [ ^ self remote ].
-
-	" We need to create the metaclass from scratch "
-	metaclassIndex := self classLoader newClassIndex.
-
-	"This is Metaclass, it is instance of itself"
-	theNewMetaclass := self classLoader
-		createStubForClassNamed: self name
-		metaclassIndex: metaclassIndex
-		newClassIndex: metaclassIndex.
-	self assert: theNewMetaclass basicClass = theNewMetaclass.
-	self assert: theNewMetaclass classTableIndex = metaclassIndex.
-	
-	^ theNewMetaclass
-]
-
 { #category : #'bootstrap - build model methods' }
 ClassModel >> installMethods [
 	(self localMethods select: #isInstallable)
@@ -727,28 +697,6 @@ ClassModel >> installStub [
 	self installStubBasic.
 	self testStub.
 	^ self remote"
-]
-
-{ #category : #'bootstrap - build kernel classes' }
-ClassModel >> installStubBasic [
-	self deprecated: 'use PBClassLoader>>installStubBasic:'.
-	" I install the stub of my corresponding class in the kernel "
-	self remote: (self classLoader
-								createStubForClassNamed: self name
-								metaclassIndex: self metaclass indexInClassTable
-								newClassIndex: self indexInClassTable).
-	self classLoader
-						registerClass: self remote
-						named: self name
-						fullyLoaded: false .
-	^ self remote
-]
-
-{ #category : #'bootstrap - build kernel classes' }
-ClassModel >> installStubCustom [
-	"Using method from protocol 'api-stubs creation' create your own stub and return it"
-	self deprecated: 'Use first Language >> installMulticlassStubs: to create the first stubs. Use >>installStub to load classes after stub creation'.
-	self subclassResponsibility
 ]
 
 { #category : #'accessing metaclass' }
