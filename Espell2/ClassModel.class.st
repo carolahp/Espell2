@@ -207,6 +207,11 @@ ClassModel >> asMCDefinition [
 		yourself
 ]
 
+{ #category : #'kernel objects' }
+ClassModel >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
+	^ self ensureRemote
+]
+
 { #category : #'accessing backend' }
 ClassModel >> backend [
 	^ self parent backend 
@@ -639,12 +644,16 @@ ClassModel >> install [
 { #category : #'bootstrap - build kernel classes' }
 ClassModel >> installBasic [
 	| remoteMethodDict remoteSuperclass |
+	self isInstallable
+		ifFalse:
+			[ self error: 'trying to install a class that is set as uninstallable' ].
 	self remoteIsInstalled
 		ifFalse: [ self installStub ].
 	self remote isStub
 		ifFalse: [ "class is fully loaded" ^ self remote ].
 	"we install an empty methodDict, it will be filled later"
-	remoteMethodDict := EP2RemoteMethodDictionary	newWithBackend: self parent remote espellBackend.
+	remoteMethodDict := EP2RemoteMethodDictionary
+		newWithBackend: self parent remote espellBackend.
 	remoteMethodDict test.
 	remoteSuperclass := self superclass
 		ifNil: [ nil ]
@@ -659,7 +668,15 @@ ClassModel >> installBasic [
 
 { #category : #'bootstrap - build kernel classes' }
 ClassModel >> installCustom [
-	self subclassResponsibility 
+	| missingFields |
+	missingFields := self class allClassModelInstVarNames
+		difference: ClassModel allClassModelInstVarNames.
+	missingFields
+		do: [ :each | 
+			| value |
+			value := self perform: each.
+			self remote perform: each , ':' with: value ].
+		self test
 ]
 
 { #category : #'bootstrap - build kernel classes' }

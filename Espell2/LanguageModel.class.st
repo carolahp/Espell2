@@ -927,7 +927,8 @@ LanguageModel >> installClass: aClassDefinition [
 
 { #category : #hooks }
 LanguageModel >> installClasses [
-	(self allClasses select: #isInstallable) do: #install
+	self allClasses do: #installBasic.
+	self allClasses do: #installCustom
 ]
 
 { #category : #hooks }
