@@ -2,7 +2,8 @@ Class {
 	#name : #ClassVariableModel,
 	#superclass : #ObjectModel,
 	#instVars : [
-		'pbInstruction'
+		'pbInstruction',
+		'value'
 	],
 	#category : #'Espell2-Metamodel-Variables'
 }
@@ -14,7 +15,8 @@ ClassVariableModel >> accept: anEPASTInterpreter assign: anEP2Remote inNode: aRB
 
 { #category : #'accessing-api' }
 ClassVariableModel >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
-	^ (self language classWithRole: #Association) ensureRemote new
+	remote ifNotNil: [ ^ remote ].
+	^ remote := (self language classWithRole: #Association) ensureRemote new
 		key: self name;
 		value: self value;
 		yourself
@@ -66,11 +68,12 @@ ClassVariableModel >> key [
 
 { #category : #'accessing-api' }
 ClassVariableModel >> value [ 
-	^ remote ifNil: [ remote := self initialValue ]
+	value ifNil: [ 
+		value := self initialValue ].
+	^ value
 ]
 
 { #category : #value }
-ClassVariableModel >> value: anEP2Remote [ 
-	self assert: anEP2Remote isEP2Remote.
-	remote := anEP2Remote
+ClassVariableModel >> value: anObject [
+	value := anObject 
 ]

@@ -225,7 +225,7 @@ EP2RemoteClass >> doesNotUnderstand: aMessage [
 		ifFalse: [ 
 			"possibly a getter"
 			result := (self instanceVariableNamed: aMessage selector) asRemoteObjectCasted  ].
-	] on: Exception do: [ super doesNotUnderstand: aMessage ].
+	] on: EP2SlotNotFoundException do: [:ex | super doesNotUnderstand: aMessage ].
 	^ result
 ]
 
