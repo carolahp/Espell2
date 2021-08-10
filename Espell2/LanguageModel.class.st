@@ -78,8 +78,7 @@ LanguageModel class >> entryPointSelector [
 
 { #category : #metamodel }
 LanguageModel class >> globalModel [
-	" return the subclass of GlobalModel used to represent globals in your language "
-	self subclassResponsibility 
+	^ GlobalModel
 ]
 
 { #category : #instantiation }
