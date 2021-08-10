@@ -34,7 +34,8 @@ LanguageAspect >> adviceAddClasses [
 						addLocalMethodFromSource: asp fieldMethodGetter
 							selector: asp fieldName;
 						addLocalMethodFromSource: asp fieldMethodSetter
-							selector: asp fieldName , ':' ] ];
+							selector: asp fieldName , ':'.
+						asp class buildDemoClassesIn: language ] ];
 		type: #after
 ]
 

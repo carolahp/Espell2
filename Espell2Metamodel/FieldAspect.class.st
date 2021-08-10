@@ -18,6 +18,20 @@ Class {
 }
 
 { #category : #'instance creation' }
+FieldAspect class >> buildDemoClassesIn: aLanguageModel [
+	" adding classes and methods that use the field implemented "
+	self subclassResponsibility 
+]
+
+{ #category : #'instance creation' }
+FieldAspect class >> demoEntryPointFor: aLanguageModel [ 
+	^ 'System log: Dog new kingdom asString.
+		Dog new kingdom: #hola.
+		System log: Dog new kingdom asString.
+		System quit'
+]
+
+{ #category : #'instance creation' }
 FieldAspect class >> for: aClassModelClass [
 	^ self for: aClassModelClass customValues: #() asDictionary
 ]
