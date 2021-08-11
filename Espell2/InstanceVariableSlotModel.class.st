@@ -4,6 +4,22 @@ Class {
 	#category : #'Espell2-Metamodel-Variables'
 }
 
+{ #category : #instanciation }
+InstanceVariableSlotModel class >> role [ 
+	^ 'InstanceVariableSlot'
+]
+
+{ #category : #'converting local-to-remote' }
+InstanceVariableSlotModel >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
+	remote ifNotNil: [ ^remote ].
+	^ remote := (self language classWithRole: self class role) remote new
+		name: self name;
+		definingClass: definingClass;
+		owningClass: owningClass;
+		index: index;
+		yourself 
+]
+
 { #category : #'as yet unclassified' }
 InstanceVariableSlotModel >> emitStore: methodBuilder [
 

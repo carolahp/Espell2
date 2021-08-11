@@ -314,6 +314,27 @@ EP2Remote >> classDefinition [
 	^ nil
 ]
 
+{ #category : #'accessing-pvt' }
+EP2Remote >> doesNotUnderstand: aMessage [
+	| selector index result instVarName |
+	"this allows the user to access instance variables defined in their class model by accessors"
+	selector := aMessage selector.
+	index := selector indexOf: $:.
+	[index > 0
+		ifTrue: [ 
+			"possibly a setter"
+			selector size = index
+				ifFalse: [ self error ]
+				ifTrue: [ 
+					instVarName := selector copyUpTo: $:.
+					result := self instanceVariableNamed: instVarName put: (aMessage arguments at: 1) ] ]
+		ifFalse: [ 
+			"possibly a getter"
+			result := (self instanceVariableNamed: aMessage selector) asRemoteObjectCasted  ].
+	] on: EP2SlotNotFoundException do: [:ex | super doesNotUnderstand: aMessage ].
+	^ result
+]
+
 { #category : #evaluating }
 EP2Remote >> evaluateCode: aString withTemps: aCollection [ 
 	^ self backend builder bootstrapInterpreter 

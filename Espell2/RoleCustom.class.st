@@ -66,5 +66,5 @@ RoleCustom >> modelInstSpec [
 
 { #category : #constants }
 RoleCustom >> modelInstVarNames [ 
-	^ self modelClass allClassModelInstVarNames.
+	^ self modelClass allModelInstVarNames.
 ]

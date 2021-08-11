@@ -29,7 +29,7 @@ Class {
 }
 
 { #category : #'hooks-api' }
-ClassModel class >> allClassModelInstVarNames [
+ClassModel class >> allModelInstVarNames [
 	| allInstVars firstIndex |
 	"returns all inst vars of class-models according to the metamodel, starting from superclass"
 	allInstVars := self allInstVarNames.
@@ -663,8 +663,8 @@ ClassModel >> installBasic [
 { #category : #'bootstrap - build kernel classes' }
 ClassModel >> installCustom [
 	| missingFields |
-	missingFields := self class allClassModelInstVarNames
-		difference: ClassModel allClassModelInstVarNames.
+	missingFields := self class allModelInstVarNames
+		difference: ClassModel allModelInstVarNames.
 	missingFields
 		do: [ :each | 
 			| value |

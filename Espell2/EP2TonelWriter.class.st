@@ -55,7 +55,7 @@ EP2TonelWriter >> typeDefinitionOf: aClassDefinition [
 	excluded := #(name superclass type category role instVarNames methodDict) asSet. 
 	
 	"We get the name of fields specified in the class metamodel defined by the user (subclass of EP2MClass)"
-	required := model class allClassModelInstVarNames.
+	required := model class allModelInstVarNames.
 	missing := required reject: [:key | excluded includes: key ].
 	
 	missing do: [ : key | | value |

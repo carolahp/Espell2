@@ -280,7 +280,7 @@ LanguageModel >> basicNewClassWithRole: aString [
 	className := self classRoles
 		at: roleName
 		ifAbsent: [ self error: 'undefined role: ' , roleName ].
-	class := self basicNewClassNamed: className.
+	class := self basicNewClassNamed: className asSymbol.
 	class
 		role: (self newRoleNamed: roleName for: class);
 		yourself.
@@ -451,8 +451,12 @@ LanguageModel >> classNameFromMonticello: aString [
 ]
 
 { #category : #'accessing classes' }
-LanguageModel >> classNamed: aString [ 
-	^ self classNamed: aString ifAbsent: [ PBClassDefinitionNotFound new key: aString; signal ]
+LanguageModel >> classNamed: aString [
+	^ self
+		classNamed: aString asSymbol
+		ifAbsent: [ PBClassDefinitionNotFound new
+				key: aString;
+				signal ]
 ]
 
 { #category : #'accessing classes' }
