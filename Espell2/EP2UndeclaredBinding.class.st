@@ -31,7 +31,11 @@ EP2UndeclaredBinding >> isUninitialized [
 
 { #category : #evaluation }
 EP2UndeclaredBinding >> markWrite [
-	self error: 'Can not compile a method that tries to write an undefined variable named: #', self name 
+	EP2UndeclaredBindingError
+		signal:
+			'Can not compile a method that tries to write an undefined variable named: #'
+				, self name
+		withTag: self name
 ]
 
 { #category : #accessing }
