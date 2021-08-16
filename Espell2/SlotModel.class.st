@@ -54,6 +54,29 @@ SlotModel >> destroy [
 	self halt.
 ]
 
+{ #category : #'code generation' }
+SlotModel >> emitStore: aMethodBuilder [
+	"generate bytecode to call the reflective write method of the Slot"
+	| tempName |
+	tempName := '0slotTempForStackManipulation'.  
+	aMethodBuilder
+		addTemp: tempName;
+		storeTemp: tempName;
+		popTop;
+		pushReceiver;
+		pushLiteralVariable: (AdditionalBinding key: #slot value: self);
+		pushTemp: tempName;
+		send: #writeSlot:value:
+]
+
+{ #category : #'code generation' }
+SlotModel >> emitValue: aMethodBuilder [
+	aMethodBuilder
+		pushLiteralVariable: (AdditionalBinding key: #slot value: self);
+		pushReceiver;
+		send: #read:
+]
+
 { #category : #accessing }
 SlotModel >> environment [ 
 	self halt
@@ -80,7 +103,7 @@ SlotModel >> printOn: aStream [
 	self subclassResponsibility 
 ]
 
-{ #category : #'read-write' }
+{ #category : #'meta object protocol' }
 SlotModel >> read: anEP2RemoteAssociation [ 
 	self subclassResponsibility 
 ]
@@ -95,7 +118,7 @@ SlotModel >> slotName [
 	self subclassResponsibility 
 ]
 
-{ #category : #testing }
+{ #category : #'meta object protocol' }
 SlotModel >> write: aValue to: anObject [
 	^self subclassResponsibility
 ]
