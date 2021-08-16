@@ -78,7 +78,7 @@ EP2CrossCompiler >> compile: sourceCode forClass: aClass inEnvironment: anEnviro
 						"index 0 means the temp is not defined in the method"
 							yourself.
 					e resume: (e signaler declareVariableNode: varNode as: tempModel) ]
-				ifFalse: [ self error: 'Undeclared Reference: ' , varNode name.
+				ifFalse: [ "self error: 'Undeclared Reference: ' , varNode name."
 					e
 						resume:
 							(EP2UndeclaredBinding new
