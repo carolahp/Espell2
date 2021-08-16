@@ -9,6 +9,11 @@ Class {
 	#category : #'Espell2-Metamodel-Variables'
 }
 
+{ #category : #testing }
+TempVariableModel class >> acceptsUndeclaredReferences [
+	^ false
+]
+
 { #category : #'accessing-api' }
 TempVariableModel >> emitStore: methodBuilder [
 

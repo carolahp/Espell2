@@ -63,18 +63,24 @@ EP2CrossCompiler >> compile: sourceCode forClass: aClass inEnvironment: anEnviro
 		forClass: binding ]
 		on: OCUndeclaredVariableWarning
 		do: [ :e | 
-			self halt.
-			((aClass name endsWith: 'Dyn') and: e node name = 'holahola')
-				ifTrue: [ | tempModel varNode |
-					varNode := e node.
-					tempModel := (DynamicVariableModel
+			| tempModelClass tempModel varNode compilationContext |
+			compilationContext := e compilationContext.
+			varNode := e node.
+			tempModelClass := (compilationContext getClass methodDict
+				at: varNode methodNode selector) class tempVariableModel.
+			(tempModelClass acceptsUndeclaredReferences
+				and: [ varNode methodOrBlockNode isBlock not ])
+				ifTrue: [ 
+					tempModel := (tempModelClass
 						named: varNode name
-						parent: anEnvironment)
-						index: 0; "index 0 means the temp is not defined in the method"
-						yourself.
+						parent: compilationContext environment)
+						index: 0;
+						"index 0 means the temp is not defined in the method"
+							yourself.
 					e resume: (e signaler declareVariableNode: varNode as: tempModel) ]
-				ifFalse: [ 
-					e resume:
+				ifFalse: [ self error: 'Undeclared Reference: ' , varNode name.
+					e
+						resume:
 							(EP2UndeclaredBinding new
 								name: e node name;
 								objectSpace: anEnvironment objectSpace;
