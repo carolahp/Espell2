@@ -18,6 +18,11 @@ VariableModel >> emitValue: methodBuilder [
 	self subclassResponsibility 
 ]
 
+{ #category : #'code generation' }
+VariableModel >> environment [ 
+	^ self language
+]
+
 { #category : #testing }
 VariableModel >> isGlobalVariable [ 
 	self subclassResponsibility 

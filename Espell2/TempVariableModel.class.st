@@ -26,6 +26,16 @@ TempVariableModel >> escaping [
 	^escaping
 ]
 
+{ #category : #accessing }
+TempVariableModel >> index [
+	^ index
+]
+
+{ #category : #accessing }
+TempVariableModel >> index: anInteger [
+	index := anInteger
+]
+
 { #category : #asd }
 TempVariableModel >> initialize [
 	super initialize.
