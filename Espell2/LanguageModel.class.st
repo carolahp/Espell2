@@ -89,7 +89,7 @@ LanguageModel class >> new [
 { #category : #instantiation }
 LanguageModel class >> newFromDefaultModelWithName: aString1 withEntryPoint: aString2 [
 	^ self
-		newFromModel: PBBootstrapGeneric baseLanguageModelRepository location
+		newFromModel: PBBootstrapGeneric baseLanguageModelLocation
 		withName: aString1
 		withEntryPoint: aString2
 ]
@@ -564,16 +564,16 @@ LanguageModel >> cleanPackages [
 { #category : #hooks }
 LanguageModel >> createInitialObjects [
 	"perform operations to initialize Classes classPools, or instructinos such as String initialize"
-	^ self subclassResponsibility 
+	
 ]
 
 { #category : #hooks }
 LanguageModel >> createRemoteSystemDictionary [
 	" return a new SystemDictionary instance, or nil if your language does not define a system dictionary"
-	self subclassResponsibility 
+	^ nil
 ]
 
-{ #category : #roles }
+{ #category : #hooks }
 LanguageModel >> customClassRoles [
 	"return an Array of Associations indicating role as key, and class name as value.
 	Do not implement if:
@@ -582,7 +582,7 @@ LanguageModel >> customClassRoles [
 	
 	The returned value overrides roles read from your Tonel repo
 	"
-	self subclassResponsibility 
+	^ nil
 ]
 
 { #category : #'api - code execution' }
@@ -859,13 +859,12 @@ LanguageModel >> hookInitializeMethodDictionaryFor: anEP2RemoteClass [
 
 { #category : #hooks }
 LanguageModel >> hookRegisterClass: anEP2RemoteClass named: aString [ 
-	
+	self deprecated: 'use ClassModel>>register'.
 	^ self newDummyInstruction 
 ]
 
 { #category : #hooks }
 LanguageModel >> hookSetSpecialObjectsArray: anEP2RemoteArray [
-	^ nil
 ]
 
 { #category : #'accessing kernel backend' }
@@ -902,12 +901,13 @@ LanguageModel >> initialize [
 
 { #category : #hooks }
 LanguageModel >> initializeRemoteGlobals [
-	^ nil
+	
+	self deprecated: 'use LanguageModel>>loadGlobals, and set their initial value'.
 ]
 
 { #category : #hooks }
 LanguageModel >> initializeSpecialObjectsArray [
-	self subclassResponsibility 
+	"stores a reference to the special objects array in a language element"
 ]
 
 { #category : #'bootstrap - build kernel configuration' }
@@ -922,7 +922,7 @@ LanguageModel >> installAccessedObjectsOnly: anObject [
 
 { #category : #hooks }
 LanguageModel >> installClass: aClassDefinition [
-	
+	self deprecated: 'use ClassModel>>installBasic / installCustom instead'.
 	aClassDefinition hookInstall.
 	aClassDefinition testRemote.
 	^ aClassDefinition remote
@@ -1011,10 +1011,10 @@ LanguageModel >> loadEntryPoint [
 	^ self
 ]
 
-{ #category : #'loading definitions' }
+{ #category : #hooks }
 LanguageModel >> loadGlobalVariables [
 	" create and instances of GlobalModel to this model, representing globals in the bootstrapped system"
-	self subclassResponsibility 
+	
 ]
 
 { #category : #'loading definitions' }

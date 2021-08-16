@@ -63,6 +63,7 @@ EP2CrossCompiler >> compile: sourceCode forClass: aClass inEnvironment: anEnviro
 		forClass: binding ]
 		on: OCUndeclaredVariableWarning
 		do: [ :e | 
+			self halt.
 			((aClass name beginsWith: 'DynamicTest') and: e node name = 'holahola')
 				ifTrue: [ | tempModel varNode |
 					varNode := e node.
@@ -72,8 +73,8 @@ EP2CrossCompiler >> compile: sourceCode forClass: aClass inEnvironment: anEnviro
 						index: 0; "index 0 means the temp is not defined in the method"
 						yourself.
 					e resume: (e signaler declareVariableNode: varNode as: tempModel) ]
-				ifFalse: [ e
-						resume:
+				ifFalse: [ 
+					e resume:
 							(EP2UndeclaredBinding new
 								name: e node name;
 								objectSpace: anEnvironment objectSpace;

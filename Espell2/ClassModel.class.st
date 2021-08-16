@@ -59,8 +59,7 @@ ClassModel class >> role [
 
 { #category : #metamodel }
 ClassModel class >> usedModels [
-	^ {self methodModel.
-	self instanceVariableSlotModel}
+	^ {self methodModel} asOrderedCollection 
 		addAll: self customModels;
 		yourself
 ]
@@ -1109,7 +1108,7 @@ ClassModel >> register [
 
 { #category : #'bootstrap - build kernel classes' }
 ClassModel >> registerCustom [
-	self subclassResponsibility 
+	^ nil
 ]
 
 { #category : #'accessing kernel objects' }
