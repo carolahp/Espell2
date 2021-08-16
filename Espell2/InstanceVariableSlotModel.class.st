@@ -1,6 +1,9 @@
 Class {
 	#name : #InstanceVariableSlotModel,
 	#superclass : #IndexedSlotModel,
+	#instVars : [
+		'name'
+	],
 	#category : #'Espell2-Metamodel-Variables'
 }
 

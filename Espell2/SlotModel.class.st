@@ -2,7 +2,6 @@ Class {
 	#name : #SlotModel,
 	#superclass : #ObjectModel,
 	#instVars : [
-		'name',
 		'owningClass',
 		'definingClass'
 	],
