@@ -63,7 +63,7 @@ EP2CrossCompiler >> compile: sourceCode forClass: aClass inEnvironment: anEnviro
 		forClass: binding ]
 		on: OCUndeclaredVariableWarning
 		do: [ :e | 
-			self halt.
+			"self halt."
 			((aClass name beginsWith: 'DynamicTest') and: e node name = 'holahola')
 				ifTrue: [ | tempModel varNode |
 					varNode := e node.
