@@ -77,6 +77,15 @@ LanguageModel class >> entryPointSelector [
 ]
 
 { #category : #metamodel }
+LanguageModel class >> firstClassModels [
+	| models |
+	models := {self classModel} asOrderedCollection.
+	models addAll: (models flatCollect: [ :model | model firstClassModels ]).
+	models addAll: self customFirstClassModels.
+	^ models
+]
+
+{ #category : #metamodel }
 LanguageModel class >> globalModel [
 	^ GlobalModel
 ]
@@ -128,15 +137,6 @@ LanguageModel class >> packageModel [
 { #category : #metamodel }
 LanguageModel class >> undeclaredVariableModel [
 	^ UndeclaredVariableModel
-]
-
-{ #category : #metamodel }
-LanguageModel class >> usedModels [
-	| models |
-	models := {self classModel} asOrderedCollection.
-	models addAll: (models flatCollect: [ :model | model usedModels ]).
-	models addAll: self customModels.
-	^ models
 ]
 
 { #category : #'method loading - dynamic' }

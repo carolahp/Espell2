@@ -17,7 +17,7 @@ ObjectModel class >> allModelInstVarNames [
 ]
 
 { #category : #instanciation }
-ObjectModel class >> customModels [
+ObjectModel class >> customFirstClassModels [
 	" returns the model classes used to build the model "
 	^#()
 ]

@@ -51,7 +51,7 @@ RoleCustom >> modelAcceptsExtraInstVars [
 { #category : #accessing }
 RoleCustom >> modelClass [
 	| result |
-	result := (objectModel language class usedModels
+	result := (objectModel language class firstClassModels
 		select: [ :aMetamodel | aMetamodel role = name ]) ifEmpty: [ ^ nil ].
 	self
 		assert: result size = 1

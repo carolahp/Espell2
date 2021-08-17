@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #metamodel }
-GlobalModel class >> usedModels [
+GlobalModel class >> firstClassModels [
 	^#()
 ]
 

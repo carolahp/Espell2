@@ -43,6 +43,13 @@ ClassModel class >> defaultLayout [
 ]
 
 { #category : #metamodel }
+ClassModel class >> firstClassModels [
+	^ {self methodModel} asOrderedCollection 
+		addAll: self customFirstClassModels;
+		yourself
+]
+
+{ #category : #metamodel }
 ClassModel class >> instanceVariableSlotModel [
 	^ InstanceVariableSlotModel 
 ]
@@ -55,13 +62,6 @@ ClassModel class >> methodModel [
 { #category : #'hooks-api' }
 ClassModel class >> role [ 
 	^ #Class
-]
-
-{ #category : #metamodel }
-ClassModel class >> usedModels [
-	^ {self methodModel} asOrderedCollection 
-		addAll: self customModels;
-		yourself
 ]
 
 { #category : #calypso }

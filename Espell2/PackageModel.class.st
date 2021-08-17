@@ -12,6 +12,11 @@ PackageModel class >> convertToCalypsoBrowserItem: anEP2MPackage [
 	^ClyBrowserItem named: anEP2MPackage name with: anEP2MPackage
 ]
 
+{ #category : #metamodel }
+PackageModel class >> firstClassModels [
+	^#()
+]
+
 { #category : #calypso }
 PackageModel class >> prepareClassQueriesFrom: packages in: aNavigationEnvironment [ 
 	^{
@@ -23,11 +28,6 @@ PackageModel class >> prepareClassQueriesFrom: packages in: aNavigationEnvironme
 { #category : #metamodel }
 PackageModel class >> role [ 
 	^ #Package
-]
-
-{ #category : #metamodel }
-PackageModel class >> usedModels [
-	^#()
 ]
 
 { #category : #'accessing backend' }

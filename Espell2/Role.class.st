@@ -22,7 +22,7 @@ Role class >> defaultClassRoles [
 { #category : #'bootstrap roles' }
 Role class >> defaultClassRolesFor: aLanguageModel [
 	| metamodelRoles roles |
-	metamodelRoles := aLanguageModel class usedModels
+	metamodelRoles := aLanguageModel class firstClassModels
 		collect: #role
 		thenSelect: #isNotNil.
 	self
@@ -110,7 +110,9 @@ Role >> objectModel: anObjectModel [
 
 { #category : #printing }
 Role >> printOn: aStream [
-	aStream nextPutAll: self name
+	aStream nextPutAll: 'role<';
+		nextPutAll: self name;
+		nextPutAll: '>'
 ]
 
 { #category : #accessing }
