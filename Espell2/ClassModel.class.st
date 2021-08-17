@@ -683,19 +683,6 @@ ClassModel >> installMethods [
 { #category : #'bootstrap - build kernel classes' }
 ClassModel >> installStub [
 	^ self classLoader installStub: self
-"	self remoteIsInstalled
-		ifTrue: [ ^ self remote ].
-	((self parent firstMetaclasses includes: self)
-		or: [ self metaclass = self or: [ self metaclass metaclass = self ] ])
-		ifTrue: [ self
-				error:
-					'Use LanguageModel >> installMulticlassStubs to install required classes' ].
-	indexInClassTable
-		ifNil: [ indexInClassTable := self classLoader newClassIndex ].
-	self metaclass installStub.
-	self installStubBasic.
-	self testStub.
-	^ self remote"
 ]
 
 { #category : #'accessing metaclass' }
@@ -1117,11 +1104,6 @@ ClassModel >> remote [
 	^ remote isNilObject 
 		ifTrue: [ remote asRemoteNil ]
 		ifFalse: [ remote asRemoteClass ]
-]
-
-{ #category : #'bootstrap - build kernel classes' }
-ClassModel >> remote: anEP2RemoteClass [ 
-	remote := anEP2RemoteClass
 ]
 
 { #category : #testing }

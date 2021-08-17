@@ -8,11 +8,6 @@ Class {
 	#category : #'Espell2-Metamodel-Variables'
 }
 
-{ #category : #metamodel }
-SlotModel class >> allModelInstVarNames [
-	^ self allInstVarNames difference: ObjectModel allInstVarNames
-]
-
 { #category : #layout }
 SlotModel class >> defaultLayout [
 	^ EP2FixedLayout

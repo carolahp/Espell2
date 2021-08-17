@@ -12,9 +12,19 @@ Class {
 }
 
 { #category : #instanciation }
+ObjectModel class >> allModelInstVarNames [
+	^ self allInstVarNames difference: ObjectModel allInstVarNames
+]
+
+{ #category : #instanciation }
 ObjectModel class >> customModels [
 	" returns the model classes used to build the model "
 	^#()
+]
+
+{ #category : #instanciation }
+ObjectModel class >> defaultLayout [
+	^ EP2FixedLayout
 ]
 
 { #category : #instanciation }
@@ -38,7 +48,20 @@ ObjectModel >> announcer [
 
 { #category : #compatibility }
 ObjectModel >> asRemoteObject [
+	self halt.
 	^ self 
+]
+
+{ #category : #'accessing remote backend' }
+ObjectModel >> asRemoteObjectInObjectSpace: anObjectSpace [
+	| missingFields |
+	self ensureRemote.
+	missingFields := self class allModelInstVarNames.
+	missingFields
+		do: [ :each | 
+			| value |
+			value := self perform: each.
+			self remote perform: each , ':' with: value ]
 ]
 
 { #category : #'evaluate ast' }
@@ -59,6 +82,14 @@ ObjectModel >> destroy [
 	objectName := nil.
 	properties := nil.
 	
+	
+]
+
+{ #category : #'accessing remote backend' }
+ObjectModel >> ensureRemote [
+	remote ifNotNil: [ ^remote ].
+	remote := (self language classWithRole: self class role) remote new.
+	^ remote
 	
 ]
 
@@ -257,6 +288,16 @@ ObjectModel >> propertyNames [
 	self hasProperties
 		ifFalse:[ ^ OrderedCollection new ].
 	^ properties keys
+]
+
+{ #category : #'accessing remote backend' }
+ObjectModel >> remote [
+	^ remote
+]
+
+{ #category : #'accessing remote backend' }
+ObjectModel >> remote: anEP2Remote [ 
+	remote := anEP2Remote 
 ]
 
 { #category : #'accessing remote backend' }

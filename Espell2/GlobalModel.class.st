@@ -97,16 +97,6 @@ GlobalModel >> registerStub [
 		fullyLoaded: false
 ]
 
-{ #category : #accessing }
-GlobalModel >> remote [
-	^ remote
-]
-
-{ #category : #accessing }
-GlobalModel >> remote: anEP2Mirror [
-	remote := anEP2Mirror
-]
-
 { #category : #testing }
 GlobalModel >> remoteIsInstalled [
 	^ self remote isNotNil and: [ remoteIsStub not ]

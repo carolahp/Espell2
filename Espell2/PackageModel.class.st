@@ -21,11 +21,16 @@ PackageModel class >> prepareClassQueriesFrom: packages in: aNavigationEnvironme
 ]
 
 { #category : #metamodel }
+PackageModel class >> role [ 
+	^ #Package
+]
+
+{ #category : #metamodel }
 PackageModel class >> usedModels [
 	^#()
 ]
 
-{ #category : #'accessing-backend' }
+{ #category : #'accessing backend' }
 PackageModel >> addDefinedBehavior: aClass [ 
 	(self definesBehavior: aClass)
 		ifFalse: [ self definedBehaviors add: aClass ].
@@ -64,6 +69,15 @@ PackageModel >> asMCSnapshot [
 	^ MCSnapshot fromDefinitions: definitions
 ]
 
+{ #category : #'accessing backend' }
+PackageModel >> behaviorNamed: aString [
+	^ self
+		classNamed: aString
+		ifAbsent: [ PBClassDefinitionNotFound new
+				key: aString;
+				signal ]
+]
+
 { #category : #calypso }
 PackageModel >> calypsoEnvironmentType [
 	^RPackage
@@ -74,6 +88,26 @@ PackageModel >> categories [
 	
 	^ self definedBehaviors collect: #category as: Set
 
+]
+
+{ #category : #'accessing backend' }
+PackageModel >> classNamed: aSymbol ifAbsent: aBlockClosure [ 
+	| found |
+	found := [ self environment classNamed: aSymbol ]
+		on: PBClassDefinitionNotFound
+		do: [ ^ aBlockClosure value ].
+	found := (self definedBehaviors like: found)
+		ifNil: [ ^ aBlockClosure value ].
+	^ found
+]
+
+{ #category : #'accessing backend' }
+PackageModel >> classNamed: aString ifAbsent: absentBlock ifPresent: presentBlock [ 
+	|result|
+	result := self classNamed: aString ifAbsent: [nil].
+	result
+		ifNil: [ ^ absentBlock value ] 
+		ifNotNil: [ ^ presentBlock cull: result ]
 ]
 
 { #category : #calypso }
@@ -97,8 +131,8 @@ PackageModel >> definedClasses [
 ]
 
 { #category : #testing }
-PackageModel >> definesBehavior: anOLClass [ 
-	^ self definedBehaviors anySatisfy: [:beh | beh = anOLClass ].
+PackageModel >> definesBehavior: aClassModel [ 
+	^ self definedBehaviors anySatisfy: [:beh | beh = aClassModel ].
 ]
 
 { #category : #calypso }

@@ -128,9 +128,7 @@ LanguageModel class >> packageModel [
 { #category : #metamodel }
 LanguageModel class >> usedModels [
 	| models |
-	models := {self classModel.
-	self globalModel.
-	self packageModel} asOrderedCollection.
+	models := {self classModel} asOrderedCollection.
 	models addAll: (models flatCollect: [ :model | model usedModels ]).
 	models addAll: self customModels.
 	^ models
@@ -610,7 +608,7 @@ LanguageModel >> defaultGlobalVariables [
 
 { #category : #'initialization - default values' }
 LanguageModel >> defaultPackage [
-	^ self packageNamed: self defaultPackageName
+	^ self ensurePackageNamed: self defaultPackageName
 ]
 
 { #category : #'initialization - default values' }

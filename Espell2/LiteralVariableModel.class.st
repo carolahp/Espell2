@@ -64,11 +64,6 @@ LiteralVariableModel >> key [
 	^ self name asSymbol
 ]
 
-{ #category : #accessing }
-LiteralVariableModel >> remote: anEP2Mirror [ 
-	remote := anEP2Mirror 
-]
-
 { #category : #'accessing-api' }
 LiteralVariableModel >> value [ 
 	^ remote
