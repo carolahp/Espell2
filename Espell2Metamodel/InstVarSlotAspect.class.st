@@ -29,17 +29,17 @@ InstVarSlotAspect class >> expectedEntryPointResult [
 
 { #category : #accessing }
 InstVarSlotAspect >> defaultFieldValue [
-	^ Dictionary new
+	self error: 'All values should be obtained from #fieldValueFor:'
 ]
 
 { #category : #accessing }
 InstVarSlotAspect >> fieldName [
-	^ #slotDict
+	^ #mySlots
 ]
 
 { #category : #accessing }
 InstVarSlotAspect >> fieldValueFor: aClassModel [ 
-	self halt.
+	^ aClassModel slots
 ]
 
 { #category : #accessing }
@@ -58,16 +58,16 @@ InstVarSlotAspect >> transformClassModel: classModel [
 		addLocalMethodFromSource:
 			'allSlots
 			self superclass 
-				ifNil: [ ^ slots asOrderedCollection ].
+				ifNil: [ ^ mySlots asOrderedCollection ].
 			^ self superclass allSlots asOrderedCollection
-				addAll: slots;
+				addAll: mySlots;
 				asArray'
 		selector: #allSlots.
-	classModel
+	"classModel
 		addLocalMethodFromSource:
 			'slots
 			^ slots'
-		selector: #slots.
+		selector: #slots."
 	classModel
 		addLocalMethodFromSource:
 			'slotNamed: aSymbol

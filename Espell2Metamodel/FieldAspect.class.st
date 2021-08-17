@@ -70,20 +70,15 @@ FieldAspect >> adviceFirstClassModels [
 	^ PhAdvice new
 		pointcut: self pcFirstClassModels;
 		advice: [ :context | 
-			| aModelClass nextAdvice collection |
-			aModelClass := context receiver.
+			| nextAdvice |
 			nextAdvice := context currentAdvice asOrderedCollection
 				select: [ :each | 
 					each owner class ~= self class
 						and: [ each owner class isKindOf: FieldAspect ] ].
 			nextAdvice
 				ifNotEmpty: [ context currentAdvice: nextAdvice continueAt: 1 ].
-			collection := context proceed
-				ifNil: [ OrderedCollection new ]
-				ifNotNil: [ :col | col asOrderedCollection ].
-			collection
-				addAll: self firstClassModelRoles ];
-		type: #before
+			self firstClassModelRoles asOrderedCollection addAll: context proceed; yourself ];
+		type: #around
 ]
 
 { #category : #advices }
@@ -252,7 +247,7 @@ FieldAspect >> pcFirstClassModels [
 	^ PhPointcut new
 		receivers: self modelClass class name;
 		selectors: 'customFirstClassModels';
-		context: #('receiver' 'advice')
+		context: #('advice')
 ]
 
 { #category : #pointcuts }

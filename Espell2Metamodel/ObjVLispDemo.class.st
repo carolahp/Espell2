@@ -16,11 +16,7 @@ ObjVLispDemo class >> classVarsFromAspect [
 	objvlisp := ObjVLispMinLanguage
 		newFromModel: self sourcesPath asFileReference
 		withName: 'ObjVLispClassVars'
-		withEntryPoint:
-			'System log: Dog new kingdom asString.
-		Dog new kingdom: #hola.
-		System log: Dog new kingdom asString.
-		System quit'.
+		withEntryPoint: ClassVarAspect demoEntryPoint.
 	
 	[ aspClass registerOn: membrane1.
 	aspClass registerOn: membrane2.
@@ -29,8 +25,8 @@ ObjVLispDemo class >> classVarsFromAspect [
 	objvlisp build.
 	objvlisp generate.
 	result := objvlisp writeImage executeInVM.
-	self assert: result = 'animal
-hola' ]
+	self assert: result = ClassVarAspect expectedEntryPointResult.
+	Transcript show: 'ObjVLispClassVars successfully generated from Aspects and run. Result: ', result asString ]
 		ensure: [ 
 			aspClass unregisterFrom: membrane1.
 			aspClass unregisterFrom: membrane2.
@@ -61,7 +57,8 @@ ObjVLispDemo class >> instVarSlotsFromAspect [
 	objvlisp build.
 	objvlisp generate.
 	result := objvlisp writeImage executeInVM.
-	self assert: result = InstVarSlotAspect expectedEntryPointResult ]
+	self assert: result = InstVarSlotAspect expectedEntryPointResult.
+	Transcript show: 'ObjVInstVarSlots successfully generated from Aspects and run. Result: ', result asString ]
 		ensure: [ 
 			aspClass unregisterFrom: membrane1.
 			aspClass unregisterFrom: membrane2.
