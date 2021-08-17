@@ -24,7 +24,7 @@ ObjectModel class >> customModels [
 
 { #category : #instanciation }
 ObjectModel class >> defaultLayout [
-	^ EP2FixedLayout
+	self subclassResponsibility 
 ]
 
 { #category : #instanciation }
@@ -61,7 +61,8 @@ ObjectModel >> asRemoteObjectInObjectSpace: anObjectSpace [
 		do: [ :each | 
 			| value |
 			value := self perform: each.
-			self remote perform: each , ':' with: value ]
+			self remote perform: each , ':' with: value ].
+	^ remote
 ]
 
 { #category : #'evaluate ast' }

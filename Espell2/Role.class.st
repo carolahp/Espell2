@@ -108,6 +108,11 @@ Role >> objectModel: anObjectModel [
 	objectModel := anObjectModel
 ]
 
+{ #category : #printing }
+Role >> printOn: aStream [
+	aStream nextPutAll: self name
+]
+
 { #category : #accessing }
 Role >> templateClass [ 
 	| result |
