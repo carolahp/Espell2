@@ -82,7 +82,10 @@ EP2RemoteClass >> asLocalClass [
 	"if I am a metaclass, my instances can be represented as instances of EP2RemoteMetaclass"
 	definition isMetaclass
 		ifTrue: [ ^ EP2RemoteMetaclass ].
-	role := self backend systemDefinition roleOfClass: definition.
+	
+	role := definition role
+		ifNil: [ self backend systemDefinition roleOfClass: definition ]
+		ifNotNil: [ :aRole | aRole name ].
 	localClassOrNil := Smalltalk classNamed: 'EP2Remote' , role asString.
 	^ localClassOrNil
 	"]"

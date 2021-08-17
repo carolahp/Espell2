@@ -182,7 +182,7 @@ ObjectModel >> isClassModel [
 
 { #category : #marking }
 ObjectModel >> isInstallable [
-	^ self environment installAccessedObjectsOnly
+	^ self language installAccessedObjectsOnly
 		ifTrue: [ self isMarkedAsAccessed ]
 		ifFalse: [ true ]
 ]
