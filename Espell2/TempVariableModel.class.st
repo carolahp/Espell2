@@ -14,6 +14,11 @@ TempVariableModel class >> acceptsUndeclaredReferences [
 	^ false
 ]
 
+{ #category : #testing }
+TempVariableModel class >> newFrom: aRBVariableNode inContext: anEP2CompilationContext [
+	^ OCTempVariable new
+]
+
 { #category : #'accessing-api' }
 TempVariableModel >> emitStore: methodBuilder [
 

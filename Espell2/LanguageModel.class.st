@@ -126,6 +126,11 @@ LanguageModel class >> packageModel [
 ]
 
 { #category : #metamodel }
+LanguageModel class >> undeclaredVariableModel [
+	^ UndeclaredVariableModel
+]
+
+{ #category : #metamodel }
 LanguageModel class >> usedModels [
 	| models |
 	models := {self classModel} asOrderedCollection.
@@ -1365,6 +1370,11 @@ LanguageModel >> transform [
 { #category : #hooks }
 LanguageModel >> transformClasses [
 	self allClasses do: #transform
+]
+
+{ #category : #metamodel }
+LanguageModel >> undeclaredVariableModel [
+	^ UndeclaredVariableModel
 ]
 
 { #category : #'bootstrap - build kernel' }

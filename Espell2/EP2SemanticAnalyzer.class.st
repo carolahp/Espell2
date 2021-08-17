@@ -6,16 +6,11 @@ Class {
 
 { #category : #variables }
 EP2SemanticAnalyzer >> declareVariableNode: aVariableNode [
-	| varModel |
-	varModel := (aVariableNode methodOrBlockNode isNil "this happens with pragma variables"
-	 or: [ aVariableNode methodOrBlockNode isBlock ]) "this happens with blocks"
-		ifTrue: [ OCTempVariable new ]
-		ifFalse: [ 
-			((compilationContext getClass methodDict
-				at: aVariableNode methodNode selector) class tempVariableModel
-				named: aVariableNode name 
-				parent: compilationContext environment)
-				index: (aVariableNode temporaryVariables indexOf: aVariableNode name); 
-				yourself ].
-	^ self declareVariableNode: aVariableNode as: varModel
+	| model modelClass |
+	modelClass := aVariableNode methodOrBlockNode "this happens with pragma variables"
+		ifNil: [ TempVariableModel ]
+		ifNotNil: [ (compilationContext getClass methodDict
+				at: aVariableNode methodNode selector) class tempVariableModel ].
+	model := modelClass newFrom: aVariableNode inContext: compilationContext.		
+	^ self declareVariableNode: aVariableNode as: model
 ]
