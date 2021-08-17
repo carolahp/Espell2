@@ -24,11 +24,13 @@ FieldAspect class >> buildDemoClassesIn: aLanguageModel [
 ]
 
 { #category : #'instance creation' }
-FieldAspect class >> demoEntryPointFor: aLanguageModel [ 
-	^ 'System log: Dog new kingdom asString.
-		Dog new kingdom: #hola.
-		System log: Dog new kingdom asString.
-		System quit'
+FieldAspect class >> demoEntryPoint [ 
+	self subclassResponsibility 
+]
+
+{ #category : #'instance creation' }
+FieldAspect class >> expectedEntryPointResult [
+	self subclassResponsibility 
 ]
 
 { #category : #'instance creation' }
@@ -64,15 +66,37 @@ FieldAspect >> adviceBindingOf [
 ]
 
 { #category : #advices }
+FieldAspect >> adviceFirstClassModels [
+	^ PhAdvice new
+		pointcut: self pcFirstClassModels;
+		advice: [ :context | 
+			| aModelClass nextAdvice collection |
+			aModelClass := context receiver.
+			nextAdvice := context currentAdvice asOrderedCollection
+				select: [ :each | 
+					each owner class ~= self class
+						and: [ each owner class isKindOf: FieldAspect ] ].
+			nextAdvice
+				ifNotEmpty: [ context currentAdvice: nextAdvice continueAt: 1 ].
+			collection := context proceed
+				ifNil: [ OrderedCollection new ]
+				ifNotNil: [ :col | col asOrderedCollection ].
+			collection
+				addAll: self firstClassModelRoles ];
+		type: #before
+]
+
+{ #category : #advices }
 FieldAspect >> adviceInitializeFieldValue [
 	^ PhAdvice new
 		pointcut: self pcInitializeClass;
-		advice: [ :context | | model | 
+		advice: [ :context | | model value | 
 			"setting default value of field"
 			model := context receiver.
+			value := [self fieldValueFor: model] on: Exception do: [self defaultFieldValue].
 			model
 				perform: self fieldName , ':'
-				with: self defaultFieldValue.
+				with: value.
 			];
 		type: #after
 ]
@@ -169,6 +193,16 @@ FieldAspect >> fieldName [
 	self subclassResponsibility 
 ]
 
+{ #category : #accessing }
+FieldAspect >> fieldValueFor: aClassModel [ 
+	self subclassResponsibility 
+]
+
+{ #category : #accessing }
+FieldAspect >> firstClassModelRoles [
+	self subclassResponsibility 
+]
+
 { #category : #initialization }
 FieldAspect >> initialize [
 	super initialize.
@@ -178,7 +212,8 @@ FieldAspect >> initialize [
 		add: self adviceSetCustomFieldValue;
 		add: self adviceInstallFieldValue;
 		add: self adviceBindingOf;
-		add: self adviceInnerBindingOf 
+		add: self adviceInnerBindingOf;
+		add: self adviceFirstClassModels 
 		
 ]
 
@@ -213,6 +248,14 @@ FieldAspect >> pcBindingOf [
 ]
 
 { #category : #pointcuts }
+FieldAspect >> pcFirstClassModels [
+	^ PhPointcut new
+		receivers: self modelClass class name;
+		selectors: 'customFirstClassModels';
+		context: #('receiver' 'advice')
+]
+
+{ #category : #pointcuts }
 FieldAspect >> pcInitializeClass [
 	^ PhPointcut new
 		receivers: self modelClass name;
@@ -244,9 +287,30 @@ FieldAspect >> pcTransformClass [
 		context: #('receiver')
 ]
 
+{ #category : #'model build' }
+FieldAspect >> transformLanguage: aLanguageModel [
+	self transformLanguageBasic: aLanguageModel.
+	self transformLanguageCustom: aLanguageModel
+]
+
+{ #category : #'model build' }
+FieldAspect >> transformLanguageBasic: aLanguageModel [
+	(aLanguageModel classWithRole: self modelClass role)
+		addLocalMethodFromSource: self fieldMethodGetter
+			selector: self fieldName;
+		addLocalMethodFromSource: self fieldMethodSetter
+			selector: self fieldName , ':'.
+	self class buildDemoClassesIn: aLanguageModel
+]
+
+{ #category : #'model build' }
+FieldAspect >> transformLanguageCustom: aLanguageModel [
+	self subclassResponsibility 
+]
+
 { #category : #'install-uninstall' }
 FieldAspect >> uninstall [
-	Transcript show: 'Uninstalling ClassVar Aspect!';cr.
+	Transcript show: 'Uninstalling ',self class name,' Aspect!';cr.
 	
 	super uninstall.
 	

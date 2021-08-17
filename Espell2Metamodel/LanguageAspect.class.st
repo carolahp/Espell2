@@ -22,20 +22,13 @@ LanguageAspect class >> new [
 ]
 
 { #category : #advices }
-LanguageAspect >> adviceAddClasses [
+LanguageAspect >> adviceTransform [
 	^ PhAdvice new
 		pointcut: self pcTransform;
 		advice: [ :context | 
 			| language |
 			language := context receiver.
-			self fieldAspects
-				do: [ :asp | 
-					(language classWithRole: asp modelClass role)
-						addLocalMethodFromSource: asp fieldMethodGetter
-							selector: asp fieldName;
-						addLocalMethodFromSource: asp fieldMethodSetter
-							selector: asp fieldName , ':'.
-						asp class buildDemoClassesIn: language ] ];
+			self fieldAspects do: [ :asp | asp transformLanguage: language ] ];
 		type: #after
 ]
 
@@ -54,7 +47,7 @@ LanguageAspect >> fieldAspects: aCollection [
 { #category : #initialization }
 LanguageAspect >> initialize [
 	super initialize.
-	self add: self adviceAddClasses.
+	self add: self adviceTransform.
 	
 ]
 

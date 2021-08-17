@@ -23,6 +23,20 @@ ClassVarAspect class >> buildDemoClassesIn: aLanguageModel [
 	dog classPool: dogClassPool
 ]
 
+{ #category : #'instance creation' }
+ClassVarAspect class >> demoEntryPoint [ 
+	^ 'System log: Dog new kingdom asString.
+		Dog new kingdom: #hola.
+		System log: Dog new kingdom asString.
+		System quit'
+]
+
+{ #category : #'instance creation' }
+ClassVarAspect class >> expectedEntryPointResult [ 
+	^ 'animal
+hola'
+]
+
 { #category : #accessing }
 ClassVarAspect >> defaultFieldValue [
 	^ Dictionary new
@@ -33,7 +47,22 @@ ClassVarAspect >> fieldName [
 	^ #classPool
 ]
 
-{ #category : #advices }
+{ #category : #accessing }
+ClassVarAspect >> fieldValueFor: aClassModel [ 
+	Exception signal
+]
+
+{ #category : #accessing }
+ClassVarAspect >> firstClassModelRoles [
+	^#()
+]
+
+{ #category : #binding }
 ClassVarAspect >> innerBindingOf: aSymbol in: aClassModel [
 	^ aClassModel classPool bindingOf: aSymbol
+]
+
+{ #category : #'model build' }
+ClassVarAspect >> transformLanguageCustom: aLanguageModel [
+	self
 ]
