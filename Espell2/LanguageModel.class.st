@@ -686,7 +686,8 @@ LanguageModel >> destroy [
 		instanceVariableMapping destroy.
 		instanceVariableMapping := nil ].
 	
-	tonelPath := nil
+	tonelPath := nil.
+	classRoles := nil
 ]
 
 { #category : #'bootstrap - build model classes' }
@@ -792,7 +793,7 @@ LanguageModel >> generate [
 LanguageModel >> generateWriteAndExecute [
 	self generate.
 	self writeImage.
-	self imageInDisk executeInVM
+	^ self imageInDisk executeInVM
 ]
 
 { #category : #marking }
