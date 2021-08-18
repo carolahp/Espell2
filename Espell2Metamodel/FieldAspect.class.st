@@ -66,6 +66,20 @@ FieldAspect >> adviceBindingOf [
 ]
 
 { #category : #advices }
+FieldAspect >> adviceExtendModelWithMC [
+	"extend with monticello, this is only valid for fields read from tonel repository"
+	^ PhAdvice new
+		pointcut: self pcExtendModelWithMC;
+		advice: [ :context | | model mcDef | 
+			"setting default value of field"
+			model := context receiver.
+			mcDef := context arguments at:1.
+			self extend: model withMonticello: mcDef
+			];
+		type: #around
+]
+
+{ #category : #advices }
 FieldAspect >> adviceFirstClassModels [
 	^ PhAdvice new
 		pointcut: self pcFirstClassModels;
@@ -82,9 +96,9 @@ FieldAspect >> adviceFirstClassModels [
 ]
 
 { #category : #advices }
-FieldAspect >> adviceInitializeFieldValue [
+FieldAspect >> adviceInitializeModel [
 	^ PhAdvice new
-		pointcut: self pcInitializeClass;
+		pointcut: self pcInitializeModel;
 		advice: [ :context | | model value | 
 			"setting default value of field"
 			model := context receiver.
@@ -116,9 +130,9 @@ FieldAspect >> adviceInnerBindingOf [
 ]
 
 { #category : #advices }
-FieldAspect >> adviceInstallFieldValue [
+FieldAspect >> adviceInstallModel [
 	^ PhAdvice new
-		pointcut: self pcInstallClass;
+		pointcut: self pcInstallModel;
 		advice: [ :context | | fieldValue model |
 			model := context receiver.
 			fieldValue := model perform: self fieldName.
@@ -132,7 +146,7 @@ FieldAspect >> adviceInstallFieldValue [
 { #category : #advices }
 FieldAspect >> adviceSetCustomFieldValue [
 	^ PhAdvice new
-		pointcut: self pcTransformClass;
+		pointcut: self pcTransformModel;
 		advice: [ :context | 
 			| model |
 			model := context receiver.
@@ -160,6 +174,11 @@ FieldAspect >> customFieldValues [
 { #category : #accessing }
 FieldAspect >> customFieldValues: aCollection [
 	customFieldValues := aCollection asDictionary
+]
+
+{ #category : #'model build' }
+FieldAspect >> extend: aClassModel withMonticello: anEP2MCClassDefinition [ 
+	"do nothing by default. Rewrite only for fields read from tonel repository, e.g. Metaclass"
 ]
 
 { #category : #accessing }
@@ -198,9 +217,9 @@ FieldAspect >> initialize [
 	super initialize.
 	self
 		addClassModifier: self classModifier;
-		add: self adviceInitializeFieldValue;
+		add: self adviceInitializeModel;
 		add: self adviceSetCustomFieldValue;
-		add: self adviceInstallFieldValue;
+		add: self adviceInstallModel;
 		add: self adviceBindingOf;
 		add: self adviceInnerBindingOf;
 		add: self adviceFirstClassModels 
@@ -238,6 +257,14 @@ FieldAspect >> pcBindingOf [
 ]
 
 { #category : #pointcuts }
+FieldAspect >> pcExtendModelWithMC [
+	^ PhPointcut new
+		receivers: self modelClass name;
+		selectors: 'extendWithMonticelloCustom:';
+		context: #('receiver' 'arguments')
+]
+
+{ #category : #pointcuts }
 FieldAspect >> pcFirstClassModels [
 	^ PhPointcut new
 		receivers: self modelClass class name;
@@ -246,7 +273,7 @@ FieldAspect >> pcFirstClassModels [
 ]
 
 { #category : #pointcuts }
-FieldAspect >> pcInitializeClass [
+FieldAspect >> pcInitializeModel [
 	^ PhPointcut new
 		receivers: self modelClass name;
 		selectors: 'initialize';
@@ -262,7 +289,7 @@ FieldAspect >> pcInnerBindingOf [
 ]
 
 { #category : #pointcuts }
-FieldAspect >> pcInstallClass [
+FieldAspect >> pcInstallModel [
 	^ PhPointcut new
 		receivers: self modelClass name;
 		selectors: 'installCustom';
@@ -270,7 +297,7 @@ FieldAspect >> pcInstallClass [
 ]
 
 { #category : #pointcuts }
-FieldAspect >> pcTransformClass [
+FieldAspect >> pcTransformModel [
 	^ PhPointcut new
 		receivers: self modelClass name;
 		selectors: 'transform';

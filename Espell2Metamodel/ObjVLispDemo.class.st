@@ -20,7 +20,7 @@ ObjVLispDemo class >> classVarsAndInstVarSlotsFromAspect [
 	languageAspect := LanguageAspect for: ObjVLispMinLanguage.
 	self prepare.
 	language := ObjVLispMinLanguage
-		newFromModel: self sourcesPath asFileReference
+		newFromModel: self sourcesPath
 		withName: 'ObjVLispClassVarsAndSlots'
 		withEntryPoint:
 			'| p | 
@@ -54,7 +54,7 @@ ObjVLispDemo class >> classVarsFromAspect [
 	languageAspect := LanguageAspect for: ObjVLispMinLanguage.
 	self prepare.
 	language := ObjVLispMinLanguage
-		newFromModel: self sourcesPath asFileReference
+		newFromModel: self sourcesPath
 		withName: 'ObjVLispClassVars'
 		withEntryPoint: ClassVarsAspect demoEntryPoint.
 	[ self install.
@@ -71,7 +71,7 @@ ObjVLispDemo class >> instVarSlotsFromAspect [
 	languageAspect := LanguageAspect for: ObjVLispMinLanguage.
 	self prepare.
 	language := ObjVLispMinLanguage
-		newFromModel: self sourcesPath asFileReference
+		newFromModel: self sourcesPath
 		withName: 'ObjVLispInstVarSlots'
 		withEntryPoint: InstVarSlotsAspect demoEntryPoint.
 	[ self install.
@@ -97,49 +97,32 @@ ObjVLispDemo class >> install [
 		asp registerOn: membrane2 ].
 	languageAspect registerOn: membrane1.
 	membrane0 deployOn: language
-	
+	"membrane0 install"
 ]
 
 { #category : #demo }
-ObjVLispDemo class >> multipleInheritanceFromAspect [
-	| aspClass aspLang membrane0 membrane1 membrane2 objvlisp result |
-	aspClass := MultipleInheritanceAspect subclassing: ObjVLispMinClass.
-	aspLang := LanguageAspect for: ObjVLispMinLanguage.
-	aspLang fieldAspects: {aspClass}.
-	membrane0 := PhMembrane new.
-	membrane1 := PhMembrane new advise: membrane0.
-	membrane2 := PhMembrane new advise: membrane1.
-	objvlisp := ObjVLispMinLanguage
-		newFromModel: self sourcesPath asFileReference
-		withName: 'ObjVLispMultipleInheritance'
-		withEntryPoint:
-			'System log: ''asd''.
-		System quit'.
-	[ aspClass registerOn: membrane1.
-	aspClass registerOn: membrane2.
-	aspLang registerOn: membrane1.
-	membrane0 deployOn: objvlisp.
-	objvlisp build.
-	objvlisp generate.
-	result := objvlisp writeImage executeInVM.
-	self assert: result = 'asd'.
-	Transcript
-		show:
-			'ObjVLispMultiInheritance successfully generated from Aspects and run. Result: '
-				, result asString ]
-		ensure: [ aspClass unregisterFrom: membrane1.
-			aspClass unregisterFrom: membrane2.
-			aspLang unregisterFrom: membrane1.
-			membrane0 undeployFrom: objvlisp.
-			PhAspectWeaver panicCleanAndResetAll.
-			objvlisp destroy ]
+ObjVLispDemo class >> metaclassFromAspect [
+	| result |
+	fieldAspects := {MetaclassFieldAspect for: ObjVLispMinClass}.
+	languageAspect := LanguageAspect for: ObjVLispMinLanguage.
+	self prepare.
+	language := ObjVLispMinLanguage
+		newFromModel: self sourcesPath
+		withName: 'ExplicitMetaclasses'
+		withEntryPoint: '
+	System log: Point metaclass name asString.
+	System quit'.
+	[ self install.
+	language build.
+	result := 'Class'.
+	self assert: result = ClassVarsAspect expectedEntryPointResult ]
+		ensure: [ self uninstall ]
 ]
 
 { #category : #deploying }
 ObjVLispDemo class >> prepare [
 	self assert: languageAspect isNotNil.
 	self assert: fieldAspects isNotNil.
-	self assert: fieldAspects isNotEmpty.
 
 	languageAspect fieldAspects: fieldAspects asArray.
 	membrane0 := PhMembrane new.
@@ -149,7 +132,7 @@ ObjVLispDemo class >> prepare [
 
 { #category : #accessing }
 ObjVLispDemo class >> sourcesPath [
-	^ '/Users/carolina.hernandez/Documents/restaurado/bootstrap/language-definitions/ObjVLispMin'
+	^ '/Users/carolina.hernandez/Documents/restaurado/bootstrap/language-definitions/ObjVLispMin' asFileReference
 ]
 
 { #category : #demo }
@@ -159,7 +142,7 @@ ObjVLispDemo class >> superclassesFromAspect [
 	languageAspect := LanguageAspect for: ObjVLispMinLanguage.
 	self prepare.
 	language := ObjVLispMinLanguage
-		newFromModel: self sourcesPath asFileReference
+		newFromModel: self sourcesPath
 		withName: 'ObjVLispSuperclasses'
 		withEntryPoint: '
 	System log: Point superclasses asString.
@@ -181,6 +164,7 @@ ObjVLispDemo class >> uninstall [
 	membrane1 unAdvise: membrane0.
 	membrane2 unAdvise: membrane1.
 	membrane0 undeployFrom: language.
+	"membrane0 uninstall."
 	PhAspectWeaver panicCleanAndResetAll.
 	language destroy.
 	fieldAspects := nil.
