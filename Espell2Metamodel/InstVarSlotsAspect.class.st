@@ -1,17 +1,17 @@
 Class {
-	#name : #InstVarSlotAspect,
+	#name : #InstVarSlotsAspect,
 	#superclass : #FieldAspect,
 	#category : #Espell2Metamodel
 }
 
 { #category : #'instance creation' }
-InstVarSlotAspect class >> buildDemoClassesIn: aLanguageModel [
+InstVarSlotsAspect class >> buildDemoClassesIn: aLanguageModel [
 	" adding classes and methods that use the field implemented "
 	^ self
 ]
 
 { #category : #'instance creation' }
-InstVarSlotAspect class >> demoEntryPoint [ 
+InstVarSlotsAspect class >> demoEntryPoint [ 
 	^ '| p |
 	p := Point new.
 	(Point slotNamed: #x) write: 42 to: p.
@@ -22,38 +22,33 @@ InstVarSlotAspect class >> demoEntryPoint [
 ]
 
 { #category : #'instance creation' }
-InstVarSlotAspect class >> expectedEntryPointResult [
+InstVarSlotsAspect class >> expectedEntryPointResult [
 	^ '42
 12'
 ]
 
 { #category : #accessing }
-InstVarSlotAspect >> defaultFieldValue [
-	self error: 'All values should be obtained from #fieldValueFor:'
-]
-
-{ #category : #accessing }
-InstVarSlotAspect >> fieldName [
+InstVarSlotsAspect >> fieldName [
 	^ #mySlots
 ]
 
 { #category : #accessing }
-InstVarSlotAspect >> fieldValueFor: aClassModel [ 
+InstVarSlotsAspect >> fieldValueFor: aClassModel [ 
 	^ aClassModel slots
 ]
 
 { #category : #accessing }
-InstVarSlotAspect >> firstClassModelRoles [
+InstVarSlotsAspect >> firstClassModelRoles [
 	^ { InstanceVariableSlotModel }
 ]
 
 { #category : #binding }
-InstVarSlotAspect >> innerBindingOf: aSymbol in: aClassModel [
+InstVarSlotsAspect >> innerBindingOf: aSymbol in: aClassModel [
 	^ nil
 ]
 
 { #category : #'model build' }
-InstVarSlotAspect >> transformClassModel: classModel [
+InstVarSlotsAspect >> transformClassModel: classModel [
 	classModel
 		addLocalMethodFromSource:
 			'allSlots
@@ -77,14 +72,14 @@ InstVarSlotAspect >> transformClassModel: classModel [
 ]
 
 { #category : #'model build' }
-InstVarSlotAspect >> transformLanguageCustom: aLanguageModel [
+InstVarSlotsAspect >> transformLanguageCustom: aLanguageModel [
 	self transformObjectModel: aLanguageModel classProtoObject.
 	self transformClassModel: aLanguageModel classClass.
 	self transformSlotModel: (aLanguageModel classWithRole: #InstanceVariableSlot)
 ]
 
 { #category : #'model build' }
-InstVarSlotAspect >> transformObjectModel: objectModel [
+InstVarSlotsAspect >> transformObjectModel: objectModel [
 	objectModel
 		addLocalMethodFromSource:
 			'writeSlot: aSlot value: anObject
@@ -93,7 +88,7 @@ InstVarSlotAspect >> transformObjectModel: objectModel [
 ]
 
 { #category : #'model build' }
-InstVarSlotAspect >> transformSlotModel: slotModel [
+InstVarSlotsAspect >> transformSlotModel: slotModel [
 	slotModel
 		addLocalMethodFromSource:
 			'printOn: aStream

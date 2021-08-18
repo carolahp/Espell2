@@ -1,11 +1,11 @@
 Class {
-	#name : #ClassVarAspect,
+	#name : #ClassVarsAspect,
 	#superclass : #FieldAspect,
 	#category : #Espell2Metamodel
 }
 
 { #category : #'as yet unclassified' }
-ClassVarAspect class >> buildDemoClassesIn: aLanguageModel [
+ClassVarsAspect class >> buildDemoClassesIn: aLanguageModel [
 	| dog dogClassPool |
 	dog := aLanguageModel ensureClassNamed: 'Dog'.
 	dog
@@ -24,7 +24,7 @@ ClassVarAspect class >> buildDemoClassesIn: aLanguageModel [
 ]
 
 { #category : #'instance creation' }
-ClassVarAspect class >> demoEntryPoint [ 
+ClassVarsAspect class >> demoEntryPoint [ 
 	^ 'System log: Dog new kingdom asString.
 		Dog new kingdom: #hola.
 		System log: Dog new kingdom asString.
@@ -32,37 +32,32 @@ ClassVarAspect class >> demoEntryPoint [
 ]
 
 { #category : #'instance creation' }
-ClassVarAspect class >> expectedEntryPointResult [ 
+ClassVarsAspect class >> expectedEntryPointResult [ 
 	^ 'animal
 hola'
 ]
 
 { #category : #accessing }
-ClassVarAspect >> defaultFieldValue [
-	^ Dictionary new
-]
-
-{ #category : #accessing }
-ClassVarAspect >> fieldName [
+ClassVarsAspect >> fieldName [
 	^ #classPool
 ]
 
 { #category : #accessing }
-ClassVarAspect >> fieldValueFor: aClassModel [ 
-	Exception signal
+ClassVarsAspect >> fieldValueFor: aClassModel [ 
+	^ Dictionary new
 ]
 
 { #category : #accessing }
-ClassVarAspect >> firstClassModelRoles [
+ClassVarsAspect >> firstClassModelRoles [
 	^#()
 ]
 
 { #category : #binding }
-ClassVarAspect >> innerBindingOf: aSymbol in: aClassModel [
+ClassVarsAspect >> innerBindingOf: aSymbol in: aClassModel [
 	^ aClassModel classPool bindingOf: aSymbol
 ]
 
 { #category : #'model build' }
-ClassVarAspect >> transformLanguageCustom: aLanguageModel [
+ClassVarsAspect >> transformLanguageCustom: aLanguageModel [
 	self
 ]

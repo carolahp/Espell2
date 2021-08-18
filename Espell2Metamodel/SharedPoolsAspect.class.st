@@ -5,13 +5,13 @@ Class {
 }
 
 { #category : #accessing }
-SharedPoolsAspect >> defaultFieldValue [
-	^ Dictionary new
+SharedPoolsAspect >> fieldName [
+	^ #mySharedPools
 ]
 
 { #category : #accessing }
-SharedPoolsAspect >> fieldName [
-	^ #mySharedPools
+SharedPoolsAspect >> fieldValueFor: aClassModel [
+	^ Dictionary new
 ]
 
 { #category : #advices }

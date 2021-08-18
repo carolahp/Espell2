@@ -88,7 +88,7 @@ FieldAspect >> adviceInitializeFieldValue [
 		advice: [ :context | | model value | 
 			"setting default value of field"
 			model := context receiver.
-			value := [self fieldValueFor: model] on: Exception do: [self defaultFieldValue].
+			value := self fieldValueFor: model.
 			model
 				perform: self fieldName , ':'
 				with: value.
@@ -160,11 +160,6 @@ FieldAspect >> customFieldValues [
 { #category : #accessing }
 FieldAspect >> customFieldValues: aCollection [
 	customFieldValues := aCollection asDictionary
-]
-
-{ #category : #accessing }
-FieldAspect >> defaultFieldValue [
-	self subclassResponsibility 
 ]
 
 { #category : #accessing }
