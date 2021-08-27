@@ -768,7 +768,26 @@ LanguageModel >> exportAsTonelRepository: aFileReference [
 { #category : #hooks }
 LanguageModel >> firstMetaclasses [
 	"return a collection with the class model of metaclasses involved in circular metaclass references, e.g. { Metaclass . Metaclass class }"
-	self subclassResponsibility 
+	| depth maxDepth metaclasses found |
+	maxDepth := self allClasses size.
+	metaclasses := #() asOrderedCollection.
+	self allClasses
+		do: [ :class | 
+			| seen current |
+			found := false.
+			depth := 0.
+			current := class.
+			seen := #() asOrderedCollection.
+			[ depth > maxDepth or: [ found ] ]
+				whileFalse: [ 
+					current := current metaclass.
+					(seen indexOf: current) > 0
+						ifTrue: [ 
+							metaclasses add: current.
+							found := true ].
+					seen add: current.
+					depth := depth + 1. ] ].
+	^ metaclasses asSet asOrderedCollection
 ]
 
 { #category : #'vm-constants' }
