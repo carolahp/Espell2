@@ -6,10 +6,22 @@ Class {
 		'imageInMemory',
 		'imageInDisk',
 		'expectedResult',
-		'entryPointCode'
+		'entryPointCode',
+		'repository'
 	],
 	#category : #'Espell2-Tests'
 }
+
+{ #category : #'external repository' }
+LanguageTest >> gitRepoName [
+	" Use ObjVLispMin sources by default "
+	^ 'KernelExplicitMetaclasses'
+]
+
+{ #category : #'external repository' }
+LanguageTest >> gitRepoUrl [
+	^ 'https://github.com/carolahp/',self gitRepoName,'.git'
+]
 
 { #category : #'evaluate code' }
 LanguageTest >> inInterpreterExecute: someCode [
@@ -28,26 +40,26 @@ LanguageTest >> inVMExecuteEntryPoint [
 	^ imageInDisk executeInVM
 ]
 
-{ #category : #'instance creation' }
+{ #category : #'model creation' }
 LanguageTest >> languageModelClass [
 	self subclassResponsibility 
 ]
 
-{ #category : #'language creation' }
+{ #category : #'kernel creation' }
 LanguageTest >> newImageInDisk [
 	self newImageInMemory.
 	model writeImage.
 	^ imageInDisk := model imageInDisk.
 ]
 
-{ #category : #'language creation' }
+{ #category : #'kernel creation' }
 LanguageTest >> newImageInMemory [
 	self newModel.
 	model generate.
 	^ imageInMemory := model imageInMemory
 ]
 
-{ #category : #'language creation' }
+{ #category : #'kernel creation' }
 LanguageTest >> newModel [
 	model := self languageModelClass
 		newFromModel: self sourcesPath asFileReference
@@ -57,12 +69,24 @@ LanguageTest >> newModel [
 	^ model
 ]
 
-{ #category : #'instance creation' }
-LanguageTest >> sourcesPath [
-	self subclassResponsibility 
+{ #category : #running }
+LanguageTest >> setUp [ 
+	
+	repository := IceRepository registry
+				detect: [ :repo | repo name = self gitRepoName ]
+				ifNone: [ (IceRepositoryCreator new
+						addRemote: self gitRepoUrl;
+						createRepository) register ].
 ]
 
-{ #category : #'instance creation' }
+{ #category : #'external repository' }
+LanguageTest >> sourcesPath [
+	^ repository location absolutePath pathString
+]
+
+{ #category : #running }
 LanguageTest >> tearDown [ 
-	model ifNotNil: [ model destroy ] 
+	
+	model ifNotNil: [ model destroy ].
+	"To do: unregister ice repository"
 ]
