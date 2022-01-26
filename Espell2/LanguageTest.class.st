@@ -12,6 +12,11 @@ Class {
 	#category : #'Espell2-Tests'
 }
 
+{ #category : #'remote repository' }
+LanguageTest >> gitBranchName [
+	^ 'master'
+]
+
 { #category : #'external repository' }
 LanguageTest >> gitRepoName [
 	" Use ObjVLispMin sources by default "
@@ -77,6 +82,7 @@ LanguageTest >> setUp [
 				ifNone: [ (IceRepositoryCreator new
 						addRemote: self gitRepoUrl;
 						createRepository) register ].
+	repository switchToBranchNamed: self gitBranchName
 ]
 
 { #category : #'external repository' }
@@ -88,5 +94,5 @@ LanguageTest >> sourcesPath [
 LanguageTest >> tearDown [ 
 	
 	model ifNotNil: [ model destroy ].
-	"To do: unregister ice repository"
+	repository delete
 ]
