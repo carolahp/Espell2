@@ -75,14 +75,16 @@ LanguageTest >> newModel [
 ]
 
 { #category : #running }
-LanguageTest >> setUp [ 
-	
+LanguageTest >> setUp [
 	repository := IceRepository registry
-				detect: [ :repo | repo name = self gitRepoName ]
-				ifNone: [ (IceRepositoryCreator new
-						addRemote: self gitRepoUrl;
-						createRepository) register ].
-	repository switchToBranchNamed: self gitBranchName
+		detect: [ :repo | repo name = self gitRepoName ]
+		ifNone: [ (IceRepositoryCreator new
+				addRemote: self gitRepoUrl;
+				createRepository) register ].
+	(repository
+		branchNamed: self gitBranchName
+		ifAbsent: [ repository remoteBranchNamed: self gitBranchName ])
+		switch
 ]
 
 { #category : #'external repository' }
