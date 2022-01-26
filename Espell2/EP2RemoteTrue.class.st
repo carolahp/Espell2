@@ -6,7 +6,7 @@ Class {
 
 { #category : #constants }
 EP2RemoteTrue class >> role [ 
-	^ 'True'
+	^ #True
 ]
 
 { #category : #printing }

@@ -46,7 +46,7 @@ EP2RemoteContext class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteContext class >> role [ 
-	^ 'Context'
+	^ #Context
 ]
 
 { #category : #converting }

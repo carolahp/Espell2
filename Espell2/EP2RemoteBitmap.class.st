@@ -21,5 +21,5 @@ EP2RemoteBitmap class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteBitmap class >> role [ 
-	^ 'Bitmap'
+	^ #Bitmap
 ]

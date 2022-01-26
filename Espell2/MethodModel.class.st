@@ -17,6 +17,11 @@ MethodModel class >> asYetUnclassifiedProtocolName [
 	^ 'as yet unclassified' asSymbol
 ]
 
+{ #category : #metamodel }
+MethodModel class >> tempVariableModel [ 
+	^ TempVariableModel
+]
+
 { #category : #calypso }
 MethodModel >> argumentNames [
 	^ self ast argumentNames
@@ -129,15 +134,6 @@ MethodModel >> install [
 	self remote: remoteMethod.
 	self installCustom.
 	^ remoteMethod
-	"installMethods
-	| methods |
-	methods := (self methodBuilder methodsFromDefinition: self)
-		sorted: [ :a :b | a selector < b selector ].
-	methods do:
-			[ :method | 
-			method test.
-			 ].
-	self remote methodDictionary test."
 ]
 
 { #category : #hooks }
@@ -227,16 +223,6 @@ MethodModel >> readsRef: literalAssociation [
 	^ self ast allChildren anySatisfy: [:each | 
 		each isVariable and: [ each name = literalAssociation key ]]
 	
-]
-
-{ #category : #access }
-MethodModel >> remote [
-	^ remote
-]
-
-{ #category : #accessing }
-MethodModel >> remote: anEP2RemoteCompiledMethod [ 
-	remote := anEP2RemoteCompiledMethod 
 ]
 
 { #category : #calypso }

@@ -21,7 +21,7 @@ EP2RemoteByteSymbol class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteByteSymbol class >> role [ 
-	^ 'ByteSymbol'
+	^ #ByteSymbol
 ]
 
 { #category : #printing }

@@ -4,8 +4,13 @@ Class {
 	#instVars : [
 		'remoteIsStub'
 	],
-	#category : #'Espell2-Metamodel'
+	#category : #'Espell2-Metamodel-Variables'
 }
+
+{ #category : #metamodel }
+GlobalModel class >> firstClassModels [
+	^#()
+]
 
 { #category : #accessing }
 GlobalModel >> environment [ 
@@ -81,7 +86,7 @@ GlobalModel >> register [
 { #category : #registering }
 GlobalModel >> registerCustom [
 	"Register this global in your system dictionary or anywhere you like"
-	self subclassResponsibility 
+	^ nil
 ]
 
 { #category : #registering }
@@ -92,16 +97,6 @@ GlobalModel >> registerStub [
 		fullyLoaded: false
 ]
 
-{ #category : #accessing }
-GlobalModel >> remote [
-	^ remote
-]
-
-{ #category : #accessing }
-GlobalModel >> remote: anEP2Mirror [
-	remote := anEP2Mirror
-]
-
 { #category : #testing }
 GlobalModel >> remoteIsInstalled [
 	^ self remote isNotNil and: [ remoteIsStub not ]
@@ -110,11 +105,6 @@ GlobalModel >> remoteIsInstalled [
 { #category : #accessing }
 GlobalModel >> remoteIsStub: aBoolean [ 
 	remoteIsStub := aBoolean
-]
-
-{ #category : #accessing }
-GlobalModel >> role [
-	^ role
 ]
 
 { #category : #accessing }

@@ -1,16 +1,35 @@
 Class {
 	#name : #InstanceVariableSlotModel,
 	#superclass : #IndexedSlotModel,
-	#category : #'Espell2-Metamodel'
+	#instVars : [
+		'name'
+	],
+	#category : #'Espell2-Metamodel-Variables'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #instanciation }
+InstanceVariableSlotModel class >> role [ 
+	^ 'InstanceVariableSlot'
+]
+
+{ #category : #'converting local-to-remote' }
+InstanceVariableSlotModel >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
+	remote ifNotNil: [ ^remote ].
+	^ remote := (self language classWithRole: self class role) remote new
+		name: self name;
+		definingClass: definingClass;
+		owningClass: owningClass;
+		index: index;
+		yourself 
+]
+
+{ #category : #'code generation' }
 InstanceVariableSlotModel >> emitStore: methodBuilder [
 
 	methodBuilder storeInstVar: self index
 ]
 
-{ #category : #emiting }
+{ #category : #'code generation' }
 InstanceVariableSlotModel >> emitValue: methodBuilder [ 
 	methodBuilder pushInstVar: self index.
 
@@ -21,17 +40,12 @@ InstanceVariableSlotModel >> isInstanceVariableSlot [
 	^ true
 ]
 
-{ #category : #'read-write' }
-InstanceVariableSlotModel >> printOn: aStream [
-	aStream nextPutAll: objectName ,' => ', self slotName
-]
-
-{ #category : #'read-write' }
+{ #category : #'meta object protocol' }
 InstanceVariableSlotModel >> read: aRemoteObject [
 	^ self backend object: aRemoteObject instVarAt: index
 ]
 
-{ #category : #'read-write' }
+{ #category : #'ast evaluation' }
 InstanceVariableSlotModel >> readWith: anInterpreter inNode: aRBInstanceVariableNode [ 
 
 	^ anInterpreter readInstVarAt: self index named: objectName
@@ -42,7 +56,7 @@ InstanceVariableSlotModel >> slotName [
 	^ 'InstVarSlot'
 ]
 
-{ #category : #'read-write' }
+{ #category : #'meta object protocol' }
 InstanceVariableSlotModel >> write: aRemoteValue to: aRemoteObject [
 	self backend 
 		object: aRemoteObject

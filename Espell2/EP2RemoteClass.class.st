@@ -21,7 +21,7 @@ EP2RemoteClass class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteClass class >> role [ 
-	^ 'Metaclass'
+	^ #Class
 ]
 
 { #category : #accessing }
@@ -42,14 +42,24 @@ EP2RemoteClass >> asCastedRemoteClass [
 
 { #category : #'converting-local' }
 EP2RemoteClass >> asClassDefinition [
-	| result |
+	| result classIndex |
+	classIndex := self indexInClassTable.
+	result := self systemDefinition allClasses
+		select:
+			[ :classModel | classModel indexInClassTable = classIndex ].
+	result isEmpty
+		ifTrue: [ self error: 'Class definition not found!' ].
+	result size > 1
+		ifTrue: [ self error: 'Two classes with the same index' ].
+	^ result anyOne
+	"| result |
 	result := self systemDefinition allClasses
 		select: [ :classDef | classDef remote = self ].
 	result size = 0
 		ifTrue: [ ^ self systemDefinition classClass ].
 	result size > 1
 		ifTrue: [ self error: 'More than one definition for one class' ].
-	^ result anyOne
+	^ result anyOne"
 ]
 
 { #category : #compatibility }
@@ -62,16 +72,23 @@ EP2RemoteClass >> asLocalClass [
 	"it returns the EP2Remote class that corresponds with this class.
 	For example: Association asLocalClass will return EP2RemoteAssociation.
 	We use this to instantiate the correct class for each remote object we fetch from the remote object memory"
+
 	"^ self addressLocalClassMap 
 		at: self mirror target address 
-		ifAbsentPut: [" | definition role localClassOrNil |
-			definition := self asClassDefinition.
-			"if I am a metaclass, my instances can be represented as instances of EP2RemoteMetaclass"
-			definition isMetaclass ifTrue: [^ EP2RemoteMetaclass].
-			role := self backend systemDefinition roleOfClass: definition.
-			localClassOrNil := Smalltalk classNamed: 'EP2Remote', role asString.
-		^	localClassOrNil
-		"]"
+		ifAbsentPut: ["
+
+	| definition role localClassOrNil |
+	definition := self asClassDefinition.
+	"if I am a metaclass, my instances can be represented as instances of EP2RemoteMetaclass"
+	definition isMetaclass
+		ifTrue: [ ^ EP2RemoteMetaclass ].
+	
+	role := definition role
+		ifNil: [ self backend systemDefinition roleOfClass: definition ]
+		ifNotNil: [ :aRole | aRole name ].
+	localClassOrNil := Smalltalk classNamed: 'EP2Remote' , role asString.
+	^ localClassOrNil
+	"]"
 ]
 
 { #category : #'converting-local' }
@@ -171,27 +188,6 @@ EP2RemoteClass >> classNameIndex [
 ]
 
 { #category : #'high-level-messages' }
-EP2RemoteClass >> classPool: anObject [ 
-	
-	^ self instanceVariableAtIndex: self classPoolIndex put: anObject
-]
-
-{ #category : #'instVars-mapping' }
-EP2RemoteClass >> classPoolIndex [
-	^ (self asClassDefinition metaclass allInstVarNames indexOf: 'classPool') = 0 ifTrue: [ self class unmappedInstVarIndex ]
-]
-
-{ #category : #'accessing-specialInstVars' }
-EP2RemoteClass >> classPoolOld [
-	^ (self instanceVariableAtIndex: self classPoolIndex) asRemoteDictionary 
-]
-
-{ #category : #'instVars-mapping' }
-EP2RemoteClass >> classSharedPoolsIndex [
-	^ (self systemDefinition instanceVariableMapping classSharedPoolsIndex) ifNil: [ self class unmappedInstVarIndex ]
-]
-
-{ #category : #'high-level-messages' }
 EP2RemoteClass >> classSide [
 	^ self isMetaclass 
 		ifTrue: [ self	]
@@ -231,8 +227,8 @@ EP2RemoteClass >> doesNotUnderstand: aMessage [
 					result := self instanceVariableNamed: instVarName put: (aMessage arguments at: 1) ] ]
 		ifFalse: [ 
 			"possibly a getter"
-			result := result := self instanceVariableNamed: aMessage selector  ].
-	] on: Exception do: [ super doesNotUnderstand: aMessage ].
+			result := (self instanceVariableNamed: aMessage selector) asRemoteObjectCasted  ].
+	] on: EP2SlotNotFoundException do: [:ex | super doesNotUnderstand: aMessage ].
 	^ result
 ]
 
@@ -251,7 +247,7 @@ EP2RemoteClass >> format: anInteger [
 	^self layout instanceVariableAtIndex: self classFormatIndex put: anInteger
 ]
 
-{ #category : #'accessing header' }
+{ #category : #'accessing-header' }
 EP2RemoteClass >> indexInClassTable [
 	^ self classTableIndex
 ]
@@ -295,7 +291,7 @@ EP2RemoteClass >> innerBindingOf: aSymbol [
 	^ nil"
 ]
 
-{ #category : #'accessing header' }
+{ #category : #'accessing-header' }
 EP2RemoteClass >> instSize [
 	^ self mirror target instSize
 ]
@@ -387,9 +383,9 @@ EP2RemoteClass >> nameOld: anObject [
 
 { #category : #'high-level-messages' }
 EP2RemoteClass >> new [
-	^ self 
+	^ (self 
 		evaluateCode: 'aClass new'
-		withTemps: { #aClass -> self } 
+		withTemps: { #aClass -> self }) asRemoteObjectCasted 
 ]
 
 { #category : #printing }
@@ -398,11 +394,6 @@ EP2RemoteClass >> printOn: aStream [
 		nextPutAll: '*';
 		nextPutAll: self classNameFromAnyOrigin;
 		nextPutAll: '*'
-]
-
-{ #category : #'accessing-specialInstVars' }
-EP2RemoteClass >> sharedPoolOld [
-	^ self instanceVariableAtIndex: self classSharedPoolsIndex 
 ]
 
 { #category : #'accessing-slots' }
@@ -433,7 +424,7 @@ EP2RemoteClass >> target [
 { #category : #testing }
 EP2RemoteClass >> test [
 	| existentIndexes myIndex |
-	self assert: (self superclass isNotNilObject or: [self asClassDefinition role = #ProtoObject]).
+	self assert: (self superclass isNotNilObject or: [self asClassDefinition isProtoObject ]).
 	self assert: self methodDictionary isNotNilObject.
 	self assert: self format isNotNilObject.
 

@@ -41,7 +41,7 @@ EP2TonelWriter >> typeDefinitionOf: aClassDefinition [
 		yourself.
 	model := self metamodel classNamed: (definition at: #name).
 	model role ifNotNil: [ 
-		definition at: #role put: model role ].
+		definition at: #role put: model role name ].
 		
 	aClassDefinition type = #normal ifFalse: [ 
 		definition at: #type put: aClassDefinition type ].
@@ -55,7 +55,7 @@ EP2TonelWriter >> typeDefinitionOf: aClassDefinition [
 	excluded := #(name superclass type category role instVarNames methodDict) asSet. 
 	
 	"We get the name of fields specified in the class metamodel defined by the user (subclass of EP2MClass)"
-	required := model class allClassModelInstVarNames.
+	required := model class allModelInstVarNames.
 	missing := required reject: [:key | excluded includes: key ].
 	
 	missing do: [ : key | | value |

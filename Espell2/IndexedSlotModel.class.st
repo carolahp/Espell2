@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'index'
 	],
-	#category : #'Espell2-Metamodel'
+	#category : #'Espell2-Metamodel-Variables'
 }
 
 { #category : #accessing }
@@ -24,10 +24,13 @@ IndexedSlotModel >> isIndexedSlot [
 
 { #category : #testing }
 IndexedSlotModel >> printOn: aStream [
-	aStream nextPutAll: objectName ,' => ', self slotName
+	aStream
+		nextPutAll: objectName;
+		nextPutAll: ' => ';
+		nextPutAll: self slotName
 ]
 
-{ #category : #accessing }
+{ #category : #'meta object protocol' }
 IndexedSlotModel >> read: aRemoteObject [
 	
 	^ self backend object: aRemoteObject at: index
@@ -38,7 +41,7 @@ IndexedSlotModel >> slotName [
 	^ 'IndexedSlot'
 ]
 
-{ #category : #testing }
+{ #category : #'meta object protocol' }
 IndexedSlotModel >> write: aRemoteValue to: aRemoteObject [
 	self backend 
 		object: aRemoteObject

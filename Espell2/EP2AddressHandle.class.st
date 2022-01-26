@@ -42,7 +42,7 @@ EP2AddressHandle >> asCastedRemoteClass [
 			basicClass asLocalClass
 				ifNotNil: [ :localClass | 
 					basicClass
-						= (backend systemDefinition classWithRole: #Metaclass) remote
+						= (backend systemDefinition classClass) remote
 						ifTrue: [ ^ EP2RemoteMetaclass ].
 					localClass = EP2RemoteMetaclass
 						ifTrue: [ ^ EP2RemoteClass ].

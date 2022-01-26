@@ -61,7 +61,7 @@ EP2RemoteDictionary class >> newWithBackend: anEP2Backend size: nElements [
 
 { #category : #constants }
 EP2RemoteDictionary class >> role [
-	^ 'Dictionary'
+	^ #Dictionary
 ]
 
 { #category : #'high-level-messages' }

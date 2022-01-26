@@ -20,19 +20,19 @@ LanguageModelBackend >> addMethodTag: aSymbol to: anEP2MClass [
 ]
 
 { #category : #slots }
-LanguageModelBackend >> addSlot: aString index: anInteger to: anEP2MClass [
+LanguageModelBackend >> addSlot: aString index: anInteger to: aClassModel [
 	| newSlot |
-	newSlot := anEP2MClass isClassMetamodel
+	newSlot := aClassModel isClassModel
 		ifTrue: [ 
-			(environment class instanceVariableSlotMetaclass
+			(aClassModel class instanceVariableSlotModel
 				named: aString asSymbol
-				parent: anEP2MClass)
-				definingClass: anEP2MClass;
+				parent: aClassModel)
+				definingClass: aClassModel;
 				yourself
 				 ]
 		ifFalse: [ self error: 'Implementation supports only Instance variable slots' ].
 	newSlot index: anInteger.
-	anEP2MClass layout pvtAddSlot: newSlot.
+	aClassModel layout pvtAddSlot: newSlot.
 	^ newSlot
 ]
 

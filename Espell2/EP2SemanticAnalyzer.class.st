@@ -6,8 +6,11 @@ Class {
 
 { #category : #variables }
 EP2SemanticAnalyzer >> declareVariableNode: aVariableNode [
-	| env varModel |
-	env := compilationContext environment.
-	varModel := env tempVariableModel named: aVariableNode name parent: env.
-	^self declareVariableNode: aVariableNode as: varModel
+	| model modelClass |
+	modelClass := aVariableNode methodOrBlockNode "this happens with pragma variables"
+		ifNil: [ TempVariableModel ]
+		ifNotNil: [ (compilationContext getClass methodDict
+				at: aVariableNode methodNode selector) class tempVariableModel ].
+	model := modelClass newFrom: aVariableNode inContext: compilationContext.		
+	^ self declareVariableNode: aVariableNode as: model
 ]

@@ -6,7 +6,7 @@ Class {
 
 { #category : #constants }
 EP2RemoteFalse class >> role [ 
-	^ 'False'
+	^ #False
 ]
 
 { #category : #testing }

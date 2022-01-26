@@ -26,5 +26,5 @@ EP2RemoteSemaphore class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteSemaphore class >> role [
-	^ 'Semaphore'
+	^ #Semaphore
 ]

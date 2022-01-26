@@ -21,5 +21,5 @@ EP2RemoteEmpty class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteEmpty class >> role [ 
-	^ 'ProtoObject'
+	^ #ProtoObject
 ]

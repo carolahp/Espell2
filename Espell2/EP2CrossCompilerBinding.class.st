@@ -84,24 +84,7 @@ EP2CrossCompilerBinding >> environment: aPBImageBuilderGeneric [
 
 { #category : #binding }
 EP2CrossCompilerBinding >> innerBindingOf: aString [ 
-	^ class innerBindingOf: aString asSymbol.
-	"(class classVarNames includes: aString asSymbol)
-		ifTrue: [ self assert: environment notNil.
-			^ EP2ClassVariableBinding new
-					name: aString asSymbol
-					ownerName: class theNonMetaClass name
-					objectSpace: environment objectSpace;
-				yourself ].
-	class instanceSide sharedPools
-		do: [ :pool | 
-			((self newBindingFor: pool) innerBindingOf: aString)
-				ifNotNil: [ :binding | ^ binding ] ].
-	class superclass
-		ifNotNil: [ (self superclassBinding innerBindingOf: aString)
-				ifNotNil: [ :binding | ^ binding ] ].
-	"
-	"If it is a temp or an instance variable"
-	"^ nil"
+	^ class innerBindingOf: aString asSymbol
 ]
 
 { #category : #accessing }
@@ -115,6 +98,11 @@ EP2CrossCompilerBinding >> newBindingFor: aRGClass [
 	^ self class new
 		class: aRGClass;
 		environment: environment
+]
+
+{ #category : #accessing }
+EP2CrossCompilerBinding >> simpleClassModel [
+	^ class
 ]
 
 { #category : #bindings }

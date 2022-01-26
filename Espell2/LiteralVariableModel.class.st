@@ -2,10 +2,9 @@ Class {
 	#name : #LiteralVariableModel,
 	#superclass : #VariableModel,
 	#instVars : [
-		'initializationCode',
 		'pbInstruction'
 	],
-	#category : #'Espell2-Metamodel'
+	#category : #'Espell2-Metamodel-Variables'
 }
 
 { #category : #hooks }
@@ -21,7 +20,6 @@ LiteralVariableModel >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [
 { #category : #testing }
 LiteralVariableModel >> destroy [ 
 	super destroy.
-	initializationCode := nil.
 	pbInstruction ifNotNil: [
 		pbInstruction destroy.
 		pbInstruction := nil.
@@ -64,11 +62,6 @@ LiteralVariableModel >> isWritable [
 { #category : #'accessing-api' }
 LiteralVariableModel >> key [ 
 	^ self name asSymbol
-]
-
-{ #category : #accessing }
-LiteralVariableModel >> remote: anEP2Mirror [ 
-	remote := anEP2Mirror 
 ]
 
 { #category : #'accessing-api' }

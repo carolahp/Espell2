@@ -40,7 +40,6 @@ Class {
 		'tonelPath',
 		'packages',
 		'globalVariables',
-		'behaviors',
 		'backend',
 		'pbBootstrapper',
 		'instanceVariableMapping',
@@ -50,10 +49,22 @@ Class {
 		'builder',
 		'entryPointCode',
 		'imageInDisk',
-		'installAccessedObjectsOnly'
+		'installAccessedObjectsOnly',
+		'classes'
 	],
 	#category : #'Espell2-Metamodel'
 }
+
+{ #category : #metamodel }
+LanguageModel class >> classModel [
+	" Return the subclass of ClassModel that defines the metamodel for classes of the language "
+	self subclassResponsibility  
+]
+
+{ #category : #metamodels }
+LanguageModel class >> classModelFor: aString [ 
+	^ self classModel
+]
 
 { #category : #'accessing - defaults' }
 LanguageModel class >> defaultPackagesListFull [
@@ -65,32 +76,18 @@ LanguageModel class >> entryPointSelector [
 	^ #entryPoint
 ]
 
-{ #category : #'hooks-api' }
+{ #category : #metamodel }
+LanguageModel class >> firstClassModels [
+	| models |
+	models := {self classModel} asOrderedCollection.
+	models addAll: (models flatCollect: [ :model | model firstClassModels ]).
+	models addAll: self customFirstClassModels.
+	^ models
+]
+
+{ #category : #metamodel }
 LanguageModel class >> globalModel [
-	" return the subclass of GlobalModel used to represent globals in your language "
-	self subclassResponsibility 
-]
-
-{ #category : #'hooks-api' }
-LanguageModel class >> indexedSlotMetaclass [
-	^ IndexedSlotModel
-]
-
-{ #category : #'hooks-api' }
-LanguageModel class >> instanceVariableSlotMetaclass [
-	^ InstanceVariableSlotModel 
-]
-
-{ #category : #'hooks-api' }
-LanguageModel class >> metaclassModel [
-	" Return the subclass of ClassModel that defines the metamodel for classes of the language "
-	self subclassResponsibility  
-]
-
-{ #category : #'hooks-api' }
-LanguageModel class >> methodModel [ 
-	self deprecated: 'use ClassModel >> methodMetaclass'
-	
+	^ GlobalModel
 ]
 
 { #category : #instantiation }
@@ -101,7 +98,7 @@ LanguageModel class >> new [
 { #category : #instantiation }
 LanguageModel class >> newFromDefaultModelWithName: aString1 withEntryPoint: aString2 [
 	^ self
-		newFromModel: PBBootstrapGeneric baseLanguageModelRepository location
+		newFromModel: PBBootstrapGeneric baseLanguageModelLocation
 		withName: aString1
 		withEntryPoint: aString2
 ]
@@ -132,17 +129,17 @@ LanguageModel class >> newWithName: aString1 withEntryPoint: aString2 [
 		withEntryPoint: aString2
 ]
 
-{ #category : #'hooks-api' }
+{ #category : #metamodel }
 LanguageModel class >> packageModel [
-	self subclassResponsibility 
+	^ PackageModel
 ]
 
 { #category : #metamodel }
-LanguageModel class >> tempVariableModel [
-	^ TempVariableModel 
+LanguageModel class >> undeclaredVariableModel [
+	^ UndeclaredVariableModel
 ]
 
-{ #category : #'hooks-dynamic method loading' }
+{ #category : #'method loading - dynamic' }
 LanguageModel >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject [
 	"loading the not understood message into the metamodel"
 
@@ -157,14 +154,13 @@ LanguageModel >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject
 	selector := aRBMessageNode selector.
 	classModel := self
 		classNamed: aRemoteObject basicClass classNameFromAnyOrigin.
-	systemClass := Smalltalk classNamed: (self equivalentClassNameInPharo: classModel name).
+	systemClass := Smalltalk classNamed: classModel name.
 	traversedClasses := #() asOrderedCollection.
 	[ systemClass isNotNil ]
 		whileTrue:
 			[ "we save traversed classes because the systemClass does not always belong to the metamodel.
 			So we install the method in the metamodel class that is nearest to the system class in the inheritance hierarchy "
 			traversedClasses add: systemClass name.
-			
 			systemClass methodDict
 				at: selector asSymbol
 				ifPresent: [ :method | 
@@ -172,7 +168,7 @@ LanguageModel >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject
 					traversedClasses
 						reverseDo: [ :travClass | 
 							self
-								classNamed: (self equivalentClassNameFromPharo: travClass)
+								classNamed: travClass
 								ifPresent: [ :class | 
 									"classModel := class.
 									newMethodModel := self class methodMetaclass
@@ -190,49 +186,55 @@ LanguageModel >> actionDoesNotUnderstand: aRBMessageNode receiver: aRemoteObject
 		self error: 'Method #', aRBMessageNode selector ,' not found in host system!'
 ]
 
-{ #category : #'accessing backend' }
-LanguageModel >> addBehavior: aMClass [
+{ #category : #'bootstrap - build model classes' }
+LanguageModel >> addClass: aMClass [
+
 	self
 		classNamed: aMClass name
-		ifAbsent: [ 
-			self behaviors at: aMClass name put: aMClass ]
+		ifAbsent: [ self allClasses at: aMClass name put: aMClass ]
 		ifPresent: [ :found | 
 			aMClass = found
 				ifFalse: [ self error: 'trying to replace existent behavior' ]
 				ifTrue: [ found ] ]
 ]
 
-{ #category : #'accessing backend' }
-LanguageModel >> addBehaviorFromMonticelloDefinition: aMCClassDefinition [
+{ #category : #'bootstrap - build model classes' }
+LanguageModel >> addClassFromMonticelloDefinition: aMCClassDefinition [
 	| newClass mcDef |
-	mcDef := aMCClassDefinition.				
-	newClass := self ensureClassNamed: aMCClassDefinition className.
+	mcDef := aMCClassDefinition.		
+	newClass := self ensureClassNamedFromMonticello: aMCClassDefinition className.
 	newClass extendWithMonticello: mcDef.
 	newClass extendWithMonticelloCustom: mcDef.
 	" we can't test yet since not all classes have been loaded "
 	^ newClass
-	
 ]
 
-{ #category : #'accessing global variables' }
+{ #category : #'bootstrap - build model globals' }
 LanguageModel >> addGlobalVariable: anEP2MGlobalVariable [
 	self globalVariables add: anEP2MGlobalVariable
 ]
 
 { #category : #'accessing backend' }
-LanguageModel >> addMethodFromMonticelloDefinition: aMCMethodDefinition [ 
-	| methodDef classDef mcDef className |
+LanguageModel >> addMethodFromMonticelloDefinition: aMCMethodDefinition [
+	| methodDef classDef mcDef |
 	mcDef := aMCMethodDefinition.
-	className := mcDef classIsMeta ifTrue: [mcDef className, self metaclassSuffix] ifFalse: [mcDef className]. 
-	classDef := self ensureClassNamed: className.
+	classDef := self ensureClassNamedFromMonticello: mcDef className.
 	methodDef := classDef ensureLocalMethodNamed: mcDef selector.
 	methodDef extendWithMonticello: mcDef.
 	^ methodDef
 ]
 
+{ #category : #'accessing packages' }
+LanguageModel >> addPackage: aPackageModel [
+	
+	self assert: (self definesPackageNamed: aPackageModel name) not.
+	self packages at: aPackageModel name asSymbol put: aPackageModel
+	
+]
+
 { #category : #'accessing classes' }
 LanguageModel >> allClasses [
-	^ self behaviors
+	^ classes
 ]
 
 { #category : #'accessing classes' }
@@ -246,7 +248,7 @@ LanguageModel >> allClassesWithRole [
 	" classes with role are installed as Stubs at the beginning of bootstrap, they can be extended by loading classes from host system or from tonel repository"
 
 	^ self allClasses
-		select: [ :beh | beh isBehavior and: [ beh role isNotNil ] ]
+		select: [ :beh | beh isBehavior and: [ beh hasRole ] ]
 ]
 
 { #category : #announcer }
@@ -255,13 +257,7 @@ LanguageModel >> announcer [
 	^ announcer ifNil: [ announcer := LanguageModelAnnouncer new ]
 ]
 
-{ #category : #calypso }
-LanguageModel >> at: aSymbol [
-self halt.
-	^ self classNamed: aSymbol
-]
-
-{ #category : #'compiler compatibility' }
+{ #category : #'compatibility - compiler' }
 LanguageModel >> at: aString ifAbsent: aBlockClosure [ 
 	"returns nil because this method is used to get CompiledMethod for generating Compiled Method instances durin the bootstrap"
 	^ aBlockClosure value
@@ -272,9 +268,26 @@ LanguageModel >> backend [
 	^ backend ifNil: [ backend := LanguageModelBackend for: self ]
 ]
 
-{ #category : #'accessing backend' }
-LanguageModel >> behaviors [ 
-	^ behaviors
+{ #category : #'bootstrap - build model classes' }
+LanguageModel >> basicNewClassNamed: aString [
+	^ (self class classModelFor: aString) basicNew
+		name: aString;
+		parent: self;
+		yourself
+]
+
+{ #category : #'bootstrap - build model classes' }
+LanguageModel >> basicNewClassWithRole: aString [
+	| class className roleName |
+	roleName := aString.
+	className := self classRoles
+		at: roleName
+		ifAbsent: [ self error: 'undefined role: ' , roleName ].
+	class := self basicNewClassNamed: className asSymbol.
+	class
+		role: (self newRoleNamed: roleName for: class);
+		yourself.
+	^ class
 ]
 
 { #category : #binding }
@@ -291,7 +304,7 @@ LanguageModel >> bindingOf: aSymbol [
 	^ self newGlobalBindingFor: aSymbol
 ]
 
-{ #category : #bootstrap }
+{ #category : #'bootstrap - build kernel' }
 LanguageModel >> bootstrap [
 	self prepareBuilder.
 	builder
@@ -301,12 +314,12 @@ LanguageModel >> bootstrap [
 	^ self spurImage
 ]
 
-{ #category : #'browse-code' }
+{ #category : #'api - browse code' }
 LanguageModel >> browse [
 	self browseAs: self name
 ]
 
-{ #category : #browser }
+{ #category : #'compatibility - calypso' }
 LanguageModel >> browseAs: browserTitleString [ 
 	| clyEnv clyNavEnv browser |
 	clyEnv := ClyEspell2Environment new.
@@ -324,22 +337,40 @@ LanguageModel >> browseAs: browserTitleString [
 	^ browser open.
 ]
 
-{ #category : #accessing }
+{ #category : #'bootstrap - build model' }
+LanguageModel >> build [
+	self loadClassRoles.
+	self loadKernel.
+	self test.
+	self loadRequiredClasses.
+	self loadRequiredGlobalVariables.
+	self loadGlobalVariables.
+	self loadClassesFromRepository.
+	self loadClasses.
+	self test.
+	"apply custom transformations implemented using MOP"
+	self transform.
+	self transformClasses.
+	self loadEntryPoint.
+	self test
+]
+
+{ #category : #'accessing kernel backend' }
 LanguageModel >> builder [
 	^ builder
 ]
 
 { #category : #testing }
 LanguageModel >> canGenerate [
-	^ self behaviors isNotNil and: [ self behaviors isNotEmpty ]
+	^ self allClasses isNotNil and: [ self allClasses isNotEmpty ]
 ]
 
-{ #category : #'accessing special classes' }
+{ #category : #'accessing classes - special' }
 LanguageModel >> classAssociation [
 	^ self classWithRole: #Association
 ]
 
-{ #category : #'accessing special classes' }
+{ #category : #'accessing classes - special' }
 LanguageModel >> classBlockClosure [
 	^ self classWithRole: #BlockClosure
 ]
@@ -391,54 +422,53 @@ LanguageModel >> classBySystemMapping: aString ifAbsent: aBlockClosure [
 	^ self classNamed: className
 ]
 
-{ #category : #'accessing special classes' }
+{ #category : #'accessing classes - special' }
 LanguageModel >> classCharacter [
 	
 	^ self classWithRole: #Character
 ]
 
-{ #category : #'accessing special classes' }
+{ #category : #'accessing classes - special' }
 LanguageModel >> classClass [
-	^ self classMetaclass 
+	^ self classWithRole: #Class
 ]
 
-{ #category : #'accessing special classes' }
-LanguageModel >> classClassVariable [
-	self deprecated: 'install in your subclass of LanguageModel'.
-	^ [ self classWithRole: #ClassVariable ] on: KeyNotFound 
-			do: [ self classWithRole: #Association ]
-]
-
-{ #category : #'accessing special classes' }
+{ #category : #'accessing classes - special' }
 LanguageModel >> classContext [
 	^ self classWithRole: #Context
 ]
 
-{ #category : #'accessing special classes' }
+{ #category : #'accessing classes - special' }
 LanguageModel >> classDictionary [
 	^ self classWithRole: #Dictionary
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'accessing kernel backend' }
 LanguageModel >> classLoader [
 	^ self pbBootstrapper builder classLoader
 ]
 
-{ #category : #'accessing special classes' }
-LanguageModel >> classMetaclass [
-	^ self classWithRole: #Metaclass
+{ #category : #'tonel repository' }
+LanguageModel >> classNameFromMonticello: aString [ 
+	^ aString
 ]
 
-{ #category : #'accessing backend' }
-LanguageModel >> classNamed: aString [ 
-	^ self classNamed: aString ifAbsent: [ PBClassDefinitionNotFound new key: aString; signal ]
+{ #category : #'accessing classes' }
+LanguageModel >> classNamed: aString [
+	^ self
+		classNamed: aString asSymbol
+		ifAbsent: [ PBClassDefinitionNotFound new
+				key: aString;
+				signal ]
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'accessing classes' }
 LanguageModel >> classNamed: aString ifAbsent: aBlockClosure [
+	
 	^ [ self classNamedExactly: aString ]
 		on: KeyNotFound
-		do: [[self classWithRole: aString] on: Error do: aBlockClosure]
+		do: [["this is necessary because EPASTInterpreter has some class names hardcoded"
+				self classWithRole: aString] on: Error do: aBlockClosure]
 ]
 
 { #category : #'accessing classes' }
@@ -457,80 +487,40 @@ LanguageModel >> classNamed: aString ifPresent: aBlockClosure [
 	result ifNotNil: [ ^ aBlockClosure cull: result ]
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'accessing classes' }
 LanguageModel >> classNamedExactly: aString [ 
 	| aSymbol |
 	aSymbol := aString ifNotNil: [ aString asSymbol ].
-	^ self behaviors at: aSymbol
+	^ self allClasses at: aSymbol
 ]
 
-{ #category : #'accessing special classes' }
+{ #category : #'accessing classes - special' }
 LanguageModel >> classProcess [
 	^ self classWithRole: #Process
 ]
 
-{ #category : #'accessing special classes' }
+{ #category : #'accessing classes - special' }
 LanguageModel >> classProcessList [
 	^ self classWithRole: #ProcessList
 ]
 
-{ #category : #'accessing special classes' }
+{ #category : #'accessing classes - special' }
 LanguageModel >> classProcessorScheduler [
 	^ self classWithRole: #ProcessorScheduler
 ]
 
-{ #category : #'accessing special classes' }
+{ #category : #'accessing classes - special' }
 LanguageModel >> classProtoObject [
 	
 	^ self classWithRole: #ProtoObject
 ]
 
-{ #category : #hooks }
+{ #category : #roles }
 LanguageModel >> classRoles [
 	^ classRoles
 ]
 
-{ #category : #roles }
-LanguageModel >> classRolesFromTonel: aFileReference [
-	| tonel packagesNames result definedClasses |
-	self
-		flag:
-			'I am reading the tonel repo twice, now and when I load the definitions. 
-	Refactor me!'.
-	result := #() asDictionary.
-	definedClasses := #() asOrderedCollection.
-	tonel := EP2TonelRepository new
-		directory: aFileReference asFileReference;
-		metamodel: self.
-	packagesNames := tonel packageDescriptionsFromReadableFileNames
-		collect: [ :each | each at: 1 ].
-	self
-		assert: packagesNames isNotEmpty
-		description: 'The repository is empty'.
-	packagesNames
-		do: [ :pn | 
-			| package snap version |
-			package := self ensurePackageNamed: pn.
-			version := tonel
-				versionWithInfo: (tonel versionInfoFromVersionNamed: pn).
-			snap := version snapshot.
-			snap definitions
-				do: [ :each | 
-					(each isKindOf: EP2MCClassDefinition)
-						ifTrue: [ definedClasses add: each name.
-							each role
-								ifNotNil: [ result at: each role asSymbol put: each name ] ] ] ].
-	"I am putting the next code here just to prevent reading the tonel repo twice, but this screams for a refactor"
-	(self customClassRoles ifNil: #())
-		do: [ :assoc | 
-			self
-				assert: (definedClasses anySatisfy: [ :defclass | defclass = assoc value ])
-				description: [ 'Class "' , assoc value
-						, '" mentioned in >>customClassRoles is not defined in Tonel' ] ].
-	^ result
-]
-
-{ #category : #'accessing special classes' }
+{ #category : #'accessing classes - special' }
 LanguageModel >> classSmallInteger [
 	
 	^ self classWithRole: #SmallInteger
@@ -538,7 +528,7 @@ LanguageModel >> classSmallInteger [
 
 { #category : #'accessing classes' }
 LanguageModel >> classWithRole: aString [ 
-	^ self classNamedExactly: (self classRoles at: aString ifAbsent: [ aString ])
+	^ self classNamedExactly: (self classRoles at: aString )
 ]
 
 { #category : #cleaning }
@@ -571,22 +561,22 @@ LanguageModel >> cleanPackages [
 	"removing empty packages"
 	| toRemove |
 	toRemove := self packages select: [ :pkg | pkg definedBehaviors isEmpty ].
-	toRemove do: [ :pkg | self packages removeKey: pkg name ]
+	toRemove do: [ :pkg | self packages removeKey: pkg name asSymbol ]
 ]
 
 { #category : #hooks }
 LanguageModel >> createInitialObjects [
 	"perform operations to initialize Classes classPools, or instructinos such as String initialize"
-	^ self subclassResponsibility 
+	
 ]
 
 { #category : #hooks }
 LanguageModel >> createRemoteSystemDictionary [
 	" return a new SystemDictionary instance, or nil if your language does not define a system dictionary"
-	self subclassResponsibility 
+	^ nil
 ]
 
-{ #category : #roles }
+{ #category : #hooks }
 LanguageModel >> customClassRoles [
 	"return an Array of Associations indicating role as key, and class name as value.
 	Do not implement if:
@@ -595,41 +585,47 @@ LanguageModel >> customClassRoles [
 	
 	The returned value overrides roles read from your Tonel repo
 	"
-	self subclassResponsibility 
+	^ nil
 ]
 
-{ #category : #'evaluation debugging' }
+{ #category : #'api - code execution' }
 LanguageModel >> debugEntryPoint [
 	^ self debugCode: self entryPointCode
 ]
 
-{ #category : #'default model values' }
+{ #category : #'initialization - default values' }
 LanguageModel >> defaultBehaviors [
 	
 	^ IdentityDictionary new
 ]
 
-{ #category : #'default model values' }
+{ #category : #'initialization - default values' }
 LanguageModel >> defaultClassRoles [
-	" get roles from EP2Remote subclasses"
-	| templates |
-	templates := (EP2Remote allSubclasses add: EP2Remote; yourself).
-	^ ((templates select: [ :each | each role isNotNil ])
-		collect: [ :each | each role asSymbol -> each role asSymbol ])
-		asDictionary
+	
+	^ Role defaultClassRolesFor: self
 ]
 
-{ #category : #'default model values' }
+{ #category : #'initialization - default values' }
 LanguageModel >> defaultGlobalVariables [
 	
 	^ IdentitySet new
 ]
 
-{ #category : #'default model values' }
+{ #category : #'initialization - default values' }
+LanguageModel >> defaultPackage [
+	^ self ensurePackageNamed: self defaultPackageName
+]
+
+{ #category : #'initialization - default values' }
+LanguageModel >> defaultPackageName [
+	^ #'Kernel-VM'
+]
+
+{ #category : #'initialization - default values' }
 LanguageModel >> defaultPackages [
 	| package |
 	package := self newPackageModel 
-		name: #'Kernel-VM';
+		name: self defaultPackageName;
 		parent: self;
 		yourself.
 	^ IdentityDictionary new
@@ -637,13 +633,20 @@ LanguageModel >> defaultPackages [
 		yourself
 ]
 
+{ #category : #testing }
+LanguageModel >> definesPackageNamed: aString [ 
+	| package |
+	package := self packageNamed: aString ifAbsent: [ nil ].
+	^ package isNotNil
+]
+
 { #category : #'initialize-destroy' }
 LanguageModel >> destroy [
 	super destroy.
 	
-	behaviors ifNotNil: [ 
-		behaviors do: [ :beh | beh destroy ].
-		behaviors := nil.].
+	classes ifNotNil: [ 
+		classes do: [ :beh | beh destroy ].
+		classes := nil.].
 	
 	packages ifNotNil: [ 
 		packages do: [ :pac | pac destroy ].
@@ -683,30 +686,36 @@ LanguageModel >> destroy [
 		instanceVariableMapping destroy.
 		instanceVariableMapping := nil ].
 	
-	tonelPath := nil
+	tonelPath := nil.
+	classRoles := nil
 ]
 
-{ #category : #'creating classes' }
+{ #category : #'bootstrap - build model classes' }
 LanguageModel >> ensureClassNamed: aString [
 	^ self
 		classNamed: aString
 		ifAbsent: [ | newBeh |
-			newBeh := self class metaclassModel named: aString parent: self.
-			self addBehavior: newBeh.
+			newBeh := self newClassNamed: aString.
+			self addClass: newBeh.
 			newBeh ]
 ]
 
-{ #category : #'accessing backend' }
-LanguageModel >> ensurePackageNamed: aString [
+{ #category : #'tonel repository' }
+LanguageModel >> ensureClassNamedFromMonticello: aString [
+	^ self ensureClassNamed: (self classNameFromMonticello: aString)
+]
 
+{ #category : #'bootstrap - build model packages' }
+LanguageModel >> ensurePackageNamed: aString [
+	self assert: aString isNotNil.
 	^ self packages
-		at: aString
+		at: aString asSymbol
 		ifAbsent: [ | package |
 			package := self newPackageModel
 				name: aString asSymbol;
 				parent: self;
 				yourself.
-			self packages at: package name put: package.
+			self addPackage: package.
 			package ]
 ]
 
@@ -735,7 +744,7 @@ LanguageModel >> entryPointSelector [
 	^ self class entryPointSelector
 ]
 
-{ #category : #accessing }
+{ #category : #binding }
 LanguageModel >> environment [ 
 	^ self
 ]
@@ -777,12 +786,26 @@ LanguageModel >> exportAsTonelRepository: aFileReference [
 { #category : #hooks }
 LanguageModel >> firstMetaclasses [
 	"return a collection with the class model of metaclasses involved in circular metaclass references, e.g. { Metaclass . Metaclass class }"
-	self subclassResponsibility 
-]
-
-{ #category : #refactor }
-LanguageModel >> fixCircularInheritance [
-	self allClasses do: [ :class | class superclass = self ifTrue: [ class superclass: nil ] ]
+	| depth maxDepth metaclasses found |
+	maxDepth := self allClasses size.
+	metaclasses := #() asOrderedCollection.
+	self allClasses
+		do: [ :class | 
+			| seen current |
+			found := false.
+			depth := 0.
+			current := class.
+			seen := #() asOrderedCollection.
+			[ depth > maxDepth or: [ found ] ]
+				whileFalse: [ 
+					current := current metaclass.
+					(seen indexOf: current) > 0
+						ifTrue: [ 
+							metaclasses add: current.
+							found := true ].
+					seen add: current.
+					depth := depth + 1. ] ].
+	^ metaclasses asSet asOrderedCollection
 ]
 
 { #category : #'vm-constants' }
@@ -790,13 +813,12 @@ LanguageModel >> formatOfImmediate [
 	^7
 ]
 
-{ #category : #api }
+{ #category : #'bootstrap - build kernel' }
 LanguageModel >> generate [
-	self canGenerate ifFalse: [ self error: 'Failure, please instantiate the language model' ].
+	self canGenerate ifFalse: [ self error: 'Failure, please build the language model using LanguageModel>>build' ].
 
 	self test.
 	self prepareBuilder.
-	self testRemoteStub.
 	self builder installClasses.
 	self builder installMethods.
 	self builder installProcess.
@@ -804,11 +826,11 @@ LanguageModel >> generate [
 	^ self spurImage
 ]
 
-{ #category : #api }
+{ #category : #'bootstrap - build kernel' }
 LanguageModel >> generateWriteAndExecute [
 	self generate.
 	self writeImage.
-	self imageInDisk executeInVM
+	^ self imageInDisk executeInVM
 ]
 
 { #category : #marking }
@@ -822,7 +844,7 @@ LanguageModel >> getAccessedMethodsBySimulatedExecution [
 		select: [ :meth | meth isMarkedAsAccessed ]
 ]
 
-{ #category : #binding }
+{ #category : #'accessing global variables' }
 LanguageModel >> globalVariableNamed: aString [
 	self globalVariables
 		do: [ :global | 
@@ -849,12 +871,6 @@ LanguageModel >> globalWithRole: aString [
 ]
 
 { #category : #hooks }
-LanguageModel >> hookCreateMetaclassStubWithClassLoader: aPBClassLoaderGeneric [ 
-	self deprecated: 'use hooks in EP2MClass instead'.
-	
-]
-
-{ #category : #hooks }
 LanguageModel >> hookGlobalNotFound: aString [
 	| localClass |
 	"load missing class from the system"
@@ -864,11 +880,11 @@ LanguageModel >> hookGlobalNotFound: aString [
 		confirm: 'Load class ' , aString , ' from host system to model?')
 		ifTrue: [ | newClass |
 			"getting the class from the system"
-			newClass := self class metaclassModel new
+			newClass := self class classModel new
 				parent: self;
 				initializeWithLocal: localClass;
 				yourself.
-			self addBehavior: newClass.
+			self addClass: newClass.
 			^ newClass ]
 ]
 
@@ -883,98 +899,71 @@ LanguageModel >> hookInitializeMethodDictionaryFor: anEP2RemoteClass [
 ]
 
 { #category : #hooks }
-LanguageModel >> hookInitializeProcessScheduler [ 
-	self deprecated: 'Use the GlobalModel with role #Processor instead'
-	"|code|
-	code := 'Processor := ProcessorScheduler basicNew.
-				Processor initProcessLists.'.
-	^ (self newInstruction
-		code: code;
-		temps: #();
-		yourself ) evaluate
-"
-]
-
-{ #category : #hooks }
-LanguageModel >> hookRegisterClass: anEP2RemoteClass fromDefinition: anOLClass withLoader: aPBClassLoaderGeneric [ 
-	self halt.
-	^ self newDummyInstruction
-]
-
-{ #category : #hooks }
 LanguageModel >> hookRegisterClass: anEP2RemoteClass named: aString [ 
-	
+	self deprecated: 'use ClassModel>>register'.
 	^ self newDummyInstruction 
 ]
 
 { #category : #hooks }
 LanguageModel >> hookSetSpecialObjectsArray: anEP2RemoteArray [
-	^ nil
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'accessing kernel backend' }
 LanguageModel >> imageBuilder [
 	self pbBootstrapper ifNil: [ ^ nil ].
 	^ self pbBootstrapper builder
 	
 ]
 
-{ #category : #api }
+{ #category : #'accessing kernel' }
 LanguageModel >> imageInDisk [
-	
-	^ imageInDisk ifNil: [ self error: 'Image file not found, Use #writeImage first' ]
+	^ imageInDisk
 ]
 
-{ #category : #api }
+{ #category : #'accessing kernel' }
 LanguageModel >> imageInMemory [
 	^ self builder spurImage
 ]
 
-{ #category : #'class roles' }
+{ #category : #roles }
 LanguageModel >> immediateClassRoles [
 	^ #(Character SmallInteger)
 ]
 
-{ #category : #initialization }
+{ #category : #'initialize-destroy' }
 LanguageModel >> initialize [ 
-	behaviors :=  self defaultBehaviors.
+	super initialize.
+	classes :=  self defaultBehaviors.
 	packages := self defaultPackages.
 	globalVariables := self defaultGlobalVariables.
-	self loadClassRoles.
-	self loadRequiredBehaviors.
-	self loadRequiredGlobalVariables.
-	self loadGlobalVariables.
-	"load definitions from Tonel if corresponds"
-	self loadClasses.
-	"load entry point"
-	self loadEntryPoint.
-	"apply custom transformations implemented using MOP"
-	self transform
+	
+	
 ]
 
 { #category : #hooks }
 LanguageModel >> initializeRemoteGlobals [
-	^ nil
+	
+	self deprecated: 'use LanguageModel>>loadGlobals, and set their initial value'.
 ]
 
 { #category : #hooks }
 LanguageModel >> initializeSpecialObjectsArray [
-	self subclassResponsibility 
+	"stores a reference to the special objects array in a language element"
 ]
 
-{ #category : #accessing }
+{ #category : #'bootstrap - build kernel configuration' }
 LanguageModel >> installAccessedObjectsOnly [
 	^ installAccessedObjectsOnly ifNil: [ installAccessedObjectsOnly := false ]
 ]
 
-{ #category : #accessing }
+{ #category : #'bootstrap - build kernel configuration' }
 LanguageModel >> installAccessedObjectsOnly: anObject [
 	installAccessedObjectsOnly := anObject
 ]
 
 { #category : #hooks }
 LanguageModel >> installClass: aClassDefinition [
-	
+	self deprecated: 'use ClassModel>>installBasic / installCustom instead'.
 	aClassDefinition hookInstall.
 	aClassDefinition testRemote.
 	^ aClassDefinition remote
@@ -982,43 +971,14 @@ LanguageModel >> installClass: aClassDefinition [
 
 { #category : #hooks }
 LanguageModel >> installClasses [
-	(self allClasses select: #isInstallable) do: #install
+	self allClasses do: #installBasic.
+	self allClasses do: #installCustom
 ]
 
 { #category : #hooks }
 LanguageModel >> installMethods [
 	(self allClasses select: #isInstallable)
 		do: [ :class | class installMethods ]
-]
-
-{ #category : #'installing stubs' }
-LanguageModel >> installMulticlassStubs: aCollection [
-	| names classes |
-	" ensure the metaclass of each class-model in the collection is present  "
-	names := aCollection collect: #name.
-	classes := #() asOrderedCollection.
-	aCollection
-		do: [ :class | 
-			(names anySatisfy: [ :c | c = class metaclass name ])
-				ifFalse: [ classes add: class metaclass ] ].
-	classes addAll: aCollection.
-	"calculate index in class table"
-	classes
-		do: [ :class | 
-			class indexInClassTable
-				ifNil: [ class indexInClassTable: self classLoader newClassIndex ] ].
-	"create stubs for each class and register"
-	classes
-		do: [ :class | 
-			class remoteIsInstalled
-				ifFalse: [ class installStubBasic ] ].
-	classes do: [ :class | class testStub ]
-]
-
-{ #category : #hooks }
-LanguageModel >> installStubs [
-	
-	self installMulticlassStubs: self firstMetaclasses "self allClassesWithRole"
 ]
 
 { #category : #'vm-constants' }
@@ -1032,6 +992,11 @@ LanguageModel >> isClassDefinition: aString [
 	^ false
 ]
 
+{ #category : #testing }
+LanguageModel >> isLanguageModel [
+	^ true
+]
+
 { #category : #'vm-constants' }
 LanguageModel >> layoutClassForInstSpec: anInteger [
  ^ EP2Layout layoutClassForInstSpec: anInteger
@@ -1042,49 +1007,37 @@ LanguageModel >> layoutForInstSpec: anInteger on: anEP2Class [
  ^ (self layoutClassForInstSpec: anInteger) on: anEP2Class 
 ]
 
-{ #category : #'load definitions - from tonel' }
-LanguageModel >> loadBaseLanguageModelDefinitions [
-	self deprecated: 'Use loadClasses leaving the variable tonelPath as default'.
-	self loadLanguageModelDefinitions: PBBootstrapGeneric baseLanguageModelRepository location
-]
-
-{ #category : #roles }
+{ #category : #'loading definitions' }
 LanguageModel >> loadClassRoles [
-	| defaultRoles rolesFromTonel customRoles |
+	| defaultRoles customRoles |
 	defaultRoles := self defaultClassRoles.
-	rolesFromTonel := (self tonelPath
-		ifNotNil: [ :path | self classRolesFromTonel: path ]
-		ifNil: [ #() ]) asDictionary.
-	
 	customRoles := (self customClassRoles ifNil: [ #() ]) asDictionary.
-	"initialize the instance var classRoles with no values"
 	classRoles := #() asDictionary.
+	"custom roles override default ones"
+	customRoles
+		associationsDo:
+			[ :assoc | classRoles at: assoc key put: assoc value ].
 	defaultRoles
 		associationsDo: [ :assoc | 
-			| theRole theClass classDefault classTonel classCustom |
-			theRole := assoc key.
-			classDefault := assoc value.
-			classTonel := rolesFromTonel at: theRole ifAbsent: [ nil ].
-			classCustom := customRoles at: theRole ifAbsent: [ nil ].
-			(classTonel isNotNil and: [ classCustom isNotNil ])
-				ifTrue: [ self
-						assert: classTonel = classCustom
-						description:
-							'role ' , theRole
-								, ' is different between tonel repository and method >>customClassRoles' ].
-			theClass := classCustom
-				ifNil: [ classTonel ifNil: [ classDefault ] ].
-			classRoles at: theRole put: theClass ].
+			classRoles at: assoc key ifAbsentPut: assoc value ].
 	^ classRoles
 ]
 
-{ #category : #hooks }
+{ #category : #'loading definitions' }
 LanguageModel >> loadClasses [
-	self tonelPath
-		ifNotNil: [ :path | self loadTonelRepository: path ]
+	
 ]
 
-{ #category : #hooks }
+{ #category : #'loading definitions' }
+LanguageModel >> loadClassesFromRepository [
+	self tonelPath ifNotNil: [ :path | self loadTonelRepository: path ].
+	self cleanInstVars.
+	self cleanPackages.
+	self allClasses do: [ :class | class initializeCustom ].
+	self testCompletitude
+]
+
+{ #category : #'loading definitions' }
 LanguageModel >> loadEntryPoint [
 	| classUndefinedObject selector |
 	"do not modify unless you know what you are doing"
@@ -1102,55 +1055,44 @@ LanguageModel >> loadEntryPoint [
 { #category : #hooks }
 LanguageModel >> loadGlobalVariables [
 	" create and instances of GlobalModel to this model, representing globals in the bootstrapped system"
-	self subclassResponsibility 
+	
 ]
 
-{ #category : #'load definitions - from tonel' }
-LanguageModel >> loadLanguageModelDefinitions: aFileReference [
-	self deprecated: 'Use loadTonelRepository: self tonelPath'.
-	tonelPath := aFileReference.
-	self loadTonelRepository: aFileReference
-]
-
-{ #category : #'load definitions - required' }
-LanguageModel >> loadRequiredBehaviors [
+{ #category : #'loading definitions' }
+LanguageModel >> loadKernel [
 	| objModel classModel |
-	"we load object and class first because they are special in the inheritance chain. 
-	Object is the root and class is instance of itself"
-
-	objModel := self newBehaviorFromTemplate: EP2RemoteEmpty.
+	" load the first classes necessary to create the rest "
+	" OVERRIDE if your language has implicit metaclasses "
+	objModel := self basicNewClassWithRole: #ProtoObject.
+	classModel := self basicNewClassWithRole: #Class.
+	
 	objModel superclass: nil.
-	self addBehavior: objModel.
-	classModel := self newBehaviorFromTemplate: EP2RemoteClass.
-	self addBehavior: classModel.
-	objModel initializeWithTemplate: EP2RemoteEmpty.
+	classModel superclass: objModel.
 	
-	classModel initializeWithTemplate: EP2RemoteClass.
+	self addClass: objModel.
+	self addClass: classModel.
 	
-	" recursive call to load subclasses"
-	EP2Remote
-		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ].	
-	"self class classMetaclass allClassModelInstVarNames do: [ :ivName | classModel addSlot: ivName ]."
-	
-	
+	objModel initialize.
+	classModel initialize
 ]
 
-{ #category : #'load definitions - required' }
-LanguageModel >> loadRequiredBehaviorsRecursive: aClassEP2Remote [
-	| template model |
-	template := aClassEP2Remote.
-	template role ifNotNil: [ 
-		model := self newBehaviorFromTemplate: template.
-		"self haltIf: (model name = #Object)."
-		
-		model initializeWithTemplate: aClassEP2Remote.
-		self addBehavior: model ].
-	" Recursive call to load subclasses "
-	template
-		subclassesDo: [ :subclass | self loadRequiredBehaviorsRecursive: subclass ]
+{ #category : #'loading definitions' }
+LanguageModel >> loadRequiredClasses [
+	
+	| missingRoles |
+	" missing roles are those that were not loaded in the kernel "
+	missingRoles := self classRoles keys asSet
+		difference: (self allClasses values select: #hasRole thenCollect: [:class | class role name ]).
+	missingRoles
+		do: [ :aRole | 
+			| class |
+			class := self newClassWithRole: aRole.
+			self addClass: class ].
+	
+	self test.
 ]
 
-{ #category : #requirements }
+{ #category : #'loading definitions' }
 LanguageModel >> loadRequiredGlobalVariables [
 	self globalVariables
 		add:
@@ -1177,25 +1119,26 @@ LanguageModel >> loadRequiredGlobalVariables [
 
 { #category : #'tonel repository' }
 LanguageModel >> loadTonelRepository: aFileReference [
-	| tonel packagesNames  | 
+	| tonel packagesNames mcClassDefinitions | 
 	tonel := EP2TonelRepository new
 		directory: aFileReference asFileReference;
 		metamodel: self. 
 	packagesNames := tonel packageDescriptionsFromReadableFileNames collect: [:each | each at: 1].
 	self assert: packagesNames isNotEmpty description: 'The repository is empty'.
 
+	mcClassDefinitions := #() asOrderedCollection.
 	packagesNames	do: [ :pn | | package snap version |
 			package := self ensurePackageNamed: pn.
 			version := tonel versionWithInfo: (tonel versionInfoFromVersionNamed: pn).
 			snap := version snapshot.
 			snap definitions do: [ :each |
-				each ensureEspellDefinitionIn: self package: package
+				each ensureEspellDefinitionIn: self package: package.
+				each isClassDefinition ifTrue: [mcClassDefinitions add: each].
 			 ]].
-	self fixCircularInheritance.
-	self testCompletitude.
-	self cleanInstVars.
-	self cleanPackages.
-	self test.
+	mcClassDefinitions do: [ :each | 
+		(self classNamed: (self classNameFromMonticello: each name)) extendLayoutWithMonticello: each
+		 ]
+	
 ]
 
 { #category : #'tonel repository' }
@@ -1218,32 +1161,25 @@ LanguageModel >> maybeAccessedPropertyName [
 	^ #maybeAccessed
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'accessing kernel backend' }
 LanguageModel >> methodBuilder [
 	^ self pbBootstrapper builder methodBuilder
 ]
 
-{ #category : #'accessing backend' }
-LanguageModel >> newBehaviorFromMonticelloDefinition: aMCClassDefinition [.
-	self deprecated: 'use extendWithMonticello: instead'.
-	^ (self class metaclassModel
-				named: aMCClassDefinition className
-				parent: self) 
-				initializeWithMonticello: aMCClassDefinition;
-				yourself 
+{ #category : #'bootstrap - build model classes' }
+LanguageModel >> newClassNamed: aString [
+	^ (self basicNewClassNamed: aString asSymbol)
+		initialize;
+		yourself
 ]
 
-{ #category : #'accessing backend' }
-LanguageModel >> newBehaviorFromTemplate: aClassEP2Remote [
-	| template model modelName |
-	template := aClassEP2Remote.
-	modelName := self classRoles at: template role.
-	model := self ensureClassNamed: modelName.
-	model template: template.
-	model layout: (template layoutClass on: model).
-	template modelInstVarNames doWithIndex: [ :ivname :index| model addSlot: ivname index: index ].
-	self packages anyOne addDefinedBehavior: model.
-	^ model
+{ #category : #'bootstrap - build model classes' }
+LanguageModel >> newClassWithRole: aString [ 
+	| class |
+	class := self basicNewClassWithRole: aString.
+	class superclass: self classProtoObject.
+	class initialize.
+	^ class
 ]
 
 { #category : #binding }
@@ -1259,6 +1195,11 @@ LanguageModel >> newPackageModel [
 	^ self class newPackageModel
 ]
 
+{ #category : #roles }
+LanguageModel >> newRoleNamed: aString for: anObjectModel [
+	^ Role named: aString for: anObjectModel
+]
+
 { #category : #marking }
 LanguageModel >> objectAccessedPropertyName [ 
 	^ markAccessed ifNil: [ markAccessed := #accessed ]
@@ -1269,12 +1210,12 @@ LanguageModel >> objectAccessedPropertyName: aString [
 	markAccessed := aString
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'accessing kernel backend' }
 LanguageModel >> objectSpace [
 	^pbBootstrapper builder objectSpace
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'accessing packages' }
 LanguageModel >> packageFor: anEP2MBehavior [
 	^ (self packages
 		select: [ :package | package definesBehavior: anEP2MBehavior ])
@@ -1288,32 +1229,32 @@ LanguageModel >> packageFor: anEP2MBehavior [
 			collection anyOne ]
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'accessing packages' }
 LanguageModel >> packageNamed: aString [ 
 	^ self packages at: aString asSymbol
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing packages' }
 LanguageModel >> packageNamed: aString ifAbsent: aBlockClosure [ 
 	^ [self packageNamed: aString] on: KeyNotFound do: [ aBlockClosure value ]
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'accessing packages' }
 LanguageModel >> packages [
 	^ packages
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing kernel backend' }
 LanguageModel >> pbBootstrapper [
 	^ pbBootstrapper
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing kernel backend' }
 LanguageModel >> pbBootstrapper: aPBBootstrapGeneric [ 
 	pbBootstrapper := aPBBootstrapGeneric
 ]
 
-{ #category : #bootstrap }
+{ #category : #'bootstrap - build kernel' }
 LanguageModel >> prepareBuilder [
 	| repo |
 	builder ifNotNil: [ builder destroy ].
@@ -1350,15 +1291,21 @@ LanguageModel >> registerClass: remoteClass fromDefinition: aClassModel [
 	aClassModel register
 ]
 
-{ #category : #'accessing remote objects' }
+{ #category : #'accessing kernel objects' }
 LanguageModel >> remote [
 	"we use the imageBuilder to interact with the kernel"
 	^ self pbBootstrapper builder
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'bootstrap - build model classes' }
 LanguageModel >> removeBehavior: aMClass [
-	self classNamed: aMClass name ifPresent: [ self halt ]
+	self deprecated: 'Use #removeClass: instead.' transformWith: '`@receiver removeBehavior:`@arg' -> '`@receiver removeClass:`@arg'.
+	self classNamed: aMClass name ifPresent: [ classes removeKey: aMClass name ]
+]
+
+{ #category : #'bootstrap - build model classes' }
+LanguageModel >> removeClass: aClassMode [
+	self classNamed: aClassMode name ifPresent: [ classes removeKey: aClassMode name ]
 ]
 
 { #category : #marking }
@@ -1376,12 +1323,12 @@ LanguageModel >> removeMaybeAccessedPropertyFromAllBehaviors [
 		
 ]
 
-{ #category : #'class roles' }
+{ #category : #roles }
 LanguageModel >> roleOfClass: anOLClass [ 
 	^ [ self classRoles keyAtValue: anOLClass name ] on: ValueNotFound do: [ nil ]
 ]
 
-{ #category : #'class roles' }
+{ #category : #roles }
 LanguageModel >> roleOfClassNamed: aString [ 
 	^ [self classRoles keyAtValue: aString]
 		on: ValueNotFound 
@@ -1390,7 +1337,7 @@ LanguageModel >> roleOfClassNamed: aString [
 				ifFalse: [ PBClassDefinitionNotFound signal: 'class "', aString, '" not found' ]]
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing kernel' }
 LanguageModel >> spurImage [
 	^ builder spurImage
 ]
@@ -1405,42 +1352,11 @@ LanguageModel >> systemClassMapping [
 		"} asDictionary 
 ]
 
-{ #category : #metamodel }
-LanguageModel >> tempVariableModel [
-	^ self class tempVariableModel
-]
-
 { #category : #testing }
 LanguageModel >> test [
-	| model metamodel modelVars metamodelVars modelVarsLast metamodelVarsEnd modelVarsFirst |
 	self assert: self name isNotNil.
-	
-	model := self classWithRole: 'Metaclass'.
-	metamodel := self class metaclassModel.
-	
-	modelVars := model allInstVarNames.
-	metamodelVars := metamodel
-		allClassModelInstVarNames.
-	modelVarsLast := (modelVars
-		copyFrom: 4
-		to: modelVars size) asIdentitySet.
-	metamodelVarsEnd := (metamodelVars
-		copyFrom: 4
-		to: metamodelVars size) asIdentitySet.
-	modelVarsFirst := metamodelVars copyFrom: 1 to: 3.
-	self
-		assert: (modelVars beginsWith: modelVarsFirst)
-		description:
-			'The first 3 instance variables of "' , model name
-				, '" must be ' , modelVarsFirst asString.
-	self
-		assert: (modelVarsLast asSet difference: metamodelVarsEnd asSet) isEmpty
-		description:
-			'The class ' , metamodel asString
-				, ' must define the same instance variables than'
-				, model asString.
-				
-	self behaviors do: [ :beh | beh test ].
+	" cycles in inheritance chain are forbidden "
+	self allClasses do: [ :class | class test ].
 	self globalVariables do: [ :glob | glob test ]
 ]
 
@@ -1473,12 +1389,12 @@ LanguageModel >> testStub [
 		select: [ :class | class remote isNotNil ]) do: #testStub
 ]
 
-{ #category : #accessing }
+{ #category : #'tonel repository' }
 LanguageModel >> tonelPath [ 
 	^ tonelPath 
 ]
 
-{ #category : #accessing }
+{ #category : #'tonel repository' }
 LanguageModel >> tonelPath: aFileReference [
 	tonelPath := aFileReference
 ]
@@ -1489,7 +1405,17 @@ LanguageModel >> transform [
 	self subclassResponsibility 
 ]
 
-{ #category : #api }
+{ #category : #hooks }
+LanguageModel >> transformClasses [
+	self allClasses do: #transform
+]
+
+{ #category : #metamodel }
+LanguageModel >> undeclaredVariableModel [
+	^ UndeclaredVariableModel
+]
+
+{ #category : #'bootstrap - build kernel' }
 LanguageModel >> writeImage [
 	^ imageInDisk := [builder writeImage] ensure: [ builder destroy ]
 ]

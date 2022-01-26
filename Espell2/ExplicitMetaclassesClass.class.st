@@ -22,30 +22,12 @@ ExplicitMetaclassesClass >> extendWithMonticelloCustom: aMCClassDefinition [
 		metaclass:
 			(metaclassDef
 				ifNotNil: [ self parent ensureClassNamed: metaclassDef ]
-				ifNil: [ self parent classMetaclass ]).
-]
-
-{ #category : #accessing }
-ExplicitMetaclassesClass >> initializeWithTemplateCustom: aTemplate [
-	self metaclass: self parent classMetaclass.
+				ifNil: [ self parent classClass ]).
 ]
 
 { #category : #hooks }
 ExplicitMetaclassesClass >> innerBindingOf: aString [ 
 	^ nil
-]
-
-{ #category : #'stubs creation' }
-ExplicitMetaclassesClass >> installStubCustom [
-
-	self deprecated: 'Use LanguageModel >> installMulticlassStubs:'.
-	self metaclass = self
-		ifTrue: [ ^ self installMetacircularStub ].
-	"first install the stub of my metaclass"
-	self metaclass installStub.
-	"instantiate my metaclass to create a stub of me"
-	^ self metaclass newStubWithFormat: self format.
-	
 ]
 
 { #category : #accessing }

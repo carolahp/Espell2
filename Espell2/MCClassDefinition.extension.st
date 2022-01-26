@@ -3,7 +3,7 @@ Extension { #name : #MCClassDefinition }
 { #category : #'*Espell2' }
 MCClassDefinition >> ensureEspellDefinitionIn: aLanguageModel [ 
 	
-	^ aLanguageModel addBehaviorFromMonticelloDefinition: self
+	^ aLanguageModel addClassFromMonticelloDefinition: self
 ]
 
 { #category : #'*Espell2' }

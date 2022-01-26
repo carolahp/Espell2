@@ -235,7 +235,10 @@ EP2Mirror >> basicClass [
 	classOrNil := backend mirrorOn: self target basicClassHandle.
 	^ classOrNil isNilObject 
 		ifTrue:  [ classOrNil asRemoteNil ] 
-		ifFalse: [ classOrNil asRemoteClass ] 
+		ifFalse: [ 
+			classOrNil target isExternalHandle 
+				ifTrue: [ classOrNil ]
+				ifFalse: [ classOrNil asRemoteClass ] ] 
 ]
 
 { #category : #comparing }
@@ -256,10 +259,14 @@ EP2Mirror >> basicIdentityHash [
 EP2Mirror >> basicRemoteClass [
 	| classOrNil |
 	"always returns a class that is installed in the kernel"
-	classOrNil := backend mirrorOn: self target basicRemoteClassHandle.
+	"classOrNil := backend mirrorOn: self target basicRemoteClassHandle.
 	^ classOrNil isNilObject 
 		ifTrue:  [ classOrNil asRemoteNil ] 
-		ifFalse: [ classOrNil asRemoteClass ] 
+		ifFalse: [ classOrNil asRemoteClass ] "
+	classOrNil := backend mirrorOn: self target basicClassHandle.
+	^ classOrNil isNilObject
+		ifTrue: [ classOrNil asRemoteNil ]
+		ifFalse: [ classOrNil asRemoteClass ]
 ]
 
 { #category : #'accessing-header' }

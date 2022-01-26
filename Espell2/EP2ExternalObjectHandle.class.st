@@ -19,7 +19,8 @@ EP2ExternalObjectHandle >> asCastedRemoteClass [
 
 { #category : #converting }
 EP2ExternalObjectHandle >> asClassIndexHandle [
-	^ self
+	^ (backend systemDefinition classWithRole: self object role) remote
+		target asClassIndexHandle
 ]
 
 { #category : #casting }

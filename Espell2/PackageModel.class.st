@@ -12,6 +12,11 @@ PackageModel class >> convertToCalypsoBrowserItem: anEP2MPackage [
 	^ClyBrowserItem named: anEP2MPackage name with: anEP2MPackage
 ]
 
+{ #category : #metamodel }
+PackageModel class >> firstClassModels [
+	^#()
+]
+
 { #category : #calypso }
 PackageModel class >> prepareClassQueriesFrom: packages in: aNavigationEnvironment [ 
 	^{
@@ -20,7 +25,12 @@ PackageModel class >> prepareClassQueriesFrom: packages in: aNavigationEnvironme
 	}
 ]
 
-{ #category : #'accessing-backend' }
+{ #category : #metamodel }
+PackageModel class >> role [ 
+	^ #Package
+]
+
+{ #category : #'accessing backend' }
 PackageModel >> addDefinedBehavior: aClass [ 
 	(self definesBehavior: aClass)
 		ifFalse: [ self definedBehaviors add: aClass ].
@@ -59,6 +69,15 @@ PackageModel >> asMCSnapshot [
 	^ MCSnapshot fromDefinitions: definitions
 ]
 
+{ #category : #'accessing backend' }
+PackageModel >> behaviorNamed: aString [
+	^ self
+		classNamed: aString
+		ifAbsent: [ PBClassDefinitionNotFound new
+				key: aString;
+				signal ]
+]
+
 { #category : #calypso }
 PackageModel >> calypsoEnvironmentType [
 	^RPackage
@@ -69,6 +88,26 @@ PackageModel >> categories [
 	
 	^ self definedBehaviors collect: #category as: Set
 
+]
+
+{ #category : #'accessing backend' }
+PackageModel >> classNamed: aSymbol ifAbsent: aBlockClosure [ 
+	| found |
+	found := [ self environment classNamed: aSymbol ]
+		on: PBClassDefinitionNotFound
+		do: [ ^ aBlockClosure value ].
+	found := (self definedBehaviors like: found)
+		ifNil: [ ^ aBlockClosure value ].
+	^ found
+]
+
+{ #category : #'accessing backend' }
+PackageModel >> classNamed: aString ifAbsent: absentBlock ifPresent: presentBlock [ 
+	|result|
+	result := self classNamed: aString ifAbsent: [nil].
+	result
+		ifNil: [ ^ absentBlock value ] 
+		ifNotNil: [ ^ presentBlock cull: result ]
 ]
 
 { #category : #calypso }
@@ -92,8 +131,8 @@ PackageModel >> definedClasses [
 ]
 
 { #category : #testing }
-PackageModel >> definesBehavior: anOLClass [ 
-	^ self definedBehaviors anySatisfy: [:beh | beh = anOLClass ].
+PackageModel >> definesBehavior: aClassModel [ 
+	^ self definedBehaviors anySatisfy: [:beh | beh = aClassModel ].
 ]
 
 { #category : #calypso }
@@ -171,12 +210,13 @@ PackageModel >> registerCustom [
 	self subclassResponsibility
 ]
 
+{ #category : #accessing }
+PackageModel >> removeDefinedBehavior: aClassModel [
+	(self definesBehavior: aClassModel)
+		ifTrue: [ self definedBehaviors remove: aClassModel ]
+]
+
 { #category : #calypso }
 PackageModel >> tagsForClasses [
 	^ IdentitySet new
-]
-
-{ #category : #metamodel }
-PackageModel >> tempVariableModel [
-	^ self parent class tempVariableModel
 ]

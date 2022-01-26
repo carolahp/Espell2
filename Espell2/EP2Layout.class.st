@@ -159,7 +159,7 @@ EP2Layout >> gtInspectorIn: composite [
 			{ 'self' -> object },
 			(object basicClass allSlots
 				collect:
-					[ :slot | slot name -> (slot read: object) asRemoteObjectCasted ]) ];
+					[ :slot | slot name -> ((slot read: object) asRemoteObjectCasted) ]) ];
 		column: 'Variable' evaluated: [ :assoc | assoc key ];
 		column: 'Value' evaluated: [ :assoc | assoc value ];
 		send: [ :assoc | 

@@ -21,5 +21,5 @@ EP2RemoteProcessList class >> modelInstVarNames [
 
 { #category : #constants }
 EP2RemoteProcessList class >> role [ 
-	^ 'ProcessList'
+	^ #ProcessList
 ]

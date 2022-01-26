@@ -38,6 +38,7 @@ EP2Remote class >> modelAcceptsExtraInstVars [
 { #category : #constants }
 EP2Remote class >> modelAllInstVarNames [
 	" I am the root of the remote objects hierarchy "
+	self deprecated: 'use modelInstVarNames'.
 	^ (self = EP2Remote)
 		ifTrue: [ self modelInstVarNames ] 
 		ifFalse: [ self superclass modelAllInstVarNames, self modelInstVarNames ]
@@ -313,6 +314,27 @@ EP2Remote >> classDefinition [
 	^ nil
 ]
 
+{ #category : #'accessing-pvt' }
+EP2Remote >> doesNotUnderstand: aMessage [
+	| selector index result instVarName |
+	"this allows the user to access instance variables defined in their class model by accessors"
+	selector := aMessage selector.
+	index := selector indexOf: $:.
+	[index > 0
+		ifTrue: [ 
+			"possibly a setter"
+			selector size = index
+				ifFalse: [ self error ]
+				ifTrue: [ 
+					instVarName := selector copyUpTo: $:.
+					result := self instanceVariableNamed: instVarName put: (aMessage arguments at: 1) ] ]
+		ifFalse: [ 
+			"possibly a getter"
+			result := (self instanceVariableNamed: aMessage selector) asRemoteObjectCasted  ].
+	] on: EP2SlotNotFoundException do: [:ex | super doesNotUnderstand: aMessage ].
+	^ result
+]
+
 { #category : #evaluating }
 EP2Remote >> evaluateCode: aString withTemps: aCollection [ 
 	^ self backend builder bootstrapInterpreter 
@@ -452,7 +474,7 @@ EP2Remote >> printOn: aStream [
 	(selfcasted class = self class) 
 	ifTrue: [ 
 		aStream 
-			nextPutAll: 'aRemote [ ';
+			nextPutAll: '*a ',self basicClass className asString,'*[ ';
 			nextPutAll: self target asString;
 			nextPutAll: ' ]' ]
 	ifFalse: [ selfcasted printOn: aStream ]

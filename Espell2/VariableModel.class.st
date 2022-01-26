@@ -5,7 +5,7 @@ Class {
 		'scope',
 		'usage'
 	],
-	#category : #'Espell2-Metamodel'
+	#category : #'Espell2-Metamodel-Variables'
 }
 
 { #category : #'code generation' }
@@ -16,6 +16,11 @@ VariableModel >> emitStore: methodBuilder [
 { #category : #'code generation' }
 VariableModel >> emitValue: methodBuilder [
 	self subclassResponsibility 
+]
+
+{ #category : #'code generation' }
+VariableModel >> environment [ 
+	^ self language
 ]
 
 { #category : #testing }
@@ -55,6 +60,12 @@ VariableModel >> isWritable [
 { #category : #'accessing-api' }
 VariableModel >> isWrite [
 	^ usage = #write or: [ self isRepeatedWrite ]
+]
+
+{ #category : #mark }
+VariableModel >> markRead [
+	"reading does not change a #write, nor an #arg"
+	usage ifNil: [usage := #read]
 ]
 
 { #category : #'accessing-api' }

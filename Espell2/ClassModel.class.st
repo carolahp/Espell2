@@ -21,7 +21,6 @@ Class {
 		'indexInSpecialObjectsArray',
 		'tagsForMethods',
 		'layout',
-		'template',
 		'superclass',
 		'methodDict',
 		'format'
@@ -30,7 +29,7 @@ Class {
 }
 
 { #category : #'hooks-api' }
-ClassModel class >> allClassModelInstVarNames [
+ClassModel class >> allModelInstVarNames [
 	| allInstVars firstIndex |
 	"returns all inst vars of class-models according to the metamodel, starting from superclass"
 	allInstVars := self allInstVarNames.
@@ -39,8 +38,30 @@ ClassModel class >> allClassModelInstVarNames [
 ]
 
 { #category : #'hooks-api' }
+ClassModel class >> defaultLayout [
+	^ EP2FixedLayout
+]
+
+{ #category : #metamodel }
+ClassModel class >> firstClassModels [
+	^ {self methodModel} asOrderedCollection 
+		addAll: self customFirstClassModels;
+		yourself
+]
+
+{ #category : #metamodel }
+ClassModel class >> instanceVariableSlotModel [
+	^ InstanceVariableSlotModel 
+]
+
+{ #category : #metamodel }
 ClassModel class >> methodModel [
 	^ MethodModel
+]
+
+{ #category : #'hooks-api' }
+ClassModel class >> role [ 
+	^ #Class
 ]
 
 { #category : #calypso }
@@ -53,13 +74,7 @@ ClassModel >> acceptsNewSlots [
 	^ self layout acceptsNewSlots 
 ]
 
-{ #category : #'accessing methods' }
-ClassModel >> addLocalMethod: anEP2MMethod [
-	self deprecated: 'use addLocalMethodFromsource:selector:'.
-	
-]
-
-{ #category : #'accessing methods' }
+{ #category : #'bootstrap - build model methods' }
 ClassModel >> addLocalMethodFromSource: source selector: selector [
 	
 	^ (self ensureLocalMethodNamed: selector)
@@ -68,23 +83,23 @@ ClassModel >> addLocalMethodFromSource: source selector: selector [
 		yourself
 ]
 
-{ #category : #calypso }
+{ #category : #'bootstrap - build model methods' }
 ClassModel >> addMethodTag: aSymbol [ 
 	self backend addMethodTag: aSymbol to: self
 ]
 
-{ #category : #'accessing slots' }
+{ #category : #'bootstrap - build model fields' }
 ClassModel >> addSlot: aString [ 
 	^ self layout addSlot: aString
 		
 ]
 
-{ #category : #'accessing slots' }
+{ #category : #'bootstrap - build model fields' }
 ClassModel >> addSlot: aString index: anInteger [  
 	self layout addSlot: aString index: anInteger
 ]
 
-{ #category : #adding }
+{ #category : #'bootstrap - build model fields' }
 ClassModel >> addSlotRecursivelyWherePossible: slotName [
 	| insert required |
 	self
@@ -93,26 +108,27 @@ ClassModel >> addSlotRecursivelyWherePossible: slotName [
 			class allSubclasses
 				do: [ :subclass | 
 					insert := insert and: subclass acceptsNewSlots.
-					required := subclass template
+					required := subclass role
 						ifNil: [ #() ]
-						ifNotNil: [ subclass template modelAllInstVarNames ].
+						ifNotNil: [ subclass role modelInstVarNames ].
 					insert := insert and: (required endsWith: class allSlots) ].
 			insert
 				ifTrue: [ class slotNamed: slotName ifAbsent: [ class addSlot: slotName ] ] ]
 		to: [ :c | c subclasses ]
 ]
 
-{ #category : #slots }
+{ #category : #'bootstrap - build model fields' }
 ClassModel >> addSlotRefactoringSubclasses: slotName [
+
 	self allSubclasses
 		do: [ :c | 
 			(c slots anySatisfy: [ :s | s name = slotName ])
 				ifTrue: [ c removeSlot: slotName ] ].
 	self addSlot: slotName.
-	self allSubclasses do: #test
+	
 ]
 
-{ #category : #'accessing instance variables' }
+{ #category : #'accessing fields' }
 ClassModel >> allInstVarNames [
 	^ (self allSlots select: #isInstanceVariableSlot) collect: #name
 ]
@@ -148,20 +164,24 @@ ClassModel >> allSubclasses [
 	^ subclasses
 ]
 
-{ #category : #'accessing superclasses' }
+{ #category : #querying }
 ClassModel >> allSuperclasses [
 	"Answer an OrderedCollection of the receiver's and the receiver's  
 	ancestor's superclasses. The first element is the receiver's immediate  
 	superclass, followed by its superclass; the last element is Object."
+
 	| temp |
 	^ self superclass == nil
-		ifTrue: [ OrderedCollection new]
-		ifFalse: [temp := self superclass allSuperclasses.
+		ifTrue: [ OrderedCollection new ]
+		ifFalse: [ self superclass = self
+				ifTrue: [ self
+						error: 'circular references are forbidden in inheritance hierarchy' ].
+			temp := self superclass allSuperclasses.
 			temp addFirst: self superclass.
-			temp]
+			temp ]
 ]
 
-{ #category : #monticello }
+{ #category : #'tonel compatibility' }
 ClassModel >> asMCDefinition [
 	^ (MCClassDefinitionEspell
 		name: self name
@@ -180,12 +200,17 @@ ClassModel >> asMCDefinition [
 		yourself
 ]
 
+{ #category : #'kernel objects' }
+ClassModel >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
+	^ self ensureRemote
+]
+
 { #category : #'accessing backend' }
 ClassModel >> backend [
 	^ self parent backend 
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing metaclass' }
 ClassModel >> basicClass [
 	^ self metaclass
 ]
@@ -218,7 +243,7 @@ ClassModel >> classIsMeta [
 	^ false
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'accessing kernel backend' }
 ClassModel >> classLoader [
 	^ self parent classLoader
 ]
@@ -228,7 +253,7 @@ ClassModel >> classSide [
 	^ self metaclass
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing fields' }
 ClassModel >> classVarNames [
 	"compiler compatibility"
 	^ #()
@@ -266,9 +291,24 @@ ClassModel >> compiler [
 	^ self class compiler
 ]
 
-{ #category : #'accessing format' }
+{ #category : #initialization }
+ClassModel >> defaultLayout [
+	^ self class defaultLayout 
+]
+
+{ #category : #'initialization - default values' }
 ClassModel >> defaultMethodDictionary [
 	^ IdentityDictionary new 
+]
+
+{ #category : #'initialization - default values' }
+ClassModel >> defaultPackage [
+	^ self parent defaultPackage
+]
+
+{ #category : #'initialization - default values' }
+ClassModel >> defaultSuperclass [
+	^ self parent classProtoObject
 ]
 
 { #category : #testing }
@@ -324,14 +364,16 @@ ClassModel >> destroy [
 	layout ifNotNil: [ 
 		layout destroy.
 		layout := nil.
-	] .
+	].
+	role ifNotNil: [ 
+		role destroy.
+		role := nil ].
 	methodDict ifNotNil: [ 
 		methodDict valuesDo: [ :method | method destroy ].
 		methodDict := nil.
 	].
 	superclass := nil.
-	tagsForMethods := nil.
-	template := nil
+	tagsForMethods := nil
 	
 ]
 
@@ -347,7 +389,7 @@ ClassModel >> ensureLocalMethodNamed: aSymbol [
 		newMethod].
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> ensureRemote [
 	^ (self remote
 		ifNil:
@@ -356,29 +398,19 @@ ClassModel >> ensureRemote [
 			self remote ]) asRemoteClass
 ]
 
-{ #category : #accessing }
+{ #category : #binding }
 ClassModel >> environment [ 
 	^ self parent 
 ]
 
-{ #category : #transforming }
-ClassModel >> extendWithMonticello: aMCClassDefinition [
-	"An existent class is extended with a definition read from Monticello.
-	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we test the class at the end"
-
-	| mcDef instVarsDefs packageDef newLayoutClass newLayout |
-	mcDef := aMCClassDefinition.
-
-	"superclass"
-	self
-		superclass:
-			(mcDef superclassName = #nil
-				ifTrue: [ nil ]
-				ifFalse: [ self parent ensureClassNamed: mcDef superclassName ]).
+{ #category : #'tonel repository' }
+ClassModel >> extendLayoutWithMonticello: aMCClassDefinition [
 	"layout"
+	| mcDef newLayoutClass newLayout instVarsDefs |
+	mcDef := aMCClassDefinition.
 	newLayoutClass := mcDef espell2LayoutType.
 	newLayout := self role
-		ifNotNil: [ self assert: self template layoutClass = self layout class.
+		ifNotNil: [ self assert: self role layoutClass = self layout class.
 			"fail if tonel sets a wrong type"
 			self
 				assert:
@@ -393,23 +425,37 @@ ClassModel >> extendWithMonticello: aMCClassDefinition [
 	instVarsDefs := (mcDef variables
 		select: [ :var | var class type = #instance ])
 		reject: [ :var | (self allInstVarNames indexOf: var name) > 0 ].
-	instVarsDefs do: [ :each | self addSlotRefactoringSubclasses: each name ].
-	"role"
-	mcDef role
-		ifNotNil: [ self role ~= mcDef role
-				ifTrue: [ self role ifNil: [ self role: mcDef role ] ifNotNil: [ self halt ] ] ].
+	instVarsDefs do: [ :each | self addSlotRefactoringSubclasses: each name ]
+]
+
+{ #category : #'tonel repository' }
+ClassModel >> extendWithMonticello: aMCClassDefinition [
+	"An existent class is extended with a definition read from Monticello.
+	This procedure may corrupt the class if the Tonel definition is incorrect, that's why we need to test all classes after they have been modified"
+
+	| mcDef packageDef |
+	mcDef := aMCClassDefinition.
+
+	"superclass"
+	self
+		superclass:
+			(mcDef superclassName = #nil
+				ifTrue: [ nil ]
+				ifFalse: [ self parent
+						ensureClassNamedFromMonticello: mcDef superclassName ]).
+
 	"package"
 	packageDef := mcDef category.
 	(self package isNotNil and: [ self package name ~= packageDef ])
-		ifTrue: [ self package definedBehaviors remove: self ].
-	self package isNil
-		ifTrue: [ | newPkg |
+		ifTrue: [ self package removeDefinedBehavior: self ].
+	self package
+		ifNil: [ | newPkg |
 			newPkg := self parent ensurePackageNamed: packageDef.
 			self package: newPkg ].
 	^ self
 ]
 
-{ #category : #hooks }
+{ #category : #'tonel repository' }
 ClassModel >> extendWithMonticelloCustom: aEP2MCClassDefinition [
 	"Specify how Class attributes read from Tonel files are loaded into this class model. 
 	Access attributes by sending a message whose selector is the attribute name.
@@ -441,10 +487,15 @@ ClassModel >> hasComment [
 	^ false
 ]
 
-{ #category : #install }
+{ #category : #testing }
+ClassModel >> hasRole [
+	^ role isNotNil
+]
+
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> hookInstall [
 	| remoteMethodDict remoteSuperclass |
-	self halt.
+	self deprecated: 'use installCustom'.
 	
 	self remoteIsInstalled
 		ifFalse: [ self installStub ].
@@ -472,7 +523,7 @@ ClassModel >> includesMethodsAffectedBy: aMethodRemoved [
 	^aMethodRemoved affectsMethodsDefinedInPackage: self
 ]
 
-{ #category : #'accessing methods' }
+{ #category : #testing }
 ClassModel >> includesSelector: aString [ 
 	^ self methodDict anySatisfy: [ :method | method selector = aString ]
 ]
@@ -488,10 +539,19 @@ ClassModel >> indexInClassTable: anInteger [
 ]
 
 { #category : #initialization }
-ClassModel >> initialize [ 
+ClassModel >> initialize [
 	super initialize.
 	methodDict := IdentityDictionary new.
-	tagsForMethods := Set new
+	tagsForMethods := Set new.
+	(superclass isNil and: [ self isProtoObject not ])
+		ifTrue: [ superclass := self defaultSuperclass ].
+	role ifNotNil: [ self loadRoleInformation ].
+	layout ifNil: [ layout := self defaultLayout on: self ]
+]
+
+{ #category : #initialization }
+ClassModel >> initializeCustom [
+	
 ]
 
 { #category : #initialization }
@@ -499,9 +559,8 @@ ClassModel >> initializeWithLocal: localClass [
 	
 	self
 		layout: (self parent layoutForInstSpec: localClass instSpec on: self);
-		superclass: (self parent classByRoleOrName: localClass superclass name ifAbsent: [ self parent classNamed: #ProtoObject ]);
-		name: localClass name;
-		template: nil.
+		superclass: (self parent classByRoleOrName: localClass superclass name ifAbsent: [ self defaultSuperclass ]);
+		name: localClass name.
 	localClass instVarNames do: [:ivname | self addSlot: ivname ].
 	^ self
 ]
@@ -512,11 +571,10 @@ ClassModel >> initializeWithMonticello: aMCClassDefinition [
 	| mcDef |
 	mcDef := aMCClassDefinition.
 	self
-		layout: (mcDef espell2LayoutType on: self);
-		template: nil.
+		layout: (mcDef espell2LayoutType on: self).
 	mcDef superclassName = #nil
 		ifTrue: [ self halt ]
-		ifFalse: [ self superclass: (self parent ensureClassNamed: mcDef superclassName) ].
+		ifFalse: [ self superclass: (self parent ensureClassNamedFromMonticello: mcDef superclassName) ].
 	mcDef variables
 		do: [ :each | 
 			"the simplest metamodel considers only instance variables"
@@ -539,57 +597,7 @@ ClassModel >> initializeWithMonticello: aMCClassDefinition [
 	self test
 ]
 
-{ #category : #initialization }
-ClassModel >> initializeWithTemplate: aTemplateClass [
-	self initializeWithTemplateGeneric: aTemplateClass.
-	self initializeWithTemplateCustom: aTemplateClass.
-	self test.
-	^ self
-		
-]
-
-{ #category : #initialization }
-ClassModel >> initializeWithTemplateCustom: aTemplateClass [.
-	self subclassResponsibility 
-]
-
-{ #category : #initialization }
-ClassModel >> initializeWithTemplateGeneric: aTemplateClass [
-	| superclassModel superTemplates superTemplate templates |
-
-	indexInClassTable := template indexInClassTable.
-	index2InClassTable := template index2InClassTable.
-	indexInSpecialObjectsArray := template indexInSpecialObjectsArray.
-	
-	"ProtoObject superclass is nil"
-	(self role = #ProtoObject) 
-		ifTrue: [self superclass: nil.
-			^ self].
-	"For other templates, we calculate the superclass"
-	templates := EP2Remote allSubclasses
-		add: EP2Remote;
-		yourself.
-	
-	superTemplates := aTemplateClass allSuperclasses
-		select: [ :each | 
-			(templates includes: each)
-				and: [ each role isNotNil ] ].
-			
-	superTemplate := superTemplates at: 1 ifAbsent: [ nil ].
-	
-	superclassModel := superTemplate
-		ifNil: [ self parent classWithRole: #ProtoObject ]
-		ifNotNil: [ self parent classNamed: superTemplate role ].
-
-	"this happens when a class has more than one role"
-	(superclassModel isNotNil and: [ superclassModel name = self name ])
-		ifTrue:
-			[ self error: 'The language model contains a clas with multiple roles' ].
-	self superclass: superclassModel.
-	^ self
-]
-
-{ #category : #hooks }
+{ #category : #binding }
 ClassModel >> innerBindingOf: aSymbol [ 
 	"Answer the binding of some variable resolved in the scope of the receiver, or one of its superclass
 	but do not look up binding in receiver's environment.
@@ -608,17 +616,17 @@ ClassModel >> instSpec [
 	^ self layout instSpec
 ]
 
-{ #category : #'accessing instance variables' }
+{ #category : #'accessing fields' }
 ClassModel >> instVarIndexFor: aString ifAbsent: aBlockClosure [ 
 	^ self allInstVarNames indexOf: aString ifAbsent: aBlockClosure 
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing fields' }
 ClassModel >> instVarNames [
 	^ self slots collect: #name
 ]
 
-{ #category : #install }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> install [
 	self installBasic.
 	self installCustom.
@@ -626,15 +634,19 @@ ClassModel >> install [
 
 ]
 
-{ #category : #install }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> installBasic [
 	| remoteMethodDict remoteSuperclass |
+	self isInstallable
+		ifFalse:
+			[ self error: 'trying to install a class that is set as uninstallable' ].
 	self remoteIsInstalled
 		ifFalse: [ self installStub ].
 	self remote isStub
 		ifFalse: [ "class is fully loaded" ^ self remote ].
 	"we install an empty methodDict, it will be filled later"
-	remoteMethodDict := EP2RemoteMethodDictionary	newWithBackend: self parent remote espellBackend.
+	remoteMethodDict := EP2RemoteMethodDictionary
+		newWithBackend: self parent remote espellBackend.
 	remoteMethodDict test.
 	remoteSuperclass := self superclass
 		ifNil: [ nil ]
@@ -647,36 +659,20 @@ ClassModel >> installBasic [
 	^ self remote
 ]
 
-{ #category : #install }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> installCustom [
-	self subclassResponsibility 
+	| missingFields |
+	missingFields := self class allModelInstVarNames
+		difference: ClassModel allModelInstVarNames.
+	missingFields
+		do: [ :each | 
+			| value |
+			value := self perform: each.
+			self remote perform: each , ':' with: value ].
+		self test
 ]
 
-{ #category : #'api - stubs creation' }
-ClassModel >> installMetacircularStub [
-	"I install a class stub that is instance of itself"
-	| theNewMetaclass metaclassIndex |
-	
-	self deprecated: 'Use LanguageModel >> installMulticlassStubs:'.
-	" If the metaclass was already created, it will be found in the bootstrapEnvironment dictionary "
-	self remoteIsInstalled
-		ifTrue: [ ^ self remote ].
-
-	" We need to create the metaclass from scratch "
-	metaclassIndex := self classLoader newClassIndex.
-
-	"This is Metaclass, it is instance of itself"
-	theNewMetaclass := self classLoader
-		createStubForClassNamed: self name
-		metaclassIndex: metaclassIndex
-		newClassIndex: metaclassIndex.
-	self assert: theNewMetaclass basicClass = theNewMetaclass.
-	self assert: theNewMetaclass classTableIndex = metaclassIndex.
-	
-	^ theNewMetaclass
-]
-
-{ #category : #install }
+{ #category : #'bootstrap - build model methods' }
 ClassModel >> installMethods [
 	(self localMethods select: #isInstallable)
 		do: [ :method | | remoteMethod | 
@@ -684,47 +680,12 @@ ClassModel >> installMethods [
 			self remote methodDictionary at: remoteMethod selector put: remoteMethod ]
 ]
 
-{ #category : #'api - stubs creation' }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> installStub [
-	" I install the stub of my corresponding class in the kernel.
-	I depend on the implementation of installStubCustom "
-
-	self remoteIsInstalled
-		ifTrue: [ ^ self remote ].
-	(self = (self parent classWithRole: #Metaclass))
-		ifTrue: [ self
-				error:
-					'Use LanguageModel >> installMulticlassStubs to install required classes' ].
-	indexInClassTable
-		ifNil: [ indexInClassTable := self classLoader newClassIndex ].
-	self metaclass installStub.
-	self installStubBasic.
-	self testStub.
-	^ self remote
+	^ self classLoader installStub: self
 ]
 
-{ #category : #'api - stubs creation' }
-ClassModel >> installStubBasic [
-	" I install the stub of my corresponding class in the kernel "
-	self remote: (self classLoader
-								createStubForClassNamed: self name
-								metaclassIndex: self metaclass indexInClassTable
-								newClassIndex: self indexInClassTable).
-	self classLoader
-						registerClass: self remote
-						named: self name
-						fullyLoaded: false .
-	^ self remote
-]
-
-{ #category : #hooks }
-ClassModel >> installStubCustom [
-	"Using method from protocol 'api-stubs creation' create your own stub and return it"
-	self deprecated: 'Use first Language >> installMulticlassStubs: to create the first stubs. Use >>installStub to load classes after stub creation'.
-	self subclassResponsibility
-]
-
-{ #category : #accessing }
+{ #category : #'accessing metaclass' }
 ClassModel >> instanceSide [
 	"compiler compatibility"
 	^ self
@@ -756,7 +717,7 @@ ClassModel >> isBytes [
 ]
 
 { #category : #'testing layout' }
-ClassModel >> isClassMetamodel [
+ClassModel >> isClassModel [
 	^ true
 ]
 
@@ -782,7 +743,9 @@ ClassModel >> isEphemeronClass [
 
 { #category : #'testing layout' }
 ClassModel >> isImmediate [
-	^ self parent immediateClassRoles contains: [:rol | rol = self role ]
+	self role
+		ifNil: [ ^ false ].
+	^ self role isImmediate
 ]
 
 { #category : #'testing layout' }
@@ -795,7 +758,7 @@ ClassModel >> isInstanceSide [
 	^ true
 ]
 
-{ #category : #accessing }
+{ #category : #testing }
 ClassModel >> isMeta [
 	"compiler compatibility"
 	^ false
@@ -821,6 +784,11 @@ ClassModel >> isObsolete [
 ClassModel >> isPointers [
 	
 	^ self isBits not
+]
+
+{ #category : #testing }
+ClassModel >> isProtoObject [
+	^ self = self parent classProtoObject
 ]
 
 { #category : #calypso }
@@ -875,8 +843,21 @@ ClassModel >> layout [
 ]
 
 { #category : #'accessing format' }
-ClassModel >> layout: anEP2LayoutClass [ 
-	layout := anEP2LayoutClass
+ClassModel >> layout: anEP2Layout [ 
+	layout := anEP2Layout
+]
+
+{ #category : #role }
+ClassModel >> loadRoleInformation [
+	| roleInstVars |
+	self assert: self hasRole.
+	indexInClassTable := role indexInClassTable.
+	index2InClassTable := role index2InClassTable.
+	indexInSpecialObjectsArray := role indexInSpecialObjectsArray.
+	self layout: (role layoutClass on: self).
+	roleInstVars := role modelInstVarNames.
+	roleInstVars
+		doWithIndex: [ :ivname :index | self addSlot: ivname index: index ]
 ]
 
 { #category : #calypso }
@@ -887,7 +868,7 @@ ClassModel >> localMethodNamed: aSymbol ifAbsent: aBlock [
 	^ aBlock value.
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing methods' }
 ClassModel >> localMethods [
 	^ methodDict
 ]
@@ -895,6 +876,23 @@ ClassModel >> localMethods [
 { #category : #calypso }
 ClassModel >> localSelectors [
 	^ self localMethods collect: #name
+]
+
+{ #category : #marking }
+ClassModel >> lookupSelector: selector [
+	"Look up the given selector in my methodDictionary.
+	Return the corresponding method if found.
+	Otherwise chase the superclass chain and try again.
+	Return nil if no method is found."
+	| lookupClass |
+	lookupClass := self.
+	[lookupClass == nil]
+		whileFalse: [ 
+			lookupClass methodDict 
+				at: selector
+				ifPresent: [ :method | ^ method ].
+			lookupClass := lookupClass superclass].
+	^ nil
 ]
 
 { #category : #marking }
@@ -930,22 +928,22 @@ ClassModel >> markMethodAsAccessed: aMethod [
 		ifNotNil: [ :method | method markAsAccessed ] 
 ]
 
-{ #category : #monticello }
+{ #category : #'tonel compatibility' }
 ClassModel >> mcType [
 	^ self layout mcType
 ]
 
 { #category : #calypso }
 ClassModel >> metaLevelScope [
-	^self isInstanceSide ifTrue: [ ClyInstanceSideScope ] ifFalse: [ self halt."ClyClassSideScope" ]
+	^self isInstanceSide ifTrue: [ ClyInstanceSideScope ] ifFalse: [ ClyClassSideScope ]
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing metaclass' }
 ClassModel >> metaclass [ 
 	self subclassResponsibility 
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'accessing kernel backend' }
 ClassModel >> methodBuilder [
 	^ self parent methodBuilder
 ]
@@ -955,12 +953,13 @@ ClassModel >> methodDict [
 	^ methodDict
 ]
 
-{ #category : #accessing }
+{ #category : #'bootstrap - build model' }
 ClassModel >> methodDict: aDictionary [
-	^ self writeSlotNamed: #methodDict value: aDictionary 
+	"^ self writeSlotNamed: #methodDict value: aDictionary"
+	methodDict := aDictionary 
 ]
 
-{ #category : #'metamodel-accessing' }
+{ #category : #metamodel }
 ClassModel >> methodModel [
 	^ self class methodModel
 ]
@@ -979,12 +978,24 @@ ClassModel >> methodNamed: aString ifAbsent: aBlock [
 	^ [self methodDict at: aString asSymbol] on: KeyNotFound do: aBlock
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing methods' }
 ClassModel >> methods [
 	^ self methodDict values asArray
 ]
 
-{ #category : #'api - stubs creation' }
+{ #category : #'bootstrap - build model' }
+ClassModel >> name: aName [
+	(self parent isNotNil and: [ self name ~= aName ])
+		ifTrue: [ self parent
+				ifNotNil: [ :lang | 
+					lang allClasses
+						removeKey: self name;
+						at: aName put: self.
+					lang classRoles at: self role name put: aName ] ].
+	super name: aName
+]
+
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> newStubWithFormat: anInteger [
 	" Only valid for metaclasses. 
 	I create a new class stub in the kernel by instantiating myself "
@@ -1002,22 +1013,28 @@ ClassModel >> objectAccessedPropertyName [
 	^ parent objectAccessedPropertyName
 ]
 
-{ #category : #'accessing backend' }
+{ #category : #'accessing kernel backend' }
 ClassModel >> objectSpace [
 	^ self parent objectSpace
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing package' }
 ClassModel >> package [
-	^ self parent packageFor: self
+	^ (self parent packageFor: self)
+		ifNil: [ self defaultPackage addDefinedBehavior: self.
+			self parent packageFor: self ].
+	
 ]
 
-{ #category : #accessing }
-ClassModel >> package: anEP2MPackage [ 
-	anEP2MPackage addDefinedBehavior: self
+{ #category : #'bootstrap - build model' }
+ClassModel >> package: aPackageModel [ 
+	| oldPackage |
+	oldPackage := self package.
+	oldPackage removeDefinedBehavior: self.
+	aPackageModel addDefinedBehavior: self
 ]
 
-{ #category : #'hooks-dynamic method loading' }
+{ #category : #'bootstrap - build kernel dynamic methods' }
 ClassModel >> parserClass [ 
 	^ RBParser
 ]
@@ -1070,18 +1087,18 @@ ClassModel >> recursivellyDo: doBlock to: nextClassesBlock [
 	(nextClassesBlock value: self) do: [ :c | c recursivellyDo: doBlock to: nextClassesBlock  ]
 ]
 
-{ #category : #hooks }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> register [ 
 	self remoteSystemDictionary at: self name put: self remote.
 	self registerCustom
 ]
 
-{ #category : #hooks }
+{ #category : #'bootstrap - build kernel classes' }
 ClassModel >> registerCustom [
-	self subclassResponsibility 
+	^ nil
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'accessing kernel objects' }
 ClassModel >> remote [
 	remote ifNil: [ ^nil ].
 	^ remote isNilObject 
@@ -1089,17 +1106,12 @@ ClassModel >> remote [
 		ifFalse: [ remote asRemoteClass ]
 ]
 
-{ #category : #'accessing remote backend' }
-ClassModel >> remote: anEP2RemoteClass [ 
-	remote := anEP2RemoteClass
-]
-
 { #category : #testing }
 ClassModel >> remoteIsInstalled [
 	^ self remote isNotNil and: [ self remote isNotNilObject ]
 ]
 
-{ #category : #'accessing remote backend' }
+{ #category : #'accessing kernel objects' }
 ClassModel >> remoteSystemDictionary [
 	^ self parent remote espellBackend objectSpace systemDictionary
 ]
@@ -1117,23 +1129,18 @@ ClassModel >> removeLocalMethod: aMethodModel [
 
 ]
 
-{ #category : #'accessing slots' }
+{ #category : #'bootstrap - build model fields' }
 ClassModel >> removeSlot: aString [ 
 	^ self layout removeSlot: aString
 		
 ]
 
-{ #category : #accessing }
-ClassModel >> role [
-	^ role ifNil: [ role := template ifNil: [ nil ] ifNotNil: [ template role ] ] 
-]
-
-{ #category : #accessing }
+{ #category : #role }
 ClassModel >> role: aString [ 
 	role := aString
 ]
 
-{ #category : #transforming }
+{ #category : #'bootstrap - build model' }
 ClassModel >> setLayoutKeepingSlots: anEP2Layout [
 	| oldSlots |
 	oldSlots := self layout ifNil: [ #() ] ifNotNil: [ self slots ].
@@ -1141,7 +1148,7 @@ ClassModel >> setLayoutKeepingSlots: anEP2Layout [
 	oldSlots do: [ :slot | self addSlot: slot name index: slot index ]
 ]
 
-{ #category : #accessing }
+{ #category : #'accessing fields' }
 ClassModel >> sharedPools [
 	"compiler compatibility"
 	^#()
@@ -1149,19 +1156,19 @@ ClassModel >> sharedPools [
 
 { #category : #'accessing slots' }
 ClassModel >> slotNamed: aString [
-	^ (self slots select: [ :slot | slot name = aString ])
+	^ (self allSlots select: [ :slot | slot name = aString ])
 		ifEmpty: [ PBSlotDefinitionNotFound new
 				key: aString;
 				signal ]
 		ifNotEmpty: [ :collection | collection anyOne ]
 ]
 
-{ #category : #slots }
+{ #category : #'accessing fields' }
 ClassModel >> slotNamed: aString ifAbsent: aBlockClosure [ 
 	^ self layout slotNamed: aString ifAbsent: aBlockClosure 
 ]
 
-{ #category : #slots }
+{ #category : #'accessing fields' }
 ClassModel >> slotNamed: aString ifAbsent: absentBlock ifPresent: presentBlock [ 
 	^ self layout slotNamed: aString ifAbsent: absentBlock ifPresent: presentBlock 
 ]
@@ -1171,7 +1178,7 @@ ClassModel >> slotNamed: aString ifNone: aBlockClosure [
 	^ [ self slotNamed: aString ] on: KeyNotFound do: aBlockClosure
 ]
 
-{ #category : #slots }
+{ #category : #'accessing fields' }
 ClassModel >> slotNamed: aString ifPresent: aBlockClosure [ 
 	^ self layout slotNamed: aString ifPresent: aBlockClosure 
 
@@ -1219,7 +1226,7 @@ ClassModel >> superclass [
 	^ superclass
 ]
 
-{ #category : #accessing }
+{ #category : #'bootstrap - build model' }
 ClassModel >> superclass: anEP2MBehavior [
 	^ superclass := anEP2MBehavior 
 ]
@@ -1241,60 +1248,48 @@ ClassModel >> tagsForMethods [
 	^ tagsForMethods
 ]
 
-{ #category : #'accessing format' }
-ClassModel >> template [
-	^ template 
-]
-
-{ #category : #'accessing format' }
-ClassModel >> template: aClass [ 
-	template := aClass
-]
-
-{ #category : #hooks }
+{ #category : #tests }
 ClassModel >> test [
-	self template ifNotNil: [ self testVMInstanceVariables. self testFormat ].
-	self assert: self layout isNotNil
+	| supclass |
+	self hasRole
+		ifTrue: [ self role test: self ].
+	self assert: self layout isNotNil.
+	self assert: self metaclass isNotNil.
+	"assert I am not in my superclasses"
+	supclass := self.
+	[ supclass isNil ]
+		whileFalse: [ supclass := supclass superclass.
+			self
+				assert: supclass ~= self
+				description: 'cycles in inheritance chain are forbidden' ]
 ]
 
-{ #category : #hooks }
+{ #category : #tests }
 ClassModel >> testForWriting [
 	self test.
 	self assert: self indexInClassTable isNotNil.
 ]
 
-{ #category : #testing }
-ClassModel >> testFormat [
-	self template
-		ifNotNil: [ :temp | 
-			| myInstSpec correctInstSpec |
-			myInstSpec := self instSpec.
-			correctInstSpec := temp modelInstSpec.
-			self
-				assert: (myInstSpec = correctInstSpec or: (correctInstSpec = 1 and: myInstSpec = 0))
-				description:
-					'Wrong inst spec in class "' , self name , '" (role "' , self role
-						, '"). It should be ' , temp modelInstSpec asString
-						, ' but it is ' , self instSpec asString.
-			self
-				assert: temp modelAllInstVarNames size <= self instSize
-				description:
-					'Missing instance variables in class "' , self name , '" (role "'
-						, self role , '"). It should define at least: '
-						, temp modelAllInstVarNames asString ]
+{ #category : #tests }
+ClassModel >> testFull [
+	self test.
+	"no circularities in inheritance chain (improve)"
+	self assert: self superclass ~= self.
+	"all metaclasses inherit from metaclass"
+	
 ]
 
-{ #category : #testing }
+{ #category : #tests }
 ClassModel >> testRemote [
 	self remote test
 ]
 
-{ #category : #testing }
+{ #category : #tests }
 ClassModel >> testRemoteStub [
 	self remote asRemoteClass testStub
 ]
 
-{ #category : #testing }
+{ #category : #tests }
 ClassModel >> testStub [
 	self assert: self remote isNotNil.
 	self assert: self remote basicClass = self metaclass remote.
@@ -1302,30 +1297,7 @@ ClassModel >> testStub [
 	self remote testStub
 ]
 
-{ #category : #testing }
-ClassModel >> testVMInstanceVariables [
-	self template modelAllInstVarNames
-		doWithIndex: [ :ivName :index | 
-			self
-				assert: (self instVarIndexFor: ivName ifAbsent: [ 0 ]) = index
-				description:
-					'Instance variable "' , ivName , '" should be in position '
-						, index asString , ' in class ' , self name , ' (role "'
-						, self role , '") ' ].
-	self template modelAcceptsExtraInstVars
-		ifFalse: [ | instVarsNames expectedInstVarsNames |
-			instVarsNames := self allInstVarNames.
-			expectedInstVarsNames := self template modelAllInstVarNames.
-			self
-				assert: instVarsNames size = expectedInstVarsNames size
-				description:
-					self name , ' defines ' , instVarsNames size asString
-						, ' instance variables, but it must have exactly '
-						, expectedInstVarsNames size asString , ' inst vars, which are: '
-						, expectedInstVarsNames asString ]
-]
-
-{ #category : #accessing }
+{ #category : #'accessing metaclass' }
 ClassModel >> theNonMetaClass [
 	"compiler compatibility"
 	^ self
@@ -1334,6 +1306,11 @@ ClassModel >> theNonMetaClass [
 { #category : #'tonel compatibility' }
 ClassModel >> tonelInstanceSide [
 	^ self
+]
+
+{ #category : #'bootstrap - build model' }
+ClassModel >> transform [ 
+	^ self 
 ]
 
 { #category : #calypso }
@@ -1346,7 +1323,7 @@ ClassModel >> visibleMethods [
 	^ self localMethods
 ]
 
-{ #category : #'accessing slots' }
+{ #category : #'bootstrap - build model fields' }
 ClassModel >> writeSlotNamed: aString value: anObject [
 	
 	(self basicClass slotNamed: aString) write: anObject to: self

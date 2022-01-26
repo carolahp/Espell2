@@ -21,12 +21,6 @@ EP2RemoteMethodDictionary class >> modelInstSpec [
 ]
 
 { #category : #constants }
-EP2RemoteMethodDictionary class >> modelInstVarNames [
-	"I inherit #(#tally #array) from RemoteDictionary. Use modelAllInstVarNames to get all my inst vars"
-	^ #()
-]
-
-{ #category : #constants }
 EP2RemoteMethodDictionary class >> newWithBackend: anEP2Backend size: nElements [
 	| dict array tally |
 	self assert: nElements isPowerOfTwo.
@@ -43,7 +37,7 @@ EP2RemoteMethodDictionary class >> newWithBackend: anEP2Backend size: nElements 
 
 { #category : #constants }
 EP2RemoteMethodDictionary class >> role [ 
-	^ 'MethodDictionary'
+	^ #MethodDictionary
 ]
 
 { #category : #'gt-inspector' }

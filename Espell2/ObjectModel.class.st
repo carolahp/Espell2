@@ -12,12 +12,33 @@ Class {
 }
 
 { #category : #instanciation }
+ObjectModel class >> allModelInstVarNames [
+	^ self allInstVarNames difference: ObjectModel allInstVarNames
+]
+
+{ #category : #instanciation }
+ObjectModel class >> customFirstClassModels [
+	" returns the model classes used to build the model "
+	^#()
+]
+
+{ #category : #instanciation }
+ObjectModel class >> defaultLayout [
+	self subclassResponsibility 
+]
+
+{ #category : #instanciation }
 ObjectModel class >> named: aString parent: anEP2MLanguage [ 
 	^ self basicNew
 		name: aString asSymbol;
 		parent: anEP2MLanguage;
 		initialize;
 		yourself
+]
+
+{ #category : #instanciation }
+ObjectModel class >> role [ 
+	^ nil
 ]
 
 { #category : #accessing }
@@ -27,7 +48,21 @@ ObjectModel >> announcer [
 
 { #category : #compatibility }
 ObjectModel >> asRemoteObject [
+	self halt.
 	^ self 
+]
+
+{ #category : #'accessing remote backend' }
+ObjectModel >> asRemoteObjectInObjectSpace: anObjectSpace [
+	| missingFields |
+	self ensureRemote.
+	missingFields := self class allModelInstVarNames.
+	missingFields
+		do: [ :each | 
+			| value |
+			value := self perform: each.
+			self remote perform: each , ':' with: value ].
+	^ remote
 ]
 
 { #category : #'evaluate ast' }
@@ -51,12 +86,20 @@ ObjectModel >> destroy [
 	
 ]
 
+{ #category : #'accessing remote backend' }
+ObjectModel >> ensureRemote [
+	remote ifNotNil: [ ^remote ].
+	remote := (self language classWithRole: self class role) remote new.
+	^ remote
+	
+]
+
 { #category : #accessing }
 ObjectModel >> environment [
 	^ parent
 ]
 
-{ #category : #'ast-evaluation' }
+{ #category : #'evaluate ast' }
 ObjectModel >> evaluateCode: aString [ 
 	^ self evaluateCode: aString temps: #()
 ]
@@ -64,6 +107,20 @@ ObjectModel >> evaluateCode: aString [
 { #category : #'evaluate ast' }
 ObjectModel >> evaluateCode: aString temps: aCollection [ 
 	^ (self newInstruction code: aString; temps: aCollection) evaluate asRemoteObjectCasted
+]
+
+{ #category : #'evaluate ast' }
+ObjectModel >> evaluateCodeD: aString [
+	" use DASTInterpreter for the evaluation "
+	^ self evaluateCodeD: aString temps: #() 
+]
+
+{ #category : #'evaluate ast' }
+ObjectModel >> evaluateCodeD: aString temps: aCollection [ 
+	" use DASTInterpreter for the evaluation "
+	^ (self newInstruction
+		code: aString;
+		temps: aCollection) evaluateWithDASTInterpreter 
 ]
 
 { #category : #'evaluate ast' }
@@ -118,11 +175,21 @@ ObjectModel >> installAccessedObjectsOnly: aBoolean [
 	self environment installAccessedObjectsOnly: aBoolean
 ]
 
+{ #category : #testing }
+ObjectModel >> isClassModel [
+	^ false
+]
+
 { #category : #marking }
 ObjectModel >> isInstallable [
-	^ self environment installAccessedObjectsOnly
+	^ self language installAccessedObjectsOnly
 		ifTrue: [ self isMarkedAsAccessed ]
 		ifFalse: [ true ]
+]
+
+{ #category : #accessing }
+ObjectModel >> isLanguageModel [
+	^ false
 ]
 
 { #category : #marking }
@@ -130,6 +197,15 @@ ObjectModel >> isMarkedAsAccessed [
 	^ self 
 		propertyNamed: self environment objectAccessedPropertyName 
 		ifAbsent: [ false ]
+]
+
+{ #category : #accessing }
+ObjectModel >> language [
+	| model |
+	model := self.
+	[ model isNil or: [ model isLanguageModel ] ]
+		whileFalse: [ model := model parent ].
+	^ model
 ]
 
 { #category : #marking }
@@ -216,6 +292,16 @@ ObjectModel >> propertyNames [
 ]
 
 { #category : #'accessing remote backend' }
+ObjectModel >> remote [
+	^ remote
+]
+
+{ #category : #'accessing remote backend' }
+ObjectModel >> remote: anEP2Remote [ 
+	remote := anEP2Remote 
+]
+
+{ #category : #'accessing remote backend' }
 ObjectModel >> remoteBackend [
 	^ self parent remote espellBackend 
 ]
@@ -225,6 +311,11 @@ ObjectModel >> removePropertyNamed: propertyName [
 	
 	(self hasPropertyNamed: propertyName)
 		ifTrue: [ properties removeKey: propertyName ]
+]
+
+{ #category : #accessing }
+ObjectModel >> role [ 
+	^ role
 ]
 
 { #category : #'transforming objects' }

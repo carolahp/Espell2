@@ -21,7 +21,7 @@ EP2RemoteCompiledMethod class >> modelInstSpec [
 
 { #category : #constants }
 EP2RemoteCompiledMethod class >> role [ 
-	^ 'CompiledMethod'
+	^ #CompiledMethod
 ]
 
 { #category : #accessing }

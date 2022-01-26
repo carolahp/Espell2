@@ -6,8 +6,18 @@ Class {
 		'index',
 		'name'
 	],
-	#category : #'Espell2-Metamodel'
+	#category : #'Espell2-Metamodel-Variables'
 }
+
+{ #category : #testing }
+TempVariableModel class >> acceptsUndeclaredReferences [
+	^ false
+]
+
+{ #category : #testing }
+TempVariableModel class >> newFrom: aRBVariableNode inContext: anEP2CompilationContext [
+	^ OCTempVariable new
+]
 
 { #category : #'accessing-api' }
 TempVariableModel >> emitStore: methodBuilder [
@@ -24,6 +34,16 @@ TempVariableModel >> emitValue: methodBuilder [
 { #category : #'accessing-api' }
 TempVariableModel >> escaping [
 	^escaping
+]
+
+{ #category : #accessing }
+TempVariableModel >> index [
+	^ index
+]
+
+{ #category : #accessing }
+TempVariableModel >> index: anInteger [
+	index := anInteger
 ]
 
 { #category : #asd }
