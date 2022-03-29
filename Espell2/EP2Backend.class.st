@@ -21,6 +21,12 @@ EP2Backend class >> for32Bit [
 ]
 
 { #category : #'instance-creation' }
+EP2Backend class >> for64Bit [
+
+	^ self withOptions: #(#ObjectMemory #Spur64BitMemoryManager)
+]
+
+{ #category : #'instance-creation' }
 EP2Backend class >> simulator: aSimulator [
 	
 	^ self new

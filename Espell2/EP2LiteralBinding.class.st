@@ -14,6 +14,11 @@ EP2LiteralBinding >> = another [
 	^ self name = another name
 ]
 
+{ #category : #compiling }
+EP2LiteralBinding >> analyzeRead: aRBVariableNode by: anEP2SemanticAnalyzer [ 
+	
+]
+
 { #category : #'from local to remote' }
 EP2LiteralBinding >> asRemoteObjectInObjectSpace: anEP2ObjectSpace [ 
 	self subclassResponsibility 
@@ -32,6 +37,12 @@ EP2LiteralBinding >> emitStore: anIRBuilder [
 { #category : #value }
 EP2LiteralBinding >> emitValue: anIRBuilder [
 	anIRBuilder pushLiteralVariable: self.
+]
+
+{ #category : #testing }
+EP2LiteralBinding >> isSuperVariable [
+	
+	^ false
 ]
 
 { #category : #testing }

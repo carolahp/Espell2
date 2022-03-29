@@ -10,6 +10,12 @@ EP2GlobalBinding >> accept: anEPASTInterpreter assign: anEPMirror inNode: aRBVar
 ]
 
 { #category : #visiting }
+EP2GlobalBinding >> acceptVisitor: aProgramNodeVisitor node: aNode [
+
+	^ aProgramNodeVisitor visitGlobalVariableNode: aNode
+]
+
+{ #category : #visiting }
 EP2GlobalBinding >> asGlobalOrClassModel [
 	| languageModel |
 	self flag: 'hardcoding access to globals, classes or packages is wrong, the metamodel should be more flexible'.

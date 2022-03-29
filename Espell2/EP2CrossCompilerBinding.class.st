@@ -87,6 +87,11 @@ EP2CrossCompilerBinding >> innerBindingOf: aString [
 	^ class innerBindingOf: aString asSymbol
 ]
 
+{ #category : #bindings }
+EP2CrossCompilerBinding >> lookupVar: aName declare: aBoolean [
+	self halt.
+]
+
 { #category : #accessing }
 EP2CrossCompilerBinding >> name [
 	^ self className

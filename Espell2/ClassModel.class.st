@@ -920,6 +920,14 @@ ClassModel >> lookupSelectorAndMarkTraversedClasses: selector [
 	^ nil
 ]
 
+{ #category : #'variable lookup' }
+ClassModel >> lookupVar: aString declare: aBoolean [ 
+	self allSlots detect: [ :e | e name = aString ] ifFound: [ :e | ^ e ].
+
+	Smalltalk globals reservedVariables at: aString ifPresent: [ :e | ^e ].
+	^ self bindingOf: aString
+]
+
 { #category : #marking }
 ClassModel >> markMethodAsAccessed: aMethod [ 
 	"We ask the class to mark the method instead of asking the method itself to do it, for handling the case in which aMethod is a compiled method coming from DASTBlock or BlockClosure" 

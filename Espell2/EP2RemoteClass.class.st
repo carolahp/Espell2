@@ -359,6 +359,11 @@ EP2RemoteClass >> isStub [
 		and: [ self methodDictionary isNilObject ]) 
 ]
 
+{ #category : #lookup }
+EP2RemoteClass >> lookupVar: aVar declare: aBoolean [
+	^ self asClassDefinition lookupVar: aVar declare: aBoolean
+]
+
 { #category : #'accessing-specialInstVars' }
 EP2RemoteClass >> methodDictionary [
 	^ (self instanceVariableAtIndex: self classMethodDictionaryIndex) asRemoteMethodDictionary

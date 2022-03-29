@@ -27,6 +27,16 @@ SlotModel >> accept: anInterpreter assign: aValue inNode: aVariableNode [
 	^ anInterpreter write: aValue at: self index named: self name
 ]
 
+{ #category : #visiting }
+SlotModel >> acceptVisitor: aProgramNodeVisitor node: aNode [ 
+	^ aProgramNodeVisitor visitInstanceVariableNode: aNode
+]
+
+{ #category : #compiling }
+SlotModel >> analyzeRead: aRBVariableNode by: anEP2SemanticAnalyzer [ 
+	
+]
+
 { #category : #converting }
 SlotModel >> asEP2Slot [
 	^ self
@@ -90,6 +100,11 @@ SlotModel >> isInstanceVariableSlot [
 SlotModel >> isSlot [
 
 	^ true
+]
+
+{ #category : #testing }
+SlotModel >> isSuperVariable [
+	^ false
 ]
 
 { #category : #testing }
