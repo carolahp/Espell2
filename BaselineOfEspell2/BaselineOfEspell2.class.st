@@ -12,11 +12,9 @@ BaselineOfEspell2 >> baseline: spec [
 		do: [ spec blessing: #baseline.
 			spec
 				baseline: 'Espell'
-				with: [ spec repository: 'github://carolahp/espell:v2.3' ].
+				with: [ spec repository: 'github://carolahp/espell:Pharo10' ].
 			spec
 				baseline: 'Phantom'
 				with: [ spec repository: 'github://carolahp/PHANtom:v1.0.0' ].
-			spec package: 'Espell2' ].
-		
-
+			spec package: 'Espell2' ]
 ]
